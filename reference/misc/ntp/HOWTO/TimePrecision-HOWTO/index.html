@@ -1,0 +1,673 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Managing Accurate Date and Time</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="NEXT"
+TITLE="Why do We Need a Precise Clock?"
+HREF="why.html"></HEAD
+><BODY
+CLASS="article"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="title"
+><A
+NAME="AEN2"
+></A
+>Managing Accurate Date and Time</H1
+><DIV
+CLASS="authorgroup"
+><A
+NAME="AEN7"
+></A
+><H3
+CLASS="author"
+><A
+NAME="AEN8"
+>Avi Alkalay</A
+></H3
+><P
+CLASS="othercredit"
+><B
+>Brad Knowles - </B
+><SPAN
+CLASS="contrib"
+>Suggestion to use pool.ntp.org and NTP's stratum 2 public time servers</SPAN
+></P
+><P
+CLASS="othercredit"
+><B
+>Kent Borg - </B
+><SPAN
+CLASS="contrib"
+>Suggestion to use ntpq instead of ntpdc</SPAN
+></P
+><P
+CLASS="othercredit"
+><B
+>Yura Moron - </B
+><SPAN
+CLASS="contrib"
+>Good explanations on ntpq and ntpdc info</SPAN
+></P
+><P
+CLASS="othercredit"
+><B
+>Takeo Nakano - </B
+></P
+><P
+CLASS="othercredit"
+><B
+>SHAKI - </B
+></P
+><P
+CLASS="othercredit"
+><B
+>Mihaly Gyulai - </B
+></P
+><P
+CLASS="othercredit"
+><B
+>Philippe Wautelet - </B
+></P
+><P
+CLASS="othercredit"
+><B
+>Kemal Ökmen - </B
+></P
+></DIV
+><P
+CLASS="copyright"
+>Copyright &copy; 2002,2003,2004,2005 Avi Alkalay</P
+><P
+CLASS="pubdate"
+>2005-11-18<BR></P
+><DIV
+CLASS="revhistory"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+><TR
+><TH
+ALIGN="LEFT"
+VALIGN="TOP"
+COLSPAN="3"
+><B
+>Revision History</B
+></TH
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 2005-11-18</TD
+><TD
+ALIGN="LEFT"
+>18 Nov 2005</TD
+><TD
+ALIGN="LEFT"
+>Revised by: Avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Included link to turkish translation</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 2005-10-12</TD
+><TD
+ALIGN="LEFT"
+>12 Oct 2005</TD
+><TD
+ALIGN="LEFT"
+>Revised by: Avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>The Brazil zic file is now external and updated</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 2005-05-03</TD
+><TD
+ALIGN="LEFT"
+>03 May 2005</TD
+><TD
+ALIGN="LEFT"
+>Revised by: Avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Included link to french translation</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 1.0.8</TD
+><TD
+ALIGN="LEFT"
+>2004-10-29</TD
+><TD
+ALIGN="LEFT"
+>Revised by: Mihaly Gyulai</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Hungarian translation, the chorny section and the very first section</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 1.0.7</TD
+><TD
+ALIGN="LEFT"
+>9 Jul 2004</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Disclaimer near to license, to let people know they can translate without asking permission.Small fixes in some phrases.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 1.0.6</TD
+><TD
+ALIGN="LEFT"
+>25 Feb 2004</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Included credits and link to russian translation.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 1.0.5</TD
+><TD
+ALIGN="LEFT"
+>05 Jul 2003</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Changed public time servers list URL. Added pool.ntp.org.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 1.0.4</TD
+><TD
+ALIGN="LEFT"
+>21 Dec 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Added japanese translation link and credits.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 1.0.3</TD
+><TD
+ALIGN="LEFT"
+>24 Aug 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Fixed wrong screen and programlisting widths.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 1.0.2</TD
+><TD
+ALIGN="LEFT"
+>04 Aug 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Link to public time servers page.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 1.0.1</TD
+><TD
+ALIGN="LEFT"
+>07 May 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Final XML conversion. Files reorganization.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 1.0</TD
+><TD
+ALIGN="LEFT"
+>28 Apr 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Finalized image.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 0.8</TD
+><TD
+ALIGN="LEFT"
+>27 Apr 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Switched from ntpdc example to ntpq, based on contributions.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 0.8.1</TD
+><TD
+ALIGN="LEFT"
+>20 Apr 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Improved graphic. Links to other doc locations.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 0.8</TD
+><TD
+ALIGN="LEFT"
+>14 Apr 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Beter tunning of NTP graphic.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 0.76</TD
+><TD
+ALIGN="LEFT"
+>13 Apr 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Inclusion of architecture graphic.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 0.75</TD
+><TD
+ALIGN="LEFT"
+>10 Apr 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Spell checked. Using DocBook XSLT 1.50.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 0.65</TD
+><TD
+ALIGN="LEFT"
+>31 Mar 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Upgraded to XML 4.1.2 DocBook format</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 0.6</TD
+><TD
+ALIGN="LEFT"
+>29 Mar 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>Finished timezone mechanism on Linux. Created appendix. Now only drawings are needed.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 0.4</TD
+><TD
+ALIGN="LEFT"
+>24 Mar 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>All skeleton defined. All command examples written.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision 0.2</TD
+><TD
+ALIGN="LEFT"
+>19 Mar 2002</TD
+><TD
+ALIGN="LEFT"
+>Revised by: avi</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+>First DocBook version</TD
+></TR
+></TABLE
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1. <A
+HREF="why.html"
+>Why do We Need a Precise Clock?</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="why.html#why.pcclock"
+>On What Factors Does the Hardware-Clock Depend?</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="time.html"
+>Computer Global Date and Time Concept</A
+></DT
+><DT
+>3. <A
+HREF="tz.html"
+>What are Time Zones?</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="tz.html#tz.dst"
+>Daylight Savings Time</A
+></DT
+><DT
+>3.2. <A
+HREF="tz.html#tz.examples"
+>Time Zones Examples</A
+></DT
+><DT
+>3.3. <A
+HREF="tz.html#tz.linux"
+>Time Zone Mechanism on Linux</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="set.html"
+>The Correct Settings for Your Linux Box</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="set.html#set.tz"
+>Setting Time Zone</A
+></DT
+><DT
+>4.2. <A
+HREF="set.html#set.hwclock"
+>Setting the Hardware Clock</A
+></DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="ntp.html"
+>Accurate Global Time Synchronization</A
+></DT
+><DD
+><DL
+><DT
+>5.1. <A
+HREF="ntp.html#ntp.ntp"
+><SPAN
+CLASS="acronym"
+>NTP</SPAN
+>: The Network Time Protocol</A
+></DT
+><DT
+>5.2. <A
+HREF="ntp.html#ntp.arch"
+>Building a Simple Time Synchronization Architecture</A
+></DT
+><DT
+>5.3. <A
+HREF="ntp.html#ntp.configs"
+><SPAN
+CLASS="acronym"
+>NTP</SPAN
+> Configurations</A
+></DT
+><DT
+>5.4. <A
+HREF="ntp.html#ntp.watch"
+>Watching Your Box Synchronizing</A
+></DT
+><DT
+>5.5. <A
+HREF="ntp.html#ntp.boot"
+>Configure to Automatically Run <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> at Boot</A
+></DT
+></DL
+></DD
+><DT
+>6. <A
+HREF="ntp.chrony.html"
+>Precise Time with the <B
+CLASS="command"
+>chrony</B
+> Program</A
+></DT
+><DD
+><DL
+><DT
+>6.1. <A
+HREF="ntp.chrony.html#ntp.chrony.diff"
+>How <B
+CLASS="command"
+>chrony</B
+> Differs from the <B
+CLASS="command"
+>ntp</B
+> Suite?</A
+></DT
+><DT
+>6.2. <A
+HREF="ntp.chrony.html#ntp.chrony.how"
+>How to Use <B
+CLASS="command"
+>chrony</B
+>?</A
+></DT
+></DL
+></DD
+><DT
+>A. <A
+HREF="about.html"
+>About this Document</A
+></DT
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="why.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Why do We Need a Precise Clock?</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,2168 @@
+                   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head profile="http://gmpg.org/xfn/1">
+   <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+   </script>
+   <script type="text/javascript">
+    _uacct = "UA-604789-8";
+    urchinTracker();
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <meta name="verify-v1" content="xJEgNwKu3dxKrVdvmNvZB+5vUUlkL2YNre568hll5gQ=" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/DanielSchnellers2ndWeblog" />
+
+    <script type="text/javascript" src="/theme/scripts/roller.js"></script>
+    <link href="http://bismarck.shipdown.de/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="http://bismarck.shipdown.de/prettify.js"></script>
+    <title>Daniel Schneller's Weblog : Weblog</title>
+
+    <style type="text/css">
+                       /*
+Theme Name: Rin
+Theme URI: http://www.brokenkode.com/rin/
+Description: Nebula flavoured Rin
+Version: 1.0 
+Author: Khaled Abou Alfa
+Author URI: http://www.brokenkode.com/ 
+
+
+Rin Credits -
+Rin is an extension of the original Manji theme. The development was
+done by Khaled Abou Alfa and Joshua. Originally released 30th January 2005.
+
+Original Manji Credits -
+The Manji template designed by Khaled Abou Alfa (www.brokenkode.com) 
+and Root (www.atthe404.com/blog); Root is currently offline. Please go read the
+FAQ on www.brokenkode.com/board for further information.
+
+Joshua (aka Alphaoide) has been helping complete this project in the wake of 
+Root's disappearance.
+
+Also a big shout out to Franchesco Anselmo &amp; David Prince for their invaluable 
+support.
+
+Also I've got to thank the wordpress forums for all the little help in solving 
+loads of questions we had when creating this theme.
+
+
+License -
+The CSS, XHTML and design is released under GPL:
+http://www.opensource.org/licenses/gpl-license.php
+
+Theme for blogging software. Initially released for Wordpress.
+Copyright (C) 2004 khaled abou alfa.
+
+This program is free software; you can redistribute it and/or modify it under 
+
+the terms of the GNU General Public License as published by the Free Software 
+Foundation, version 2 of the License.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY 
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+*/
+
+/* ------------------- Structural Layout ------------------- */
+body {
+ background: #fff;
+ margin:  0;
+ padding: 0;
+ text-align: center; /* IE hack Part 1 */ 
+}
+
+
+/*---------------------------- Site Navigation -------------------------------*/
+#hnav {
+/*750*/
+ width: 890px;
+ margin: 8px auto;
+ height: 23px;
+ background: #d9d7da url(/themes/rin/images/navgradient.jpg) repeat-x top;
+ border-bottom: 1px solid #ccced2;
+ border-left: 1px solid #f5f6f7;
+ border-right: 1px solid #ccced2;
+}
+
+
+#header {
+ float: left;
+ width: 235px;
+ margin: 0px;
+ padding: 0px;
+ text-align: left;
+ height: 20px;
+}
+
+
+#hmenu {
+ margin: 2px 5px 0 0;
+ text-transform:lowercase;
+ text-align: right;
+ float: right;
+ width: 440px;
+}
+
+
+#masthead {
+/* background: url(/themes/rin/images/masthead.jpg); */
+ background: url("http://bismarck.shipdown.de/blogbackground.gif");
+ background-repeat: no-repeat;
+/*750*/
+ width: 890px;
+ height: 95px;
+ margin: 0 auto;
+ padding: 0;
+/* border-top: 1px solid #b8e4e7;
+ border-right: 1px solid #86c9cf;
+ border-left: 1px solid #86c9cf;
+*/
+ border-bottom: 2px solid #00527f;
+}
+
+
+/*------------------------------- Main Body ----------------------------------*/
+#container {
+/*750*/
+ width: 890px;
+ margin: 10px auto;
+ background: #f5f6f7;
+ border-left: 1px solid #d5d7db;
+ border-right: 1px solid #d5d7db;
+ font-family: "Segoe UI", Verdana,  Arial, Helvetica, sans-serif;
+ font-size: .70em;
+ text-align: left; /* IE hack Part 2 */
+ border-top: 15px solid #d5d7db;
+ border-bottom: 15px solid #d5d7db;
+}
+
+
+#topcontentdouble {
+ float: right;
+/*500*/
+ width: 620px;
+ height: 27px;
+/* background: #f5f6f7 url(/themes/rin/images/header_whole2.gif) no-repeat right top;*/
+ background: #f5f6f7 url(/themes/rin/images/header_whole2.gif) repeat-x right top;
+ margin: 9px 10px 0 0;
+ display: inline;
+}
+
+
+#topcontent {
+ width: 730px;
+ background: #f5f6f7 url(/themes/rin/images/header_whole.gif) no-repeat top;
+ margin: 9px auto 0 auto;
+ height: 27px;
+}
+
+
+#content {
+ float: right;
+/*500*/
+ width: 620px;
+ background: #ffffff;
+ margin:  0 10px 0 0;
+ display: inline;
+}
+
+
+#bottomcontentdouble {
+ display: inline;
+ float: right;
+/*500*/
+ width: 620px;
+ background: #f5f6f7 url(/themes/rin/images/bottom_whole2.gif) no-repeat -40px 0;
+ margin: 0 10px 9px 0;
+ height: 27px;
+}
+
+#singlecontent {
+ width: 730px;
+ background: #ffffff;
+ padding-top:0;
+ margin:  0 auto;
+}
+
+
+.post {
+ margin-top: 0px;
+ margin-left: 10px;
+ margin-right: 20px;
+ margin-bottom: 80px;
+}
+
+
+.singlepost {
+ margin: 0px 105px 80px 105px;
+}
+
+
+#bottomcontent {
+ /*730*/
+ width: 870px;
+ background: #f5f6f7 url(/themes/rin/images/bottom_whole.gif) no-repeat top;
+ margin: 0px auto 0px auto;
+ padding-bottom: 9px;
+ height: 27px;
+}
+
+
+.meta {
+ font-size: .9em;
+ line-height: 18px;
+}
+
+
+.feedback {
+ float: right;
+ font-size: 1.0em;
+ line-height: 35px;
+}
+
+
+.author {
+ width: 200px;
+ float: right;
+ text-align: right;
+}
+
+
+/*---------------------------- Page Navigation -------------------------------*/
+.postnavigation {
+ height: 45px;
+}
+
+
+.left {
+ float: left;
+ padding-left: 105px;
+}
+
+
+.right {
+ float: right;
+ padding-right: 105px; 
+}
+
+
+.leftdouble {
+ float: left;
+ padding-left: 10px;
+}
+
+
+.rightdouble {
+ float: right;
+ padding-right: 10px; 
+}
+
+
+/* ------------------------------ Sidebars -----------------------------------*/
+#sidebar {
+ position: relative;
+ float: left;
+ width: 225px;
+ margin: 0 0 0 10px;
+ font-family: "Segoe UI", Verdana, Arial, Helvetica, sans-serif;
+ font-size: 1.0em;
+ text-align: left; /* IE hack Part 2 */
+ display: inline;
+}
+
+
+#sidebar ul {
+ position: relative;
+}
+
+#sidebar ul li {
+ list-style-type: none;
+ list-style-image: none;
+}
+
+#sidebar ul, #sidebar ul li {
+ margin: 0;
+ padding: 0;
+ 
+}
+
+#sidebar ul li ul{
+
+ background: #fff;
+ margin: 0 5px 0 0;
+ padding: 10px 5PX 15px 5px;
+}
+
+#sidebar h2 {
+ background: url(/themes/rin/images/navgradient.jpg) repeat-x top;
+ height: 16px;
+ margin: 10px 5px 0 0px;
+ padding:  8px 0 1px 5px;
+ color: #8B9198;
+ border-bottom: 1px solid #fff;
+}
+
+
+/*
+The following is the fix
+for 3-pixel-jog bug in IE 
+*/
+/* Hide from IE5-mac. Only IE-win sees this. \*/
+ 
+* html #content {
+ /*margin-right: 7px;*/
+}
+ 
+* html #sidebar {
+ height: 1%;
+}
+/* End hide from IE5/mac */
+
+
+#sidebar ul li ul li{
+ margin: 4px 10px 4px 10px;
+ display: block;
+ background: url(/themes/rin/images/bullet.jpg) no-repeat;
+ padding: 0 0 0 18px;
+
+}
+
+
+#sidebar ul li ul li a{
+ display: block;
+ height:1%; /* IE WIN */
+}
+
+
+#sidebar ul li ul li a:hover{
+ background: #F0F0F0;
+ text-decoration: none;
+}
+
+
+#sidebar ul li ul li ul {
+ margin: 0;
+ padding: 0;
+}
+
+
+/* ------------------------------ Comments -----------------------------------*/
+#response {
+ margin: 0px 110px;
+}
+
+
+#commentlist {
+ padding: 0px 10px 0px 10px;
+ margin-left: 10px;
+ margin-right: 10px;
+ color: #7b7b7b;
+ list-style-type: none; 
+ text-align: justify;
+}
+
+
+#commentlist li  p{
+ padding: 0px;
+ margin: 8px 0px 0px 0px;
+}
+
+
+.commentname {
+ width: 220px;
+ float: left;
+ font-size: 0.9em;
+ margin: 0;
+ padding: 0  0 2px 0;
+}
+
+
+.commentinfo{
+ width: 250px;
+ float: right;
+ text-align: right;
+}
+
+
+.commenttext {
+ clear: both;
+ padding-top: 0px;
+ margin-top: 0px;
+ margin-bottom: 70px;
+ border-top: 1px solid #e4ebef;
+ text-align:left; 
+ line-height:16px;
+}
+
+
+/* ----------------------------- Comment Form ------------------------------- */
+h2#postcomment {
+ background: #FFFFFF url(/themes/rin/images/comments.gif) no-repeat center top;
+ margin: 40px 0px 0px 0px;
+ padding: 0 0 20px 10px;
+}
+
+
+#commentform {
+ background: #f5f6f7; 
+ padding: 1px 20px;
+ margin-top: 0px;
+ margin-bottom: 0px;
+}
+
+
+#commentboxes {
+ width: 200px;
+ float: left;
+ color: #7b7b7b;
+ font-size: 0.9em;
+}
+
+
+p.instructions {
+ margin: 14px 0 0 200px;
+ color: #7b7b7b;
+ font-size: 0.9em;
+ text-align: justify;
+ border-left-width: 1px;
+ border-left-style: solid;
+ border-left-color: #d5d7db;
+ padding-left: 15px;
+ position: relative;
+}
+
+
+#inputbox {
+ clear: both;
+ color: #7b7b7b;
+ font-size: 0.9em;
+}
+
+
+#button{
+ padding-top: 0.5em;
+}
+
+
+#commentsbottom {
+ background: #FFFFFF url(/themes/rin/images/commentsdown.gif) no-repeat center top;
+ margin: 0;
+ padding: 0;
+ height: 22px;
+}
+
+
+/* --------------------------- 'Sidebar' Structure -------------------------- */
+#menu {
+ width: 750px;
+ height: 45px;
+ background: #F0F0F0 url(/themes/rin/images/bottomgradient.jpg) repeat-x top;
+ border-top: 1px solid #d1d4d9;
+ border-right: 1px solid #d5d7db;
+ border-bottom: 2px solid #d5d7db;
+ border-left: 1px solid #d1d4d9;
+}
+
+
+#searchform {
+ float: left;
+ margin-top: 12px;
+ padding-left: 20px;
+}
+
+
+#topimage {
+ margin: 2px 0 0 0; 
+ cursor: pointer;
+ width: 60px;
+ height: 40px;
+ background: url(/themes/rin/images/topbutton.gif) no-repeat top;
+ float: right;
+ padding-right: 9px;
+ padding-top: 3px;
+}
+
+
+#topimage a{
+ display:block;
+ height:100%;
+ overflow:hidden;
+ text-decoration:none;
+}
+
+
+/* ------------------------------- Credits ---------------------------------- */
+#footer {
+ margin: 10px auto;
+ width: 750px;
+ font-size: .8em;
+}
+
+
+#footer p {
+ margin-top: 0;
+}
+
+
+.clearer {
+ clear: both;
+ line-height: 0px;
+}
+
+
+/*------------------------------ H Menu Styling ----------------------------- */
+#top { 
+ display: inline;
+ list-style-type: none;
+}
+
+
+#hnav ul li{
+ display: inline;
+}
+
+
+#hnav ul li a {
+ color: #919191;
+ text-decoration: none;
+ padding: 5px 0px 5px 30px;
+ font-size: 0.7em;
+ font-family: "Segoe UI", Arial, Verdana, Helvetica, sans-serif;
+ font-weight: normal;
+}
+
+
+#hnav ul li a:hover {
+ color: #bfbfbf;
+}
+
+
+
+/* ------------------- Typography ------------------- */
+/* ------------------------------- General ---------------------------------- */
+a {
+ color: #005DDD;
+ text-decoration: none;
+}
+
+
+a:hover {
+ color: #990000;
+ text-decoration: underline;
+}
+
+
+top a {
+ border: 0;
+ text-decoration: none;
+}
+
+
+blockquote {
+ background: #f5f6f7;
+ padding: 10px;
+}
+
+q {
+ font-style: italic;
+ padding: 10px 20px;
+}
+
+.code {
+ font-family: "Courier New", Courier, monospace;
+ font-size: 1.0em;
+}
+
+.codeoutput {
+ font-family: "Courier New", Courier, monospace;
+ font-size: 0.9em;
+ color: #000033;
+ font-style: italic;
+}
+
+
+h1 a {
+ margin: 0;
+ padding: 0;
+ text-decoration: none;
+ color: #6f6f6f;
+}
+
+
+h2 {
+ color: #005D93;
+ font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+ font-size: 1.1em;
+ margin-bottom: 0px;
+ margin-top: 40px;
+ margin-left: 0px;
+}
+
+
+.singlepost h2{
+ margin-top: 0px;
+}
+
+
+h3 {
+ text-align: left;
+ color: #005D93;
+ margin: 0;
+ margin-top: 3px;
+ padding: 0;
+ font-size: 0.9em;
+ line-height: 26px;
+ font-weight: normal;
+}
+
+
+.hCalendarDayLinked {
+  font-weight: bold;
+  border: solid thin;
+}
+
+/* ------------------------------Site Navigation ---------------------------- */
+#blogtitle {
+ margin: 0;
+ padding: 5px;
+ font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+ font-weight: normal;
+ font-size: 0.7em;
+}
+
+
+#blogtitle a{
+ font-weight: bold;
+}
+
+
+#blogtitle a:hover{
+ color: #bfbfbf;
+ font-weight: bold;
+ text-decoration: none;
+}
+
+
+/* -------------------------------- Main Body ------------------------------- */
+.post, .singlepost{
+color: #3f3f3f;
+ text-align: left;
+
+}
+
+pre  {
+  
+  overflow: auto;
+
+  padding: 15px;
+
+  font-size: 11px;
+
+  line-height: 15px;
+
+  margin: 15px;
+
+  width: 93%;
+
+  display: block;
+
+  background-color: #f5f6f7;
+
+  color: #000000;
+
+  max-height: 300px;
+
+}
+
+.posted {
+ color: #555555;
+}
+
+
+.title a  {
+ text-align: left;
+ height: 20px;
+ color: #444444;
+ display: block;
+ text-decoration: none;
+ font-size: 1.6em;
+ padding-top: 8px;
+
+}
+
+
+.title a:hover {
+ color: #005DFF;
+}
+
+
+.storycontent {
+ border-bottom: 1px solid #BBBBBB;
+ padding: 0px 0px 5px 0px;
+ font: 1.1em "Segoe UI", Arial, Helvetica, sans-serif;
+ line-height: 18px;
+}
+
+.singlepost p {
+ margin-top: 0;
+}
+
+.singlepages p {
+ color: #3f3f3f;
+ text-align: left;
+ margin: 0px 105px 80px 105px;
+ line-height: 20px;
+ font: 1.2em "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+
+.storycontent a {
+ /* text-decoration: none; */
+ color: #3333BB;
+}
+
+
+.storycontent a:hover {
+ text-decoration: underline;
+}
+
+
+.storycontent a:visited {
+ color: #000044;
+}
+
+
+/* ----------------------------- Page Navigation ---------------------------- */
+.left a{
+ color: #990000;
+ font-size: 0.9em;
+}
+
+
+.right a{
+ font-size: 0.9em;
+ color: #990000;
+}
+
+
+.leftdouble a{
+ color: #990000;
+ font-size: 0.9em;
+}
+
+
+.rightdouble a{
+ font-size: 0.9em;
+ color: #990000;
+}
+
+
+/* -------------------------------- Comments ------------------------------- */
+.commentauthor {
+ font-weight: bold;
+ font-size: 1.2em;
+ padding: 0 0 2px 0;
+ margin: 0;
+ color: #000000;
+}
+
+
+.commentauthor a{
+ font-weight: bold;
+ margin: 0;
+ padding: 0 20px 0 0;
+ background: url(/themes/rin/images/icon.jpg) no-repeat top right;
+}
+
+
+.commentdate {
+ font-size: 0.8em;
+ text-align: right;
+ line-height: 18px;
+ padding: 0;
+ margin: 0;
+}
+
+
+#nocomment, #commentsclosed {
+ text-align: center;
+ color: #7b7b7b;
+ font-size: 1.1em;
+}
+
+
+/* ------------------------------ Comments Form ----------------------------- */
+#comment  {
+ width: 465px;
+}
+
+
+#comment, #author, #url, #email, #press{
+ background: #e7e9ed;
+ font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+ font-size: 1.1em;
+ color: #7b7b7b;
+ padding: 1px 2px 1px 1px;
+}
+
+
+#comment, #author, #url, #email{
+ border: 1px solid #d5d7db;
+}
+
+
+#comment:hover, #author:hover, #url:hover, #email:hover{
+ border: 1px solid #7b7b7b;
+}
+
+
+#comment:focus, #author:focus, #url:focus, #email:focus{
+ background: #FFFFFF;
+ border: 1px solid #000000;
+ color: #7b7b7b;
+ padding: 1px 2px 1px 1px;
+}
+
+
+#commentboxes p {
+ margin: 0;
+ padding-bottom: 0.9em;
+}
+
+
+h2#comments{
+ margin-bottom:40px;
+}
+
+
+p.feeds {
+ float: right;
+ margin-top: -1.8em;
+ font-size: 0.9em;
+}
+
+
+p.feeds a, p.feeds a:hover  {
+ text-decoration: none;
+}
+
+
+p.feeds a:hover {
+ color: #000000;
+}
+
+
+#inputbox {
+ clear: both;
+ color: #7b7b7b;
+ font-size: 0.9em;
+}
+
+
+#inputbox a {
+ color: #7b7b7b;
+}
+
+
+#inputbox a:hover {
+ color: #FFFFFF;
+}
+
+
+p.inputbox {
+ margin: 0;
+ padding-bottom: 10px;
+}
+
+
+p.pages {
+ margin: 0;
+ padding: 40px 40px;
+ padding-top: 0;
+ text-align: center;
+}
+
+
+p.pages a {
+ color: #005D93;
+}
+
+
+/* -------------------------------- Credits --------------------------------- */
+p.credits {
+ padding: 0px 0px;
+ text-align: center;
+ margin: 10px 0px; 
+ color: #9e9e9e;
+ font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+ font-size: 0.8em;
+}
+
+
+p.wordpress {
+ margin: 0;
+ padding: 0;
+ border-bottom-width: 1px;
+ border-bottom-style: solid;
+ border-bottom-color: #d5d7db;
+}
+
+
+/* --------------- Search/Archives/Categories Results Pages ------------------*/
+.searchresult {
+ padding: 30px 0 0 0;
+ margin:0;
+}
+
+
+.searchresult a{
+ color: #000000; 
+}
+
+
+.searchinfo {
+ font-size: .9em;
+ line-height: 18px;
+ padding: 0 0 2px 0;
+ color: #000000;
+ margin: 0 ;
+}
+
+
+.searchdetails {
+ font-size: .9em;
+ line-height: 18px;
+ padding: 0 0 2px 0;
+ color: #000000;
+ margin: 0 ;
+ border-bottom: 1px solid #BBBBBB;
+}
+
+
+/*--------------------------- 'Comment Edit' Buttons ------------------------ */
+#ed_toolbar {
+ background: #d5d7db; 
+ border: 1px solid #d5d7db;
+ padding-left: 5px;
+}
+
+
+#ed_bold {
+ background: url(/themes/rin/images/bold.gif) no-repeat top;
+ height: 22px;
+ width: 22px;
+ border: 0px none;
+}
+
+
+#ed_italic {
+ background: url(/themes/rin/images/italic.gif) no-repeat top;
+ height: 22px;
+ width: 22px;
+ border: 0px none;
+ margin-left: 5px;
+}
+
+
+#ed_link {
+ background: url(/themes/rin/images/link.gifimages/link.gif) no-repeat top;
+ height: 22px;
+ width: 22px;
+ border: 0px none;
+ margin-left: 5px;
+}
+
+
+#ed_close{
+ background: url(/themes/rin/images/close.gifimages/close.gif) no-repeat top;
+ height: 22px;
+ width: 22px;
+ border: 0px none;
+ margin-left: 25px;
+}
+
+/* 
+This piece of code is for clearing
+the floats without structural markup
+Don't modify it
+*/
+.clearfix:after {
+ content: "."; 
+ display: block; 
+ height: 0; 
+ clear: both; 
+ visibility: hidden;
+}
+
+.clearfix {
+ display: inline-table;
+}
+
+/* Hides from IE-mac \*/
+* html .clearfix {
+ height: 1%;
+}
+.clearfix {
+ display: block;
+}
+/* End hide from IE-mac */        </style>
+</head>
+
+ <body onload="prettyPrint()">
+  <div><a name="top"></a><img src="http://bismarck.shipdown.de/1px.gif" alt="1 Pixel GIF for tracking"/></div>
+  <div id="hnav">
+    <div id="hmenu">	
+    <ul id="top"> 
+     <li><a href="#bottom" title="search in previous posts">search</a></li>
+             <li><a href="/roller-ui/login-redirect.jsp">Login</a></li>
+        </ul>
+   </div>
+   
+   <div id="header">
+    <h1 id="blogtitle">
+     <a href="/page/dschneller">Daniel Schneller's Weblog     </a>
+    </h1>
+   </div>
+  </div> <!-- Closes the hnav div-->
+ <div id="masthead" onclick="location.href='/page/dschneller';" style="cursor: pointer; font-family: 'Arial Black',Arial,Helvetica,sans-serif; font-size: 40px; padding-top: 30px;">Daniel Schneller's Blog</div>     <div id="container" class="clearfix">
+                      <div id="sidebar">
+ <ul>
+  <li><h2>About</h2>
+     <ul><li>
+      This blog covers more or less random computer stuff. Most things will be about everyday experiences with Windows, Linux, MySQL, Java  and other insanities.      <br /><img src="http://jroller.com/resources/d/dschneller/foto.JPG" alt="Daniel Schneller"/>
+     </li></ul>
+  </li>
+
+<!--
+<li><h2>Pages</h2>
+<ul>
+    <li><a href="/page/dschneller">Home</a></li>
+                                                        
+                                <li>
+                                    <a href="/page/dschneller/Weblog">Weblog</a>                </li>
+                                                                                                                                                                                        </ul>
+</li>
+-->
+<li><h2>Tags</h2>
+  
+      
+</li>
+
+<li>
+    <h2>Calendar</h2>
+            <table cellspacing="0" border="0"  summary="Blog Archive Calendar" class="hCalendarTable"><tr><td colspan="7" align="center" class="hCalendarMonthYearRow"><a href="/dschneller/date/201610" title="Prev" class="hCalendarNavBar">&laquo;</a> November 2016</td></tr><tr><th class="hCalendarDayNameRow" align="center">Sun</th><th class="hCalendarDayNameRow" align="center">Mon</th><th class="hCalendarDayNameRow" align="center">Tue</th><th class="hCalendarDayNameRow" align="center">Wed</th><th class="hCalendarDayNameRow" align="center">Thu</th><th class="hCalendarDayNameRow" align="center">Fri</th><th class="hCalendarDayNameRow" align="center">Sat</th></tr><tr><td class="hCalendarDayNotInMonth">&nbsp;</td><td class="hCalendarDayNotInMonth">&nbsp;</td><td class="hCalendarDay"><div class="hCalendarDayTitle">1</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">2</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">3</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">4</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">5</div></td></tr><tr><td class="hCalendarDay"><div class="hCalendarDayTitle">6</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">7</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">8</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">9</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">10</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">11</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">12</div></td></tr><tr><td class="hCalendarDay"><div class="hCalendarDayTitle">13</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">14</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">15</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">16</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">17</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">18</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">19</div></td></tr><tr><td class="hCalendarDay"><div class="hCalendarDayTitle">20</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">21</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">22</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">23</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">24</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">25</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">26</div></td></tr><tr><td class="hCalendarDay"><div class="hCalendarDayTitle">27</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">28</div></td><td class="hCalendarDayCurrent"><div class="hCalendarDayTitle">29</div></td><td class="hCalendarDay"><div class="hCalendarDayTitle">30</div></td><td class="hCalendarDayNotInMonth">&nbsp;</td><td class="hCalendarDayNotInMonth">&nbsp;</td><td class="hCalendarDayNotInMonth">&nbsp;</td></tr><tr><td class="hCalendarDayNotInMonth">&nbsp;</td><td class="hCalendarDayNotInMonth">&nbsp;</td><td class="hCalendarDayNotInMonth">&nbsp;</td><td class="hCalendarDayNotInMonth">&nbsp;</td><td class="hCalendarDayNotInMonth">&nbsp;</td><td class="hCalendarDayNotInMonth">&nbsp;</td><td class="hCalendarDayNotInMonth">&nbsp;</td></tr><tr class="hCalendarNextPrev"><td colspan="7" align="center"><a href="/dschneller/" class="hCalendarNavBar">Today</a></td></tr></table>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-410289-11";
+urchinTracker();
+</script>
+</li>
+
+
+<li><h2>Earlier Entries</h2>
+   <div class="sidebar">
+                  <ul class="recentposts">
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/moved_to_dschneller_blogspot_com">Moved to www.danielschneller.com</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/leverage_eclipse_perspectives_for_different">Leverage Eclipse perspectives for different screen layouts</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/google_analytics_hickup">Google Analytics hickup</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/how_to_charge_the_ipod">How to charge the iPod Touch's battery on Linux</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/can_t_start_server_bind">Can't start server: Bind on TCP/IP port: No such file or directory</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/the_value_of_a_cvs">The value of a CVS commit database</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/helpless_helpers_and_useless_utilities">Helpless Helpers and Useless Utilities</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/gmail_spam_filter_missing_whitelist">GMail spam filter missing whitelist</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/hard_disks_are_too_big">Hard disks are too big</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/error_1033_hy000_on_innodb">ERROR 1033 (HY000) on InnoDB configuration error</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/comfortable_xpath_accessor">Comfortable XPath accessor  </a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/how_the_vulcan_greeting_came">How the Vulcan greeting came about</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/windows_date_created_timestamp_strangeness">Windows Date Created Timestamp strangeness</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/gnome_nautilus_ssh_fails_when">Gnome Nautilus SSH fails when hostkey changed</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/gmail_advanced_search_operators">GMail advanced search operators</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/building_xml_the_groovy_way">Building XML the Groovy way in Java</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_index_analyzer_updated">MySQL Index Analyzer updated</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/back_online">Back online</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/thoughts_on_un_checked_exceptions">Thoughts on (Un)checked Exceptions</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/download_youtube_videos_and_google">Download Youtube Videos (and Google video)</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_server_errno_1236_when">MySQL server_errno=1236 when disk full</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/visualize_hard_disk_temperature_with">Visualize hard disk temperature with gnuplot</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/beware_of_ubuntu_kernel_2">Beware of Ubuntu Kernel 2.6.20-16!</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_optimizer_bug_28554">MySQL Optimizer Bug 28554</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/usb_scanner_not_working_on">USB scanner not working on VMwared XP</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/linux_eventqueue_problem">Linux EventQueue Problem</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_add_primary_key_to">MySQL: Add primary key to table with duplicates</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/findbugs_writing_custom_detectors_part1">FindBugs - Writing custom detectors (Part 2)</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/sap_memoryanalyzer">SAP MemoryAnalyzer</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/exception_in_thread_compilerthread0_java">Exception in thread "CompilerThread0" java.lang.OutOfMemoryError</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/jax_07_day_3">jax.07 Day 3</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/jax_07_day_2_cont">jax.07 Day 2 (cont'd)</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/jax_07_day_2">jax.07 Day 2</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/jax_07_day_1_cont">jax.07 Day 1 (cont'd)</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/jax_07_day_1">jax.07 Day 1</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/jax_07">jax.07</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/upgrade_to_feisty_fawn">Upgrade to Feisty Fawn</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/something_to_know_about_toshiba">Something to know about Toshiba external USB HDD</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/findbugs_writing_custom_detectors_part">FindBugs - Writing custom detectors (Part 1)</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/backup_just_in_time">Backup... Just in time</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/bumptop_3d_desktop">BumpTop 3D Desktop</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/calendar_dateformat_and_multi_threading">Calendar, DateFormat and multi threading</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/composition_over_inheritance_again">Composition over Inheritance... again</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/google_code_prettify">Google Code Prettify</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/streaming_mysql_slave_deployment">"Streaming" MySQL slave deployment</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/my_first_groovy_program">My first Groovy program</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/google_company_name_change">Google company name change?</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/fax_via_fritz_box">Fax via Fritz!Box</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_culture_shock">MySQL "Culture Shock"</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/ms_word_headers_lost">MS Word - Headers Lost?</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_5_0_32_serious">MySQL 5.0.32: Serious InnoDB bug</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/conditional_insert_with_mysql">Conditional INSERT with MySQL</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_5_0_33_finally">MySQL 5.0.33 finally released</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/java_5_crashes_the_workaround">Java 5 crashes - the workaround</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/java_5_crash_the_saga">Java 5 crash - the saga continues</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/some_progress_on_java_5">Some progress on Java 5 on Linux crash</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/follow_up_f_secure_s">Follow Up: F-Secure's response</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/java_5_crashes_on_linux">Java 5 crashes on Linux 2.6, too</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/amazingly_simple">Amazingly simple - Collection Initialization</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_innodb_slowness_with_blobs">MySQL/InnoDB slowness with Blobs</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/system_lockup_f_secure_av">System Lockup: F-Secure AV 2007 and Kerio Firewall</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/javaposse_podcast_on_java_gpl">JavaPosse podcast on Java GPL'ing</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/roller_problem_with_calendar_control">Roller problem with calendar control</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/vista_aero_and_quicktime">Vista Aero and QuickTime</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/java_5_random_vm_crashes">Java 5 random VM crashes</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/beryl_on_edgy_eft">Beryl on Edgy Eft</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/upgrade_to_egdy_eft">Upgrade to Egdy Eft</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/flash_9_beta_in_ubuntu">Flash 9 beta in Ubuntu Dapper</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_5_0_decimals_queried">MySQL 5.0: DECIMALs queried with Strings</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_replication_timeout_trap">MySQL replication timeout trap</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/windows_tcp_port_conflicts_above">Windows: TCP Port conflicts above 1024</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/video_colors_wrong_on_ubuntu">Video colors wrong on Ubuntu</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_index_analyzer_0_04">MySQL Index Analyzer: 0.04 released</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/the_register_interesting_article_on">The Register: Interesting Article on software standards</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/internet_explorer_display_fixed">Internet Explorer Display fixed</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_index_analyzer_first_gui">MySQL Index Analyzer: First GUI version</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/ubuntu_kernel_update_broke_x11">Ubuntu kernel update broke X11</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/prevent_windows_automatic_updates_reboot">Prevent Windows automatic updates reboot</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/log_buffer_9_a_carnival">Log Buffer #9: a Carnival of the Vanities for DBAs</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_index_analyzer_0_02">MySQL Index Analyzer 0.02 package ready for download</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/old_bad_habits_die_hard">Old (Bad) habits die hard</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_index_analyzer_mia_refactoring">MySQL Index Analyzer (MIA): Refactoring, Part 1</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_index_analyzer_basic_documentation">MySQL Index Analyzer Basic Documentation</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/windows_compressed_folders_again">Windows compressed folders... again</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_index_analysis_tool">MySQL Index Analysis Tool</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/logbuffer">LogBuffer</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/from_jroller_to_blogger">From JRoller to Blogger?</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/windows_xp_image_preview_broken">Windows XP image preview broken</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/ubuntu_framebuffer_console">Ubuntu Framebuffer Console</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_replication_using_blackhole_engine">MySQL replication using blackhole engine</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/wdr_computerclub_2">(WDR) Computerclub "2"</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/x11_dual_head_with_nvidia">X11 Dual Head with nVidia</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/fedora_core_5_part_1">Fedora Core 5, Part 1</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/faster_queries_because_of_higher">Faster queries because of higher(!) isolation level</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_5_0_bug_10210">MySQL 5.0, Bug 10210</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/enhanced_mysql_administrator_graphs">Enhanced MySQL Administrator Graphs</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/messageformat_and_locale">MessageFormat and Locale</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/fedora_core_5_part_2">Fedora Core 5, Part 2</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/mysql_replication_error_1053">MySQL Replication: Error 1053</a></li>
+                    <li class="recentposts"><a href="http://www.jroller.com/dschneller/entry/xp_activation_hassles">XP activation hassles</a></li>
+            </ul>
+   </div>
+</li>
+</ul>
+
+</div>      <div id="topcontentdouble">
+
+</div>
+   <div id="content">
+     <div class="contentright">
+          
+            <div class="next-previous">
+                                        &laquo; <a href="http://www.jroller.com/dschneller/entry/wdr_computerclub_2">(WDR) Computerclub...</a> |  
+                <a href="/dschneller/">Main</a>
+                | <a href="http://www.jroller.com/dschneller/entry/ubuntu_framebuffer_console">Ubuntu Framebuffer...</a> &raquo;
+            </div>
+    
+                <div class="post">
+<div class="title" id="mysql_replication_using_blackhole_engine">
+<p style="font-weight: bold; font-size:18px">This blog has moved to <a href="http://www.danielschneller.com">www.danielschneller.com</a></p>
+ <a href="/page/dschneller/?anchor=mysql_replication_using_blackhole_engine" rel="bookmark">
+  MySQL replication using blackhole engine
+ </a>
+</div>
+<h3><span class="posted">Posted on</span>
+
+     Sunday August 13, 2006     </h3>
+<div class="storycontent">
+                           <p>Setting up MySQL replication is fairly easy. Just tell the slaves which master
+they need to connect to and make sure the master is writing binlogs. Ok, it is a little more
+complicated, but in the end it's pretty straight-forward.</p>
+<p>If however you have large number of slaves and a rather busy master machine, the
+network load can become significant. This is because all statements that are written
+to the binlog are transferred to all the slaves. They put them into their relay logs
+and asynchronously process them. Each slave may decide which statements need to be
+executed and which can be discarded. This is especially useful in setups where there
+are tables modified on the slaves that should not be replicated.</p>
+<h2>Use case</h2>
+<p>In a production scenario we  have up to 35 slaves configured against a single master. The
+master does "full" binlogs, i. e. no exceptions are made. This is done on purpose,
+because the binlogs are backed up for disaster recovery.</p>
+<p>The main schema on the master consists of close to 500 InnoDB tables of which about 350
+are to be replicated and kept up to date on the slaves. There is only a moderate amount of
+change on these 350 tables. On the remaining 150 tables a lot of modifications happen. 
+Records are inserted constantly. All these inserts are transferred to each of the 35 slaves, 
+just to be discarded there. This takes up a significant amount of network bandwidth that
+could be used more sensibly.</p>
+<p>The main reason for this heavy network load is the "filter on the slave" paradigm mentioned
+above. Everything is sent to every one of the slaves and each one decides, based on its particular
+configuration file, which statements to throw away and which to apply locally. In the worst
+case you have to transmit every single change to a database to replicate only a single
+table. Some time ago we suggested a feature that would allow filtering on the master side.</p>
+<h2>Black holes</h2>
+<p>While MySQL did not implement a "filter on master" feature literally, another way of doing
+similar things was. MySQL's system design allows for pluggable storage engines beneath the SQL layer. This 
+allows you to choose from a wide range of different implementations of the low level data
+storage, the most common ones being MyISAM and InnoDB. While those two implement ways of storing 
+data on disk, another engine was created that is basically an empty shell. It just answers "OK"
+to all <code>INSERT</code>, <code>UPDATE</code> or <code>DELETE</code> requests coming from the
+SQL layer above. <code>SELECT</code> statements always return an empty result set. This engine is
+called "blackhole".</p>
+<p>So why would anyone need a no-op storage engine? The answer is simple enough if you
+consider that writing the binlogs, which are the basis of replication, is done by a different 
+part of MySQL (i. e. not the storage engine). So it is possible to set up an "intermediate slave"
+which applies the desired filtering operations on the incoming replication data from the master and writes 
+new, much shorter binlogs itself. The
+<a href="http://dev.mysql.com/doc/refman/5.0/en/blackhole-storage-engine.html">MySQL manual</a>
+contains a brief description of this procedure. However it is far too short to provide
+ready-to-go instructions. I will try to do this here.</p>
+<h2>The idea</h2>
+<p>First of all take a look at this picture:</p>
+<p><img src="http://jroller.com/resources/d/dschneller/blackhole.png" alt="Schematic display of using the blackhole engine as a filter" /></p>
+<p>In the upper left you see the main master server. All modifying statements are
+replicated (i. e. written to the master's binlog files and sent over the network to
+subscribed slaves). In this case, there is only a single one slave: The filter server
+in the upper right. The thick arrow in between them represents the large amount of
+data that is sent to it. Please note, that those two could even be on the same physical
+machine.</p>
+<p>In the lower part of the picture there are a number of slaves. In a regular setup,
+a thick arrow would be drawn from the master to each of those, meaning that the same
+massive amount of replication data would be sent over the network <em>n</em> times. 
+In the picture however the filter server is configured to ignore statements for certain
+tables. It is also configured to write the statements received from a replication master 
+to its own binlogs. This is important, because usually slaves do not write replicated statements
+to their binlogs again. Now the filter server's binlogs are much smaller than those of the main master. This
+is because lots of statements have been left out. This would normally have taken place
+on each an every regular slave. </p>
+<p>The slaves are not configured against the main master server as they would have
+been normally, but against the filter server. That means they only receive the
+pre-filtered stream of statements that have made it into the filter's binlogs through
+the "<code>replicate-ignore-*</code>" or "<code>replicate-do-*</code>" directives. This is
+represented by thin arrows in the picture.</p>
+<h2>So what's the fuzz about?</h2>
+<p>So far this kind of setup is nothing special and can be implemented using MyISAM or InnoDB
+without even knowing anything of the blackhole engine. This would however have had the side-effect 
+of duplicating the data on the filter server. While this can be a desirable feature, e. g.
+for load balancing etc, in our scenario this was unacceptable. We are dealing with decentralized databases
+of up to 100GB each. Every one of them a replication master and can have the number of clients
+mentioned above. Due to external limitations we could not set up a separate machine for the filter
+server but had to install it on the same physical hardware the main master runs on. Storing the
+data twice on a single disk array was neither sensible nor desired due the performance impact and
+the wasted storage space.</p>
+<p>Enter: The blackhole storage engine. It allows the filter server to write filtered binlogs
+and at the same time not require any additional hard disk space for table data. Alright,
+of course it needs the "mysql" database containg user accounts and other metadata, but this
+is neglegible. At first glance one might however come to the conclusion that the space for the
+relay-logs and the desired filtered binlogs could fill up too much additional space if they
+are to be stored on the same disks as the original data.</p>
+<p>But it is just the other way round, this kind of setup (may) even help you save disk space!
+Because slaves can go offline for extended amounts of time, their master's binlogs need to be kept
+for some time to allow slaves to catch up when they come back online. Depending on how long you
+want to allow the slaves to drop out of replication at a time and on how busy your server is,
+the binlogs can easily mount up to dozens of gigabytes in a few days.</p>
+<p>If however you now have much smaller binlogs for the slaves to use, you can more often purge
+the large main master's binlogs (of course only after having made a full-backup, e. g. with 
+<code>mysqldump</code>); in the end freeing more space than is needed by the additional filter
+instance.</p>
+
+<h2>Let me see this!</h2>
+<p>But enough theory for now. I will walk you through a simple example that can be implemented
+on a single machine. The following procedure was created on Linux, so in order to repeat it on
+Windows you need to adapt the path names and a little shell-syntax accordingly.</p>
+<h3>Prerequisites</h3>
+<p>First of all you are going to need the "Max" version of the MySQL server daemon. The standard
+distribution does not contain the blackhole engine. You can check if you already have the
+blackhole engine by issuing the following command:</p>
+<pre>
+<span class="code">mysql> SHOW VARIABLES LIKE 'have_blackhole_engine';</span>
+</pre>
+<p>Remember that you only need the blackhole engine on the filter server instance, so in case you
+want to use this, no changes to your existing master or slave instances is necessary. If you
+choose to run the filter on a different machine, you just need the Max-version on that machine.
+If you want to use one machine (as described here) for master and filter, you have to install the
+Max-Version separately. In case you do not have it installed already (e.&nbsp;g. in Ubuntu you do
+not get it by default) just go to the <a href="http://dev.mysql.com/downloads/">MySQL download page</a>
+and grab the current Max-release. I leave it to you which format suits you best.</p>
+<p>From here on I will not differentiate between the normal and the Max-version anymore. In fact in this
+example we are even going to use the same installation for master, filter and slave instances, each of them
+with a different configuration, of course.</p>
+<p>Once you have installed the downloaded version (I will assume an installation directory of
+<code>~/mysqltest/mymax</code>) you need three different data directories. I recommend naming
+them sensibly: </p>
+<p><em>Please note that for better legibility command lines will be wrapped in the examples.
+Make sure to enter them correctly when trying them out!</em></p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ mkdir data.master
+
+ds@yavin:~/mysqltest
+$ mkdir data.slave
+
+ds@yavin:~/mysqltest
+$ mkdir data.black
+</span></pre>
+<p>Into each of these copy the <code>mysql</code> database that came with the downloaded MySQL
+daemon.</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ cp -R mymax/data/mysql data.master
+
+ds@yavin:~/mysqltest
+$ cp -R mymax/data/mysql data.slave
+
+ds@yavin:~/mysqltest
+$ cp -R mymax/data/mysql data.black</span>
+</pre>
+
+
+<h3>Configure the main master</h3>
+<p>Next we need a config file for each instance. Create the one for the master
+first; The following block will show the most important paramters; it is not complete.
+I recommend copying the default <code>my.cnf</code> that comes with your distribution
+or the downloaded package as a start. I copied mine from the Ubuntu default, so yours may
+look a little different. In this example I will name it <code>my.master</code>:</p>
+<pre>
+<span class="code">[client]
+port            = <span style="color: green; font-weight: bold">3307</span>
+socket          = /home/ds/mysqltest/<span style="color: green; font-weight: bold">master</span>.sock
+
+[mysqld_safe]
+socket          = /home/ds/mysqltest/<span style="color: green; font-weight: bold">master</span>.sock
+
+[mysqld]
+user            = mysql
+pid-file        = /home/ds/mysqltest/<span style="color: green; font-weight: bold">master</span>.pid
+socket          = /home/ds/mysqltest/<span style="color: green; font-weight: bold">master</span>.sock
+port            = <span style="color: green; font-weight: bold">3307</span>
+basedir         = /home/ds/mysqltest/mymax
+datadir         = /home/ds/mysqltest/data.<span style="color: green; font-weight: bold">master</span>
+tmpdir          = /tmp
+language        = /home/ds/mysqltest/mymax/share/mysql/english
+
+bind-address    = 127.0.0.1
+
+server-id       = <span style="color: green; font-weight: bold">1</span>
+log-bin         = /home/ds/mysqltest/<span style="color: green; font-weight: bold">master</span>-bin.log
+</span></pre>
+
+<p>As you can see, everything that is specific to the master instance has been colored <span style="color: green; font-weight: bold">green</span>.
+Startup this daemon. If you are using Windows I recommend starting another command line for this.
+On Linux you could do this on a new VT or (if you are running X11) like this:</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ xterm -T MASTER -e mymax/bin/mysqld \
+>        --defaults-file=my.master \
+>        --console &amp;</span>
+</pre>
+
+<p>This will start the daemon in the background and show its output in a new xterm window.</p>
+<pre>
+<span class="codeoutput">060812 23:59:21 [Warning] One can only use the --user switch if running as root
+
+InnoDB: The first specified data file ./ibdata1 did not exist:
+InnoDB: a new database to be created!
+060812 23:59:21  InnoDB: Setting file ./ibdata1 size to 10 MB
+InnoDB: Database physically writes the file full: wait...
+060812 23:59:22  InnoDB: Log file ./ib_logfile0 did not exist: new to be created
+InnoDB: Setting log file ./ib_logfile0 size to 5 MB
+InnoDB: Database physically writes the file full: wait...
+060812 23:59:22  InnoDB: Log file ./ib_logfile1 did not exist: new to be created
+InnoDB: Setting log file ./ib_logfile1 size to 5 MB
+InnoDB: Database physically writes the file full: wait...
+InnoDB: Doublewrite buffer not found: creating new
+InnoDB: Doublewrite buffer created
+InnoDB: Creating foreign key constraint system tables
+InnoDB: Foreign key constraint system tables created
+060812 23:59:22  InnoDB: Started; log sequence number 0 0
+060812 23:59:22 [Note] mymax/bin/mysqld: ready for connections.
+Version: '5.0.22-max-log'  socket: '/home/ds/mysqltest/master.sock'  port: 3307  MySQL Community Edition - Experimental (GPL)</span>
+</pre>
+
+<p>The warning about the <code>--user</code> switch can be ignored for now. Should you not get a message very similar
+to the one above (especially concerning the <code>ready for connections</code> part) go back and find
+the error in your setup before going on. Usually the error messages issued by MySQL are rather verbose and bring
+you back on track pretty soon.</p>
+
+
+<h3>Prepare test data</h3>
+<p>Before we set up a slave instance we will first take care of some test data. 
+For the Windows command line just modify the one below appropriately to include the 
+<code>--port=3307</code> option.</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ mymax/bin/mysql -uroot -S master.sock --prompt='master> '
+</span><span class="codeoutput">
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 1 to server version: 5.0.22-max-log
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</span><span class="code">
+master> CREATE DATABASE repdb;</span>
+<span class="codeoutput">Query OK, 1 row affected (0.00 sec)
+</span><span class="code">
+master> USE repdb;</span><span class="codeoutput">
+Database changed</span><span class="code">
+master> CREATE TABLE tblA (
+    ->       id INT(10) PRIMARY KEY NOT NULL,
+    ->       label VARCHAR(30)
+    ->  ) ENGINE=InnoDB;</span><span class="codeoutput">
+Query OK, 0 rows affected (0.02 sec)
+</span><span class="code">
+master> CREATE TABLE tblB (
+    ->       name VARCHAR(20) PRIMARY KEY NOT NULL,
+    ->       age INT(3)
+    ->  ) ENGINE=InnoDB;</span><span class="codeoutput">
+Query OK, 0 rows affected (0.01 sec)
+</span><span class="code">
+master> INSERT INTO tblA VALUES
+    ->      (1, 'label 1'),
+    ->      (2, 'label 2'),
+    ->      (3, 'label 3')
+    ->  ;</span><span class="codeoutput">
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+</span><span class="code">
+master> INSERT INTO tblB VALUES 
+    ->      ('Peter', 55),
+    ->      ('Paul', 43), 
+    ->      ('Mary', 25)
+    ->  ;</span><span class="codeoutput">
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+</span>
+</pre>
+
+<p>Inserting this data already created binlog information. You can easily verify this
+by looking at the filesystem. The <code>master-bin.000001</code> file should have grown
+to around 850 bytes now, depending on how you formatted the queries.<br />
+For the example, we will only replicate changes to table <code>tblB</code>
+but ignore anything that happens to table <code>tblA</code>. We will assume that
+<code>tblB</code> needs to be written by an application on the slave, so the
+table should be present, but empty on the slaves, to avoid key collisions.</p>
+<p>One more thing we are going to do right now is create a user account for the
+filter to connect with:</p>
+<pre>
+<span class="code">master> GRANT REPLICATION SLAVE
+    -> ON *.*
+    -> TO 'repblack'@'localhost'
+    -> IDENTIFIED BY 'blackpass';</span>
+<span class="codeoutput">Query OK, 0 rows affected (0.00 sec)</span>
+</pre>
+
+<p>This account will allow the filter to connect to the master for replication.</p>
+
+
+<h3>Configure the filter instance</h3>
+<p>Now prepare the configuration for the filter engine (call it <code>my.black</code>):</p>
+<pre>
+<span class="code">[client]
+port            = <span style="color: red; font-weight: bold">3308</span>
+socket          = /home/ds/mysqltest/<span style="color: red; font-weight: bold">black</span>.sock
+
+[mysqld_safe]
+socket          = /home/ds/mysqltest/<span style="color: red; font-weight: bold">black</span>.sock
+
+[mysqld]
+<span style="color: red; font-weight: bold">log-slave-updates</span>
+<span style="color: red; font-weight: bold">skip-innodb</span>
+<span style="color: red; font-weight: bold">default-storage-engine=blackhole</span>
+
+user            = mysql
+pid-file        = /home/ds/mysqltest/<span style="color: red; font-weight: bold">black</span>.pid
+socket          = /home/ds/mysqltest/<span style="color: red; font-weight: bold">black</span>.sock
+port            = <span style="color: red; font-weight: bold">3308</span>
+basedir         = /home/ds/mysqltest/mymax
+datadir         = /home/ds/mysqltest/data.<span style="color: red; font-weight: bold">black</span>
+tmpdir          = /tmp
+language        = /home/ds/mysqltest/mymax/share/mysql/english
+
+bind-address    = 127.0.0.1
+
+server-id       = <span style="color: red; font-weight: bold">2</span>
+log-bin         = /home/ds/mysqltest/<span style="color: red; font-weight: bold">black</span>-bin.log
+relay-log       = /home/ds/mysqltest/<span style="color: red; font-weight: bold">black</span>-relay.log</span>
+</pre>
+
+<p>Notice that all occurences of "<span style="color: green; font-weight: bold">master</span>" have been 
+replaced with "<span style="color: red; font-weight: bold">black</span>". Moreover the
+<code>server-id</code> setting has been changed and the <code>log-slave-updates</code>,
+<code>skip-innodb</code> and <code>default-storage-engine</code> options have been added.
+The second one prevents this instance from creating <code>ibdata</code> tablespace files which would
+not be used later anyways. The last one specifies which storage engine to use when a <code>CREATE TABLE</code>
+statement does not explicitly specify one or if the specified engine is not available. We will come
+back to this in a bit.</p>
+<p>Make sure this instance basically works by starting it the same way as the master before 
+(you will not see the InnoDB messages here, of course).</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ xterm -T BLACK -e mymax/bin/mysqld \
+>        --defaults-file=my.black \
+>        --console &amp;</span>
+</pre>
+
+
+<h3>Create dump files</h3>
+<p>Usually the next step while setting up a new slave (in this case the filter) is to 
+create an SQL dump of the master that contains all structure, data and replication offset
+information. This is done with the <code>mysqldump</code> commmand and its
+<code>--master-data</code> switch. If you are using InnoDB you should also use the
+<code>--single-transaction</code> option.</p>
+<p>However in our case we need to consider some special requirements. First of all the
+filter engine does not need a dump that contains any data, because it could not be
+stored anyways. All that's needed on the filter is the table structure definition. For
+the "real" slaves we will however need an initial set of data along with the structure.
+But we must leave out those tables that are not replicated, because otherwise we
+would run into problems as soon as the application running on the slave tries to insert
+into them. In the end we need two dump files:</p>
+<ol>
+	<li>a structure-only file</li>
+	<li>a data-file containing only replicated tables</li>
+</ol>
+<p>To get these two, on a new command line issue the following commands:</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ mymax/bin/mysqldump -S master.sock -uroot \
+>                      --master-data \
+>                      --single-transaction \
+>                      --no-create-info \
+>                      --ignore-table=repdb.tblA \
+>                      repdb > master_data.sql
+
+$ mymax/bin/mysqldump -S master.sock -uroot \
+>                      --no-data \
+>                      repdb > master_struct.sql</span>
+</pre>
+
+<p>The first command creates a file with data for <code>tblB</code>, which is replicated,
+but not <code>tblA</code> which is ignored. We will need this later. Be aware that this
+file will not contain any hint that <code>tblA</code> even exists.</p>
+<p>The second command will dump a complete SQL representation of the <code>repdb</code>'s database schema to the
+<code>master_struct.sql</code> file. It will not dump any data, which would be pointless
+for the blackhole anyway. It does however contain information on the tables that are ignored
+by the replication, too. We will need this file for the real slaves later, too.</p>
+<p>Be advised that if you are using a different storage engine than InnoDB
+for your tables (especially MyISAM) you will need to do a little more tweaking. This is
+because the InnoDB example relies on MySQL's being very lenient concerning errors in many cases. 
+We put the <code>skip-innodb</code> option into the <code>my.black</code> config file. This means that InnoDB
+will not be available at runtime. Because the <code>master_struct.sql</code> dumpfile contains
+<code>CREATE TABLE ... ENGINE=InnoDB</code> statements, MySQL falls back to the default storage
+engine which we configured to be the blackhole engine.</p>
+<p>If you are using MyISAM tables, there is no need for the server to automatically change 
+the table type, because MyISAM is always available (MySQL stores its user information 
+apart from other things in MyISAM tables). So you need to adapt the <code>master_struct.sql</code> 
+dump file before sourcing it into the filter server. I recommend using <code>sed</code>, like this:</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ sed -e 's/ENGINE=InnoDB/ENGINE=BLACKHOLE/g' \
+>      master_struct.sql > master_black.sql</span>
+</pre>
+
+<p>This will replace all occurences of the InnoDB engine with the blackhole engine and
+put the result into a new file. note that is does not hurt to do this even if you are
+using InnoDB, its just a step more that's not strictly necessary. Please keep the original 
+file, too, as we will need it for the slave machines.</p>
+
+<h3>Create schema on the filter</h3>
+<p>Once your dump files are ready connect a client to the filter server.
+Create the database, switch to it and finally import the modified structure file:</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ mymax/bin/mysql -uroot -S black.sock --prompt='black> '</span>
+<span class="codeoutput">Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 1 to server version: 5.0.22-max-log
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</span>
+<span class="code">black> CREATE DATABASE repdb;</span>
+<span class="codeoutput">Query OK, 1 row affected (0.00 sec)
+</span>
+<span class="code">black> USE repdb;</span>
+<span class="codeoutput">Database changed</span>
+<span class="code">black> source master_black.sql;</span>
+<span class="codeoutput">Query OK, 0 rows affected (0.00 sec)
+...</span>
+<span class="code">black></span>
+</pre>
+
+
+
+<h3>Set up master-filter replication</h3>
+<p>At this point we now have the structure of the master transferred to the
+filter engine, adapted to use the blackhole engine for all the tables.
+Next we are going to configure the replication between the two. 
+To do so we need to know the exact position from where the filter will start
+replicating. As we created the <code>master_data.sql</code> file using the
+<code>--master-data</code> option, we can easily extract the required
+information from that file:</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ head -n 30 master_data.sql | grep 'CHANGE MASTER TO'</span>
+<span class="codeoutput">CHANGE MASTER TO MASTER_LOG_FILE='<span style="font-weight: bold">master-bin.000001</span>', MASTER_LOG_POS=<span style="font-weight: bold">1074</span>;</span>
+</pre>
+
+<p>Write down that information (especially the emphasized parts), we are going to need it in a second.</p>
+<p>Now modify the <code>my.black</code> file to include the following two lines:</p>
+<pre><span class="code"><span style="color: red; font-weight: bold">replicate-ignore-table=repdb.tblA
+replicate-do-table=repdb.tblB</span></span>
+</pre>
+
+<p>In a real world application you will probably have a more complex configuration, but this will
+suffice for now. Restart the filter engine to activate this new configuration:</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ mymax/bin/mysqladmin -uroot -S black.sock shutdown
+
+ds@yavin:~/mysqltest
+$ xterm -T BLACK -e mymax/bin/mysqld \
+>        --defaults-file=my.black \
+>        --console &amp;</span>
+</pre>
+
+<p>Make sure the client connected to the blackhole instance gets reconnected, e. g. by
+issuing a <code>SELECT 1</code> statement. The following statements will</p>
+<ol>
+	<li>Configure the filter's master</li>
+	<li>Flush the filter's logs (including its binlogs)</li>
+	<li>Display the filter's status as a master (which we will need to set up the real slaves later)</li>
+	<li>Start the slave threads</li>
+	<li>Display the slave status to verfiy it's running</li>
+</ol> 
+<p>Be sure to fill in the values you wrote down a moment ago into the
+	<code>CHANGE MASTER TO</code> statement should yours differ!</p>
+<pre>
+<span class="code">black> CHANGE MASTER TO
+    -> master_host='localhost',
+    -> master_port=3307,
+    -> master_user='repblack',
+    -> master_password='blackpass',
+    -> master_log_file='master-bin.000001',
+    -> master_log_pos=1074;</span>
+<span class="codeoutput">Query OK, 0 rows affected (0.01 sec)</span>
+
+<span class="code">black> FLUSH LOGS;</span>
+<span class="codeoutput">Query OK, 0 rows affected (0.00 sec)</span>
+
+<span class="code">black> SHOW MASTER STATUS;</span><span class="codeoutput">
++------------------+----------+--------------+------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
++------------------+----------+--------------+------------------+
+| black-bin.000003 |       98 |              |                  |
++------------------+----------+--------------+------------------+
+1 row in set (0.00 sec)</span>
+
+<span class="code">black> START SLAVE;</span>
+<span class="codeoutput">Query OK, 0 rows affected (0.00 sec)</span>
+
+
+<span class="code">black> SHOW SLAVE STATUS \G</span>
+<span class="codeoutput">*************************** 1. row ***************************
+             Slave_IO_State: Waiting for master to send event
+                Master_Host: localhost
+                Master_User: repblack
+                Master_Port: 3307
+              Connect_Retry: 60
+            Master_Log_File: master-bin.000001
+        Read_Master_Log_Pos: 1074
+             Relay_Log_File: black-relay.000003
+              Relay_Log_Pos: 236
+      Relay_Master_Log_File: master-bin.000001
+           Slave_IO_Running: Yes
+          Slave_SQL_Running: Yes
+            Replicate_Do_DB:
+        Replicate_Ignore_DB:
+         Replicate_Do_Table: repdb.tblB
+     Replicate_Ignore_Table: repdb.tblA
+    Replicate_Wild_Do_Table:
+Replicate_Wild_Ignore_Table:
+                 Last_Errno: 0
+                 Last_Error:
+               Skip_Counter: 0
+        Exec_Master_Log_Pos: 1074
+            Relay_Log_Space: 236
+            Until_Condition: None
+             Until_Log_File:
+              Until_Log_Pos: 0
+         Master_SSL_Allowed: No
+         Master_SSL_CA_File:
+         Master_SSL_CA_Path:
+            Master_SSL_Cert:
+          Master_SSL_Cipher:
+             Master_SSL_Key:
+      Seconds_Behind_Master: 0
+1 row in set (0.00 sec)</span>
+</pre>
+
+
+
+<h3>Verify master-filter replication</h3>
+<p>At this point we have successfully established a replication connection
+between the master database and the blackhole based filter instance. Now let's
+see if everything works as expected.</p>
+<p>First of all we will verify that nothing has been written to the filter's
+binlogs yet. Because we issued a <code>FLUSH LOGS</code> on the filter instance,
+there should be nothing in the most recent binlog. Verify this as follows:</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ mymax/bin/mysqlbinlog black-bin.000003</span>
+<span class="codeoutput">/*!40019 SET @@session.max_insert_delayed_threads=0*/;
+/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+# at 4
+#060813  0:44:06 server id 2  end_log_pos 98    Start: binlog v 4, server v 5.0.22-max-log created 060813  0:44:06
+# Warning: this binlog was not closed properly. Most probably mysqld crashed writing it.
+# End of log file
+ROLLBACK /* added by mysqlbinlog */;
+/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;</span>
+</pre>
+
+<p>Do not get nervous about the crash warning shown; it is just written as the first thing in a new
+binlog file and is only removed when the daemon shuts down normally or rotates to another log (as with
+<code>FLUSH LOGS</code>. What we wanted to see however is that there are no statements in this file. We
+will now go on and make some changes to the master database to see if really only statements 
+modifying <code>tblB</code> end up in the filter's binlogs. Please be advised here, that with the
+configuration in the <code>my.black</code> file only fully qualified statements will be considered by
+a replication slave. Statements that do not include the table name will not be applied on any slave
+configured as in our example, even if you first switch the default database on the master with the
+<code>USE</code> command. For more details on this please read the MySQL manual page on setting up
+<a href="http://dev.mysql.com/doc/refman/5.0/en/replication-rules.html">replication rules</a>!
+</p>
+<pre>
+<span class="code">master> UPDATE repdb.tblA
+    -> SET label='modified label 3'
+    -> WHERE id=3;</span>
+<span class="codeoutput">Query OK, 1 row affected (0.06 sec)
+Rows matched: 1  Changed: 1  Warnings: 0</span>
+
+<span class="code">master> INSERT INTO repdb.tblB
+    -> VALUES ('John', 39);</span>
+<span class="codeoutput">Query OK, 1 row affected (0.03 sec)</span>
+</pre>
+
+<p>We would expect to see the <code>INSERT</code> in the binlog file of the filter instance, but not
+the <code>UPDATE</code> statement, because it modifies <code>tblA</code> which is to be ignored. So
+have a look at the filter's binlog again:</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ mymax/bin/mysqlbinlog black-bin.000002</span>
+<span class="codeoutput">/*!40019 SET @@session.max_insert_delayed_threads=0*/;
+/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+# at 4
+#060813  0:44:06 server id 2  end_log_pos 98    Start: binlog v 4, server v 5.0.22-max-log created 060813  0:44:06
+# Warning: this binlog was not closed properly. Most probably mysqld crashed writing it.
+# at 98
+#060813  0:46:30 server id 1  end_log_pos 204   Query   thread_id=1     exec_time=0     error_code=0
+use repdb;
+SET TIMESTAMP=1155422790;
+SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1;
+SET @@session.sql_mode=0;
+/*!\C latin1 */;
+SET @@session.character_set_client=8,@@session.collation_connection=8,@@session.collation_server=8;
+<span style="font-weight: bold">INSERT INTO repdb.tblB
+VALUES ('John', 39);</span>
+# End of log file
+ROLLBACK /* added by mysqlbinlog */;
+/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;</span>
+</pre>
+
+<p>This looks precisely as expected (5th line from the bottom holds our <code>INSERT</code> and the
+<code>UPDATE</code> is nowhere to be seen. It's about time for the final step: Setting up a "real"
+slave.</p>
+
+
+<h3>Set up a "real" slave</h3>
+<p>To do so, we need one more configuration file. Call it <code>my.slave</code> and make sure it contains
+the following options (I recommend copying the <code>my.master</code> file as a template):</p>
+<pre>
+<span class="code">[client]
+port            = <span style="color: lime; font-weight: bold">3309</span>
+socket          = /home/ds/mysqltest/<span style="color: lime; font-weight: bold">slave</span>.sock
+
+[mysqld_safe]
+socket          = /home/ds/mysqltest/<span style="color: lime; font-weight: bold">slave</span>.sock
+
+[mysqld]
+user            = mysql
+pid-file        = /home/ds/mysqltest/<span style="color: lime; font-weight: bold">slave</span>.pid
+socket          = /home/ds/mysqltest/<span style="color: lime; font-weight: bold">slave</span>.sock
+port            = <span style="color: lime; font-weight: bold">3309</span>
+basedir         = /home/ds/mysqltest/mymax
+datadir         = /home/ds/mysqltest/data.<span style="color: lime; font-weight: bold">slave</span>
+tmpdir          = /tmp
+language        = /home/ds/mysqltest/mymax/share/mysql/english
+
+bind-address    = 127.0.0.1
+
+server-id       = <span style="color: lime; font-weight: bold">3</span>
+relay-log       = /home/ds/mysqltest/<span style="color: lime; font-weight: bold">slave</span>-relay.log</span>
+</pre>
+
+<p>Notice that all occurences of "<span style="color: green; font-weight: bold">master</span>" have been 
+replaced with "<span style="color: lime; font-weight: bold">slave</span>". Again the
+<code>server-id</code> setting has been changed and the <code>log-slave-updates</code>,
+<code>skip-innodb</code> and <code>default-storage-engine</code> options that were part of the filter
+instance's configuration are <em>not</em> included. Also the <code>log-bin</code> parameter has
+been removed, because changes on the slave need not be recorded separately. You may of course leave this
+in if you like to have binlogs of statements that modify data on the slave side.</p>
+<p>Start up the slave engine as usual. You should see the familiar messages about filling up
+the InnoDB data files and finally the "ready for connections" line. Then connect a client to the
+running slave and create the database:</p>
+<pre>
+<span class="code">ds@yavin:~/mysqltest
+$ xterm -T SLAVE -e mymax/bin/mysqld \
+>        --defaults-file=my.slave \
+>        --console &amp;
+
+ds@yavin:~/mysqltest
+$ mymax/bin/mysql -uroot -S slave.sock --prompt='slave> '</span>
+<span class="codeoutput">
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 1 to server version: 5.0.22-max-log
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</span><span class="code">
+slave> CREATE DATABASE repdb;</span>
+<span class="codeoutput">Query OK, 1 row affected (0.00 sec)
+</span><span class="code">
+slave> USE repdb;</span><span class="codeoutput">
+Database changed</span>
+</pre>
+
+
+
+<h3>Install data into the slave</h3>
+<p>At this point the slave is set up and has an empty <code>repdb</code> database. Next we are going
+to fill this database with an initial snapshot of the master from where the replication will
+start.</p>
+<p>Think about it for a moment: We have two SQL dump files at hand (well, three if you count
+<code>master_black.sql</code>). One of them (<code>master_struct.sql</code>) contains the structure
+of all tables, regardless of whether they are going to be modified on the slave
+and another one (<code>master_data.sql</code>) that contains only the data for those tables
+that are not going to be changed on the slave. As we used the <code>--no-create-info</code> 
+switch to generate  <code>master_data.sql</code>, we must read the structure file first. Only then
+do the tables exist of which one is going to be filled by the data dump file. Be sure <em>not</em> to
+use the <code>master_black.sql</code> here, because on the slave we need the original information 
+about the storage engines to use:</p>
+<pre>
+<span class="code">slave> source master_struct.sql;</span>
+<span class="codeoutput">Query OK, 0 rows affected (0.00 sec)
+...
+</span><span class="code">
+slave> source master_data.sql;</span><span class="codeoutput">
+Query OK, 0 rows affected (0.00 sec)
+...
+Query OK, 3 rows affected (0.09 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+Query OK, 0 rows affected (0.00 sec)
+...</span>
+</pre>
+
+<p>The output of the <code>source</code> command clearly shows 3 new records
+that have been inserted. This is what we would expect, because in <code>tblB</code>
+there were 3 records when we took the snapshot. <code>tblA</code> was excluded
+from the dump, so there are no records on the slave. We can verify this as follows:</p>
+<pre>
+<span class="code">slave> SELECT * FROM repdb.tblA;</span><span class="codeoutput">
+Empty set (0.00 sec)
+</span>
+<span class="code">slave> SELECT * FROM repdb.tblB;</span><span class="codeoutput">
++-------+------+
+| name  | age  |
++-------+------+
+| Mary  |   25 |
+| Paul  |   43 |
+| Peter |   55 |
++-------+------+
+3 rows in set (0.00 sec)
+</span>
+</pre>
+
+
+
+<h3>Configure filter-slave replication</h3>
+<p>The final step is to set up the replication between the slave and the filter engine.
+To allow that, we first need a user account on the filter. Create one as follows:</p>
+<pre>
+<span class="code">black> GRANT REPLICATION SLAVE
+    -> ON *.*
+    -> TO 'repslave'@'localhost'
+    -> IDENTIFIED BY 'slavepass';</span>
+<span class="codeoutput">Query OK, 0 rows affected (0.00 sec)</span>
+</pre>
+
+<p>Connect the slave to the filter engine. Be sure to insert the correct values
+for <code>MASTER_LOG_FILE</code> and <code>MASTER_LOG_POS</code> into the statement
+below. Those are the values you wrote down when you issued the <code>SHOW MASTER STATUS</code>
+on the filter server before starting the replication there.</p>
+<pre>
+<span class="code">slave> CHANGE MASTER TO
+    -> master_host='localhost',
+    -> master_port=3308,
+    -> master_user='repslave',
+    -> master_password='slavepass',
+    -> master_log_file='black-bin.000003',
+    -> master_log_pos=98;</span>
+<span class="codeoutput">Query OK, 0 rows affected (0.01 sec)</span>
+
+<span class="code">slave> START SLAVE</span>
+<span class="codeoutput">Query OK, 0 rows affected (0.01 sec)</span>
+
+<span class="code">slave> SHOW SLAVE STATUS \G</span>
+<span class="codeoutput">*************************** 1. row ***************************
+             Slave_IO_State: Waiting for master to send event
+                Master_Host: localhost
+                Master_User: repslave
+                Master_Port: 3308
+              Connect_Retry: 60
+            Master_Log_File: black-bin.000003
+        Read_Master_Log_Pos: 350
+             Relay_Log_File: slave-relay.000002
+              Relay_Log_Pos: 487
+      Relay_Master_Log_File: black-bin.000003
+           Slave_IO_Running: Yes
+          Slave_SQL_Running: Yes
+            Replicate_Do_DB:
+        Replicate_Ignore_DB:
+         Replicate_Do_Table:
+     Replicate_Ignore_Table:
+    Replicate_Wild_Do_Table:
+Replicate_Wild_Ignore_Table:
+                 Last_Errno: 0
+                 Last_Error:
+               Skip_Counter: 0
+        Exec_Master_Log_Pos: 350
+            Relay_Log_Space: 487
+            Until_Condition: None
+             Until_Log_File:
+              Until_Log_Pos: 0
+         Master_SSL_Allowed: No
+         Master_SSL_CA_File:
+         Master_SSL_CA_Path:
+            Master_SSL_Cert:
+          Master_SSL_Cipher:
+             Master_SSL_Key:
+      Seconds_Behind_Master: 0
+1 row in set (0.00 sec)</span>
+</pre>
+
+<p>As soon as this is done, the replication should already have updated <code>tblB</code>
+on the slave and inserted the new ("John", 39) record:</p>
+<pre>
+<span class="code">slave> SELECT * FROM repdb.tblB;</span><span class="codeoutput">
++-------+------+
+| name  | age  |
++-------+------+
+<span style="font-weight:bold">| John  |   39 |</span>
+| Mary  |   25 |
+| Paul  |   43 |
+| Peter |   55 |
++-------+------+
+4 rows in set (0.01 sec)
+</span>
+</pre>
+
+
+<h3>Done!</h3>
+<p>Yes, it works! Try and modify some data on the master and check if the results match
+on the slave. Anything you do to modify table <code>tblB</code> should be reflected on
+the slave. Remember to use fully qualified statements, otherwise changes will not match
+the replication rules!</p>
+
+
+<h2>Some more thoughts</h2>
+<p>While the example above generally shows how the blackhole engine can be used, implementing it
+in a real production environment can be a little more difficult. If you want to do it,
+I suggest you set up some tests first just to get used to it. Especially getting the
+replication parameters right is somewhat error-prone. The <code>--master-data</code>
+option places offset information into the data dump file, but this cannot be used
+on the slaves (as it would be in a regular replication scenario).</p>
+<p>Also be advised that the performance and/or disk space improvements are very
+dependent on your individual use case and data. It is very well possible that you
+come to the conclusion that transferring the complete binlogs to your slaves is
+just ok. If you do not have any problems, you definitely should not try to implement
+a blackhole based filter engine in between just for the fun of it. It is certainly
+a new point-of-failure you introduce. And as this whole stuff has not really been
+tested on a broad scale, you could really discover unforeseen problems.</p>
+<p>But if you do use this, please drop me a line what you think of it and maybe
+which improvements you made. I would certainly be grateful to get some feedback :-)</p>
+           </div>
+<div class="meta">
+ <div class="author">
+ 
+  dschneller @ 1:12 AM 
+ </div>
+
+     <a href="http://www.jroller.com/dschneller/entry/mysql_replication_using_blackhole_engine"
+        title="Permanent link to this weblog entry"
+        class="entrypermalink">Permalink</a>
+     Filed under: Technology
+<p class="commenttext" style="color: red; font-weight: bold" >Please be advised that email addresses provided with comments will be publicly available. You are not required to enter an email address for posting. However in that case your IP address will be displayed. Sorry, I cannot help this, because it is the JRoller defaults which I cannot change. You could however just enter a bogus mail address. All comments are subject to removal without notice.</p>
+</div>
+<div class="feedback">
+</div>
+<!--<?php trackback_rdf(); ?>  -->
+</div> <!-- Closes the post div-->
+    
+                                    <a name="comments"></a>
+    <div class="comments" id="comments">
+
+            <div class="comments-head">Comments:</div>
+            
+    <br/>
+                                                            
+            <div class="comment odd" id="comment1">
+                Great article. I can't believe it has got any comments.<br />I have dugg this article so hopefully some more people will see this and starting having ideas on developing the filter engine more.
+
+                <p class="comment-details">
+                Posted by
+                                    <a rel="nofollow" href="http://roobaron.blogspot.com"><b>Paul</b></a>
+                
+                on August 26, 2006 at 04:16 AM CEST
+
+                <a href="http://www.jroller.com/dschneller/entry/mysql_replication_using_blackhole_engine#comment-1156558561000"
+                   class="entrypermalink" title="comment permalink">#</a>
+                </p>
+
+            </div>
+
+                                                                    
+            <div class="comment even" id="comment2">
+                Fantastic work - this article is very thorough, I can't wait to give this a try. Kudos and thanks.
+
+                <p class="comment-details">
+                Posted by
+                                    <b>Mark Thomson</b>
+                
+                on October 02, 2006 at 01:32 AM CEST
+
+                <a href="http://www.jroller.com/dschneller/entry/mysql_replication_using_blackhole_engine#comment-1159745576000"
+                   class="entrypermalink" title="comment permalink">#</a>
+                </p>
+
+            </div>
+
+                                                                    
+            <div class="comment odd" id="comment3">
+                Good stuff. Has warned me off trying this and I'll move our temporal data to a new DB instead which won't be replicated!<br /><br />Cheers.
+
+                <p class="comment-details">
+                Posted by
+                                    <a rel="nofollow" href="http://philchambers.co.uk/"><b>Phil Chambers</b></a>
+                
+                on January 15, 2007 at 12:37 PM CET
+
+                <a href="http://www.jroller.com/dschneller/entry/mysql_replication_using_blackhole_engine#comment-1168861074000"
+                   class="entrypermalink" title="comment permalink">#</a>
+                </p>
+
+            </div>
+
+                                                                    
+            <div class="comment even" id="comment4">
+                Good stuff, thanks
+
+                <p class="comment-details">
+                Posted by
+                                    <a rel="nofollow" href="http://venublog.com"><b>Venu</b></a>
+                
+                on May 23, 2007 at 10:27 PM CEST
+
+                <a href="http://www.jroller.com/dschneller/entry/mysql_replication_using_blackhole_engine#comment-1179952068000"
+                   class="entrypermalink" title="comment permalink">#</a>
+                </p>
+
+            </div>
+
+                                                                    
+            <div class="comment odd" id="comment5">
+                One quqestion regarding the black hole engine use. Now if you want to add failover to your setup, you make things a bit more complicated. The slaves actually do not talk to the master anymore. So suddenly you need to handle failover for another server (even though on the same machine).
+
+                <p class="comment-details">
+                Posted by
+                                    <a rel="nofollow" href="http://pooteeweet.org"><b>Lukas</b></a>
+                
+                on June 05, 2007 at 09:03 AM CEST
+
+                <a href="http://www.jroller.com/dschneller/entry/mysql_replication_using_blackhole_engine#comment-1181026998000"
+                   class="entrypermalink" title="comment permalink">#</a>
+                </p>
+
+            </div>
+
+                                                                    
+            <div class="comment even" id="comment6">
+                You are right, this indeed increases complexity. As failover was not required in my case, I did not pay attention to it. 
+
+                <p class="comment-details">
+                Posted by
+                                    <b>Daniel Schneller</b>
+                
+                on June 05, 2007 at 12:40 PM CEST
+
+                <a href="http://www.jroller.com/dschneller/entry/mysql_replication_using_blackhole_engine#comment-1181040024000"
+                   class="entrypermalink" title="comment permalink">#</a>
+                </p>
+
+            </div>
+
+                                                                    
+            <div class="comment odd" id="comment7">
+                Great article !<br /><br />We have a replication setup with about 25 GB of Databases and have problems with errors coming from databases that are not replicated but make the slave stop its work since all instructions reach the replication-log which is transferrd via a 4.6Mbit DSL line.<br /><br />
+
+                <p class="comment-details">
+                Posted by
+                                    <a rel="nofollow" href="http://www.databay.de"><b>Ralf Schenk</b></a>
+                
+                on November 08, 2007 at 09:06 AM CET
+
+                <a href="http://www.jroller.com/dschneller/entry/mysql_replication_using_blackhole_engine#comment-1194509176000"
+                   class="entrypermalink" title="comment permalink">#</a>
+                </p>
+
+            </div>
+
+                </div>
+        
+    <div class="comments-form">
+    <div class="comments-head">Post a Comment:</div><br/>
+
+    <span class="status">Comments are closed for this entry.</span>
+
+    </div>
+          </div> <!--Closes the contentright div-->
+     </div> <!-- Closes the content div-->
+     <div id="bottomcontentdouble">
+    </div>
+ </div> <!-- Closes the container div-->
+                   <div id="footer">
+  <a name="bottom"></a>
+  <div id="menu">
+  <form id="searchform" method="get" action="/search/dschneller"
+                onsubmit="return validateSearch(this)"><div>
+   <input id="searchbutton" type="submit" name="submit" value="Search" />
+   <input type="text" name="q" id="search" size="15" /></div>
+  </form> 
+ <div id="topimage"> 
+  <a href="#"></a>  
+ </div>
+</div>
+</div>
+</body>
+</html>
+    

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with ASCIIToSVG (http://9vx.org/~dho/a2s/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="414px"
+   height="368px"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="zmq-examples-publish-subscribe.svg">
+  <metadata
+     id="metadata73">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="979"
+     id="namedview71"
+     showgrid="false"
+     inkscape:zoom="2.5652174"
+     inkscape:cx="214.43437"
+     inkscape:cy="164.42944"
+     inkscape:window-x="0"
+     inkscape:window-y="28"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="group177" />
+  <defs
+     id="defs4">
+    <filter
+       id="dsFilter"
+       width="150%"
+       height="150%">
+      <feOffset
+         result="offOut"
+         in="SourceGraphic"
+         dx="3"
+         dy="3"
+         id="feOffset7" />
+      <feColorMatrix
+         result="matrixOut"
+         in="offOut"
+         type="matrix"
+         values="0.2 0 0 0 0 0 0.2 0 0 0 0 0 0.2 0 0 0 0 0 1 0"
+         id="feColorMatrix9" />
+      <feBlend
+         in="SourceGraphic"
+         in2="matrixOut"
+         mode="normal"
+         id="feBlend11" />
+    </filter>
+    <marker
+       id="iPointer"
+       viewBox="0 0 10 10"
+       refX="5"
+       refY="5"
+       markerUnits="strokeWidth"
+       markerWidth="8"
+       markerHeight="7"
+       orient="auto">
+      <path
+         d="M 10 0 L 10 10 L 0 5 z"
+         id="path14" />
+    </marker>
+    <marker
+       id="Pointer"
+       viewBox="0 0 10 10"
+       refX="5"
+       refY="5"
+       markerUnits="strokeWidth"
+       markerWidth="8"
+       markerHeight="7"
+       orient="auto">
+      <path
+         d="M 0 0 L 10 5 L 0 10 z"
+         id="path17" />
+    </marker>
+  </defs>
+  <g
+     id="boxes"
+     stroke="black"
+     stroke-width="2"
+     fill="none">
+    <g
+       id="group0">
+      <path
+         id="path0"
+         filter="url(#dsFilter)"
+         fill="#fff"
+         d="M 139.5 8 L 265.5 8 L 265.5 62 Q 265.5 72 255.5 72 L 149.5 72 Q 139.5 72 139.5 62 Z" />
+      <text
+         x="161.1"
+         y="28.8"
+         id="text0"
+         fill="#000"
+         stroke="none"
+         style="font-family:LMMono10,monospace;font-size:15.2px">Publisher </text>
+      <text
+         x="188.1"
+         y="60.8"
+         id="text23"
+         fill="#000"
+         stroke="none"
+         style="font-family:LMMono10,monospace;font-size:15.2px">PUB </text>
+    </g>
+    <g
+       id="group9">
+      <path
+         id="path9"
+         filter="url(#dsFilter)"
+         fill="#fff"
+         d="M 4.5 290 Q 4.5 280 14.5 280 L 111.5 280 Q 121.5 280 121.5 290 L 121.5 344 L 4.5 344 Z" />
+      <text
+         x="44.1"
+         y="300.8"
+         id="text9"
+         fill="#000"
+         stroke="none"
+         style="font-family:LMMono10,monospace;font-size:15.2px">SUB </text>
+      <text
+         x="17.1"
+         y="332.8"
+         id="text28"
+         fill="#000"
+         stroke="none"
+         style="font-family:LMMono10,monospace;font-size:15.2px">Subscriber </text>
+    </g>
+    <g
+       id="group11">
+      <path
+         id="path11"
+         filter="url(#dsFilter)"
+         fill="#fff"
+         d="M 148.5 290 Q 148.5 280 158.5 280 L 255.5 280 Q 265.5 280 265.5 290 L 265.5 344 L 148.5 344 Z" />
+      <text
+         x="188.1"
+         y="300.8"
+         id="text11"
+         fill="#000"
+         stroke="none"
+         style="font-family:LMMono10,monospace;font-size:15.2px">SUB </text>
+      <text
+         x="161.1"
+         y="332.8"
+         id="text33"
+         fill="#000"
+         stroke="none"
+         style="font-family:LMMono10,monospace;font-size:15.2px">Subscriber </text>
+    </g>
+    <g
+       id="group13">
+      <path
+         id="path13"
+         filter="url(#dsFilter)"
+         fill="#fff"
+         d="M 292.5 290 Q 292.5 280 302.5 280 L 399.5 280 Q 409.5 280 409.5 290 L 409.5 344 L 292.5 344 Z" />
+      <text
+         x="332.1"
+         y="300.8"
+         id="text13"
+         fill="#000"
+         stroke="none"
+         style="font-family:LMMono10,monospace;font-size:15.2px">SUB </text>
+      <text
+         x="305.1"
+         y="332.8"
+         id="text38"
+         fill="#000"
+         stroke="none"
+         style="font-family:LMMono10,monospace;font-size:15.2px">Subscriber </text>
+    </g>
+  </g>
+  <g
+     id="lines"
+     stroke="black"
+     stroke-width="2"
+     fill="none">
+    <g
+       id="group46">
+      <path
+         id="path46"
+         d="M 4.5 312 L 121.5 312 " />
+    </g>
+    <g
+       id="group177">
+      <path
+         id="path177"
+         d="M 58.5,198.81356 58.5,178 c 0,-6.66667 3.333333,-10 10,-10 l 134,0 134,0 c 6.66667,0 10,3.33333 10,10 l 0,22"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="csscssc" />
+    </g>
+    <g
+       id="group179">
+      <path
+         id="path179"
+         marker-end="url(#Pointer)"
+         d="M 58.5 216 L 58.5 248 " />
+    </g>
+    <g
+       id="group375">
+      <path
+         id="path375"
+         d="M 139.5 40 L 265.5 40 " />
+    </g>
+    <g
+       id="group416">
+      <path
+         id="path416"
+         d="M 148.5 312 L 265.5 312 " />
+    </g>
+    <g
+       id="group542">
+      <path
+         id="path542"
+         d="M 202.5 104 L 202.5 136 " />
+    </g>
+    <g
+       id="group545">
+      <path
+         id="path545"
+         d="M 202.5 152 L 202.5 168 L 202.5 200 " />
+    </g>
+    <g
+       id="group549">
+      <path
+         id="path549"
+         marker-end="url(#Pointer)"
+         d="M 202.5 216 L 202.5 248 " />
+    </g>
+    <g
+       id="group785">
+      <path
+         id="path785"
+         d="M 292.5 312 L 409.5 312 " />
+    </g>
+    <g
+       id="group918">
+      <path
+         id="path918"
+         marker-end="url(#Pointer)"
+         d="M 346.5 216 L 346.5 248 " />
+    </g>
+  </g>
+  <g
+     id="text"
+     style="font-family:LMMono10,monospace;font-size:15.2px"
+     fill="black">
+    <text
+       x="184.94746"
+       y="95.138985"
+       id="text2"
+       style="fill:#000000">bind</text>
+    <text
+       x="170.48984"
+       y="147.03729"
+       id="text3"
+       style="fill:#000000">updates</text>
+    <text
+       x="26.879662"
+       y="212.20679"
+       id="text4"
+       style="fill:#000000">updates</text>
+    <text
+       x="170.48984"
+       y="212.20679"
+       id="text5"
+       style="fill:#000000">updates</text>
+    <text
+       x="314.10001"
+       y="212.20679"
+       id="text6"
+       style="fill:#000000">updates</text>
+    <text
+       x="26.1"
+       y="268.8"
+       id="text7"
+       fill="#000">connect </text>
+    <text
+       x="170.1"
+       y="268.8"
+       id="text8"
+       fill="#000">connect </text>
+    <text
+       x="314.1"
+       y="268.8"
+       id="text69"
+       fill="#000">connect</text>
+  </g>
+</svg>

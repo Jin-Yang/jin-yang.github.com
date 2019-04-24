@@ -1,0 +1,88 @@
+<center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  {% for post in site.posts limit: 5 %}
+    <a class="list-group-item" href="{{ post.url }}">{{ post.title }}</a>
+  {% endfor %}
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  {% assign sorted_cates = site.categories | sort %}
+  {% for category in sorted_cates %}
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#{{ category | first }}"> {{ category | first }}</a>
+    <span class="badge">{{ category | last | size }}</span>
+  </li>
+  {% endfor %}
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+{% if page.layout == 'post' %}
+{% endif %}

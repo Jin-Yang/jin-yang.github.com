@@ -1,0 +1,60 @@
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>{% if page.title %}{{ page.title }}|{% endif %}JinYang's Blog</title>
+  <meta name="keywords" content="{{ page.keywords }}">
+  <meta name="description" content="{{ page.description }}">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  {% if page.language == 'chinese' %}
+    .post-container > p {text-indent: 2em;}
+  {% endif %}
+  </style>
+  {% if page.usemath %}
+  <!-- mathjax config similar to math.stackexchange -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+  </script>
+  <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+        }
+      });
+  </script>
+  <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+          var all = MathJax.Hub.getAllJax(), i;
+          for(i=0; i < all.length; i += 1) {
+              all[i].SourceElement().parentNode.className += ' has-jax';
+          }
+      });
+  </script>
+  <script type="text/javascript"
+     src="https://cdn.bootcss.com/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+  <style type="text/css">.MathJax .mi, .MathJax .mo { color: #111; font-size: 100%; font-weight: 300; }</style>
+  {% endif %}
+  {% include google-analytics.html %}
+</head>

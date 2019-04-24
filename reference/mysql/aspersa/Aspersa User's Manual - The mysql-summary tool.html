@@ -1,0 +1,457 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20mysql-summary%20tool_files/default.css" media="screen">
+<title>Aspersa User's Manual - The mysql-summary tool</title>
+</head>
+<body>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The mysql-summary tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The mysql-summary tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+The <em>mysql-summary</em> tool is a convenient way to summarize the 
+status and configuration of a MySQL database server, so that you can 
+learn about it at a glance.  It is not a tuning tool or diagnosis tool; 
+expert humans are better at that.  It produces a report that is easy to 
+'diff,' and can be pasted into emails without losing the formatting.  It
+ should work well on Linux, FreeBSD, and Solaris, and perhaps others as 
+well; please report any bugs you find on decently capable Unix-like 
+systems.  It will not work on Windows.<p></p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>This tool does not use any environment variables.  Any command-line 
+options are simply passed through to the MySQL client tools when 
+querying the database server.</p>
+
+<h2>How it Works</h2>
+
+<p>This tool works by connecting to a MySQL database server and querying
+ it for status and configuration information.  It saves these bits of 
+data into files in /tmp, and then formats them neatly with <em>awk</em> and other scripting languages.</p>
+
+<p>The tool interacts minimally with the server upon which it runs.  It 
+assumes that you'll run it on the same server you're inspecting, and 
+therefore it assumes that it will be able to find the <em>my.cnf</em> 
+configuration file, for example.  However, it should degrade gracefully 
+if this is not the case.  Note, however, that its output does not 
+indicate which information comes from the MySQL database and which comes
+ from the host operating system, so it is possible for confusing output 
+to be generated if you run the tool on one server and direct it to 
+connect to a MySQL database server running on another server.</p>
+
+<h2 id="fuzzy">Fuzzy-Rounding</h2>
+
+<p>Many of the outputs from this tool are deliberately rounded to show 
+their magnitude but not the exact detail.  This is called 
+fuzzy-rounding.  The idea is that it doesn't matter whether a server is 
+running 918 queries per second or 921 queries per second; such a small 
+variation is insignificant, and only makes the output hard to compare to
+ other servers.  Fuzzy-rounding rounds in larger increments as the input
+ grows.  It begins by rounding to the nearest 5, then the nearest 10, 
+nearest 25, and then repeats by a factor of 10 larger (50, 100, 250), 
+and so on, as the input grows.</p>
+
+<h2>Example Usage</h2>
+
+<p>Simply execute the tool, passing any connection options that you wish
+ to use for the underlying MySQL client tools.  If you run the tool 
+interactively, then it will prompt you to decide whether to dump and 
+analyze the server's schema structures; if run non-interactively, it 
+will assume No and skip the schema analysis step.</p>
+
+<p>The following is an example report.  Each section is followed by a discussion of its contents and meaning.</p>
+
+<code>
+# Aspersa MySQL Summary Report ###############################
+         System time | 2010-09-22 15:33:38 UTC (local TZ: PDT -0700)
+</code>
+
+<p>The first section simply shows the time the report was generated, in 
+UTC time.  This comes from the operating system where the tool is 
+executed, not from the MySQL server.</p>
+
+<code>
+# Instances ##################################################
+  Port  Data Directory             Socket
+  ===== ========================== ======
+   3306 /var/lib/mysql/data        /tmp/mysql.sock
+</code>
+
+<p>The <u>Instances</u> report is generated from the output of <em>ps</em>
+ and shows one line per server instance.  Sometimes it is not able to 
+detect some of the parameters such as the port number.  From this point 
+on, the report will be about a single MySQL server instance; if multiple
+ instances are running, you might need to run multiple reports.</p>
+
+<code>
+# Report On Port 3306 ########################################
+                User | root@localhost
+                Time | 2010-09-22 08:33:38 (PDT)
+            Hostname | db1.localdomain.com
+             Version | 5.1.47-rel11.2-log Percona
+            Built On | unknown-linux-gnu x86_64
+             Started | 2010-09-08 16:57 (up 13+15:35:47)
+           Databases | 5
+             Datadir | /var/lib/mysql/data/
+           Processes | 80 connected, 1 running
+         Replication | Is a slave, has 0 slaves connected
+</code>
+
+<p>This section is a quick summary of the MySQL instance: version, uptime, and other very basic parameters.  The <u>Time</u>
+ output is generated from the MySQL server, unlike the system date and 
+time printed earlier, so you can see whether the database and operating 
+system's time matches.</p>
+
+<code>
+# Processlist ################################################
+
+  Command                        COUNT(*) Working SUM(Time) MAX(Time)
+  ------------------------------ -------- ------- --------- ---------
+  Connect                               2       2   1000000   1000000
+  Query                                 1       1         0         0
+  Sleep                                80       0      3000       150
+
+  User                           COUNT(*) Working SUM(Time) MAX(Time)
+  ------------------------------ -------- ------- --------- ---------
+  readonly                             80       0         0         0
+  root                                  1       1         0         0
+  system user                           2       2   1000000   1000000
+
+  Host                           COUNT(*) Working SUM(Time) MAX(Time)
+  ------------------------------ -------- ------- --------- ---------
+  10.10.18.253                         80       0         0         0
+                                        2       2   1000000   1000000
+  localhost                             1       1         0         0
+
+  db                             COUNT(*) Working SUM(Time) MAX(Time)
+  ------------------------------ -------- ------- --------- ---------
+  lportal                              80       0         0         0
+  NULL                                  3       3   1000000   1000000
+
+  State                          COUNT(*) Working SUM(Time) MAX(Time)
+  ------------------------------ -------- ------- --------- ---------
+                                       80       0         0         0
+  Has read all relay log; waitin        1       1         0         0
+  NULL                                  1       1         0         0
+  Waiting for master to send eve        1       1   1000000   1000000
+</code>
+
+<p>This section is a summary of the output from SHOW PROCESSLIST.  Each 
+sub-section is aggregated by a different item, which is shown as the 
+first column heading.  When summarized by Command, every row in SHOW 
+PROCESSLIST is included, but otherwise, rows whose Command is Sleep are 
+excluded  from the SUM and MAX columns, so they don't skew the numbers 
+too much.</p>
+
+<p>The columns are the number of rows included, the number that are not 
+in Sleep status, the sum of the Time column, and the maximum Time 
+column.  The numbers are <a href="#fuzzy">fuzzy-rounded</a>.</p>
+
+<code>
+# Status Counters (Wait 10 Seconds) ##########################
+Variable                                Per day  Per second     10 secs
+Aborted_clients                              20                        
+Binlog_cache_disk_use                       500                        
+Binlog_cache_use                         450000           5          10
+Bytes_received                      12500000000      150000      350000
+Bytes_sent                          70000000000      800000     2500000
+Com_begin                                450000           5          10
+Table_locks_immediate                  60000000         700        1500
+.......................... (many lines omitted) .......................
+Threads_created                             800                        
+Uptime                                    90000           1           1
+</code>
+
+<p>This section shows selected counters from two snapshots of SHOW GLOBAL STATUS, gathered approximately 10 seconds apart and <a href="#fuzzy">fuzzy-rounded</a>.
+  It includes only items that are incrementing counters; it does not 
+include absolute numbers such as the Threads_running status variable, 
+which represents a current value, rather than an accumulated number over
+ time.</p>
+
+<p>The first column is the variable name, and the second column is the 
+counter from the first snapshot divided by 86400, so you can see the 
+magnitude of the counter's change per day.  86400 fuzzy-rounds to 90000,
+ so the Uptime counter should always be about 90000.</p>
+
+<p>The third column is the value from the first snapshot, divided by 
+Uptime and then fuzzy-rounded, so it represents approximately how 
+quickly the counter is growing per-second over the uptime of the server.</p>
+
+<p>The third column is the incremental difference from the first and 
+second snapshot, divided by the difference in uptime and then 
+fuzzy-rounded.  Therefore, it shows how quickly the counter is growing 
+per second at the time the report was generated.</p>
+
+<code>
+# Table cache ################################################
+                Size | 2048
+               Usage | 25%
+</code>
+
+<p>This section shows the size of the table cache, followed by the 
+percentage of the table cache in use.  The usage is fuzzy-rounded.</p>
+
+<code>
+# Query cache ################################################
+    query_cache_type | ON
+                Size | 0.0k
+               Usage | 0%
+</code>
+
+<p>This section shows whether the query cache is enabled and its size, 
+followed by the percentage of the cache in use.  The usage is 
+fuzzy-rounded.</p>
+
+<code>
+# Schema #####################################################
+Would you like to mysqldump -d the schema and analyze it? y/n y
+There are 4 databases.   Would you like to dump all, or just one?
+Type the name of the database, or press Enter to dump all of them.
+
+  Database Tables Views SPs Trigs Funcs   FKs Partn
+  lportal     249                                  
+  maatkit       2                                  
+  mysql        21                                  
+  test          1                                  
+
+  Database InnoDB MyISAM
+  lportal     249       
+  maatkit              2
+  mysql               21
+  test                 1
+
+  Database BTREE
+  lportal    936
+  maatkit      2
+  mysql       29
+  test          
+
+             b   v   d   i   t   l   d   b   s   t   t   m   c   d   f   s   e   l
+             i   a   a   n   i   o   o   l   m   i   e   e   h   a   l   e   n   o
+             g   r   t   t   n   n   u   o   a   m   x   d   a   t   o   t   u   n
+             i   c   e       y   g   b   b   l   e   t   i   r   e   a       m   g
+             n   h   t       i   t   l       l   s       u           t           b
+             t   a   i       n   e   e       i   t       m                       l
+                 r   m       t   x           n   a       i                       o
+                     e           t           t   m       n                       b
+                                                 p       t                        
+  Database === === === === === === === === === === === === === === === === === ===
+  lportal  686 610 321 214 152 103  34   6   1  14   1   1  15   9                
+  maatkit    2   1   5                               4              25            
+  mysql      8   1   4  19   2           4   3   7   2      58           6  77   5
+  test                   1                                                        
+</code>
+
+<p>If you select to dump the schema and analyze it, the tool will print 
+the above section.  This summarizes the number and type of objects in 
+the database.  It is generated by running <em>mysqldump --no-data</em>, not by querying the INFORMATION_SCHEMA, which can freeze a busy server.</p>
+
+<p>You can choose not to dump the schema, to dump all of the databases, 
+or to dump only a single named one, by specifying the appropriate 
+options.  In the example above, we are dumping all databases.  If only a
+ single one is dumped, its name will appear as {chosen}.</p>
+
+<p>The first sub-report in the section is the count of objects by type 
+in each database: tables, views, and so on.  The second one shows how 
+many tables use various storage engines in each database.  The third 
+sub-report shows the number of each type of indexes in each database.</p>
+
+<p>The last section shows the number of columns of various data types in
+ each database.  For compact display, the column headers are formatted 
+vertically, so you need to read downwards from the top.  In this 
+example, the first column is 'bigint' and the second column is 
+'varchar'.</p>
+
+<p>All of the numbers in this portion of the output are exact, not fuzzy-rounded.</p>
+
+<code>
+# Noteworthy Technologies ####################################
+  Full Text Indexing | No
+    Geospatial Types | No
+        Foreign Keys | No
+        Partitioning | No
+                 SSL | No
+Explicit LOCK TABLES | No
+      Delayed Insert | No
+     XA Transactions | No
+         NDB Cluster | No
+ Prepared Statements | Yes
+</code>
+
+<p>This section shows some specific technologies used on this server.  
+Some of them are detected from the schema dump performed for the 
+previous sections; others can be detected by looking at SHOW GLOBAL 
+STATUS.</p>
+
+<code>
+# InnoDB #####################################################
+             Version | 1.0.8-11.2
+    Buffer Pool Size | 24.0G
+    Buffer Pool Fill | 100%
+   Buffer Pool Dirty | 0%
+      File Per Table | ON
+           Page Size | 16k
+       Log File Size | 2 * 256M = 512M
+     Log Buffer Size | 8M
+        Flush Method | O_DIRECT
+ Flush Log At Commit | 1
+          XA Support | ON
+           Checksums | ON
+         Doublewrite | ON
+     R/W I/O Threads | 4 4
+        I/O Capacity | 200
+  Thread Concurrency | 0
+ Concurrency Tickets | 500
+  Commit Concurrency | 0
+ Txn Isolation Level | REPEATABLE-READ
+Oldest Transaction  Seconds
+Transaction States
+     75  not started
+Tables Locked
+Semaphore Waits
+Semaphore Holders
+</code>
+
+<p>This section shows important configuration variables for the InnoDB 
+storage engine.  The buffer pool fill percent and dirty percent are 
+fuzzy-rounded.  The last few lines are derived from the output of SHOW 
+INNODB STATUS.  It is likely that this output will change in the future 
+to become more useful.</p>
+
+<code>
+# MyISAM #####################################################
+           Key Cache | 384.0M
+            Pct Used | 20%
+           Unflushed | 0%
+</code>
+
+<p>This section shows the size of the MyISAM key cache, followed by the 
+percentage of the cache in use and percentage unflushed (fuzzy-rounded).</p>
+
+<code>
+# Security ###################################################
+               Users | 12 users, 0 anon, 4 w/o pw, 4 old pw
+       Old Passwords | OFF
+</code>
+
+<p>This section is generated from queries to tables in the <em>mysql</em>
+ system database.  It shows how many users exist, and various potential 
+security risks such as old-style passwords and users without passwords.</p>
+
+<code>
+# Binary Logging #############################################
+             Binlogs | 5
+          Zero-Sized | 0
+          Total Size | 4.9G
+       binlog_format | STATEMENT
+    expire_logs_days | 10
+         sync_binlog | 0
+           server_id | 2
+        binlog_do_db | 
+    binlog_ignore_db | 
+</code>
+
+<p>This section shows configuration and status of the binary logs.  If 
+there are zero-sized binary logs, then it is possible that the binlog 
+index is out of sync with the binary logs that actually exist on disk.</p>
+
+<code>
+# Noteworthy Variables #######################################
+Auto-Inc Incr/Offset | 1/1
+default_storage_engine | 0
+          flush_time | 0
+        init_connect | 0
+           init_file | 0
+            sql_mode | 0
+    join_buffer_size | 128k
+    sort_buffer_size | 2M
+    read_buffer_size | 2M
+read_rnd_buffer_size | 8M
+  bulk_insert_buffer | 0k
+ max_heap_table_size | 16M
+      tmp_table_size | 16M
+  max_allowed_packet | 1M
+        thread_stack | 256k
+                 log | OFF
+           log_error | /var/lib/mysql/data/db1.localdomain.com.err
+        log_warnings | 1
+    log_slow_queries | ON
+log_queries_not_using_indexes | OFF
+   log_slave_updates | ON
+</code>
+
+<p>This section shows several noteworthy server configuration variables 
+that might be important to know about when working with this server.</p>
+
+<code>
+# Configuration File #########################################
+         Config File | Cannot autodetect, trying common locations
+         Config File | /etc/my.cnf
+
+[client]
+port                                = 3306
+socket                              = /tmp/mysql.sock
+
+[mysqld]
+port                                = 3306
+socket                              = /tmp/mysql.sock
+language                            = /usr/share/mysql/english
+skip-locking
+key_buffer                          = 384M
+..................... (many lines omitted) ......................
+</code>
+
+<p>This section shows a pretty-printed version of the my.cnf file, with 
+comments removed and with whitespace added to align things for easy 
+reading.  The tool tries to detect the my.cnf file by looking at the 
+output of <em>ps</em>, and if it does not find the location of the file there, it tries common locations until it finds a file.  <strong>Note:</strong>
+ this file might not actually correspond with the server from which the 
+report was generated.  This can happen when the tool isn't run on the 
+same server it's reporting on, or when detecting the location of the 
+configuration file fails.</p>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

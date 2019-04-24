@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20collect%20tool_files/default.css" media="screen">
+<title>Aspersa User's Manual - The collect tool</title>
+</head>
+<body>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The collect tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The collect tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+<p>The <em>collect</em> tool gathers a variety of information about a system for a short time. It is typically executed when the <a href="http://aspersa.googlecode.com/svn/html/stalk.html"><em>stalk</em></a> tool detects a condition and wants to collect information to assist in diagnosis.</p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>This tool accepts the following command-line options, <strong>all of which are required and must be specified</strong>:</p>
+
+<dl>
+<dt>-d DESTINATION</dt><dd>The directory where the collected data should be stored.  It must exist.</dd>
+<dt>-i INTERVAL</dt><dd>How many seconds to collect data before quitting.</dd>
+<dt>-g</dt><dd>"yes" or "no": whether to collect GDB stack traces.</dd>
+<dt>-o</dt><dd>"yes" or "no": whether to collect oprofile data.  This disables -s.</dd>
+<dt>-p PREFIX</dt><dd>A timestamp to use as the prefix of all files; defaults to current timestamp.</dd>
+<dt>-s</dt><dd>"yes" or "no": whether to collect strace data.</dd>
+<dt>-t</dt><dd>"yes" or "no": whether to collect tcpdump data.</dd>
+</dl>
+
+<h2>How it Works</h2>
+
+<p>This tool creates a lock to ensure that only one instance runs at a 
+time, and then saves a variety of performance and status data into files
+ in the configured directory.  Files are named with a timestamp so they 
+can be grouped together.  The tool is MySQL-centric by default, and 
+gathers quite a bit of diagnostic data that's useful for understanding 
+the behavior of a MySQL database server.</p>
+
+<h2>Example Usage</h2>
+
+<p>To use this tool, simply execute it with the required options.  It is usually executed by another tool, such as <a href="http://aspersa.googlecode.com/svn/html/stalk.html">the stalk tool</a>, instead of being called directly.</p>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

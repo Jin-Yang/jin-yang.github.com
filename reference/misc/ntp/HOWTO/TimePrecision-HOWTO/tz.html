@@ -1,0 +1,611 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>What are Time Zones?</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Managing Accurate Date and Time"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Computer Global Date and Time Concept"
+HREF="time.html"><LINK
+REL="NEXT"
+TITLE="The Correct Settings for Your Linux Box"
+HREF="set.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Managing Accurate Date and Time</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="time.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="set.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="tz"
+></A
+>3. What are Time Zones?</H1
+><P
+>Time Zones are a geographical world globe division of 15<SUP
+>o</SUP
+> each, starting at Greenwich, in England, created to help people know what time is it now in another part of the world.</P
+><P
+>Nowadays it is much more a political division than geographical, because sometimes people needs to have the same time as other people in not-so-far locations. And for energy savings reasons, we have today the <A
+HREF="tz.html#tz.dst"
+>Daylight Savings Time</A
+>, that are also a Time Zone variation.</P
+><P
+>Time Zones are usually defined by your country government or some astronomical institute, and is represented by 3 or 4 letters. See <A
+HREF="tz.html#tz.examples"
+>Section 3.2</A
+> for examples.</P
+><P
+>Use the <A
+HREF="http://www.timezoneconverter.com/"
+TARGET="_top"
+>timezoneconverter.com</A
+> to know what time is it now at any part of the globe.</P
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="tz.dst"
+></A
+>3.1. Daylight Savings Time</H2
+><P
+>For energy savings reasons, governments created the Daylight Savings Time. Our clocks are forwarded one hour, and this makes our days look longer. In fact, what really happens is only a Time Zone change. The primitive time (<SPAN
+CLASS="acronym"
+>UTC</SPAN
+>) is still, and will allways be, the same.</P
+><P
+>Later we'll see how to enable and disable <SPAN
+CLASS="acronym"
+>DST</SPAN
+> automatically in Linux.</P
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="tz.examples"
+></A
+>3.2. Time Zones Examples</H2
+><P
+>There is nothing better than examples:</P
+><DIV
+CLASS="table"
+><A
+NAME="tz.ex.br"
+></A
+><P
+><B
+>Table 1. Brazilian Time Zones. Shifts relative to <SPAN
+CLASS="acronym"
+>UTC</SPAN
+></B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>Name and Shift</TH
+><TH
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+><A
+HREF="tz.html#tz.dst"
+><SPAN
+CLASS="acronym"
+>DST</SPAN
+></A
+> Name and Shift</TH
+><TH
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>Locations</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>BREST -2:00</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>BREDT -1:00</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>Fernando de Noronha</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>BRST -3:00</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>BRDT -2:00</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>São Paulo, Rio, Brasilia, Minas Gerais, North East Region, South Region,etc</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>BRWST -4:00</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>BRWDT -3:00</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>West Region</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>BRAST -5:00</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>BRADT -4:00</TD
+><TD
+ALIGN="LEFT"
+VALIGN="MIDDLE"
+>Acre</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>Please send me contributions like this table for US Time Zones.</P
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="tz.linux"
+></A
+>3.3. Time Zone Mechanism on Linux</H2
+><P
+>Linux systems uses the GLIBC dynamic Time Zones, based on <TT
+CLASS="filename"
+>/etc/localtime</TT
+>. This file is a link to (or a copy of) a zone information file, usually located under <TT
+CLASS="filename"
+>/usr/share/zoneinfo</TT
+> directory.</P
+><P
+>From a geophysical perspective, there is only 360<SUP
+>o</SUP
+>/15<SUP
+>o</SUP
+>=24 Time Zones in the world. But to make things easy to people, and to accommodate all the political variations (like Daylight Savings Time), you'll find hundreds of zoneinfo files in <TT
+CLASS="filename"
+>/usr/share/zoneinfo</TT
+>, each for every world city, country, etc.</P
+><P
+>Some countries, like Brazil, don't have a fixed day to start Daylight Savings Time. It is defined every year, a couple of months before summer, and you may end up in a situation you'll have to change your zoneinfo file, which was compiled by <B
+CLASS="command"
+>zic</B
+> from a text file like this.</P
+><DIV
+CLASS="example"
+><A
+NAME="AEN271"
+></A
+><P
+><B
+>Example 1. Brazilian Zone Info text file</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;# Brazil Time Zones
+#
+# Brazilian Time Zones are:
+# BREST: East of Brasilia. Fernando de Noronha.
+# BRST:  Brasilia, SÃ£o Paulo, Rio, Northeast, South etc
+# BRWST: West of Brasilia. Mato Grosso, Manaus
+# BRAST: Acre.
+#
+# In daylight saving time, letter 'S' changes to 'D'.
+# All the brazilian daylight changes can be found here:
+#   http://pcdsh01.on.br/
+#   http://pcdsh01.on.br/verao1.html
+#
+# To install, make:
+#
+# # zic Brazil.txt
+#
+# Zone files will be installed in /usr/share/zoneinfo (depends on your
+# distribution). Then, make a symbolic link from your zone to /etc/localtime:
+#
+# # cd /etc; ln -sf /usr/share/zoneinfo/Brazil/Brasilia localtime
+#
+#
+# If you have updates and new standards to this file please send to
+# Avi Alkalay (avi @ unix.sh)
+# Fred Neves (fneves @ registro.br)
+#
+# Last update: 12 Oct 2005
+#
+#
+# This file is available at
+#
+# http://avi.alkalay.net/software/zoneinfo/
+#
+
+# Rule  NAME    FROM    TO      TYPE    IN    ON      AT      SAVE    LETTER/S
+Rule    Brazil  1931    1932    -       Oct    3      00:00   1:00    D
+Rule    Brazil  1932    1933    -       Mar   31      00:00   0       S
+Rule    Brazil  1949    only    -       Dec    1      00:00   1:00    D
+Rule    Brazil  1950    only    -       Apr   30      00:00   0       S
+Rule    Brazil  1950    1952    -       Dec    1      00:00   1:00    D
+Rule    Brazil  1951    only    -       Apr   16      00:00   0       S
+Rule    Brazil  1952    only    -       Mar   31      00:00   0       S
+Rule    Brazil  1953    only    -       Feb   28      00:00   0       S
+Rule    Brazil  1963    only    -       Oct   23      00:00   1:00    D
+Rule    Brazil  1964    only    -       Mar    1      00:00   0       S
+Rule    Brazil  1965    only    -       Jan   31      00:00   1:00    D
+Rule    Brazil  1965    only    -       Mar   31      00:00   0       S
+Rule    Brazil  1965    only    -       Dec    1      00:00   1:00    D
+Rule    Brazil  1966    1968    -       Mar    1      00:00   0       S
+Rule    Brazil  1966    1967    -       Nov    1      00:00   1:00    D
+Rule    Brazil  1984    only    -       Nov    2      00:00   1:00    D
+Rule    Brazil  1985    only    -       Mar   15      00:00   0       S
+Rule    Brazil  1985    only    -       Nov    2      00:00   1:00    D
+Rule    Brazil  1986    only    -       Mar   15      00:00   0       S
+Rule    Brazil  1986    only    -       Oct   25      00:00   1:00    D
+Rule    Brazil  1987    only    -       Feb   14      00:00   0       S
+Rule    Brazil  1987    only    -       Oct   25      00:00   1:00    D
+Rule    Brazil  1988    only    -       Feb    7      00:00   0       S
+Rule    Brazil  1988    only    -       Oct   16      00:00   1:00    D
+Rule    Brazil  1989    only    -       Jan   29      00:00   0       S
+Rule    Brazil  1989    only    -       Oct   15      00:00   1:00    D
+Rule    Brazil  1990    only    -       Feb   11      00:00   0       S
+Rule    Brazil  1990    only    -       Oct   21      00:00   1:00    D
+Rule    Brazil  1991    only    -       Feb   17      00:00   0       S
+Rule    Brazil  1991    only    -       Oct   20      00:00   1:00    D
+Rule    Brazil  1992    only    -       Feb    9      00:00   0       S
+Rule    Brazil  1992    only    -       Oct   25      00:00   1:00    D
+Rule    Brazil  1993    only    -       Jan   31      00:00   0       S
+Rule    Brazil  1993    only    -       Oct   17      00:00   1:00    D
+Rule    Brazil  1994    only    -       Feb   20      00:00   0       S
+Rule    Brazil  1994    only    -       Oct   16      00:00   1:00    D
+Rule    Brazil  1995    only    -       Feb   19      00:00   0       S
+Rule    Brazil  1995    only    -       Oct   15      00:00   1:00    D
+Rule    Brazil  1996    only    -       Feb   11      00:00   0       S
+Rule    Brazil  1996    only    -       Oct   06      00:00   1:00    D
+Rule    Brazil  1997    only    -       Feb   16      00:00   0       S
+Rule    Brazil  1997    only    -       Oct   06      00:00   1:00    D
+Rule    Brazil  1998    only    -       Mar   01      00:00   0       S
+Rule    Brazil  1998    only    -       Oct   11      00:00   1:00    D
+Rule    Brazil  1999    only    -       Feb   21      00:00   0       S
+Rule    Brazil  1999    only    -       Oct    3      00:00   1:00    D
+Rule    Brazil  2000    only    -       Feb   27      00:00   0       S
+Rule    Brazil  2000    only    -       Oct    8      00:00   1:00    D
+Rule    Brazil  2001    only    -       Feb   18      00:00   0       S
+Rule    Brazil  2001    only    -       Oct   14      00:00   1:00    D
+Rule    Brazil  2002    only    -       Feb   17      00:00   0       S
+Rule    Brazil  2002    only    -       Nov    3      00:00   1:00    D
+Rule    Brazil  2003    only    -       Feb   16      00:00   0       S
+Rule    Brazil  2003    only    -       Oct   19      00:00   1       D
+Rule    Brazil  2004    only    -       Feb   15      00:00   0       S
+Rule    Brazil  2004    only    -       Nov    2      00:00   1       D
+Rule    Brazil  2005    only    -       Feb   20      00:00   0       S
+Rule    Brazil  2005    only    -       Oct   16      00:00   1       D
+Rule    Brazil  2006    only    -       Feb   19      00:00   0       S
+
+
+
+# Zone  NAME                           GMTOFF  RULES/SAVE    FORMAT  [UNTIL]
+Zone    Brazil/DeNoronha               -2:00   Brazil        BRE%sT
+Zone    posix/Brazil/DeNoronha         -2:00   Brazil        BRE%sT
+Zone    right/Brazil/DeNoronha         -2:00   Brazil        BRE%sT
+
+Zone    America/Sao_Paulo              -3:00   Brazil        BR%sT
+Zone    America/Rio_de_Janeiro         -3:00   Brazil        BR%sT
+Zone    America/Brasilia               -3:00   Brazil        BR%sT
+Zone    posix/America/Sao_Paulo        -3:00   Brazil        BR%sT
+Zone    posix/America/Rio_de_Janeiro   -3:00   Brazil        BR%sT
+Zone    posix/America/Salvador         -3:00   Brazil        BR%sT
+Zone    posix/America/Brasilia         -3:00   Brazil        BR%sT
+Zone    posix/Brazil/Central           -3:00   Brazil        BR%sT
+Zone    posix/Brazil/Brasilia          -3:00   Brazil        BR%sT
+Zone    posix/Brazil/Sao_Paulo         -3:00   Brazil        BR%sT
+Zone    posix/Brazil/Salvador          -3:00   Brazil        BR%sT
+Zone    posix/Brazil/Rio_de_Janeiro    -3:00   Brazil        BR%sT
+Zone    right/America/Sao_Paulo        -3:00   Brazil        BR%sT
+Zone    right/America/Rio_de_Janeiro   -3:00   Brazil        BR%sT
+Zone    right/America/Salvador         -3:00   Brazil        BR%sT
+Zone    right/America/Brasilia         -3:00   Brazil        BR%sT
+Zone    right/Brazil/Central           -3:00   Brazil        BR%sT
+Zone    right/Brazil/Brasilia          -3:00   Brazil        BR%sT
+Zone    right/Brazil/Sao_Paulo         -3:00   Brazil        BR%sT
+Zone    right/Brazil/Salvador          -3:00   Brazil        BR%sT
+Zone    right/Brazil/Rio_de_Janeiro    -3:00   Brazil        BR%sT
+Zone    Brazil/Central                 -3:00   Brazil        BR%sT
+Zone    Brazil/Brasilia                -3:00   Brazil        BR%sT
+Zone    Brazil/Sao_Paulo               -3:00   Brazil        BR%sT
+Zone    Brazil/Rio_de_Janeiro          -3:00   Brazil        BR%sT
+Zone    Brazil/Salvador                -3:00   Brazil        BR%sT
+Zone    Brazil/East                    -3:00   Brazil        BR%sT
+Zone    posix/Brazil/East              -3:00   Brazil        BR%sT
+Zone    right/Brazil/East              -3:00   Brazil        BR%sT
+
+Zone    Brazil/West                    -4:00   Brazil        BRW%sT
+Zone    Brazil/Manaus                  -4:00   Brazil        BRW%sT
+Zone    Brazil/Rondonia                -4:00   Brazil        BRW%sT
+Zone    Brazil/Roraima                 -4:00   Brazil        BRW%sT
+Zone    Brazil/Mato_Grosso             -4:00   Brazil        BRW%sT
+Zone    posix/Brazil/Manaus            -4:00   Brazil        BRW%sT
+Zone    posix/Brazil/Mato_Grosso       -4:00   Brazil        BRW%sT
+Zone    right/Brazil/Manaus            -4:00   Brazil        BRW%sT
+Zone    right/Brazil/Mato_Grosso       -4:00   Brazil        BRW%sT
+Zone    posix/America/Manaus           -4:00   Brazil        BRW%sT
+Zone    right/America/Manaus           -4:00   Brazil        BRW%sT
+
+Zone    Brazil/Acre                    -5:00   Brazil        BRA%sT
+
+				</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>The <B
+CLASS="command"
+>Rule</B
+> block defines the date and time we change the Time Zone, while in the <B
+CLASS="command"
+>Zone</B
+> block we reference the <B
+CLASS="command"
+>Rule</B
+> will manage it. Note that the <B
+CLASS="command"
+>Zone</B
+> name is actually the file name under <TT
+CLASS="filename"
+>/usr/share/zoneinfo</TT
+> directory, and here we defined several different names for the same Time Zone, just to be easyer for people to find their zone.</P
+><P
+>This file's comments explains how to install these time zones, using the <B
+CLASS="command"
+>zic</B
+> zoneinfo compiler (which already installs them also). To make it effective, you only have to link (or copy) the zoneinfo file to <TT
+CLASS="filename"
+>/etc/localtime</TT
+>. In some distributions, there is a higher level (and preferred) way to set the Time Zone, described in <A
+HREF="set.html#set.tz"
+>Section 4.1</A
+>.</P
+><P
+>After making <TT
+CLASS="filename"
+>/etc/localtime</TT
+> pointing to the correct zoneinfo file, you are already under that zone rules and <SPAN
+CLASS="acronym"
+>DST</SPAN
+> changes are automatic -- you don't have to change time manually.</P
+><P
+>The following command sequence shows Linux Time Zone mechanics dynamism. Note they were all issued in less than one minute:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="screen"
+><TT
+CLASS="prompt"
+>bash$ </TT
+><B
+CLASS="command"
+>ls -al /etc/localtime</B
+>
+lrwxrwxrwx  1 root root 35 May 22  2001 /etc/localtime -&#62; <EM
+>/usr/share/zoneinfo/Brazil/Brasilia</EM
+>
+<TT
+CLASS="prompt"
+>bash$ </TT
+><B
+CLASS="command"
+>date</B
+>
+Fri Mar 29 20:13:38 <EM
+>BRST</EM
+> 2002
+<TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>ln -sf /usr/share/zoneinfo/GMT /etc/localtime</B
+>
+<TT
+CLASS="prompt"
+>bash$ </TT
+><B
+CLASS="command"
+>date</B
+>
+Fri Mar 29 23:13:47 <EM
+>GMT</EM
+> 2002
+<TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>ln -sf /usr/share/zoneinfo/Brazil/Brasilia /etc/localtime</B
+>
+<TT
+CLASS="prompt"
+>bash$ </TT
+><B
+CLASS="command"
+>date</B
+>
+Fri Mar 29 20:14:03 <EM
+>BRST</EM
+> 2002</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>At 20:13, I was in my default brazilian Time Zone (BRST), then I switched to GMT and my system time changed to 23:13! When your Time Zone enters DST, you'll see a similar effect, but the rules are all inside your Time Zone (<TT
+CLASS="filename"
+>/etc/localtime</TT
+> link doesn't change like this example).</P
+><P
+>An application running in this machine (eg. web-server generating access logs) will feel this change, so it is very important for developers to remember that the full Time Concept is the current <EM
+>time</EM
+> plus current <EM
+>Time Zone</EM
+>, as described in <A
+HREF="time.html"
+>Section 2</A
+>.</P
+><P
+>In the end, I switched back to my correct Time Zone.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="time.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="set.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Computer Global Date and Time Concept</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>The Correct Settings for Your Linux Box</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

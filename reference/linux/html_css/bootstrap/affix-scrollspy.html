@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bootstrap's Affix and ScrollSpy plugins</title>
+    <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+
+    <style>
+    body {
+        background: lightblue;
+        position: relative;
+        line-height: 1.5;
+        font-family: 'Raleway', sans-serif;
+    }
+    h1,
+    h2 {
+        font-weight: 700;
+    }
+    h3 span {
+        color: #286090;
+    }
+    .jumbotron {
+        border-radius: 0px;
+        background: #5fb3ce;
+        margin-bottom: 0;
+    }
+    .jumbotron button {
+        margin-top: 10px;
+    }
+    section {
+        padding: 40px 0;
+        border-bottom: 1px solid #c1e1ec;
+    }
+    #web-development,
+    #mobile-development {
+        padding-bottom: 0;
+    }
+    section:last-child {
+        border-bottom: none;
+    }
+    .nav {
+        background: #4baac8;
+    }
+    .nav a {
+        color: black;
+        font-style: italic;
+    }
+    .nav li a:hover,
+    .nav li a:focus {
+        background: #86c5da;
+    }
+    .nav .active {
+        font-weight: bold;
+        background: #72bcd4;
+    }
+    .nav .nav {
+        display: none;
+    }
+    .nav .active .nav {
+        display: block;
+    }
+    .nav .nav a {
+        font-weight: normal;
+        font-size: .85em;
+    }
+    .nav .nav span {
+        margin: 0 5px 0 2px;
+    }
+    .nav .nav .active a,
+    .nav .nav .active:hover a,
+    .nav .nav .active:focus a {
+        font-weight: bold;
+        padding-left: 30px;
+        border-left: 5px solid black;
+    }
+    .nav .nav .active span,
+    .nav .nav .active:hover span,
+    .nav .nav .active:focus span {
+        display: none;
+    }
+    .application {
+        border-top: 1px solid #c1e1ec;
+    }
+    .affix-top {
+        position: relative;
+    }
+    .affix {
+        top: 20px;
+    }
+    .affix,
+    .affix-bottom {
+        width: 213px;
+    }
+    .affix-bottom {
+        position: absolute;
+    }
+    footer {
+        border-top: 1px solid #c1e1ec;
+        height: 50px;
+    }
+    footer p {
+        line-height: 50px;
+        margin-bottom: 0;
+    }
+    @media (min-width: 1200px) {
+        .affix,
+        .affix-bottom {
+            width: 263px;
+        }
+    }
+    </style>
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy">
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Playing with Bootstrap</h1>
+            <h3><span class="fa fa-pencil"></span> Affix & Scrollspy plugins help you create nice scrolling effects.</h3>
+            <h3><span class="fa fa-pencil"></span> Minimal code is needed. Plugins take care of the rest.</h3>
+            <h3><span class="fa fa-pencil"></span> This demo will help you understand how to use them in your projects.</h3>
+            <a href="http://9iphp.com/?p=1349" class="btn btn-primary btn-lg">Learn More</a>
+        </div>
+    </div>
+    <!--end of .jumbotron-->
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-3 scrollspy">
+                <ul id="nav" class="nav hidden-xs hidden-sm" data-spy="affix">
+                    <li><a href="#web-design">Web Design</a>
+                    </li>
+                    <li><a href="#web-development">Web Development</a>
+                        <ul class="nav">
+                            <li><a href="#ruby"><span class="fa fa-angle-double-right"></span>Ruby</a>
+                            </li>
+                            <li><a href="#python"><span class="fa fa-angle-double-right"></span>Python</a>
+                            </li>
+                            <li><a href="#php"><span class="fa fa-angle-double-right"></span>PHP</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#marketing">Marketing</a>
+                    </li>
+                    <li><a href="#graphic-design">Graphic Design</a>
+                    </li>
+                    <li><a href="#logistics">Logistics</a>
+                    </li>
+                    <li><a href="#social">Social</a>
+                    </li>
+                    <li><a href="#management">Management</a>
+                    </li>
+                    <li><a href="#chemistry">Chemistry</a>
+                    </li>
+                    <li><a href="#mobile-development">Mobile Development</a>
+                        <ul class="nav">
+                            <li><a href="#android"><span class="fa fa-angle-double-right"></span>Android</a>
+                            </li>
+                            <li><a href="#iOS"><span class="fa fa-angle-double-right"></span>iOS</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#mathematics">Mathematics</a>
+                    </li>
+                </ul>
+            </div>
+
+                <div class="col-md-9">
+                    <section id="web-design">
+                        <h2><span class="fa fa-edit"></span> Web Design</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus.
+                        </p>
+                        <button type="button" class="btn btn-primary">Learn More</button>
+                    </section>
+                    <!--end of #web-design-->
+
+                    <section id="web-development">
+                        <h2><span class="fa fa-edit"></span> Web Development</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh.Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+
+                        <section id="ruby">
+                            <h3>Ruby</h3>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <button type="button" class="btn btn-primary">Learn More</button>
+                        </section>
+                        <!--end of #ruby-->
+
+                        <section id="python">
+                            <h3>Python</h3>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <button type="button" class="btn btn-primary">Learn More</button>
+                        </section>
+                        <!--end of #python-->
+
+                        <section id="php">
+                            <h3>PHP</h3>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <button type="button" class="btn btn-primary">Learn More</button>
+                        </section>
+                        <!--end of #php-->
+                    </section>
+                    <!--end of #web-devlopment-->
+
+                    <section id="marketing">
+                        <h2><span class="fa fa-edit"></span> Marketing</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus.
+                        </p>
+                        <p>Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <button type="button" class="btn btn-primary">Learn More</button>
+                    </section>
+                    <!--end of #marketing-->
+
+                    <section id="graphic-design">
+                        <h2><span class="fa fa-edit"></span> Graphic Design</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <button type="button" class="btn btn-primary">Learn More</button>
+                    </section>
+                    <!--end of #graphic-design-->
+
+                    <section id="logistics">
+                        <h2><span class="fa fa-edit"></span> Logistics</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <button type="button" class="btn btn-primary">Learn More</button>
+                    </section>
+                    <!--end of #logistics-->
+
+                    <section id="social">
+                        <h2><span class="fa fa-edit"></span> Social</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus.
+                        </p>
+                        <p>Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <button type="button" class="btn btn-primary">Learn More</button>
+                    </section>
+                    <!--end of #social-->
+
+                    <section id="management">
+                        <h2><span class="fa fa-edit"></span> Management</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus.
+                        </p>
+                        <button type="button" class="btn btn-primary">Learn More</button>
+                    </section>
+                    <!--end of #management-->
+
+                    <section id="chemistry">
+                        <h2><span class="fa fa-edit"></span> Chemistry</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <button type="button" class="btn btn-primary">Learn More</button>
+                    </section>
+                    <!--end of #chemistry-->
+
+                    <section id="mobile-development">
+                        <h2><span class="fa fa-edit"></span> Mobile Development</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus.
+                        </p>
+
+                        <section id="android">
+                            <h3>Android Development</h3>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <button type="button" class="btn btn-primary">Learn More</button>
+                        </section>
+                        <!--end of #android-->
+
+                        <section id="iOS">
+                            <h3>iOS Development</h3>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                            </p>
+                            <button type="button" class="btn btn-primary">Learn More</button>
+                        </section>
+                        <!--end of #iOS-->
+                    </section>
+                    <!--end of #mobile-development-->
+
+                    <section id="mathematics">
+                        <h2><span class="fa fa-edit"></span> Mathematics</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <button type="button" class="btn btn-primary">Learn More</button>
+                    </section>
+                    <!--end of #mathematics-->
+                </div>
+
+            </div>
+            <!--end of .row-->
+        </div>
+        <!--end of .container-->
+
+        <section class="application">
+            <div class="container">
+                <h2>Come and Join Us</h2>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante.
+                        </p>
+                        <img class="img-responsive  " src="http://placehold.it/500x250/5fb3ce/000000">
+                    </div>
+                    <div class="col-sm-6">
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <p>Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.
+                        </p>
+                        <button type="button" class="btn btn-primary">Apply Now</button>
+                    </div>
+                </div>
+                <!--end of .row-->
+            </div>
+            <!--end of .container-->
+        </section>
+        <footer>
+            <p class="text-center">A demo by George Martsoukos. <a href="http://www.sitepoint.com/understanding-bootstraps-affix-scrollspy-plugins">See article.</a>
+            </p>
+        </footer>
+
+    <script src='http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js'></script>
+    <script src='http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js'></script>
+    <script>
+    $('#nav').affix({
+        offset: {
+            top: $('#nav').offset().top,
+            bottom: $('footer').outerHeight(true) + $('.application').outerHeight(true) + 40
+        }
+    });
+    </script>
+</body></html>

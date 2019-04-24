@@ -1,0 +1,164 @@
+#! /usr/bin/env python
+#encoding=utf-8
+"""
+Usage: innodb_page_info [OPTIONS] sub-cmd
+Options:
+    -h   help
+    -v   verbose mode
+    -f   table-space file
+    -p   check which page, start with 0
+Sub-cmd:
+
+"""
+import os
+import sys
+import struct
+import getopt
+
+
+# ../innodb_page_info -v -f foobar.ibd -p 3 page-summary
+
+
+
+
+
+
+
+INNODB_PAGE_SIZE=1024*16 # InnoDB Page 16K
+FIL_PAGE_DATA = 38       # start of the data on the page
+FIL_PAGE_OFFSET = 4      # page offset inside space
+FIL_PAGE_TYPE = 24       # file page type
+PAGE_LEVEL = 26          # level of the node in an index tree; the leaf level is the level 0
+
+FIL_PAGE_DATA_END = 8    # size of the page trailer
+
+
+
+PAGE_DIR_SLOT_SIZE = 2   # size of slot in the page directory
+
+
+innodb_page_type={
+    '0000': (u'Freshly Allocated Page', 'innodb_foobar()'),
+    '0002': (u'Undo Log Page', 'innodb_foobar()'),
+    '0003': (u'File Segment inode', 'innodb_foobar()'),
+    '0004': (u'Insert Buffer Free List', 'innodb_foobar()'),
+    '0005': (u'Insert Buffer Bitmap', 'innodb_foobar()'),
+    '0006': (u'System Page', 'innodb_foobar()'),
+    '0007': (u'Transaction system Page', 'innodb_foobar()'),
+    '0008': (u'File Space Header', 'innodb_foobar()'),
+    '0009': (u'扩展描述页', 'innodb_foobar()'),
+    '000a': (u'Uncompressed BLOB Page', 'innodb_foobar()'),
+    '000b': (u'1st compressed BLOB Page', 'innodb_foobar()'),
+    '000c': (u'Subsequent compressed BLOB Page', 'innodb_foobar()'),
+    '45bf': (u'B-tree Node', 'page_index(page)')                       # FIL_PAGE_INDEX
+    }
+
+innodb_page_direction={
+    '0000': 'Unknown(0x0000)',
+    '0001': 'Page Left',
+    '0002': 'Page Right',
+    '0003': 'Page Same Rec',
+    '0004': 'Page Same Page',
+    '0005': 'Page No Direction',
+    'ffff': 'Unkown2(0xffff)'
+    }
+
+
+class Options:
+    def __init__(self, args):
+        self.args = args
+        self.tablespace = ''
+        self.verbose = False
+        self.page = -1
+        self.subcmd = "get-page-type"
+
+        try:
+            opts, args = getopt.getopt(args, 'f:p:hv', ['help'])
+        except getopt.error, exc:
+            print 'innodb_page_info: %s, try innodb_page_info -h' % str(exc)
+            sys.exit(1)
+
+        for opt, arg in opts:
+            if opt in ('-h'):
+                self.usage()
+                sys.exit(1)
+            elif opt in ('-v'):
+                self.verbose = True
+            elif opt in ('-f'):
+                self.tablespace = arg
+            elif opt in ('-p'):
+                self.page = int(arg)
+            else:
+                print 'innodb_page_info: option %s unknown to getopt, try innodb_page_info -h' % opt
+                sys.exit(1)
+        if len(args) > 0:
+            self.subcmd = args[0]
+
+    def usage(self):
+        sys.stderr.write(__doc__)
+
+def read_from_n(page, start_offset, length):
+    ret = page[start_offset:start_offset+length]
+    return ret.encode('hex')
+
+def int_read_from_n(page, start_offset, length, type):
+    return struct.unpack(type, page[start_offset:start_offset+length])[0]
+
+def page_index(page):
+    record_type = ("conventional", "node pointer", "infimum", "supremum")
+    # 1. get number of slots from "INDEX Header" field.
+    slots = int_read_from_n(page, 38, 2, '>h')
+    print "%4s %8s %15s %8s" % ("slot", "offset", "type", "owned")
+    # 2. get all slots.
+    for n in range(slots):
+        offset = int_read_from_n(page, 
+            INNODB_PAGE_SIZE - FIL_PAGE_DATA_END - (n + 1) * PAGE_DIR_SLOT_SIZE,
+            PAGE_DIR_SLOT_SIZE, '>h')
+        owned = int_read_from_n(page, offset - 5, 1, 'B') & 0x0f
+        rec_type = int_read_from_n(page, offset - 3, 1, 'B') & 0x07
+        print "%4d %8d %15s %8d" % (n, offset, record_type[rec_type], owned)
+
+def innodb_page_summary():
+    f = file(op.tablespace, 'rb')
+    f.seek(INNODB_PAGE_SIZE * op.page, 0)
+    page = f.read(INNODB_PAGE_SIZE)
+    page_type = read_from_n(page, FIL_PAGE_TYPE, 2)
+    print "page offset %s, page type <%s>\n" % (op.page, innodb_page_type[page_type][0])
+    exec(innodb_page_type[page_type][1])
+
+
+def innodb_foobar():
+    print "default page handler"
+
+def innodb_get_page_type():
+    f = file(op.tablespace, 'rb')
+    pages = os.path.getsize(f.name)/INNODB_PAGE_SIZE
+    ret = {}
+    for i in range(pages):
+        page = f.read(INNODB_PAGE_SIZE)
+        page_offset = read_from_n(page, FIL_PAGE_OFFSET, 4)
+        page_type = read_from_n(page, FIL_PAGE_TYPE, 2)
+
+        if op.verbose:
+            if page_type == '45bf':
+                page_level = read_from_n(page,FIL_PAGE_DATA+PAGE_LEVEL,2)
+                print "page offset %s, page type <%s>, page level <%s>" % (page_offset,
+                                                         innodb_page_type[page_type][0], page_level)
+            else:
+                print "page offset %s, page type <%s>"%(page_offset, innodb_page_type[page_type][0])
+
+        if ret.has_key(page_type):
+            ret[page_type] = ret[page_type] + 1
+        else:
+            ret[page_type] = 1
+    print "Total number of pages: %d" % pages
+    for type in ret:
+        print "%s: %s"%(innodb_page_type[type][0], ret[type])
+
+if __name__ == '__main__':
+    op = Options(sys.argv[1:])
+    subcmd = "innodb_" + op.subcmd.replace('-', '_')
+    if subcmd in globals().keys():
+        exec(subcmd+"()")
+    else:
+        print "Sub-cmd '%s' not found, try help" % op.subcmd

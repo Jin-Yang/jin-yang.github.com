@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+{% include head.html %}
+<body>
+{% include topbar.html %}
+{% include masthead.html %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12 blog-main" style="min-width: 500px">
+      <div class="post-container">
+        <div class="blog-header">
+          <h1>{{ page.title }}</h1>
+        </div>
+        <hr>
+        {{ content }}
+        <hr>
+      </div>
+    </div>
+  </div>
+  {% include footer.html %}
+</div>
+</body>
+</html>

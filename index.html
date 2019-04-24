@@ -1,0 +1,56 @@
+---
+layout: default
+title: while(SUCC!=try());
+---
+{% for post in paginator.posts %}
+<div class="blog-post">
+  <div class="blog-post-title"><a href="{{ post.url }}">{{ post.title }}</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> {{ post.date | date: "%F %A"}}</span>
+  <p style="margin-top:10px;">
+    {% if post.content contains "<!-- more -->" %}
+       {{ post.content | split:"<!-- more -->" | first }}
+    {% else %}
+       {{ post.content | strip_html | truncatewords: 200 }}
+    {% endif %}
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    {% for cate in post.categories %}
+      <a class="label label-info" href="/categories.html#{{ cate }}"> {{ cate }} </a>
+      {% if forloop.last %}{% else %}&nbsp;{% endif %}
+    {% endfor %}
+    <a class="btn btn-default pull-right"  href="{{ post.url }}" role="button">View Details »</a>
+  </li></ul>
+</div>
+{% endfor %}
+
+<div class="row"><center>
+{% if page.site_filter == null and paginator.total_pages > 1 %}
+  <nav><ul class="pagination pagination-lg">
+   {% if paginator.previous_page %}
+     <li><a href="/" title="Go to newest articles">&laquo;</a></li>
+     {% if paginator.previous_page > 1 %}
+     <li><a href="/page{{ paginator.previous_page }}" title="Go to newer articles">&lsaquo;</a></li>
+     {% else %}
+     <li><a href="/" title="Go to newer articles">&lsaquo;</a></li>
+     {% endif %}
+   {% else %}
+     <li class="disabled"><a title="Go to newest articles">&laquo;</a></li>
+     <li class="disabled"><a title="Go to newer articles">&lsaquo;</a></li>
+   {% endif %}
+   {% if paginator.next_page %}
+     <li class="disabled"><span>page <strong>{{ paginator.next_page | minus:1 }}</strong> of <strong>{{ paginator.total_pages }}</strong></span></li>
+   {% else %}
+     <li class="disabled"><span>page <strong>{{ paginator.total_pages }}</strong> of <strong>{{ paginator.total_pages }}</strong></span></li>
+   {% endif %}
+   {% if paginator.next_page %}
+     <li><a href="/page{{ paginator.next_page }}" title="Go to older articles">&rsaquo;</a></li>
+     <li><a href="/page{{ paginator.total_pages }}" title="Go to oldest articles">&raquo;</a></li>
+   {% else %}
+     <li class="disabled"><a title="Go to older articles">&rsaquo;</a></li>
+     <li class="disabled"><a title="Go to oldest articles">&raquo;</a></li>
+   {% endif %}
+  </ul></nav>
+{% endif %}
+</center></div>

@@ -1,0 +1,866 @@
+From: <Saved by Mozilla 5.0 (X11)>
+Subject: What's the deal with __builtins__ vs __builtin__
+Date: Sun, 08 Jan 2017 09:00:28 +0800
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----=_NextPart_000_0000_5FE0F8DA.A8C6F1EF"
+X-MAF-Information: Produced By MAF V4.0.1rc
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0000_5FE0F8DA.A8C6F1EF
+Content-Type: text/html;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://mathamy.com/whats-the-deal-with-builtins-vs-builtin.html
+
+<!DOCTYPE html><html lang=3D"en"><head>
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3DUTF-8">
+        <title>What's the deal with __builtins__ vs __builtin__</title>
+        <meta charset=3D"utf-8">
+        <link rel=3D"stylesheet" href=3D"urn:snapshot-3F864232:http://matha=
+my.com/theme/css/main.css" type=3D"text/css">
+        <link href=3D"urn:snapshot-B667EB01:http://netdna.bootstrapcdn.com/=
+font-awesome/4.0.3/css/font-awesome.css" rel=3D"stylesheet">
+  =20
+
+        <!--[if IE]>
+                <script src=3D"http://html5shiv.googlecode.com/svn/trunk/ht=
+ml5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel=3D"stylesheet" type=3D"text/css" media=3D"all" hr=
+ef=3D"./css/ie.css"/>
+                <script src=3D"./js/IE8.js" type=3D"text/javascript"></scri=
+pt><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel=3D"stylesheet" type=3D"text/css" media=3D"all" hr=
+ef=3D"./css/ie6.css"/><![endif]-->
+
+<script src=3D"urn:snapshot-C84C18C1:http://mathamy.disqus.com/embed.js" as=
+ync=3D"" type=3D"text/javascript"></script><script src=3D"urn:snapshot-560F=
+96B1:http://mathamy.disqus.com/count.js" type=3D"text/javascript" async=3D"=
+"></script></head>
+
+<body id=3D"index" class=3D"home">
+        <header id=3D"banner" class=3D"body">
+                <h1><a href=3D"http://mathamy.com/">Amy Hanlon </a></h1>
+                <nav><ul>
+                    <li><a href=3D"http://mathamy.com/">Home</a></li>
+                    <li><a href=3D"http://mathamy.com/pages/about.html">Abo=
+ut</a></li>
+                    <li><a href=3D"http://mathamy.com/pages/contact.html">C=
+ontact</a></li>
+                    <li><a href=3D"http://mathamy.com/pages/projects.html">=
+Projects</a></li>
+                    <li><a href=3D"http://mathamy.com/pages/talks.html">Tal=
+ks</a></li>
+                </ul></nav>
+
+        </header><!-- /#banner -->
+<section id=3D"content" class=3D"body">
+  <article>
+    <header>
+      <h1 class=3D"entry-title">
+        <a href=3D"#" rel=3D"bookmark" title=3D"Permalink to What's the dea=
+l with __builtins__ vs __builtin__">What's the deal with <code>__builtins__=
+</code> vs <code>__builtin__</code></a></h1>
+    </header>
+
+    <div class=3D"entry-content">
+<footer class=3D"post-info">
+        <abbr class=3D"published" title=3D"2014-03-23T00:00:00">
+                March 23 2014
+        </abbr>
+
+<p><!-- In <a href=3D"./category/projects.html">Projects</a>  --></p>
+
+
+</footer><!-- /.post-info -->      <p>Seriously, what's the difference? Whe=
+n you first fire up the Python interpreter, <code>__builtins__</code> is in=
+ your namespace for free:</p>
+<div class=3D"highlight"><pre><span class=3D"gp">&gt;&gt;&gt; </span><span=
+ class=3D"nb">globals</span><span class=3D"p">()</span><span class=3D"o">.<=
+/span><span class=3D"n">keys</span><span class=3D"p">()</span>
+<span class=3D"go">['__builtins__', '__name__', '__doc__', '__package__']</=
+span>
+<span class=3D"gp">&gt;&gt;&gt; </span><span class=3D"n">__builtins__</span>
+<span class=3D"go">&lt;module '__builtin__' (built-in)&gt;</span>
+</pre></div>
+
+
+<p>But it appears to be the <code>__builtin__</code> module (singular)! If=
+ you:</p>
+<div class=3D"highlight"><pre><span class=3D"o">&gt;&gt;&gt;</span> <span=
+ class=3D"kn">import</span> <span class=3D"nn">__builtin__</span>
+<span class=3D"o">&gt;&gt;&gt;</span> <span class=3D"n">__builtin__</span>=
+ <span class=3D"ow">is</span> <span class=3D"n">__builtins__</span>
+<span class=3D"bp">True</span>
+</pre></div>
+
+
+<p>Hrm. So they are both names that point to the same object, the module <c=
+ode>__builtin__</code>. Weird. Why does Python do this? Do they always beha=
+ve the same?</p>
+<p>I read on <a href=3D"http://stackoverflow.com/questions/11181519/python-=
+whats-the-difference-between-builtin-and-builtins">StackOverflow</a> that</=
+p>
+<blockquote>
+<p>By default, when in the <code>__main__</code> module, <code>__builtins__=
+</code> is the built-in module <code>__builtin__</code> (note: no 's'); whe=
+n in any other module, <code>__builtins__</code> is an alias for the dictio=
+nary of the <code>__builtin__</code> module itself.</p>
+</blockquote>
+<p>What. What does that mean.</p>
+<p>This talk of the "<code>__main__</code> module" and "any other module"=
+ reminds me of a sequence of words that I've known for quite a while, but=
+ haven't completely grokked:</p>
+<blockquote>
+<p>We can access the name of the current module with the builtin variable=
+ <code>__name__</code>.</p>
+</blockquote>
+<p>You're probably familiar with the related canonical statement:</p>
+<div class=3D"highlight"><pre><span class=3D"k">if</span> <span class=3D"n"=
+>__name__</span> <span class=3D"o">=3D=3D</span> <span class=3D"s">'__main_=
+_'</span><span class=3D"p">:</span>
+    <span class=3D"n">main</span><span class=3D"p">()</span>
+</pre></div>
+
+
+<p>But what does "current module" mean? What does the <code>__name__</code>=
+ variable look like when it does not equal <code>__main__</code>?</p>
+<p>I happen to know, because I've obsessively read about the <code>import</=
+code> statement, another sequence of words:</p>
+<blockquote>
+<p>Any code executed as a result of an <code>import</code> isn't executed=
+ in the <code>__main__</code> module.</p>
+</blockquote>
+<p>Let's use these bits of knowledge to observe the behavior of <code>__bui=
+ltins__</code> both inside and outside of the <code>__main__</code> module.=
+ We can also check out the <code>__name__</code> variable while we're at it=
+.</p>
+<p>First, let's make a script, <code>a.py</code>, which will allow us to ob=
+serve the behavior of <code>__builtin__</code>, <code>__builtins__</code>,=
+ and <code>__name__</code>.</p>
+<div class=3D"highlight"><pre><span class=3D"kn">import</span> <span class=
+=3D"nn">__builtin__</span>
+
+<span class=3D"k">print</span> <span class=3D"s">"In a"</span>
+<span class=3D"k">print</span> <span class=3D"s">"__name__ is:"</span><span=
+ class=3D"p">,</span> <span class=3D"n">__name__</span>
+<span class=3D"k">print</span> <span class=3D"s">"__builtin__ is __builtins=
+__:"</span><span class=3D"p">,</span> <span class=3D"n">__builtin__</span>=
+ <span class=3D"ow">is</span> <span class=3D"n">__builtins__</span>
+<span class=3D"k">print</span> <span class=3D"s">"type(__builtin__):"</span=
+><span class=3D"p">,</span> <span class=3D"nb">type</span><span class=3D"p"=
+>(</span><span class=3D"n">__builtin__</span><span class=3D"p">)</span>
+<span class=3D"k">print</span> <span class=3D"s">"type(__builtins__):"</spa=
+n><span class=3D"p">,</span> <span class=3D"nb">type</span><span class=3D"p=
+">(</span><span class=3D"n">__builtins__</span><span class=3D"p">)</span>
+</pre></div>
+
+
+<p>Let's see what happens when we execute <code>a.py</code>:</p>
+<div class=3D"highlight"><pre><span class=3D"gp">$</span> python a.py
+<span class=3D"go">In a</span>
+<span class=3D"go">__name__ is: __main__</span>
+<span class=3D"go">__builtin__ is __builtins__: True</span>
+<span class=3D"go">type(__builtin__): &lt;type 'module'&gt;</span>
+<span class=3D"go">type(__builtins__): &lt;type 'module'&gt;</span>
+</pre></div>
+
+
+<p>Okay. So we're in the <code>__main__</code> module, and in here <code>__=
+builtin__</code> is pointing to the same module object as <code>__builtins_=
+_</code>.</p>
+<p>What happens if we <code>import a</code> in another script? The code in=
+ <code>a</code> will execute, but it won't be executed within the <code>__m=
+ain__</code> module. Instead, it'll be executed within the <code>a</code>=
+ module. Let's write another script, <code>b.py</code>, to find out what ha=
+ppens to <code>__builtins__</code> outside of <code>__main__</code>:</p>
+<div class=3D"highlight"><pre><span class=3D"kn">import</span> <span class=
+=3D"nn">__builtin__</span>
+
+<span class=3D"k">print</span> <span class=3D"s">"In b, before importing a"=
+</span>
+
+<span class=3D"c"># the output from this should be the same as when we ran<=
+/span>
+<span class=3D"c"># $ python a.py</span>
+<span class=3D"k">print</span> <span class=3D"s">"__name__ is:"</span><span=
+ class=3D"p">,</span> <span class=3D"n">__name__</span>
+<span class=3D"k">print</span> <span class=3D"s">"__builtin__ is __builtins=
+__:"</span><span class=3D"p">,</span> <span class=3D"n">__builtin__</span>=
+ <span class=3D"ow">is</span> <span class=3D"n">__builtins__</span>
+<span class=3D"k">print</span> <span class=3D"s">"type(__builtin__):"</span=
+><span class=3D"p">,</span> <span class=3D"nb">type</span><span class=3D"p"=
+>(</span><span class=3D"n">__builtin__</span><span class=3D"p">)</span>
+<span class=3D"k">print</span> <span class=3D"s">"type(__builtins__):"</spa=
+n><span class=3D"p">,</span> <span class=3D"nb">type</span><span class=3D"p=
+">(</span><span class=3D"n">__builtins__</span><span class=3D"p">)</span>
+<span class=3D"k">print</span> <span class=3D"s">"</span><span class=3D"se"=
+>\n</span><span class=3D"s">"</span>
+
+<span class=3D"kn">import</span> <span class=3D"nn">a</span>
+<span class=3D"c"># code from a will execute here</span>
+</pre></div>
+
+
+<p>Let's see what happens when we run <code>b.py</code>:</p>
+<div class=3D"highlight"><pre><span class=3D"gp">$</span> python b.py
+<span class=3D"go">In b, before importing a</span>
+<span class=3D"go">__name__ is: __main__</span>
+<span class=3D"go">__builtin__ is __builtins__: True</span>
+<span class=3D"go">type(__builtin__): &lt;type 'module'&gt;</span>
+<span class=3D"go">type(__builtins__): &lt;type 'module'&gt;</span>
+
+
+<span class=3D"go">In a</span>
+<span class=3D"go">__name__ is: a</span>
+<span class=3D"go">__builtin__ is __builtins__: False</span>
+<span class=3D"go">type(__builtin__): &lt;type 'module'&gt;</span>
+<span class=3D"go">type(__builtins__): &lt;type 'dict'&gt;</span>
+</pre></div>
+
+
+<p>Aha. So when we're outside the context of the <code>__main__</code> modu=
+le, <code>__name__</code> is just equal to the name of the module where cod=
+e is currently being executed. That seems logical. And outside of <code>__m=
+ain__</code>, <code>__builtins__</code> is a dict, rather than a module.</p>
+<p>We were told earlier that, outside the context of <code>__main__</code>,=
+ <em>"<code>__builtins__</code> is an alias for the dictionary of the <code=
+>__builtin__</code> module"</em>. I think that means that <code>__builtins_=
+_ is __builtin__.__dict__</code>. Let's see if my hypothesis is true, by ad=
+ding another line to the bottom of our <code>a.py</code> file:</p>
+<div class=3D"highlight"><pre><span class=3D"k">print</span> <span class=3D=
+"s">"__builtins__ is __builtin__.__dict__"</span><span class=3D"p">,</span>=
+ <span class=3D"n">__builtins__</span> <span class=3D"ow">is</span> <span=
+ class=3D"n">__builtin__</span><span class=3D"o">.</span><span class=3D"n">=
+__dict__</span>
+</pre></div>
+
+
+<p>Running <code>b.py</code> again, we get:</p>
+<div class=3D"highlight"><pre><span class=3D"gp">$</span> python b.py
+<span class=3D"go">In b, before importing a</span>
+<span class=3D"go">__name__ is: __main__</span>
+<span class=3D"go">__builtin__ is __builtins__: True</span>
+<span class=3D"go">type(__builtin__): &lt;type 'module'&gt;</span>
+<span class=3D"go">type(__builtins__): &lt;type 'module'&gt;</span>
+
+
+<span class=3D"go">In a</span>
+<span class=3D"go">__name__ is: a</span>
+<span class=3D"go">__builtin__ is __builtins__: False</span>
+<span class=3D"go">type(__builtin__): &lt;type 'module'&gt;</span>
+<span class=3D"go">type(__builtins__): &lt;type 'dict'&gt;</span>
+<span class=3D"go">__builtins__ is __builtin__.__dict__ True</span>
+</pre></div>
+
+
+<p>Yes! My hypothesis was correct. Okay. So now I get why using <code>__bui=
+ltin__</code> is better than <code>__builtins__</code>:</p>
+<p><strong>The type, and thus behavior, of <code>__builtins__</code> change=
+s based on the context of where it's being executed, while the type and beh=
+avior of <code>__builtin__</code> is constant. Rad.</strong></p>
+<p>Thanks, stranger who <a href=3D"https://github.com/amygdalama/nagini/iss=
+ues/1">suggested</a> I look into this, for the learning opportunity. And th=
+anks, always, to Allison Kaptur, for exploring this topic with me.</p>
+<p>The code for this blog post is on <a href=3D"https://github.com/amygdala=
+ma/builtins">GitHub</a>, of course.</p>
+      <p>
+    <!-- <p> -->
+        tags:=20
+           <a href=3D"http://mathamy.com/tag/python.html">python</a>
+           <a href=3D"http://mathamy.com/tag/builtins.html">builtins</a>
+           <a href=3D"http://mathamy.com/tag/hacker-school.html">hacker sch=
+ool</a>
+           <a href=3D"http://mathamy.com/tag/python-internals.html">python=
+ internals</a>
+    <!-- </p> -->
+   =20
+      </p>
+    </div><!-- /.entry-content -->
+    <br>
+    <div class=3D"comments">
+      <h1>Comments</h1>
+      <div id=3D"disqus_thread"></div>
+      <script type=3D"text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+    </div>
+
+  </article>
+</section>
+        <section id=3D"extras" class=3D"body">
+        </section><!-- /#extras -->
+
+        <footer id=3D"contentinfo" class=3D"body">
+
+        </footer><!-- /#contentinfo -->
+
+    <script type=3D"text/javascript"><!--
+/* Script removed by snapshot save */
+--></script><script src=3D"urn:snapshot-E1DCE597:http://www.google-analytic=
+s.com/ga.js" type=3D"text/javascript"></script>
+    <script type=3D"text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+<script type=3D"text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+
+</body></html>
+------=_NextPart_000_0000_5FE0F8DA.A8C6F1EF
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-3F864232:http://mathamy.com/theme/css/main.css
+
+/* Effective stylesheet produced by snapshot save */
+@import url("urn:snapshot-8036DCC8:http://mathamy.com/theme/css/reset.css");
+@import url("urn:snapshot-0A45AC64:http://mathamy.com/theme/css/pygment.css=
+");
+@import url("urn:snapshot-1023865F:http://mathamy.com/theme/css/typogrify.c=
+ss");
+body { font-family: "PT Serif",serif; font-size: 18px; line-height: 1.429;=
+ margin: 0px; padding: 0px; text-align: left; }
+h1 { font-size: 2em; }
+h1, h2, h3, h4, h5, h6 { font-weight: 700; line-height: 1.1; margin-bottom:=
+ 0.8em; font-family: "PT Serif",serif; }
+a { outline: 0px none; }
+a:link, a:visited { color: rgb(199, 68, 81); padding: 0px 1px; text-decorat=
+ion: underline; }
+a:hover, a:active { color: rgb(126, 38, 46); transition: all 0.25s ease 0s;=
+ }
+h1 a:hover { background-color: inherit; }
+p { margin-bottom: 1.143em; }
+strong, b { font-weight: bold; }
+em, i { font-style: italic; }
+ul { list-style: outside none disc; margin: 1em 0px 1.5em 1.5em; }
+.post-info { padding-bottom: 1em; padding-top: 1em; color: rgb(170, 170, 17=
+0); }
+.post-info p { margin-bottom: 1px; }
+pre { font-family: Menlo,Monaco,"Andale Mono","lucida console","Courier New=
+",monospace; padding: 10px; margin: 10px; overflow: auto; font-size: 0.8em;=
+ }
+code { font-family: Menlo,Monaco,"Andale Mono","lucida console","Courier Ne=
+w",monospace; display: inline-block; font-size: 0.8em; color: rgb(85, 85,=
+ 85); border: 1px solid rgb(221, 221, 221); border-radius: 0.4em; padding:=
+ 0px 0.3em; margin: -1px 0px; }
+blockquote { margin: 20px; font-style: italic; }
+header, section, footer, aside, nav, article, figure { display: block; }
+.body { clear: both; margin: 0px auto; width: 800px; }
+#banner { margin: 0px auto; padding: 2.5em 0px 0px; background-size: 100%=
+ auto; background-repeat: no-repeat; background-position: 0px 115px; }
+#banner h1 { font-family: "PT Serif",serif; font-size: 2.5em; line-height:=
+ 0; }
+#banner h1 a:link, #banner h1 a:visited { color: rgb(0, 3, 5); display: blo=
+ck; font-weight: bold; margin: 0px 0px 0.6em 0.2em; text-decoration: none;=
+ width: 427px; }
+#banner h1 a:hover, #banner h1 a:active { background: transparent none repe=
+at scroll 0% 0%; color: rgb(199, 68, 81); text-shadow: none; }
+#banner nav { background: rgb(0, 3, 5) none repeat scroll 0% 0%; font-size:=
+ 1em; height: 40px; line-height: 30px; margin: 0px auto 1em; padding: 0px;=
+ text-align: center; width: 800px; border-radius: 5px; }
+#banner nav ul { list-style: outside none none; margin: 0px auto; width: 80=
+0px; }
+#banner nav li { float: left; display: inline; margin: 0px; }
+#banner nav a:link, #banner nav a:visited { color: rgb(255, 255, 255); disp=
+lay: inline-block; height: 30px; padding: 5px 1.5em; text-decoration: none;=
+ }
+#banner nav a:hover, #banner nav a:active, #banner nav .active a:link, #ban=
+ner nav .active a:visited { background: rgb(199, 68, 81) none repeat scroll=
+ 0% 0%; color: rgb(255, 255, 255); text-shadow: none ! important; }
+#banner nav li:first-child a { border-top-left-radius: 5px; border-bottom-l=
+eft-radius: 5px; }
+#content { background-color: white; background-position: center top, center=
+ bottom, center top; margin-bottom: 2em; overflow: hidden; padding: 20px;=
+ width: 760px; border-radius: 0px; }
+#extras { margin: 0px auto 3em; overflow: hidden; }
+#contentinfo { padding-bottom: 2em; text-align: right; }
+.entry-title { font-weight: 900; margin-bottom: 0px; margin-top: 0px; color=
+: rgb(0, 3, 5); }
+.entry-title a:link, .entry-title a:visited { text-decoration: none; color:=
+ rgb(0, 3, 5); }
+.entry-title a:visited { background-color: rgb(255, 255, 255); }
+.entry-title a:hover { text-decoration: none; text-shadow: none; color: rgb=
+(199, 68, 81); }
+#comments-list li:nth-child(2n) blockquote { background: rgb(245, 245, 245)=
+ none repeat scroll 0% 0%; }
+
+------=_NextPart_000_0000_5FE0F8DA.A8C6F1EF
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-8036DCC8:http://mathamy.com/theme/css/reset.css
+
+/* Effective stylesheet produced by snapshot save */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p,=
+ blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em,=
+ font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var,=
+ b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, ta=
+ble, caption, tbody, tfoot, thead, tr, th, td { background: transparent non=
+e repeat scroll 0% 0%; border: 0px none; font-size: 100%; margin: 0px; outl=
+ine: 0px none; padding: 0px; vertical-align: baseline; }
+body { line-height: 1; }
+ol, ul { list-style: outside none none; }
+blockquote, q { quotes: none; }
+blockquote::before, blockquote::after, q::before, q::after { content: none;=
+ }
+:focus { outline: 0px none; }
+
+------=_NextPart_000_0000_5FE0F8DA.A8C6F1EF
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-0A45AC64:http://mathamy.com/theme/css/pygment.css
+
+/* Effective stylesheet produced by snapshot save */
+.highlight { background: rgb(248, 248, 248) none repeat scroll 0% 0%; }
+.highlight .c { color: rgb(64, 128, 128); font-style: italic; }
+.highlight .k { color: rgb(0, 128, 0); font-weight: bold; }
+.highlight .o { color: rgb(102, 102, 102); }
+.highlight .go { color: rgb(136, 136, 136); }
+.highlight .gp { color: rgb(0, 0, 128); font-weight: bold; }
+.highlight .kn { color: rgb(0, 128, 0); font-weight: bold; }
+.highlight .s { color: rgb(186, 33, 33); }
+.highlight .nb { color: rgb(0, 128, 0); }
+.highlight .nn { color: rgb(0, 0, 255); font-weight: bold; }
+.highlight .ow { color: rgb(170, 34, 255); font-weight: bold; }
+.highlight .se { color: rgb(187, 102, 34); font-weight: bold; }
+.highlight .bp { color: rgb(0, 128, 0); }
+
+------=_NextPart_000_0000_5FE0F8DA.A8C6F1EF
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-1023865F:http://mathamy.com/theme/css/typogrify.css
+
+/* Effective stylesheet produced by snapshot save */
+
+------=_NextPart_000_0000_5FE0F8DA.A8C6F1EF
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-B667EB01:http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css
+
+/* Effective stylesheet produced by snapshot save */
+@font-face {
+  font-family: "FontAwesome";
+  font-style: normal;
+  font-weight: normal;
+  src: url("urn:not-loaded:http://netdna.bootstrapcdn.com/font-awesome/4.0.=
+3/fonts/fontawesome-webfont.eot?#iefix&v=3D4.0.3") format("embedded-opentyp=
+e"), url("urn:not-loaded:http://netdna.bootstrapcdn.com/font-awesome/4.0.3/=
+fonts/fontawesome-webfont.woff?v=3D4.0.3") format("woff"), url("urn:not-loa=
+ded:http://netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-web=
+font.ttf?v=3D4.0.3") format("truetype"), url("urn:not-loaded:http://netdna.=
+bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.svg?v=3D4.0.3=
+#fontawesomeregular") format("svg");
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}
+.fa-glass::before { content: "=EF=80=80"; }
+.fa-music::before { content: "=EF=80=81"; }
+.fa-search::before { content: "=EF=80=82"; }
+.fa-envelope-o::before { content: "=EF=80=83"; }
+.fa-heart::before { content: "=EF=80=84"; }
+.fa-star::before { content: "=EF=80=85"; }
+.fa-star-o::before { content: "=EF=80=86"; }
+.fa-user::before { content: "=EF=80=87"; }
+.fa-film::before { content: "=EF=80=88"; }
+.fa-th-large::before { content: "=EF=80=89"; }
+.fa-th::before { content: "=EF=80=8A"; }
+.fa-th-list::before { content: "=EF=80=8B"; }
+.fa-check::before { content: "=EF=80=8C"; }
+.fa-times::before { content: "=EF=80=8D"; }
+.fa-search-plus::before { content: "=EF=80=8E"; }
+.fa-search-minus::before { content: "=EF=80=90"; }
+.fa-power-off::before { content: "=EF=80=91"; }
+.fa-signal::before { content: "=EF=80=92"; }
+.fa-gear::before, .fa-cog::before { content: "=EF=80=93"; }
+.fa-trash-o::before { content: "=EF=80=94"; }
+.fa-home::before { content: "=EF=80=95"; }
+.fa-file-o::before { content: "=EF=80=96"; }
+.fa-clock-o::before { content: "=EF=80=97"; }
+.fa-road::before { content: "=EF=80=98"; }
+.fa-download::before { content: "=EF=80=99"; }
+.fa-arrow-circle-o-down::before { content: "=EF=80=9A"; }
+.fa-arrow-circle-o-up::before { content: "=EF=80=9B"; }
+.fa-inbox::before { content: "=EF=80=9C"; }
+.fa-play-circle-o::before { content: "=EF=80=9D"; }
+.fa-rotate-right::before, .fa-repeat::before { content: "=EF=80=9E"; }
+.fa-refresh::before { content: "=EF=80=A1"; }
+.fa-list-alt::before { content: "=EF=80=A2"; }
+.fa-lock::before { content: "=EF=80=A3"; }
+.fa-flag::before { content: "=EF=80=A4"; }
+.fa-headphones::before { content: "=EF=80=A5"; }
+.fa-volume-off::before { content: "=EF=80=A6"; }
+.fa-volume-down::before { content: "=EF=80=A7"; }
+.fa-volume-up::before { content: "=EF=80=A8"; }
+.fa-qrcode::before { content: "=EF=80=A9"; }
+.fa-barcode::before { content: "=EF=80=AA"; }
+.fa-tag::before { content: "=EF=80=AB"; }
+.fa-tags::before { content: "=EF=80=AC"; }
+.fa-book::before { content: "=EF=80=AD"; }
+.fa-bookmark::before { content: "=EF=80=AE"; }
+.fa-print::before { content: "=EF=80=AF"; }
+.fa-camera::before { content: "=EF=80=B0"; }
+.fa-font::before { content: "=EF=80=B1"; }
+.fa-bold::before { content: "=EF=80=B2"; }
+.fa-italic::before { content: "=EF=80=B3"; }
+.fa-text-height::before { content: "=EF=80=B4"; }
+.fa-text-width::before { content: "=EF=80=B5"; }
+.fa-align-left::before { content: "=EF=80=B6"; }
+.fa-align-center::before { content: "=EF=80=B7"; }
+.fa-align-right::before { content: "=EF=80=B8"; }
+.fa-align-justify::before { content: "=EF=80=B9"; }
+.fa-list::before { content: "=EF=80=BA"; }
+.fa-dedent::before, .fa-outdent::before { content: "=EF=80=BB"; }
+.fa-indent::before { content: "=EF=80=BC"; }
+.fa-video-camera::before { content: "=EF=80=BD"; }
+.fa-picture-o::before { content: "=EF=80=BE"; }
+.fa-pencil::before { content: "=EF=81=80"; }
+.fa-map-marker::before { content: "=EF=81=81"; }
+.fa-adjust::before { content: "=EF=81=82"; }
+.fa-tint::before { content: "=EF=81=83"; }
+.fa-edit::before, .fa-pencil-square-o::before { content: "=EF=81=84"; }
+.fa-share-square-o::before { content: "=EF=81=85"; }
+.fa-check-square-o::before { content: "=EF=81=86"; }
+.fa-arrows::before { content: "=EF=81=87"; }
+.fa-step-backward::before { content: "=EF=81=88"; }
+.fa-fast-backward::before { content: "=EF=81=89"; }
+.fa-backward::before { content: "=EF=81=8A"; }
+.fa-play::before { content: "=EF=81=8B"; }
+.fa-pause::before { content: "=EF=81=8C"; }
+.fa-stop::before { content: "=EF=81=8D"; }
+.fa-forward::before { content: "=EF=81=8E"; }
+.fa-fast-forward::before { content: "=EF=81=90"; }
+.fa-step-forward::before { content: "=EF=81=91"; }
+.fa-eject::before { content: "=EF=81=92"; }
+.fa-chevron-left::before { content: "=EF=81=93"; }
+.fa-chevron-right::before { content: "=EF=81=94"; }
+.fa-plus-circle::before { content: "=EF=81=95"; }
+.fa-minus-circle::before { content: "=EF=81=96"; }
+.fa-times-circle::before { content: "=EF=81=97"; }
+.fa-check-circle::before { content: "=EF=81=98"; }
+.fa-question-circle::before { content: "=EF=81=99"; }
+.fa-info-circle::before { content: "=EF=81=9A"; }
+.fa-crosshairs::before { content: "=EF=81=9B"; }
+.fa-times-circle-o::before { content: "=EF=81=9C"; }
+.fa-check-circle-o::before { content: "=EF=81=9D"; }
+.fa-ban::before { content: "=EF=81=9E"; }
+.fa-arrow-left::before { content: "=EF=81=A0"; }
+.fa-arrow-right::before { content: "=EF=81=A1"; }
+.fa-arrow-up::before { content: "=EF=81=A2"; }
+.fa-arrow-down::before { content: "=EF=81=A3"; }
+.fa-mail-forward::before, .fa-share::before { content: "=EF=81=A4"; }
+.fa-expand::before { content: "=EF=81=A5"; }
+.fa-compress::before { content: "=EF=81=A6"; }
+.fa-plus::before { content: "=EF=81=A7"; }
+.fa-minus::before { content: "=EF=81=A8"; }
+.fa-asterisk::before { content: "=EF=81=A9"; }
+.fa-exclamation-circle::before { content: "=EF=81=AA"; }
+.fa-gift::before { content: "=EF=81=AB"; }
+.fa-leaf::before { content: "=EF=81=AC"; }
+.fa-fire::before { content: "=EF=81=AD"; }
+.fa-eye::before { content: "=EF=81=AE"; }
+.fa-eye-slash::before { content: "=EF=81=B0"; }
+.fa-warning::before, .fa-exclamation-triangle::before { content: "=EF=81=B1=
+"; }
+.fa-plane::before { content: "=EF=81=B2"; }
+.fa-calendar::before { content: "=EF=81=B3"; }
+.fa-random::before { content: "=EF=81=B4"; }
+.fa-comment::before { content: "=EF=81=B5"; }
+.fa-magnet::before { content: "=EF=81=B6"; }
+.fa-chevron-up::before { content: "=EF=81=B7"; }
+.fa-chevron-down::before { content: "=EF=81=B8"; }
+.fa-retweet::before { content: "=EF=81=B9"; }
+.fa-shopping-cart::before { content: "=EF=81=BA"; }
+.fa-folder::before { content: "=EF=81=BB"; }
+.fa-folder-open::before { content: "=EF=81=BC"; }
+.fa-arrows-v::before { content: "=EF=81=BD"; }
+.fa-arrows-h::before { content: "=EF=81=BE"; }
+.fa-bar-chart-o::before { content: "=EF=82=80"; }
+.fa-twitter-square::before { content: "=EF=82=81"; }
+.fa-facebook-square::before { content: "=EF=82=82"; }
+.fa-camera-retro::before { content: "=EF=82=83"; }
+.fa-key::before { content: "=EF=82=84"; }
+.fa-gears::before, .fa-cogs::before { content: "=EF=82=85"; }
+.fa-comments::before { content: "=EF=82=86"; }
+.fa-thumbs-o-up::before { content: "=EF=82=87"; }
+.fa-thumbs-o-down::before { content: "=EF=82=88"; }
+.fa-star-half::before { content: "=EF=82=89"; }
+.fa-heart-o::before { content: "=EF=82=8A"; }
+.fa-sign-out::before { content: "=EF=82=8B"; }
+.fa-linkedin-square::before { content: "=EF=82=8C"; }
+.fa-thumb-tack::before { content: "=EF=82=8D"; }
+.fa-external-link::before { content: "=EF=82=8E"; }
+.fa-sign-in::before { content: "=EF=82=90"; }
+.fa-trophy::before { content: "=EF=82=91"; }
+.fa-github-square::before { content: "=EF=82=92"; }
+.fa-upload::before { content: "=EF=82=93"; }
+.fa-lemon-o::before { content: "=EF=82=94"; }
+.fa-phone::before { content: "=EF=82=95"; }
+.fa-square-o::before { content: "=EF=82=96"; }
+.fa-bookmark-o::before { content: "=EF=82=97"; }
+.fa-phone-square::before { content: "=EF=82=98"; }
+.fa-twitter::before { content: "=EF=82=99"; }
+.fa-facebook::before { content: "=EF=82=9A"; }
+.fa-github::before { content: "=EF=82=9B"; }
+.fa-unlock::before { content: "=EF=82=9C"; }
+.fa-credit-card::before { content: "=EF=82=9D"; }
+.fa-rss::before { content: "=EF=82=9E"; }
+.fa-hdd-o::before { content: "=EF=82=A0"; }
+.fa-bullhorn::before { content: "=EF=82=A1"; }
+.fa-bell::before { content: "=EF=83=B3"; }
+.fa-certificate::before { content: "=EF=82=A3"; }
+.fa-hand-o-right::before { content: "=EF=82=A4"; }
+.fa-hand-o-left::before { content: "=EF=82=A5"; }
+.fa-hand-o-up::before { content: "=EF=82=A6"; }
+.fa-hand-o-down::before { content: "=EF=82=A7"; }
+.fa-arrow-circle-left::before { content: "=EF=82=A8"; }
+.fa-arrow-circle-right::before { content: "=EF=82=A9"; }
+.fa-arrow-circle-up::before { content: "=EF=82=AA"; }
+.fa-arrow-circle-down::before { content: "=EF=82=AB"; }
+.fa-globe::before { content: "=EF=82=AC"; }
+.fa-wrench::before { content: "=EF=82=AD"; }
+.fa-tasks::before { content: "=EF=82=AE"; }
+.fa-filter::before { content: "=EF=82=B0"; }
+.fa-briefcase::before { content: "=EF=82=B1"; }
+.fa-arrows-alt::before { content: "=EF=82=B2"; }
+.fa-group::before, .fa-users::before { content: "=EF=83=80"; }
+.fa-chain::before, .fa-link::before { content: "=EF=83=81"; }
+.fa-cloud::before { content: "=EF=83=82"; }
+.fa-flask::before { content: "=EF=83=83"; }
+.fa-cut::before, .fa-scissors::before { content: "=EF=83=84"; }
+.fa-copy::before, .fa-files-o::before { content: "=EF=83=85"; }
+.fa-paperclip::before { content: "=EF=83=86"; }
+.fa-save::before, .fa-floppy-o::before { content: "=EF=83=87"; }
+.fa-square::before { content: "=EF=83=88"; }
+.fa-bars::before { content: "=EF=83=89"; }
+.fa-list-ul::before { content: "=EF=83=8A"; }
+.fa-list-ol::before { content: "=EF=83=8B"; }
+.fa-strikethrough::before { content: "=EF=83=8C"; }
+.fa-underline::before { content: "=EF=83=8D"; }
+.fa-table::before { content: "=EF=83=8E"; }
+.fa-magic::before { content: "=EF=83=90"; }
+.fa-truck::before { content: "=EF=83=91"; }
+.fa-pinterest::before { content: "=EF=83=92"; }
+.fa-pinterest-square::before { content: "=EF=83=93"; }
+.fa-google-plus-square::before { content: "=EF=83=94"; }
+.fa-google-plus::before { content: "=EF=83=95"; }
+.fa-money::before { content: "=EF=83=96"; }
+.fa-caret-down::before { content: "=EF=83=97"; }
+.fa-caret-up::before { content: "=EF=83=98"; }
+.fa-caret-left::before { content: "=EF=83=99"; }
+.fa-caret-right::before { content: "=EF=83=9A"; }
+.fa-columns::before { content: "=EF=83=9B"; }
+.fa-unsorted::before, .fa-sort::before { content: "=EF=83=9C"; }
+.fa-sort-down::before, .fa-sort-asc::before { content: "=EF=83=9D"; }
+.fa-sort-up::before, .fa-sort-desc::before { content: "=EF=83=9E"; }
+.fa-envelope::before { content: "=EF=83=A0"; }
+.fa-linkedin::before { content: "=EF=83=A1"; }
+.fa-rotate-left::before, .fa-undo::before { content: "=EF=83=A2"; }
+.fa-legal::before, .fa-gavel::before { content: "=EF=83=A3"; }
+.fa-dashboard::before, .fa-tachometer::before { content: "=EF=83=A4"; }
+.fa-comment-o::before { content: "=EF=83=A5"; }
+.fa-comments-o::before { content: "=EF=83=A6"; }
+.fa-flash::before, .fa-bolt::before { content: "=EF=83=A7"; }
+.fa-sitemap::before { content: "=EF=83=A8"; }
+.fa-umbrella::before { content: "=EF=83=A9"; }
+.fa-paste::before, .fa-clipboard::before { content: "=EF=83=AA"; }
+.fa-lightbulb-o::before { content: "=EF=83=AB"; }
+.fa-exchange::before { content: "=EF=83=AC"; }
+.fa-cloud-download::before { content: "=EF=83=AD"; }
+.fa-cloud-upload::before { content: "=EF=83=AE"; }
+.fa-user-md::before { content: "=EF=83=B0"; }
+.fa-stethoscope::before { content: "=EF=83=B1"; }
+.fa-suitcase::before { content: "=EF=83=B2"; }
+.fa-bell-o::before { content: "=EF=82=A2"; }
+.fa-coffee::before { content: "=EF=83=B4"; }
+.fa-cutlery::before { content: "=EF=83=B5"; }
+.fa-file-text-o::before { content: "=EF=83=B6"; }
+.fa-building-o::before { content: "=EF=83=B7"; }
+.fa-hospital-o::before { content: "=EF=83=B8"; }
+.fa-ambulance::before { content: "=EF=83=B9"; }
+.fa-medkit::before { content: "=EF=83=BA"; }
+.fa-fighter-jet::before { content: "=EF=83=BB"; }
+.fa-beer::before { content: "=EF=83=BC"; }
+.fa-h-square::before { content: "=EF=83=BD"; }
+.fa-plus-square::before { content: "=EF=83=BE"; }
+.fa-angle-double-left::before { content: "=EF=84=80"; }
+.fa-angle-double-right::before { content: "=EF=84=81"; }
+.fa-angle-double-up::before { content: "=EF=84=82"; }
+.fa-angle-double-down::before { content: "=EF=84=83"; }
+.fa-angle-left::before { content: "=EF=84=84"; }
+.fa-angle-right::before { content: "=EF=84=85"; }
+.fa-angle-up::before { content: "=EF=84=86"; }
+.fa-angle-down::before { content: "=EF=84=87"; }
+.fa-desktop::before { content: "=EF=84=88"; }
+.fa-laptop::before { content: "=EF=84=89"; }
+.fa-tablet::before { content: "=EF=84=8A"; }
+.fa-mobile-phone::before, .fa-mobile::before { content: "=EF=84=8B"; }
+.fa-circle-o::before { content: "=EF=84=8C"; }
+.fa-quote-left::before { content: "=EF=84=8D"; }
+.fa-quote-right::before { content: "=EF=84=8E"; }
+.fa-spinner::before { content: "=EF=84=90"; }
+.fa-circle::before { content: "=EF=84=91"; }
+.fa-mail-reply::before, .fa-reply::before { content: "=EF=84=92"; }
+.fa-github-alt::before { content: "=EF=84=93"; }
+.fa-folder-o::before { content: "=EF=84=94"; }
+.fa-folder-open-o::before { content: "=EF=84=95"; }
+.fa-smile-o::before { content: "=EF=84=98"; }
+.fa-frown-o::before { content: "=EF=84=99"; }
+.fa-meh-o::before { content: "=EF=84=9A"; }
+.fa-gamepad::before { content: "=EF=84=9B"; }
+.fa-keyboard-o::before { content: "=EF=84=9C"; }
+.fa-flag-o::before { content: "=EF=84=9D"; }
+.fa-flag-checkered::before { content: "=EF=84=9E"; }
+.fa-terminal::before { content: "=EF=84=A0"; }
+.fa-code::before { content: "=EF=84=A1"; }
+.fa-reply-all::before { content: "=EF=84=A2"; }
+.fa-mail-reply-all::before { content: "=EF=84=A2"; }
+.fa-star-half-empty::before, .fa-star-half-full::before, .fa-star-half-o::b=
+efore { content: "=EF=84=A3"; }
+.fa-location-arrow::before { content: "=EF=84=A4"; }
+.fa-crop::before { content: "=EF=84=A5"; }
+.fa-code-fork::before { content: "=EF=84=A6"; }
+.fa-unlink::before, .fa-chain-broken::before { content: "=EF=84=A7"; }
+.fa-question::before { content: "=EF=84=A8"; }
+.fa-info::before { content: "=EF=84=A9"; }
+.fa-exclamation::before { content: "=EF=84=AA"; }
+.fa-superscript::before { content: "=EF=84=AB"; }
+.fa-subscript::before { content: "=EF=84=AC"; }
+.fa-eraser::before { content: "=EF=84=AD"; }
+.fa-puzzle-piece::before { content: "=EF=84=AE"; }
+.fa-microphone::before { content: "=EF=84=B0"; }
+.fa-microphone-slash::before { content: "=EF=84=B1"; }
+.fa-shield::before { content: "=EF=84=B2"; }
+.fa-calendar-o::before { content: "=EF=84=B3"; }
+.fa-fire-extinguisher::before { content: "=EF=84=B4"; }
+.fa-rocket::before { content: "=EF=84=B5"; }
+.fa-maxcdn::before { content: "=EF=84=B6"; }
+.fa-chevron-circle-left::before { content: "=EF=84=B7"; }
+.fa-chevron-circle-right::before { content: "=EF=84=B8"; }
+.fa-chevron-circle-up::before { content: "=EF=84=B9"; }
+.fa-chevron-circle-down::before { content: "=EF=84=BA"; }
+.fa-html5::before { content: "=EF=84=BB"; }
+.fa-css3::before { content: "=EF=84=BC"; }
+.fa-anchor::before { content: "=EF=84=BD"; }
+.fa-unlock-alt::before { content: "=EF=84=BE"; }
+.fa-bullseye::before { content: "=EF=85=80"; }
+.fa-ellipsis-h::before { content: "=EF=85=81"; }
+.fa-ellipsis-v::before { content: "=EF=85=82"; }
+.fa-rss-square::before { content: "=EF=85=83"; }
+.fa-play-circle::before { content: "=EF=85=84"; }
+.fa-ticket::before { content: "=EF=85=85"; }
+.fa-minus-square::before { content: "=EF=85=86"; }
+.fa-minus-square-o::before { content: "=EF=85=87"; }
+.fa-level-up::before { content: "=EF=85=88"; }
+.fa-level-down::before { content: "=EF=85=89"; }
+.fa-check-square::before { content: "=EF=85=8A"; }
+.fa-pencil-square::before { content: "=EF=85=8B"; }
+.fa-external-link-square::before { content: "=EF=85=8C"; }
+.fa-share-square::before { content: "=EF=85=8D"; }
+.fa-compass::before { content: "=EF=85=8E"; }
+.fa-toggle-down::before, .fa-caret-square-o-down::before { content: "=EF=85=
+=90"; }
+.fa-toggle-up::before, .fa-caret-square-o-up::before { content: "=EF=85=91"=
+; }
+.fa-toggle-right::before, .fa-caret-square-o-right::before { content: "=EF=
+=85=92"; }
+.fa-euro::before, .fa-eur::before { content: "=EF=85=93"; }
+.fa-gbp::before { content: "=EF=85=94"; }
+.fa-dollar::before, .fa-usd::before { content: "=EF=85=95"; }
+.fa-rupee::before, .fa-inr::before { content: "=EF=85=96"; }
+.fa-cny::before, .fa-rmb::before, .fa-yen::before, .fa-jpy::before { conten=
+t: "=EF=85=97"; }
+.fa-ruble::before, .fa-rouble::before, .fa-rub::before { content: "=EF=85=
+=98"; }
+.fa-won::before, .fa-krw::before { content: "=EF=85=99"; }
+.fa-bitcoin::before, .fa-btc::before { content: "=EF=85=9A"; }
+.fa-file::before { content: "=EF=85=9B"; }
+.fa-file-text::before { content: "=EF=85=9C"; }
+.fa-sort-alpha-asc::before { content: "=EF=85=9D"; }
+.fa-sort-alpha-desc::before { content: "=EF=85=9E"; }
+.fa-sort-amount-asc::before { content: "=EF=85=A0"; }
+.fa-sort-amount-desc::before { content: "=EF=85=A1"; }
+.fa-sort-numeric-asc::before { content: "=EF=85=A2"; }
+.fa-sort-numeric-desc::before { content: "=EF=85=A3"; }
+.fa-thumbs-up::before { content: "=EF=85=A4"; }
+.fa-thumbs-down::before { content: "=EF=85=A5"; }
+.fa-youtube-square::before { content: "=EF=85=A6"; }
+.fa-youtube::before { content: "=EF=85=A7"; }
+.fa-xing::before { content: "=EF=85=A8"; }
+.fa-xing-square::before { content: "=EF=85=A9"; }
+.fa-youtube-play::before { content: "=EF=85=AA"; }
+.fa-dropbox::before { content: "=EF=85=AB"; }
+.fa-stack-overflow::before { content: "=EF=85=AC"; }
+.fa-instagram::before { content: "=EF=85=AD"; }
+.fa-flickr::before { content: "=EF=85=AE"; }
+.fa-adn::before { content: "=EF=85=B0"; }
+.fa-bitbucket::before { content: "=EF=85=B1"; }
+.fa-bitbucket-square::before { content: "=EF=85=B2"; }
+.fa-tumblr::before { content: "=EF=85=B3"; }
+.fa-tumblr-square::before { content: "=EF=85=B4"; }
+.fa-long-arrow-down::before { content: "=EF=85=B5"; }
+.fa-long-arrow-up::before { content: "=EF=85=B6"; }
+.fa-long-arrow-left::before { content: "=EF=85=B7"; }
+.fa-long-arrow-right::before { content: "=EF=85=B8"; }
+.fa-apple::before { content: "=EF=85=B9"; }
+.fa-windows::before { content: "=EF=85=BA"; }
+.fa-android::before { content: "=EF=85=BB"; }
+.fa-linux::before { content: "=EF=85=BC"; }
+.fa-dribbble::before { content: "=EF=85=BD"; }
+.fa-skype::before { content: "=EF=85=BE"; }
+.fa-foursquare::before { content: "=EF=86=80"; }
+.fa-trello::before { content: "=EF=86=81"; }
+.fa-female::before { content: "=EF=86=82"; }
+.fa-male::before { content: "=EF=86=83"; }
+.fa-gittip::before { content: "=EF=86=84"; }
+.fa-sun-o::before { content: "=EF=86=85"; }
+.fa-moon-o::before { content: "=EF=86=86"; }
+.fa-archive::before { content: "=EF=86=87"; }
+.fa-bug::before { content: "=EF=86=88"; }
+.fa-vk::before { content: "=EF=86=89"; }
+.fa-weibo::before { content: "=EF=86=8A"; }
+.fa-renren::before { content: "=EF=86=8B"; }
+.fa-pagelines::before { content: "=EF=86=8C"; }
+.fa-stack-exchange::before { content: "=EF=86=8D"; }
+.fa-arrow-circle-o-right::before { content: "=EF=86=8E"; }
+.fa-arrow-circle-o-left::before { content: "=EF=86=90"; }
+.fa-toggle-left::before, .fa-caret-square-o-left::before { content: "=EF=86=
+=91"; }
+.fa-dot-circle-o::before { content: "=EF=86=92"; }
+.fa-wheelchair::before { content: "=EF=86=93"; }
+.fa-vimeo-square::before { content: "=EF=86=94"; }
+.fa-turkish-lira::before, .fa-try::before { content: "=EF=86=95"; }
+.fa-plus-square-o::before { content: "=EF=86=96"; }
+
+------=_NextPart_000_0000_5FE0F8DA.A8C6F1EF
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-C84C18C1:http://mathamy.disqus.com/embed.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_5FE0F8DA.A8C6F1EF
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-560F96B1:http://mathamy.disqus.com/count.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_5FE0F8DA.A8C6F1EF
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-E1DCE597:http://www.google-analytics.com/ga.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_5FE0F8DA.A8C6F1EF--

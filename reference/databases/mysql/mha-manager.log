@@ -1,0 +1,258 @@
+Sat Mar  4 20:22:59 2017 - [warning] Got error on MySQL select ping: 2006 (MySQL server has gone away)
+Sat Mar  4 20:22:59 2017 - [info] Executing SSH check script: save_binary_logs --command=test --start_pos=4 --binlog_dir=/tmp/mysql-master --output_file=/tmp/mha/save_binary_logs_test --manager_version=0.57 --binlog_prefix=mysql-bin --debug
+Sat Mar  4 20:22:59 2017 - [debug] SSH connection test to 127.0.0.1, option -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o BatchMode=yes -o ConnectTimeout=5, timeout 5
+Sat Mar  4 20:22:59 2017 - [info] HealthCheck: SSH to 127.0.0.1 is reachable.
+Sat Mar  4 20:23:00 2017 - [warning] xxxxxxxxxxxxxxx
+Sat Mar  4 20:23:00 2017 - [warning] Got error on MySQL connect: 2003 (Can't connect to MySQL server on '127.0.0.1' (111))
+Sat Mar  4 20:23:00 2017 - [warning] Connection failed 2 time(s)..
+Sat Mar  4 20:23:01 2017 - [warning] Got error on MySQL connect: 2003 (Can't connect to MySQL server on '127.0.0.1' (111))
+Sat Mar  4 20:23:01 2017 - [warning] Connection failed 3 time(s)..
+Sat Mar  4 20:23:02 2017 - [warning] Got error on MySQL connect: 2003 (Can't connect to MySQL server on '127.0.0.1' (111))
+Sat Mar  4 20:23:02 2017 - [warning] Connection failed 4 time(s)..
+Sat Mar  4 20:23:02 2017 - [warning] Master is not reachable from health checker!
+Sat Mar  4 20:23:02 2017 - [warning] Master 127.0.0.1(127.0.0.1:3307) is not reachable!
+Sat Mar  4 20:23:02 2017 - [warning] SSH is reachable.
+Sat Mar  4 20:23:02 2017 - [info] Connecting to a master server failed. Reading configuration file /etc/masterha_default.cnf and /tmp/mha-master/foobar.conf again, and trying to connect to all servers to check server status..
+Sat Mar  4 20:23:02 2017 - [info] Reading default configuration from /etc/masterha_default.cnf..
+Sat Mar  4 20:23:02 2017 - [info] Reading application default configuration from /tmp/mha-master/foobar.conf..
+Sat Mar  4 20:23:02 2017 - [info] Reading server configuration from /tmp/mha-master/foobar.conf..
+Sat Mar  4 20:23:02 2017 - [debug] Skipping connecting to dead master 127.0.0.1(127.0.0.1:3307).
+Sat Mar  4 20:23:02 2017 - [debug] Connecting to servers..
+Sat Mar  4 20:23:02 2017 - [debug]  Connected to: 127.0.0.1(127.0.0.1:3308), user=root
+Sat Mar  4 20:23:02 2017 - [debug]  Number of slave worker threads on host 127.0.0.1(127.0.0.1:3308): 0
+Sat Mar  4 20:23:02 2017 - [debug]  Connected to: 127.0.0.1(127.0.0.1:3309), user=root
+Sat Mar  4 20:23:02 2017 - [debug]  Number of slave worker threads on host 127.0.0.1(127.0.0.1:3309): 0
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [debug]  Comparing MySQL versions..
+Sat Mar  4 20:23:02 2017 - [debug]   Comparing MySQL versions done.
+Sat Mar  4 20:23:02 2017 - [debug] Connecting to servers done.
+Sat Mar  4 20:23:02 2017 - [info] GTID failover mode = 0
+Sat Mar  4 20:23:02 2017 - [info] Dead Servers:
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info] Alive Servers:
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3308)
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3309)
+Sat Mar  4 20:23:02 2017 - [info] Alive Slaves:
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3308)  Version=5.7.17-debug-log (oldest major version between slaves) log-bin:enabled
+Sat Mar  4 20:23:02 2017 - [debug]    Relay log info repository: TABLE
+Sat Mar  4 20:23:02 2017 - [info]     Replicating from localhost(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info]     Primary candidate for the new Master (candidate_master is set)
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3309)  Version=5.7.17-debug-log (oldest major version between slaves) log-bin:enabled
+Sat Mar  4 20:23:02 2017 - [debug]    Relay log info repository: TABLE
+Sat Mar  4 20:23:02 2017 - [info]     Replicating from localhost(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info] Checking slave configurations..
+Sat Mar  4 20:23:02 2017 - [info]  read_only=1 is not set on slave 127.0.0.1(127.0.0.1:3308).
+Sat Mar  4 20:23:02 2017 - [info]  read_only=1 is not set on slave 127.0.0.1(127.0.0.1:3309).
+Sat Mar  4 20:23:02 2017 - [info] Checking replication filtering settings..
+Sat Mar  4 20:23:02 2017 - [info]  Replication filtering check ok.
+Sat Mar  4 20:23:02 2017 - [info] Master is down!
+Sat Mar  4 20:23:02 2017 - [info] Terminating monitoring script.
+Sat Mar  4 20:23:02 2017 - [debug]  Disconnected from 127.0.0.1(127.0.0.1:3308)
+Sat Mar  4 20:23:02 2017 - [debug]  Disconnected from 127.0.0.1(127.0.0.1:3309)
+Sat Mar  4 20:23:02 2017 - [info] Got exit code 20 (Master dead).
+Sat Mar  4 20:23:02 2017 - [info] MHA::MasterFailover version 0.57.
+Sat Mar  4 20:23:02 2017 - [info] Starting master failover.
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 1: Configuration Check Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [debug] Skipping connecting to dead master 127.0.0.1.
+Sat Mar  4 20:23:02 2017 - [debug] Connecting to servers..
+Sat Mar  4 20:23:02 2017 - [debug]  Connected to: 127.0.0.1(127.0.0.1:3308), user=root
+Sat Mar  4 20:23:02 2017 - [debug]  Number of slave worker threads on host 127.0.0.1(127.0.0.1:3308): 0
+Sat Mar  4 20:23:02 2017 - [debug]  Connected to: 127.0.0.1(127.0.0.1:3309), user=root
+Sat Mar  4 20:23:02 2017 - [debug]  Number of slave worker threads on host 127.0.0.1(127.0.0.1:3309): 0
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [debug]  Comparing MySQL versions..
+Sat Mar  4 20:23:02 2017 - [debug]   Comparing MySQL versions done.
+Sat Mar  4 20:23:02 2017 - [debug] Connecting to servers done.
+Sat Mar  4 20:23:02 2017 - [info] GTID failover mode = 0
+Sat Mar  4 20:23:02 2017 - [info] Dead Servers:
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info] Checking master reachability via MySQL(double check)...
+Sat Mar  4 20:23:02 2017 - [info]  ok.
+Sat Mar  4 20:23:02 2017 - [info] Alive Servers:
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3308)
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3309)
+Sat Mar  4 20:23:02 2017 - [info] Alive Slaves:
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3308)  Version=5.7.17-debug-log (oldest major version between slaves) log-bin:enabled
+Sat Mar  4 20:23:02 2017 - [debug]    Relay log info repository: TABLE
+Sat Mar  4 20:23:02 2017 - [info]     Replicating from localhost(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info]     Primary candidate for the new Master (candidate_master is set)
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3309)  Version=5.7.17-debug-log (oldest major version between slaves) log-bin:enabled
+Sat Mar  4 20:23:02 2017 - [debug]    Relay log info repository: TABLE
+Sat Mar  4 20:23:02 2017 - [info]     Replicating from localhost(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info] Starting Non-GTID based failover.
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] ** Phase 1: Configuration Check Phase completed.
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 2: Dead Master Shutdown Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [debug]  Stopping IO thread on 127.0.0.1(127.0.0.1:3308)..
+Sat Mar  4 20:23:02 2017 - [info] Forcing shutdown so that applications never connect to the current master..
+Sat Mar  4 20:23:02 2017 - [warning] master_ip_failover_script is not set. Skipping invalidating dead master IP address.
+Sat Mar  4 20:23:02 2017 - [debug]  Stopping IO thread on 127.0.0.1(127.0.0.1:3309)..
+Sat Mar  4 20:23:02 2017 - [warning] shutdown_script is not set. Skipping explicit shutting down of the dead master.
+Sat Mar  4 20:23:02 2017 - [debug]  Stop IO thread on 127.0.0.1(127.0.0.1:3308) done.
+Sat Mar  4 20:23:02 2017 - [debug]  Stop IO thread on 127.0.0.1(127.0.0.1:3309) done.
+Sat Mar  4 20:23:02 2017 - [info] * Phase 2: Dead Master Shutdown Phase completed.
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 3: Master Recovery Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 3.1: Getting Latest Slaves Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [debug] Fetching current slave status..
+Sat Mar  4 20:23:02 2017 - [debug]  Fetching current slave status done.
+Sat Mar  4 20:23:02 2017 - [info] The latest binary log file/position on all slaves is mysql-bin.000002:447
+Sat Mar  4 20:23:02 2017 - [info] Latest slaves (Slaves that received relay log files to the latest):
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3308)  Version=5.7.17-debug-log (oldest major version between slaves) log-bin:enabled
+Sat Mar  4 20:23:02 2017 - [debug]    Relay log info repository: TABLE
+Sat Mar  4 20:23:02 2017 - [info]     Replicating from localhost(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info]     Primary candidate for the new Master (candidate_master is set)
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3309)  Version=5.7.17-debug-log (oldest major version between slaves) log-bin:enabled
+Sat Mar  4 20:23:02 2017 - [debug]    Relay log info repository: TABLE
+Sat Mar  4 20:23:02 2017 - [info]     Replicating from localhost(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info] The oldest binary log file/position on all slaves is mysql-bin.000002:447
+Sat Mar  4 20:23:02 2017 - [info] Oldest slaves:
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3308)  Version=5.7.17-debug-log (oldest major version between slaves) log-bin:enabled
+Sat Mar  4 20:23:02 2017 - [debug]    Relay log info repository: TABLE
+Sat Mar  4 20:23:02 2017 - [info]     Replicating from localhost(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info]     Primary candidate for the new Master (candidate_master is set)
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3309)  Version=5.7.17-debug-log (oldest major version between slaves) log-bin:enabled
+Sat Mar  4 20:23:02 2017 - [debug]    Relay log info repository: TABLE
+Sat Mar  4 20:23:02 2017 - [info]     Replicating from localhost(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 3.2: Saving Dead Master's Binlog Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] Fetching dead master's binary logs..
+Sat Mar  4 20:23:02 2017 - [info] Executing command on the dead master 127.0.0.1(127.0.0.1:3307): save_binary_logs --command=save --start_file=mysql-bin.000002  --start_pos=447 --binlog_dir=/tmp/mysql-master --output_file=/tmp/mha/saved_master_binlog_from_127.0.0.1_3307_20170304202302.binlog --handle_raw_binlog=1 --disable_log_bin=0 --manager_version=0.57 --debug
+stty: standard input: Inappropriate ioctl for device
+  Creating /tmp/mha if not exists..    ok.
+ Concat binary/relay logs from mysql-bin.000002 pos 447 to mysql-bin.000002 EOF into /tmp/mha/saved_master_binlog_from_127.0.0.1_3307_20170304202302.binlog ..
+parse_init_headers: file=mysql-bin.000002 event_type=15 server_id=1 length=119 nextmpos=123 prevrelay=4 cur(post)relay=123
+ Binlog Checksum enabled
+parse_init_headers: file=mysql-bin.000002 event_type=35 server_id=1 length=31 nextmpos=154 prevrelay=123 cur(post)relay=154
+ Got previous gtids log event: 154.
+parse_init_headers: file=mysql-bin.000002 event_type=34 server_id=1 length=65 nextmpos=219 prevrelay=154 cur(post)relay=219
+  Dumping binlog format description event, from position 0 to 154.. ok.
+  No need to dump effective binlog data from /tmp/mysql-master/mysql-bin.000002 (pos starts 447, filesize 447). Skipping.
+ERROR: Error in Log_event::read_log_event(): 'Found invalid event in binary log', data_len: 31, event_type: 35
+parse_init_headers: file=saved_master_binlog_from_127.0.0.1_3307_20170304202302.binlog event_type=15 server_id=1 length=119 nextmpos=123 prevrelay=4 cur(post)relay=123
+ Binlog Checksum enabled
+parse_init_headers: file=saved_master_binlog_from_127.0.0.1_3307_20170304202302.binlog event_type=35 server_id=1 length=31 nextmpos=154 prevrelay=123 cur(post)relay=154
+ Got previous gtids log event: 154.
+ /tmp/mha/saved_master_binlog_from_127.0.0.1_3307_20170304202302.binlog has no effective data events.
+Event not exists.
+Sat Mar  4 20:23:02 2017 - [info] Additional events were not found from the orig master. No need to save.
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 3.3: Determining New Master Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] Finding the latest slave that has all relay logs for recovering other slaves..
+Sat Mar  4 20:23:02 2017 - [info] All slaves received relay logs to the same position. No need to resync each other.
+Sat Mar  4 20:23:02 2017 - [info] Searching new master from slaves..
+Sat Mar  4 20:23:02 2017 - [info]  Candidate masters from the configuration file:
+Sat Mar  4 20:23:02 2017 - [info]   127.0.0.1(127.0.0.1:3308)  Version=5.7.17-debug-log (oldest major version between slaves) log-bin:enabled
+Sat Mar  4 20:23:02 2017 - [debug]    Relay log info repository: TABLE
+Sat Mar  4 20:23:02 2017 - [info]     Replicating from localhost(127.0.0.1:3307)
+Sat Mar  4 20:23:02 2017 - [info]     Primary candidate for the new Master (candidate_master is set)
+Sat Mar  4 20:23:02 2017 - [info]  Non-candidate masters:
+Sat Mar  4 20:23:02 2017 - [info]  Searching from candidate_master slaves which have received the latest relay log events..
+Sat Mar  4 20:23:02 2017 - [info] New master is 127.0.0.1(127.0.0.1:3308)
+Sat Mar  4 20:23:02 2017 - [info] Starting master failover..
+Sat Mar  4 20:23:02 2017 - [info]
+From:
+127.0.0.1(127.0.0.1:3307) (current master)
+ +--127.0.0.1(127.0.0.1:3308)
+ +--127.0.0.1(127.0.0.1:3309)
+
+To:
+127.0.0.1(127.0.0.1:3308) (new master)
+ +--127.0.0.1(127.0.0.1:3309)
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 3.3: New Master Diff Log Generation Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info]  This server has all relay logs. No need to generate diff files from the latest slave.
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 3.4: Master Log Apply Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] *NOTICE: If any error happens from this phase, manual recovery is needed.
+Sat Mar  4 20:23:02 2017 - [info] Starting recovery on 127.0.0.1(127.0.0.1:3308)..
+Sat Mar  4 20:23:02 2017 - [info]  This server has all relay logs. Waiting all logs to be applied..
+Sat Mar  4 20:23:02 2017 - [info]   done.
+Sat Mar  4 20:23:02 2017 - [debug]  Stopping SQL thread on 127.0.0.1(127.0.0.1:3308)..
+Sat Mar  4 20:23:02 2017 - [debug]   done.
+Sat Mar  4 20:23:02 2017 - [info]  All relay logs were successfully applied.
+Sat Mar  4 20:23:02 2017 - [info] Getting new master's binlog name and position..
+Sat Mar  4 20:23:02 2017 - [info]  mysql-bin.000002:447
+Sat Mar  4 20:23:02 2017 - [info]  All other slaves should start replication from here. Statement should be: CHANGE MASTER TO MASTER_HOST='127.0.0.1', MASTER_PORT=3308, MASTER_LOG_FILE='mysql-bin.000002', MASTER_LOG_POS=447, MASTER_USER='mysync', MASTER_PASSWORD='xxx';
+Sat Mar  4 20:23:02 2017 - [warning] master_ip_failover_script is not set. Skipping taking over new master IP address.
+Sat Mar  4 20:23:02 2017 - [info] ** Finished master recovery successfully.
+Sat Mar  4 20:23:02 2017 - [info] * Phase 3: Master Recovery Phase completed.
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 4: Slaves Recovery Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 4.1: Starting Parallel Slave Diff Log Generation Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] -- Slave diff file generation on host 127.0.0.1(127.0.0.1:3309) started, pid: 29275. Check tmp log /tmp/mha-master/foobar/127.0.0.1_3309_20170304202302.log if it takes time..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] Log messages from 127.0.0.1 ...
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info]  This server has all relay logs. No need to generate diff files from the latest slave.
+Sat Mar  4 20:23:02 2017 - [info] End of log messages from 127.0.0.1.
+Sat Mar  4 20:23:02 2017 - [info] -- 127.0.0.1(127.0.0.1:3309) has the latest relay log events.
+Sat Mar  4 20:23:02 2017 - [info] Generating relay diff files from the latest slave succeeded.
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 4.2: Starting Parallel Slave Log Apply Phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] -- Slave recovery on host 127.0.0.1(127.0.0.1:3309) started, pid: 29277. Check tmp log /tmp/mha-master/foobar/127.0.0.1_3309_20170304202302.log if it takes time..
+Sat Mar  4 20:23:02 2017 - [debug] Explicitly disabled relay_log_purge.
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] Log messages from 127.0.0.1 ...
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] Starting recovery on 127.0.0.1(127.0.0.1:3309)..
+Sat Mar  4 20:23:02 2017 - [info]  This server has all relay logs. Waiting all logs to be applied..
+Sat Mar  4 20:23:02 2017 - [info]   done.
+Sat Mar  4 20:23:02 2017 - [debug]  Stopping SQL thread on 127.0.0.1(127.0.0.1:3309)..
+Sat Mar  4 20:23:02 2017 - [debug]   done.
+Sat Mar  4 20:23:02 2017 - [info]  All relay logs were successfully applied.
+Sat Mar  4 20:23:02 2017 - [info]  Resetting slave 127.0.0.1(127.0.0.1:3309) and starting replication from the new master 127.0.0.1(127.0.0.1:3308)..
+Sat Mar  4 20:23:02 2017 - [debug]  Stopping slave IO/SQL thread on 127.0.0.1(127.0.0.1:3309)..
+Sat Mar  4 20:23:02 2017 - [debug]   done.
+Sat Mar  4 20:23:02 2017 - [info]  Executed CHANGE MASTER.
+Sat Mar  4 20:23:02 2017 - [debug]  Starting slave IO/SQL thread on 127.0.0.1(127.0.0.1:3309)..
+Sat Mar  4 20:23:02 2017 - [debug]   done.
+Sat Mar  4 20:23:02 2017 - [info]  Slave started.
+Sat Mar  4 20:23:02 2017 - [info] End of log messages from 127.0.0.1.
+Sat Mar  4 20:23:02 2017 - [info] -- Slave recovery on host 127.0.0.1(127.0.0.1:3309) succeeded.
+Sat Mar  4 20:23:02 2017 - [info] All new slave servers recovered successfully.
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] * Phase 5: New master cleanup phase..
+Sat Mar  4 20:23:02 2017 - [info]
+Sat Mar  4 20:23:02 2017 - [info] Resetting slave info on the new master..
+Sat Mar  4 20:23:02 2017 - [debug]  Clearing slave info..
+Sat Mar  4 20:23:02 2017 - [debug]  Stopping slave IO/SQL thread on 127.0.0.1(127.0.0.1:3308)..
+Sat Mar  4 20:23:02 2017 - [debug]   done.
+Sat Mar  4 20:23:02 2017 - [debug]  SHOW SLAVE STATUS shows new master does not replicate from anywhere. OK.
+Sat Mar  4 20:23:02 2017 - [info]  127.0.0.1: Resetting slave info succeeded.
+Sat Mar  4 20:23:02 2017 - [info] Master failover to 127.0.0.1(127.0.0.1:3308) completed successfully.
+Sat Mar  4 20:23:02 2017 - [info] Deleted server1 entry from /tmp/mha-master/foobar.conf .
+Sat Mar  4 20:23:02 2017 - [debug]  Disconnected from 127.0.0.1(127.0.0.1:3308)
+Sat Mar  4 20:23:02 2017 - [debug]  Disconnected from 127.0.0.1(127.0.0.1:3309)
+Sat Mar  4 20:23:02 2017 - [info]
+
+----- Failover Report -----
+
+foobar: MySQL Master failover 127.0.0.1(127.0.0.1:3307) to 127.0.0.1(127.0.0.1:3308) succeeded
+
+Master 127.0.0.1(127.0.0.1:3307) is down!
+
+Check MHA Manager logs at localhost.localdomain:/tmp/mha-master/foobar/manager.log for details.
+
+Started automated(non-interactive) failover.
+The latest slave 127.0.0.1(127.0.0.1:3308) has all relay logs for recovery.
+Selected 127.0.0.1(127.0.0.1:3308) as a new master.
+127.0.0.1(127.0.0.1:3308): OK: Applying all logs succeeded.
+127.0.0.1(127.0.0.1:3309): This host has the latest relay log events.
+Generating relay diff files from the latest slave succeeded.
+127.0.0.1(127.0.0.1:3309): OK: Applying all logs succeeded. Slave started, replicating from 127.0.0.1(127.0.0.1:3308)
+127.0.0.1(127.0.0.1:3308): Resetting slave info succeeded.
+Master failover to 127.0.0.1(127.0.0.1:3308) completed successfully.

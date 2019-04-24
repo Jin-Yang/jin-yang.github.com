@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (X11; U; Linux 2.4.2-3mdk i686) [Netscape]">
+   <meta name="KeyWords" content="security, telnet, hijacking, netcat, hunt">
+   <meta name="Keywords" content="iptables, ipchains">
+   <title>IPtables: Connection tracking</title>
+</head>
+<body>
+
+<center><img src="conntrack_files/blue_marble.html" align="MIDDLE" height="10" width="556">
+<br>&nbsp;
+<p><b><u><font size="+3">Connection tracking</font></u></b></p></center>
+
+<p><br>
+</p><p><b><u><font size="+1">What is connection tracking?</font></u></b>
+</p><p>Connection tracking refers to the ability to maintain state information
+about a connection in memory tables, such as source and destination ip
+address and port number pairs (known as <i>socket pairs</i>), protocol
+types, connection state and timeouts. Firewalls that do this are known
+as <i>stateful</i>. Stateful firewalling is inherently more secure than
+its "stateless" counterpart .... simple packet filtering.
+</p><p>Connection tracking is accomplished with the state option in iptables.
+From the iptables manpage:
+</p><p>&nbsp;<font color="#000066">state</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This module,
+when combined with connection tracking, allows access to&nbsp; the</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; connection
+tracking state for this packet.</font>
+</p><p><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --state state</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Where&nbsp; state&nbsp; is a comma separated list of the connection states
+to</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+match.&nbsp; Possible states are </font><font color="#33CC00">INVALID</font><font color="#000066">&nbsp;
+meaning&nbsp; that&nbsp; the&nbsp; packet&nbsp; is</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+associated&nbsp; with&nbsp; no known connection, </font><font color="#33CC00">ESTABLISHED</font><font color="#000066">
+meaning that the</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+packet is associated with a connection which has&nbsp; seen&nbsp; packets&nbsp;
+in</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+both directions, </font><font color="#33CC00">NEW</font><font color="#000066">
+meaning that the packet has started a new con­</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nection, or otherwise associated with a connection&nbsp; which&nbsp; has&nbsp;
+not</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+seen&nbsp; packets&nbsp; in&nbsp; both&nbsp; directions,&nbsp; and 
+</font><font color="#33CC00">RELATED
+</font><font color="#000066">meaning that the</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+packet is starting a new connection,&nbsp; but&nbsp; is&nbsp; associated&nbsp;
+with&nbsp; an</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+existing&nbsp; connection,&nbsp; such&nbsp; as&nbsp; an&nbsp; FTP&nbsp;
+data transfer, or an ICMP</font>
+<br><font color="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+error.</font>
+</p><p>Connection tracking is done either in the <font color="#3333FF">PREROUTING</font>
+chain, or the <font color="#3333FF">OUTPUT</font> chain for locally generated
+packets.
+<br>Connection tracking defragments all packets before tracking their state.
+This explains why there is no ip_always_defrag switch as there was in the
+2.2 kernel.
+</p><p><font color="#000000">The state table for udp and tcp connections is
+maintained in <i>/proc/net/ip_conntrack</i>. We will discuss what its contents
+look below.</font>
+</p><p><font color="#000000">The maximum number of connections the state table
+can contain is stored in <i>/proc/sys/net/ipv4/ip_conntrack_max</i>. This
+value is determined initially by how much physical memory you have (on
+my 128Mb machine, ip_conntrack_max = 8184 by default).</font>
+<br>&nbsp;
+</p><p><b><u><font size="+1">How does connection tracking work?</font></u></b>
+</p><p><b><i>A quick overview</i></b>
+</p><p>Lets get our bearings first with respect to the whole netfilter framework
+before we delve deeper. For a packet forwarded between interfaces the sequence
+of chain negotiation would be:
+</p><p><font color="#000000">1)</font><font color="#3333FF"> PREROUTING </font><font color="#000000">chain
+- </font>DNAT the packet if necessary. Mangle the packet if necessary.
+Connection tracking now defragments and tracks (classifies) the packet
+in some way:
+</p><p>If the packet matches a entry in the state table it is part of an <font color="#33CC00">ESTABLISHED</font>
+connection. If it is icmp traffic it might be <font color="#33CC00">RELATED</font>
+to a udp/tcp connection already in the state table. The packet might be
+starting a <font color="#33CC00">NEW</font> connection, or it might be
+unrelated to any connection in which case it is deemed <font color="#33CC00">INVALID</font>.
+</p><p><font color="#000000">2)</font><font color="#3333FF"> FORWARD </font><font color="#000000">chain
+- Compare the packet state against the ruleset in the filter table until
+the first match, or until the</font>
+<br><font color="#000000">default policy of the chain is executed.</font>
+</p><p>3) <font color="#3333FF">POSTROUTING</font> chain - SNAT the packet
+if necessary.
+</p><p>Note that all packets are compared against the ruleset in the filter
+table. This is easily proved - If you have entries in the state table and
+you change the rules to deny all traffic, then although the entries in
+the state table remain, all traffic is indeed denied as it should be.
+</p><p><b><i>More detail</i></b>
+</p><p>We will consider each of the three protocols, udp, tcp and icmp in turn.
+</p><p><a name="UDP"></a><b>UDP</b>
+</p><p>Because it lacks sequence numbers, udp is known as a "stateless" protocol
+. However, this does not mean we can't track udp connections. There is
+still other useful information we can utilize. Here is an example state
+table entry for a newly formed udp connection:
+</p><p><font color="#000066">udp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17 19 src=192.168.1.2
+dst=192.168.1.50 sport=1032 dport=53 [UNREPLIED] src=192.168.1.50 dst=192.168.1.2
+sport=53 dport=1032 use=1</font>
+</p><p><font color="#000000">This state table entry can only be made if there
+is an iptables filter rule specifying </font><font color="#33CC00">NEW</font><font color="#000000">
+connections, something like the following ruleset, which allows </font><font color="#33CC00">NEW</font><font color="#000000">
+connections outbound only (as is often wise):</font>
+</p><p><font color="#CC0000">iptables -A </font><font color="#3333FF">INPUT</font><font color="#CC0000">&nbsp;&nbsp;&nbsp;&nbsp;
+-p udp -m state --state </font><font color="#33CC00">ESTABLISHED </font><font color="#CC0000">-j
+ACCEPT</font>
+<br><font color="#CC0000">iptables -A </font><font color="#3333FF">OUTPUT</font><font color="#CC0000">
+-p udp -m state --state </font><font color="#33CC00">NEW,ESTABLISHED</font><font color="#CC0000">
+-j ACCEPT</font>
+</p><p><font color="#000000">Things we can tell from the state table entry
+are as follows:</font>
+</p><ul>
+<li>
+<font color="#000000">The protocol is udp (IP protocol number 17).</font></li>
+
+<li>
+<font color="#000000">The state table entry has 19 seconds until it expires.</font></li>
+
+<li>
+<font color="#000000">Source and destination addresses and ports of original
+query.</font></li>
+
+<li>
+<font color="#000000">Source and destination addresses and ports of expected
+reply. The connection is marked UNREPLIED so this has not been received
+yet.</font></li>
+</ul>
+<font color="#000000">Udp timeouts are set in <i>/usr/src/linux/net/ipv4/netfilter/ip_conntrack_proto_udp.c
+</i></font>at
+compile time.
+<br>Here is the relevant section of code:
+<p><font color="#000000">#define UDP_TIMEOUT (30*HZ)</font>
+<br><font color="#000000">#define UDP_STREAM_TIMEOUT (180*HZ)</font>
+</p><p>A single request will enter into the state for 30*HZ (generally 30 seconds).
+In the example above, where we have 19 seconds left, 11 seconds have already
+elapsed without a reply being received. Once a reply is received, and allowed
+by a rule permitting <font color="#33CC00">ESTABLISHED</font> connections,
+the timeout is reset to 30 seconds and the UNREPLIED mark is removed. Here
+we see the connection a couple of seconds after this has taken place:
+</p><p><font color="#000066">udp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17 28 src=192.168.1.2
+dst=192.168.1.50 sport=1032 dport=53 src=192.168.1.50 dst=192.168.1.2 sport=53
+dport=1032 use=1</font>
+</p><p>If multiple requests and replies occur between the same socket pairs,
+the entry is considered to be a stream and the timeout changes to 180 seconds.
+At this point the entry is marked ASSURED (once connections become ASSURED
+they are not dropped under heavy load ). Here we see the connection a few
+of seconds after this has taken place:
+</p><p><font color="#000066">udp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17 177 src=192.168.1.2
+dst=192.168.1.50 sport=1032 dport=53 src=192.168.1.50 dst=192.168.1.2 sport=53
+dport=1032 [ASSURED] use=1</font>
+</p><p>There is no absolute timeout for a udp connection (or a tcp connection
+for that matter), provided traffic keeps flowing.
+<br>&nbsp;
+</p><p><a name="TCP"></a><b>TCP</b>
+</p><p>A tcp connection is initiated via a three-way handshake involving a
+synchronization request from the client, a synchronization and an acknowledgement
+from the server, and finally an acknowledgement from the client. Subsequent
+traffic flowing between server and client is acknowledged in all cases.
+The sequence looks like
+</p><p>&nbsp;&nbsp;&nbsp;&nbsp; <u>Client</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<u>Server</u>
+</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SYN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---&gt;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;---&nbsp;&nbsp;&nbsp;&nbsp; SYN+ACK
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ACK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---&gt;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ACK
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ACK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---&gt;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+.........
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+.........
+</p><p>SYN and ACK refer to flags set in the tcp header. There are also 32
+bit sequence and acknowledgement numbers stored in the tcp header which
+are passed back and forth and updated during the session.
+</p><p>To get connection tracking to work for a tcp connection you need a ruleset
+like this:
+</p><p><font color="#CC0000">iptables -A </font><font color="#3333FF">INPUT</font><font color="#CC0000">&nbsp;&nbsp;&nbsp;&nbsp;
+-p tcp -m state --state </font><font color="#33CC00">ESTABLISHED </font><font color="#CC0000">-j
+ACCEPT</font>
+<br><font color="#CC0000">iptables -A </font><font color="#3333FF">OUTPUT</font><font color="#CC0000">
+-p tcp -m state --state </font><font color="#33CC00">NEW,ESTABLISHED</font><font color="#CC0000">
+-j ACCEPT</font>
+</p><p><u><font color="#000000">Walkthrough</font></u>
+</p><p>What we are going to do now is walk and talk through the establishment
+of a normal tcp connection and look at the state table at each stage:
+</p><p>1) Once an initial SYN is sent in the <font color="#3333FF">OUTPUT</font>
+chain, and accepted by out rule that allows the <font color="#33CC00">NEW</font>
+connection, the connection table entry may look something like:
+</p><p><font color="#000066">tcp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 119 SYN_SENT
+src=140.208.5.62 dst=207.46.230.218 sport=1311 dport=80 [UNREPLIED] src=207.46.230.218
+dst=140.208.5.62 sport=80 dport=1311 use=1</font>
+</p><p>The tcp connection status is SYN_SENT and the connection is marked UNREPLIED.
+</p><p>2) We are now waiting for a SYN+ACK to arrive at which point the tcp
+connection state changes to SYN_RECV and the UNREPLIED disappears:
+</p><p><font color="#000066">tcp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 57 SYN_RECV
+src=140.208.5.62 dst=207.46.230.218 sport=1311 dport=80 src=207.46.230.218
+dst=140.208.5.62 sport=80 dport=1311 use=1</font>
+</p><p>3) We are now waiting for the final part of the handshake, an ACK. When
+it arrives, we check that it's sequence number matches the ACK of the handshake
+from the server to the client. The tcp connection state now becomes ESTABLISHED
+and the state table entry is marked ASSURED (ASSURED connections are not
+dropped from the state table when the connection is under load). Here we
+see the ESTABLISHED connection:
+</p><p><font color="#000066">tcp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 431995 ESTABLISHED
+src=140.208.5.62 dst=207.46.230.218 sport=1311 dport=80 src=207.46.230.218
+dst=140.208.5.62 sport=80 dport=1311 [ASSURED] use=1</font>
+</p><p><u>Connection tracking's perspective on the state table</u>
+</p><p>We just talked a lot about tcp connection states. Now let's think about
+this from the perspective of the connection tracking:
+</p><p>Connection tracking only knows about <font color="#33CC00">NEW</font>,
+<font color="#33CC00">ESTABLISHED</font>,
+<font color="#33CC00">RELATED</font> and <font color="#33CC00">INVALID</font>,
+classified as described above and in the iptables <a href="http://www.rigacci.org/wiki/lib/exe/fetch.php/doc/appunti/linux/sa/iptables/iptables_manpage.txt">manpage</a>.
+To quote Joszef Kadlecsik, who helped me out with a confusion I had initially
+about this very subject:
+</p><p><i>When a packet with the SYN+ACK flags set arrrives in response to
+a packet with SYN set the connection tracking thinks: "I have been just
+seeing a packet with SYN+ACK which answers a SYN I had previously seen,
+so this is an <font color="#33CC00">ESTABLISHED</font> connection."</i>
+</p><p>The important point here is that the conntrack states are<i> not </i>equivalent
+to tcp states<i>. </i>We have already seen that a connection doesn't achive
+the tcp connection status of ESTABLISHED until the ACK after the SYN+ACK
+has been received.
+</p><p>The representation of the tcp connection states in the state table is
+purely for timeouts. You can prove this to yourself by sending an ACK packet
+through your firewall to a non-existent machine (so that you don't get
+the RST back). It will create a state table entry no problem because it
+it is the first packet of a connection and so is treated as <font color="#33CC00">NEW</font>
+(the entry will not be marked as ASSURED though).&nbsp; <font color="#000000">Checkpoint's
+Firewall-1 version 4.1 SP1 allows connection initiation by ACK packets
+too (see Lance Spitzner's <a href="http://www.enteract.com/%7Elspitz/fwtable.html">whitepaper</a>
+for details).</font>
+</p><p>In the light of the fact that ACK packets can create state table entries,
+the following contribution from Henrik Nordstrum is insightful: To make
+sure that <font color="#33CC00">NEW</font> tcp connections are packets
+with SYN set, use the following rule:
+</p><p><font color="#CC0000">iptables -A </font><font color="#3333FF">INPUT</font><font color="#CC0000">
+-p tcp ! --syn -m state --state </font><font color="#33CC00">NEW</font><font color="#CC0000">
+-j DROP</font>
+</p><p><font color="#000000">Note that doing this will prevent idle sessions
+from continuing once they have expired from the conntrack table. In the
+normal "relaxed" view such connections initiated from the correct direction
+(i.e. the direction you allow NEW packets through) can normally continue
+even if expired from conntrack, provided that the first data/ack packet
+that resumes the connection comes from the correct direction.</font>
+</p><p>If you want real stateful filtering that requires correct connection
+initiation and tracks sequence numbers, apply the
+<br>tcp-window-tracking patch from <a href="http://netfilter.kernelnotes.org/netfilter-faq-1.html#ss1.5">patch-o-matic</a>.
+A very detailed paper describing the patch can be found <a href="http://www.iae.nl/users/guido/papers/tcp_filtering.ps.gz">here</a>.
+</p><p><u>Timeouts</u>
+</p><p><font color="#000000">Something to note is that timeouts are reset to
+the maximum each time a connection sees traffic. Timeouts are set in <i>/usr/src/linux/net/ipv4/netfilter/ip_conntrack_proto_tcp.c</i>
+at compile time. </font>Here is the relevant section of code:
+</p><p><i><font color="#000000">static unsigned long tcp_timeouts[]</font></i>
+<br><i><font color="#000000">= { 30 MINS,&nbsp;&nbsp;&nbsp; /*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+TCP_CONNTRACK_NONE,&nbsp;&nbsp;&nbsp;&nbsp; */</font></i>
+<br><i><font color="#000000">&nbsp;&nbsp;&nbsp; 5 DAYS,&nbsp;&nbsp;&nbsp;&nbsp;
+/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TCP_CONNTRACK_ESTABLISHED,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font></i>
+<br><i><font color="#000000">&nbsp;&nbsp;&nbsp; 2 MINS,&nbsp;&nbsp;&nbsp;&nbsp;
+/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TCP_CONNTRACK_SYN_SENT, */</font></i>
+<br><i><font color="#000000">&nbsp;&nbsp;&nbsp; 60 SECS,&nbsp;&nbsp;&nbsp;
+/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TCP_CONNTRACK_SYN_RECV, */</font></i>
+<br><i><font color="#000000">&nbsp;&nbsp;&nbsp; 2 MINS,&nbsp;&nbsp;&nbsp;&nbsp;
+/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TCP_CONNTRACK_FIN_WAIT, */</font></i>
+<br><i><font color="#000000">&nbsp;&nbsp;&nbsp; 2 MINS,&nbsp;&nbsp;&nbsp;&nbsp;
+/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TCP_CONNTRACK_TIME_WAIT,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font></i>
+<br><i><font color="#000000">&nbsp;&nbsp;&nbsp; 10 SECS,&nbsp;&nbsp;&nbsp;
+/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TCP_CONNTRACK_CLOSE,&nbsp;&nbsp;&nbsp;
+*/</font></i>
+<br><i><font color="#000000">&nbsp;&nbsp;&nbsp; 60 SECS,&nbsp;&nbsp;&nbsp;
+/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TCP_CONNTRACK_CLOSE_WAIT,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font></i>
+<br><i><font color="#000000">&nbsp;&nbsp;&nbsp; 30 SECS,&nbsp;&nbsp;&nbsp;
+/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TCP_CONNTRACK_LAST_ACK, */</font></i>
+<br><i><font color="#000000">&nbsp;&nbsp;&nbsp; 2 MINS,&nbsp;&nbsp;&nbsp;&nbsp;
+/*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TCP_CONNTRACK_LISTEN,&nbsp;&nbsp; */</font></i>
+<br><i><font color="#000000">};</font></i>
+</p><p>There is no absolute timeout for a connection.
+</p><p><u>Connection termination</u>
+</p><p>Connection termination occurs in two ways. Natural termination at the
+end of a session occurs when the client sends a packet with the FIN and
+ACK flags set. The closure proceeds as follows:
+</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>Client</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<u>Server</u>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+.........
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+.........
+<br>&nbsp;&nbsp; FIN+ACK&nbsp;&nbsp; ---&gt;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ ACK
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;---&nbsp;&nbsp;&nbsp;&nbsp;
+ FIN+ACK
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ACK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+---&gt;
+</p><p>Sometime during, or at the end of this sequence the state table connection
+status changes to TIME_WAIT and the entry is removed after 2 minutes by
+default.
+</p><p>Another way for connection termination to occur is if either party sends
+a packet with the RST (reset) flag set. RST's are not acknowledged. In
+this case the state table connection status changes to CLOSE and times
+out from the state table after 10 seconds. This often happens with http
+entries, where the server sends an RST after a period of inactivity.
+<br>&nbsp;
+</p><p><a name="ICMP"></a><b>ICMP</b>
+</p><p>In iptables parlance, there are only four types of icmp that can be
+categorized as <font color="#33CC00">NEW</font>, or <font color="#33CC00">ESTABLISHED</font>:
+</p><p>1) Echo request (ping, 8) and echo reply (pong, 0).
+<br>2) Timestamp request (13)and reply (14).
+<br>3) Information request (15) and reply (16).
+<br>4) Address mask request (17) and reply (18).
+</p><p>The request in each case is classified as <font color="#33CC00">NEW</font>
+and the reply as <font color="#33CC00">ESTABLISHED</font>.
+<br>Other types of icmp are not request-reply based and can only be <font color="#33CC00">RELATED</font>
+to other connections.
+</p><p>Let us consider a sample ruleset and a few examples:
+</p><p><font color="#CC0000">iptables -A </font><font color="#3333FF">OUTPUT</font><font color="#CC0000">
+-p icmp -m state --state </font><font color="#33CC00">NEW,ESTABLISHED,RELATED</font><font color="#CC0000">
+-j ACCEPT</font>
+<br><font color="#CC0000">iptables -A </font><font color="#3333FF">INPUT</font><font color="#CC0000">&nbsp;&nbsp;&nbsp;&nbsp;
+-p icmp -m state --state </font><font color="#33CC00">ESTABLISHED,RELATED</font><font color="#CC0000">&nbsp;
+-j ACCEPT</font>
+</p><p>1) An icmp echo request is <font color="#33CC00">NEW</font> and so is
+allowed in the OUTPUT chain.
+</p><p>2) An icmp echo reply, provided it is in response to an echo request,
+is <font color="#33CC00">ESTABLISHED</font> and so is allowed in the INPUT
+chain. An echo reply cannot be allowed in the OUTPUT chain for the rules
+above because there is no <font color="#33CC00">NEW</font> in the INPUT
+chain to allow echo requests and a reply has to be in response to a request.
+</p><p>3) An icmp redirect, because it is not request-reply based, is <font color="#33CC00">RELATED</font>
+and so can be allowed in both the INPUT and the OUTPUT chains provided
+there is already a tcp or udp connection in the state table already that
+it can be matched against.
+<br>&nbsp;
+</p><p><a name="FTP"></a><b><u><font size="+1">Connection tracking and ftp</font></u></b>
+</p><p><font color="#000000">Firstly, you need to load the ip_conntrack_ftp
+module.</font>
+</p><p><font color="#000000">Assuming you have a single-homed box, a simple
+ruleset to allow an ftp connection would be:</font>
+</p><p><font color="#CC0000">iptables -A </font><font color="#3333FF">INPUT</font><font color="#CC0000">&nbsp;&nbsp;&nbsp;&nbsp;
+-p tcp --sport 21 -m state --state </font><font color="#33CC00">ESTABLISHED</font><font color="#CC0000">
+-j ACCEPT</font>
+<br><font color="#CC0000">iptables -A </font><font color="#3333FF">OUTPUT</font><font color="#CC0000">
+-p tcp --dport 21 -m state --state </font><font color="#33CC00">NEW,ESTABLISHED</font><font color="#CC0000">
+-j ACCEPT</font>
+</p><p><font color="#000000">(Please note, I am assuming here you have a separate
+ruleset to allow any icmp </font><font color="#33CC00">RELATED</font><font color="#000000">
+to the conection. Please see my <a href="http://www.cs.princeton.edu/%7Ejns/security/iptables/index.html#CONFIG">example
+ruleset</a> for this).</font>
+</p><p><font color="#000000">This is not the whole story. An ftp connection
+also needs a data-channel, which can be provided in one of two ways:</font>
+</p><p><b><font color="#000000">1) Active ftp</font></b>
+</p><p><font color="#000000">The ftp client sends a port number over the ftp
+channel via a PORT command to the ftp server. The ftp server then connects
+from port 20 to this port to send data, such as a file, or the output from
+an ls command. The ftp-data connection is in the <i>opposite sense</i>
+from the original ftp connection.</font>
+</p><p><font color="#000000">To allow active ftp without knowing the port number
+that has been passed we need a general rule which allows connections from
+port 20 on remote ftp servers to high ports (port numbers &gt; 1023) on ftp
+clients. This is simply too general to ever be secure.</font>
+</p><p><font color="#000000">Enter the <i>ip_conntrack_ftp</i> module. This
+module is able to recognize the PORT command and pick-out the port number.
+As such, the ftp-data connection can be classified as </font><font color="#33CC00">RELATED</font><font color="#000000">
+to the original outgoing connection to port 21 so we don't need </font><font color="#33CC00">NEW</font><font color="#000000">
+as a state match for the connection in the INPUT chain. The following rules
+will serve our purposes grandly:</font>
+</p><p><font color="#CC0000">iptables -A </font><font color="#3333FF">INPUT</font><font color="#CC0000">&nbsp;&nbsp;&nbsp;&nbsp;
+-p tcp --sport 20 -m state --state </font><font color="#33CC00">ESTABLISHED,RELATED</font><font color="#CC0000">
+-j ACCEPT</font>
+<br><font color="#CC0000">iptables -A </font><font color="#3333FF">OUTPUT</font><font color="#CC0000">
+-p tcp --dport 20 -m state --state </font><font color="#33CC00">ESTABLISHED</font><font color="#CC0000">
+-j ACCEPT</font>
+</p><p><b><font color="#000000">2) Passive ftp</font></b>
+</p><p><font color="#000000">A PORT command is again issued, but this time
+it is from the server to the client. The client connects to the server
+for data transfer. Since the connection is in the <i>same sense</i> as
+the original ftp connection,&nbsp; passive ftp is inherently more secure
+than active ftp, but note that this time we know even less about the port
+numbers. Now we have a connection between almost arbitrary port numbers.</font>
+</p><p><font color="#000000">Enter the <i>ip_conntrack_ftp</i> module once
+more. Again, this module is able to recognize the PORT command and pick-out
+the port number. Instead of </font><font color="#33CC00">NEW</font><font color="#000000">
+in the state match for the OUTPUT chain, we can use </font><font color="#33CC00">RELATED</font><font color="#000000">.
+The following rules will suffice:</font>
+</p><p><font color="#CC0000">iptables -A </font><font color="#3333FF">INPUT</font><font color="#CC0000">&nbsp;&nbsp;&nbsp;&nbsp;
+-p tcp --sport 1024: --dport 1024:&nbsp; -m state --state </font><font color="#33CC00">ESTABLISHED</font><font color="#CC0000">
+-j ACCEPT</font>
+<br><font color="#CC0000">iptables -A </font><font color="#3333FF">OUTPUT</font><font color="#CC0000">
+-p tcp --sport 1024: --dport 1024:&nbsp; -m state --state </font><font color="#33CC00">ESTABLISHED,RELATED</font><font color="#CC0000">
+-j ACCEPT</font>
+<br>&nbsp;
+<br>&nbsp;
+<br>
+</p><center>
+<p><img src="conntrack_files/blue_marble.html" align="MIDDLE" height="10" width="556"></p></center>
+
+<p><i>Prepared by James C. Stephens</i>
+<br><i>(jns@gfdl.noaa.gov)</i>
+<br><i>Last updated:Thu Apr 5 EST 2001</i>
+
+
+</p></body></html>

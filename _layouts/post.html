@@ -1,0 +1,114 @@
+---
+layout: default
+---
+{% assign post = page %}
+<div class="post-container">
+  <div class="blog-header">
+    <h1>{{ page.title }}</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> {{ post.date | date: "%F %A" }} &nbsp; &nbsp;
+      <i class="fa fa-tags"></i> {% for cate in post.categories %} {{ cate }} {% if forloop.last %}{% else %},{% endif %} {% endfor %}
+      {% if post.source %}--- Quoted From: <a href="{{ post.source }}" rel="external">Source</a>{% endif %}
+    </div>
+  </div>
+  <hr>
+  {{ content }}
+  <hr>
+  <nav>
+    <ul class="pager">
+        {% if page.previous %} <li class="previous"><a href="{{ page.previous.url }}" title="{{ page.previous.title }}">&larr; Older</a></li> {% endif %}
+        {% if page.next %} <li class="next"><a href="{{ page.next.url }}" title="{{ page.next.title }}">Newer &rarr;</a></li> {% endif %}
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '{{ page.date | date: "%s" }}',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="{{ site.url }}{{ page.id }}.html" data-title="{{ page.title }}" data-url="{{ site.url }}{{ page.id }}.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>

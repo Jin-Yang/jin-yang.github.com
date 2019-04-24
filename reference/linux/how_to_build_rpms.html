@@ -1,0 +1,677 @@
+<!DOCTYPE html><!-- Source is http://giovannitorres.me/how-to-build-rpms-collectd-example.html --><html prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>How to Build RPMs - Collectd Example - Giovanni Torres</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="#">
+
+        <meta name="author" content="Giovanni Torres">
+        <meta name="keywords" content="rpm,collectd">
+        <meta name="description" content="Table of Contents Introduction Prerequisites Building RPMs from a SPEC file Rebuilding Source RPMs (SRPMs) Building RPMs using Mock Conclusion Introduction Now that we have an rpm build environment , we can build RPM packages. In this guide, we will use the collectd monitoring application and walk through three different ways …">
+
+        <meta property="og:site_name" content="Giovanni Torres">
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="How to Build RPMs - Collectd Example">
+        <meta property="og:url" content="http://giovannitorres.me/how-to-build-rpms-collectd-example.html">
+        <meta property="og:description" content="Table of Contents Introduction Prerequisites Building RPMs from a SPEC file Rebuilding Source RPMs (SRPMs) Building RPMs using Mock Conclusion Introduction Now that we have an rpm build environment , we can build RPM packages. In this guide, we will use the collectd monitoring application and walk through three different ways …">
+        <meta property="article:published_time" content="2015-09-19">
+            <meta property="article:section" content="RPM">
+            <meta property="article:tag" content="rpm">
+            <meta property="article:tag" content="collectd">
+            <meta property="article:author" content="Giovanni Torres">
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="how_to_build_rpms_files/bootstrap.cosmo.min.css" type="text/css">
+    <link href="how_to_build_rpms_files/font-awesome.min.css" rel="stylesheet">
+
+    <link href="how_to_build_rpms_files/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="how_to_build_rpms_files/style.css" type="text/css">
+
+        <link href="http://giovannitorres.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Giovanni Torres ATOM Feed">
+
+
+
+        <link href="http://giovannitorres.me/feeds/rpm.atom.xml" type="application/atom+xml" rel="alternate" title="Giovanni Torres RPM ATOM Feed">
+
+<script type="text/javascript" src="how_to_build_rpms_files/jXHR.js"></script><script type="text/javascript" async="" src="how_to_build_rpms_files/ga.js"></script><script type="text/javascript" async="" src="how_to_build_rpms_files/embed.js"></script><script async="" type="text/javascript" src="how_to_build_rpms_files/count.js"></script></head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <a href="http://giovannitorres.me/" class="navbar-brand">
+Giovanni Torres            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="http://giovannitorres.me/reading-list.html"><i class="fa fa-book"></i><span class="icon-label">Reading List</span></a></li>
+              <li><a href="http://giovannitorres.me/about.html"><i class="fa fa-user"></i><span class="icon-label">About Me</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="#" rel="bookmark" title="Permalink to How to Build RPMs - Collectd Example">
+                        How to Build RPMs - Collectd Example
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2015-09-19T00:00:00-04:00"> Sat 19 September 2015</time>
+    </span>
+
+            <span class="label label-default">Series</span>
+            Part 3 of Building RPMs
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://giovannitorres.me/tag/rpm.html">rpm</a>
+        /
+	<a href="http://giovannitorres.me/tag/collectd.html">collectd</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <div class="toc"><span class="toctitle">Table of Contents</span><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#building-rpms-from-a-spec-file">Building RPMs from a SPEC file</a></li>
+<li><a href="#rebuilding-source-rpms-srpms">Rebuilding Source RPMs (SRPMs)</a></li>
+<li><a href="#building-rpms-using-mock">Building RPMs using Mock</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</div>
+<h4 id="introduction">Introduction</h4>
+<p>Now that we have an <a href="http://giovannitorres.me/how-to-setup-an-rpm-build-environment-on-centos-6.html">rpm build
+environment</a>
+, we can build RPM packages.</p>
+<p>In this guide, we will use the collectd monitoring application and walk through
+three different ways of building RPMs for this package:
+using a spec file, rebuilding a source rpm, and using
+<a href="https://fedoraproject.org/wiki/Mock">mock</a>.</p>
+<p><br></p>
+<h4 id="prerequisites">Prerequisites</h4>
+<p>We already installed the necessary packages in <a href="http://giovannitorres.me/how-to-setup-an-rpm-build-environment-on-centos-6.html">Part
+1</a>.  These
+packages provide the utilities that we will use to build RPMs, namely rpmbuild,
+spectool, and yum-builddep.</p>
+<p>The steps in this guide will be carried out by the <strong>makerpm</strong> user.</p>
+<p>Additionally, we will need the source for collectd:</p>
+<div class="highlight"><pre><span></span><span class="go">cd $HOME</span>
+<span class="go">mkdir src &amp;&amp; cd src</span>
+<span class="go">curl --progress https://collectd.org/files/collectd-5.5.0.tar.gz | tar xz</span>
+</pre></div>
+
+
+<p><br></p>
+<h4 id="building-rpms-from-a-spec-file">Building RPMs from a SPEC file</h4>
+<p>A spec file includes all the information and steps the <strong>rpmbuild</strong> command
+needs to build an RPM package.  Among other things, it lists the name and
+version of your application, all package dependencies and how the application
+should be configured and built.  A spec file is written in plain text and, by
+convention, its name is formed by appending a <strong>.spec</strong> suffix to the application
+name, for example, <strong>collectd.spec</strong>.</p>
+<p>The collectd spec file is relatively complex compared to other spec files.  It
+contains custom macros for the many built-in plugins as well as subpackage
+definitions for each configured plugin.</p>
+<p>Have a look at the spec file and then copy it to the SPECS directory in your
+rpmbuild directory:</p>
+<div class="highlight"><pre><span></span>cd $HOME/src/collectd-5.5.0/contrib/redhat
+cp collectd.spec $HOME/rpmbuild/SPECS
+</pre></div>
+
+
+<p>Change to the SPECS directory inside your rpmbuild directory and use the
+<strong>spectool</strong> command to download the sources listed inside the spec file.  </p>
+<div class="highlight"><pre><span></span>cd $HOME/rpmbuild/SPECS
+spectool -g -R collectd.spec
+</pre></div>
+
+
+<p>The <strong>-g</strong> flag tells spectool to download the <em>Source</em> listed in the spec file.</p>
+<div class="highlight"><pre><span></span><span class="gh">Name</span><span class="p">:</span>           collectd
+<span class="gh">Version</span><span class="p">:</span>        5.5.0
+<span class="gh">Source</span><span class="p">:</span>         http://collectd.org/files/<span class="kc">%{name}</span>-<span class="kc">%{version}</span>.tar.bz2
+</pre></div>
+
+
+<p>The <strong>-R</strong> flag downloads the <em>Source</em> to the rpm's %{_sourcedir}, which
+translates to <strong>$HOME/rpmbuild/SOURCES</strong> directory:</p>
+<div class="highlight"><pre><span></span>$ rpm --eval <span class="s2">"%{_sourcedir}"</span>
+/home/makerpm/rpmbuild/SOURCES
+</pre></div>
+
+
+<p>Now, run the <strong>rpmbuild</strong> command to build the RPM from the spec file:</p>
+<div class="highlight"><pre><span></span>rpmbuild -bb collectd.spec 
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="go">error: Failed build dependencies:</span>
+<span class="go">    libtool-ltdl-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libcap-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    librabbitmq-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    curl-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    yajl-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libdbi-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libudev-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libpcap-devel &gt;= 1.0 is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    ganglia-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    OpenIPMI-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    iptables-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    java-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    lvm2-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libmemcached-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libmodbus-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libmnl-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    iproute-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libnotify-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libesmtp-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    nut-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    openldap-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    perl-ExtUtils-Embed is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    protobuf-c-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    liboping-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    hiredis-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libatasmart-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    varnish-libs-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+<span class="go">    libvirt-devel is needed by collectd-5.5.0-1.el6.x86_64</span>
+</pre></div>
+
+
+<p>The rpmbuild process checks package dependencies based on the packages listed
+in the <em>Requires</em> and <em>BuildRequires</em> tags in spec file.</p>
+<p>Thankfully, these dependencies are easy to satisfy with the <strong>yum-builddep</strong>
+command found in the <strong>yum-utils</strong> package.  Run the following to download the
+necessary dependencies:</p>
+<div class="highlight"><pre><span></span>sudo yum-builddep collectd.spec
+</pre></div>
+
+
+<p>Now that all dependencies are installed, re-run <strong>rpmbuild</strong>:</p>
+<div class="highlight"><pre><span></span>rpmbuild -bb collectd.spec
+</pre></div>
+
+
+<p>This gets to the very end and throws an error when checking rpaths:</p>
+<div class="highlight"><pre><span></span><span class="go">+ /usr/lib/rpm/check-rpaths /usr/lib/rpm/check-buildroot</span>
+<span class="go">*******************************************************************************</span>
+<span class="go">*</span>
+<span class="go">* WARNING: 'check-rpaths' detected a broken RPATH and will cause 'rpmbuild'</span>
+<span class="go">*          to fail. To ignore these errors, you can set the '$QA_RPATHS'</span>
+<span class="go">*          environment variable which is a bitmask allowing the values</span>
+<span class="go">*          below. The current value of QA_RPATHS is 0x0000.</span>
+<span class="go">*</span>
+<span class="go">*    0x0001 ... standard RPATHs (e.g. /usr/lib); such RPATHs are a minor</span>
+<span class="go">*               issue but are introducing redundant searchpaths without</span>
+<span class="go">*               providing a benefit. They can also cause errors in multilib</span>
+<span class="go">*               environments.</span>
+<span class="go">*    0x0002 ... invalid RPATHs; these are RPATHs which are neither absolute</span>
+<span class="go">*               nor relative filenames and can therefore be a SECURITY risk</span>
+<span class="go">*    0x0004 ... insecure RPATHs; these are relative RPATHs which are a</span>
+<span class="go">*               SECURITY risk</span>
+<span class="go">*    0x0008 ... the special '$ORIGIN' RPATHs are appearing after other</span>
+<span class="go">*               RPATHs; this is just a minor issue but usually unwanted</span>
+<span class="go">*    0x0010 ... the RPATH is empty; there is no reason for such RPATHs</span>
+<span class="go">*               and they cause unneeded work while loading libraries</span>
+<span class="go">*    0x0020 ... an RPATH references '..' of an absolute path; this will break</span>
+<span class="go">*               the functionality when the path before '..' is a symlink</span>
+<span class="go">*          </span>
+<span class="go">*</span>
+<span class="go">* Examples:</span>
+<span class="go">* - to ignore standard and empty RPATHs, execute 'rpmbuild' like</span>
+<span class="go">*   $ QA_RPATHS=$[ 0x0001|0x0010 ] rpmbuild my-package.src.rpm</span>
+<span class="go">* - to check existing files, set $RPM_BUILD_ROOT and execute check-rpaths like</span>
+<span class="go">*   $ RPM_BUILD_ROOT=&lt;top-dir&gt; /usr/lib/rpm/check-rpaths</span>
+<span class="go">*  </span>
+<span class="go">*******************************************************************************</span>
+<span class="go">ERROR   0001: file '/usr/bin/collectd-nagios' contains a standard rpath</span>
+<span class="go">'/usr/lib64' in [/usr/lib64]</span>
+<span class="go">ERROR   0001: file '/usr/bin/collectdctl' contains a standard rpath</span>
+<span class="go">'/usr/lib64' in [/usr/lib64]</span>
+<span class="go">ERROR   0001: file '/usr/bin/collectd-tg' contains a standard rpath</span>
+<span class="go">'/usr/lib64' in [/usr/lib64]</span>
+<span class="go">error: Bad exit status from /var/tmp/rpm-tmp.HwWMnY (%install)</span>
+
+
+<span class="go">RPM build errors:</span>
+<span class="go">    Bad exit status from /var/tmp/rpm-tmp.HwWMnY (%install)</span>
+</pre></div>
+
+
+<p>The reason it fails is because collectd hardcodes the <strong>/usr/lib64</strong> path
+into the collectd-nagios, collectdctl and collectd-tg binaries when the
+Linux dynamic loader will automatically load libraries from this path, given that it
+is a system default library path.  Therefore, hardcoding this particular path
+in the library is redundant.</p>
+<p>There are two ways to get around this.  The first is to comment out the
+<strong>/usr/lib/rpm/check-rpaths</strong> line from the <strong>$HOME/.rpmmacros</strong> and then rerun the
+rpmbuild command.  The second option is to tell rpmbuild to ignore standard
+RPATHs by running rpmbuild as follows:</p>
+<div class="highlight"><pre><span></span>QA_RPATHS=0x0001 rpmbuild -bb collectd.spec
+</pre></div>
+
+
+<p>After you rerun rpmbuild and it finishes successfully, you will see the last
+line as:</p>
+<div class="highlight"><pre><span></span><span class="go"> **+ exit 0**</span>
+</pre></div>
+
+
+<p>The built RPMs will be in the <strong>$HOME/rpmbuild/RPMS/x86_64</strong> directory:</p>
+<div class="highlight"><pre><span></span><span class="go">ls $HOME/rpmbuild/RPMS/x86_64/</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="go">collectd-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-netlink-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-amqp-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-nginx-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-apache-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-notify_desktop-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-ascent-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-notify_email-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-bind-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-nut-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-ceph-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-openldap-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-collection3-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-perl-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-contrib-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-php-collection-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-curl-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-pinba-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-curl_json-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-ping-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-curl_xml-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-postgresql-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-dbi-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-python-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-debuginfo-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-redis-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-disk-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-rrdtool-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-dns-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-sensors-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-email-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-smart-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-gmond-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-snmp-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-hddtemp-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-utils-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-ipmi-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-varnish-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-iptables-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-virt-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-java-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-write_http-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-log_logstash-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-write_redis-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-lvm-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-write_riemann-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-memcachec-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">libcollectdclient-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-modbus-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">libcollectdclient-devel-5.5.0-1.el6.x86_64.rpm</span>
+<span class="go">collectd-mysql-5.5.0-1.el6.x86_64.rpm</span>
+</pre></div>
+
+
+<p><br></p>
+<h4 id="rebuilding-source-rpms-srpms">Rebuilding Source RPMs (SRPMs)</h4>
+<p>Building from a src rpm is admittedly easier than from a spec file. A source
+RPM, or SRPM, is the corresponding source code to a ready-to-install, compiled
+RPM. It includes a spec file, source files and possibly patch files.  It can be
+compiled for a particular architecture and even modified before compiling into
+an RPM.  </p>
+<p>There are several places where you can find SRPMs:</p>
+<ul>
+<li><a href="ftp://ftp.redhat.com/pub/redhat/linux/enterprise/6Server/en/os/SRPMS/">Redhat</a></li>
+<li><a href="http://vault.centos.org/6.7/os/Source/SPackages/">CentOS</a></li>
+<li><a href="http://dl.fedoraproject.org/pub/epel/6/SRPMS/">EPEL</a></li>
+</ul>
+<p>Grab the src rpm for collectd from the EPEL repository.  It is an
+outdated version of collectd but serves the purpose of this guide.  Download
+and save the file somewhere in your home directory:</p>
+<div class="highlight"><pre><span></span><span class="go">cd $HOME</span>
+<span class="go">mkdir local &amp;&amp; cd local</span>
+<span class="go">wget http://dl.fedoraproject.org/pub/epel/6/SRPMS/collectd-4.10.9-1.el6.src.rpm</span>
+</pre></div>
+
+
+<p>Before using <strong>rpmbuild</strong>, run <strong>yum-builddep</strong> on the src rpm to
+download any missing dependencies.  </p>
+<div class="highlight"><pre><span></span><span class="go">sudo yum-builddep collectd-4.10.9-1.el6.src.rpm</span>
+</pre></div>
+
+
+<p>Now, use <em>rpmbuild</em> to rebuild the src rpm:</p>
+<div class="highlight"><pre><span></span><span class="go">QA_RPATHS=0x0001 rpmbuild --rebuild collectd-4.10.9-1.el6.src.rpm</span>
+</pre></div>
+
+
+<p>Again, you can choose to either prepend the rpmbuild command with <strong>QA_RPATHS</strong>
+or comment out the <strong>/usr/lib/rpm/check-rpaths</strong> line in your $HOME/.rpmmacros to
+avoid issues with rpaths during the build.</p>
+<p>The built RPMs are again in the <strong>$HOME/rpmbuild/RPMS/x86_64/</strong> directory.</p>
+<p><br></p>
+<h4 id="building-rpms-using-mock">Building RPMs using Mock</h4>
+<p>Mock is a tool that creates chroot environments and builds RPM packages in
+them.  It comes with default configurations, but it is easy to adapt and
+customize a configuration.</p>
+<p>First, download mock:</p>
+<div class="highlight"><pre><span></span>sudo yum install mock
+</pre></div>
+
+
+<p>Mock's configuration files are stored in <strong>/etc/mock</strong>.  Change to that
+directory and copy the <strong>epel-6-x86_64.cfg</strong>, since that configuration file
+includes the repositories for CentOS and EPEL, which is exactly the repos
+needed for satisfying dependencies for collectd.</p>
+<div class="highlight"><pre><span></span><span class="go">cd /etc/mock</span>
+<span class="go">sudo cp epel-6-x86_64.cfg centos-6-x86_64.cfg</span>
+</pre></div>
+
+
+<p>Now, we can customize the <strong>centos-6-x86_64.cfg </strong> configuration file.  You can
+make the following changes:</p>
+<ul>
+<li>change <strong>config_opts['root']</strong> from <strong>epel-6-x86_64</strong> to <strong>centos-6-x86_64</strong> to match
+  the name of our configuration</li>
+<li>remove unneeded yum repositories, such as <strong>testing</strong> and <strong>local</strong></li>
+<li>optionally, you could add the <strong>config_opts['macros']['%dist']</strong> option and
+  set it to something like <strong>.org.el6</strong>, which would include the name of your
+  <em>org</em> into the RPM names to help distinguish them from RPMs in the CentOS
+  and EPEL repositories.</li>
+</ul>
+<p>The mock utility should be run as non-root.  Any user using mock should be a
+member of the mock group:</p>
+<div class="highlight"><pre><span></span><span class="go">sudo usermod -a -G mock makerpm</span>
+</pre></div>
+
+
+<p>Next, use the <strong>newgrp</strong> command to change groups during the current login
+session:</p>
+<div class="highlight"><pre><span></span><span class="go">newgrp mock</span>
+</pre></div>
+
+
+<p>Mock needs the spec file to first build the SRPM.  Copy the spec file to the
+SPECS directory:</p>
+<div class="highlight"><pre><span></span><span class="go">cp collectd-5.5.0/contrib/redhat/collectd.spec $HOME/rpmbuild/SPECS/</span>
+</pre></div>
+
+
+<p>As before, use <strong>spectool</strong> to download the sources specified in the spec file:</p>
+<div class="highlight"><pre><span></span><span class="go">spectool -R -g $HOME/rpmbuild/SPECS/collectd.spec</span>
+</pre></div>
+
+
+<p>Now, instruct mock to use our custom <em>centos-6-x86_64</em> configuration and build
+a source rpm from the spec file and sources:</p>
+<div class="highlight"><pre><span></span><span class="go">mock -r centos-6-x86_64 --buildsrpm \</span>
+<span class="go">--spec $HOME/rpmbuild/SPECS/collectd.spec \</span>
+<span class="go">--sources $HOME/rpmbuild/SOURCES</span>
+</pre></div>
+
+
+<p>By default, all builds are written in the <strong>/var/lib/mock</strong> directory.  After
+building the SRPM in the previous command, the output shows where the results
+are written:</p>
+<div class="highlight"><pre><span></span><span class="n">INFO</span><span class="o">:</span> <span class="n">Results</span> <span class="n">and</span><span class="sr">/or logs in: /var/lib/mock/centos-6-x86_64/</span><span class="n">result</span>
+</pre></div>
+
+
+<p>Mock will build the RPMs in a chroot environment and install
+all the necessary packages.  Therefore, there is no need to run
+<strong>yum-builddep</strong>. Mock will take care of them.</p>
+<p>Lastly, instruct mock to build the collectd RPMs using the source RPM built in
+the previous step:</p>
+<div class="highlight"><pre><span></span><span class="go">mock -r centos-6-x86_64 --no-clean --rebuild /var/lib/mock/centos-6-x86_64/result/collectd-5.5.0-1.el6.src.rpm</span>
+</pre></div>
+
+
+<p>Again, the output will show where the built RPMs are written:</p>
+<div class="highlight"><pre><span></span><span class="go">INFO: Results and/or logs in: /var/lib/mock/centos-6-x86_64/result</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>cd /var/lib/mock/centos-6-x86_64/result/
+ls *rpm
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>collectd-netlink-5.5.0-1.el6.x86_64.rpm
+collectd-5.5.0-1.el6.src.rpm
+collectd-nginx-5.5.0-1.el6.x86_64.rpm
+collectd-5.5.0-1.el6.x86_64.rpm
+collectd-notify_desktop-5.5.0-1.el6.x86_64.rpm
+collectd-amqp-5.5.0-1.el6.x86_64.rpm
+collectd-notify_email-5.5.0-1.el6.x86_64.rpm
+collectd-apache-5.5.0-1.el6.x86_64.rpm
+collectd-nut-5.5.0-1.el6.x86_64.rpm
+collectd-ascent-5.5.0-1.el6.x86_64.rpm
+collectd-openldap-5.5.0-1.el6.x86_64.rpm
+collectd-bind-5.5.0-1.el6.x86_64.rpm
+collectd-perl-5.5.0-1.el6.x86_64.rpm
+collectd-ceph-5.5.0-1.el6.x86_64.rpm
+collectd-php-collection-5.5.0-1.el6.x86_64.rpm
+collectd-collection3-5.5.0-1.el6.x86_64.rpm
+collectd-pinba-5.5.0-1.el6.x86_64.rpm
+collectd-contrib-5.5.0-1.el6.x86_64.rpm
+collectd-ping-5.5.0-1.el6.x86_64.rpm
+collectd-curl-5.5.0-1.el6.x86_64.rpm
+collectd-postgresql-5.5.0-1.el6.x86_64.rpm
+collectd-curl_json-5.5.0-1.el6.x86_64.rpm
+collectd-python-5.5.0-1.el6.x86_64.rpm
+collectd-curl_xml-5.5.0-1.el6.x86_64.rpm
+collectd-redis-5.5.0-1.el6.x86_64.rpm
+collectd-dbi-5.5.0-1.el6.x86_64.rpm
+collectd-rrdtool-5.5.0-1.el6.x86_64.rpm
+collectd-debuginfo-5.5.0-1.el6.x86_64.rpm
+collectd-sensors-5.5.0-1.el6.x86_64.rpm
+collectd-disk-5.5.0-1.el6.x86_64.rpm
+collectd-smart-5.5.0-1.el6.x86_64.rpm
+collectd-dns-5.5.0-1.el6.x86_64.rpm
+collectd-snmp-5.5.0-1.el6.x86_64.rpm
+collectd-email-5.5.0-1.el6.x86_64.rpm
+collectd-utils-5.5.0-1.el6.x86_64.rpm
+collectd-gmond-5.5.0-1.el6.x86_64.rpm
+collectd-varnish-5.5.0-1.el6.x86_64.rpm
+collectd-hddtemp-5.5.0-1.el6.x86_64.rpm
+collectd-virt-5.5.0-1.el6.x86_64.rpm
+collectd-ipmi-5.5.0-1.el6.x86_64.rpm
+collectd-write_http-5.5.0-1.el6.x86_64.rpm
+collectd-iptables-5.5.0-1.el6.x86_64.rpm
+collectd-write_redis-5.5.0-1.el6.x86_64.rpm
+collectd-java-5.5.0-1.el6.x86_64.rpm
+collectd-write_riemann-5.5.0-1.el6.x86_64.rpm
+collectd-log_logstash-5.5.0-1.el6.x86_64.rpm
+libcollectdclient-5.5.0-1.el6.x86_64.rpm
+collectd-lvm-5.5.0-1.el6.x86_64.rpm
+libcollectdclient-devel-5.5.0-1.el6.x86_64.rpm
+collectd-memcachec-5.5.0-1.el6.x86_64.rpm
+collectd-modbus-5.5.0-1.el6.x86_64.rpm
+collectd-mysql-5.5.0-1.el6.x86_64.rpm
+</pre></div>
+
+
+<p><br></p>
+<h4 id="conclusion">Conclusion</h4>
+<p>Mock is a great tool for building RPMs.  You get a clean chroot environment in
+which to build RPMs.  Building from a source rpm or a spec file is slightly
+more involved.  In the last part of this guide, Part 4, we will look at signing
+our RPMs and distributing the GPG key.</p>
+            </div>
+            <!-- /.entry-content -->
+<section class="well" id="related-posts">
+    <h4>Part 3 of the Building RPMs series</h4>
+       <h5>Previous articles</h5>
+       <ul>
+           <li><a href="http://giovannitorres.me/how-to-setup-an-rpm-build-environment-on-centos-6.html">How to Setup an RPM Build Environment on CentOS 6</a></li>
+           <li><a href="http://giovannitorres.me/how-to-setup-an-rpm-signing-key.html">How to Setup an RPM Signing Key</a></li>
+       </ul>
+       <h5>Next articles</h5>
+       <ul>
+           <li><a href="http://giovannitorres.me/signing-rpms.html">Signing RPMs</a></li>
+       </ul>
+</section>
+    <hr>
+    <section class="comments" id="comments">
+        <h2>Comments</h2>
+
+        <div id="disqus_thread"></div>
+        <script type="text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+
+            <li class="list-group-item"><a href="http://giovannitorres.me/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                    <li class="list-group-item">
+                        <a href="http://giovannitorres.me/category/ansible.html">
+                            <i class="fa fa-folder-open fa-lg"></i> Ansible
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="http://giovannitorres.me/category/collectd.html">
+                            <i class="fa fa-folder-open fa-lg"></i> Collectd
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="http://giovannitorres.me/category/cython.html">
+                            <i class="fa fa-folder-open fa-lg"></i> Cython
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="http://giovannitorres.me/category/kvm.html">
+                            <i class="fa fa-folder-open fa-lg"></i> KVM
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="http://giovannitorres.me/category/linux.html">
+                            <i class="fa fa-folder-open fa-lg"></i> Linux
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="http://giovannitorres.me/category/rpm.html">
+                            <i class="fa fa-folder-open fa-lg"></i> RPM
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="http://giovannitorres.me/category/slurm.html">
+                            <i class="fa fa-folder-open fa-lg"></i> Slurm
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+
+                    <li class="list-group-item"><h4><i class="fa fa-tags fa-list-ul"></i><span class="icon-label">Series</span></h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <h5> Previous article</h5>
+                                <a href="http://giovannitorres.me/how-to-setup-an-rpm-signing-key.html">How to Setup an RPM Signing Key</a>
+                            </li>
+                            <li class="list-group-item">
+                                <h5>Next article</h5>
+                                <a href="http://giovannitorres.me/signing-rpms.html">Signing RPMs</a>
+                            </li>
+                        </ul>
+                    </li>
+
+    <li class="list-group-item"><h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://github.com/PySlurm/pyslurm" target="_blank">
+                PySlurm
+            </a>
+        </li>
+      </ul>
+    </li>
+
+    <li class="list-group-item"><h4><i class="fa fa-github fa-lg"></i><span class="icon-label">GitHub Repos</span></h4>
+        <div id="gh_repos"><ul class="list-group" id="github"><li class="list-group-item"><a href="https://github.com/giovtorres/ansible-role-tuned">ansible-role-tuned</a><p><small>Ansible Role - tuned</small></p></li><li class="list-group-item"><a href="https://github.com/giovtorres/kvm-install-vm">kvm-install-vm</a><p><small>Bash script to build local virtual machines using KVM/libvirt and cloud-init.</small></p></li><li class="list-group-item"><a href="https://github.com/giovtorres/docker-centos7-slurm">docker-centos7-slurm</a><p><small>Slurm Docker Container on CentOS 7</small></p></li><li class="list-group-item"><a href="https://github.com/giovtorres/docker-centos6-slurm">docker-centos6-slurm</a><p><small>Slurm Docker Container on CentOS 6</small></p></li><li class="list-group-item"><a href="https://github.com/giovtorres/giovtorres.github.io">giovtorres.github.io</a><p><small>Website source for</small></p></li></ul></div>
+    </li>
+    </ul>
+</section>
+            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">© 2017 Giovanni Torres
+            · Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="how_to_build_rpms_files/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="how_to_build_rpms_files/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="how_to_build_rpms_files/respond.min.js"></script>
+
+    <!-- GitHub JS -->
+    <script type="text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+    <script src="how_to_build_rpms_files/github.js" type="text/javascript"></script>
+    <!-- End GitHub JS Code -->
+    <!-- Disqus -->
+    <script type="text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+    <!-- End Disqus Code -->
+    <!-- Google Analytics -->
+    <script type="text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+    <!-- End Google Analytics Code -->
+
+
+</body></html>

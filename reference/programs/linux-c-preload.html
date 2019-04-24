@@ -1,0 +1,1384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0135)https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script async="" src="https://graph.facebook.com/?callback=WPCOMSharing.update_facebook_count&amp;ids=https%3A%2F%2Frafalcieslak.wordpress.com%2F2013%2F04%2F02%2Fdynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs%2F&amp;_=1534607743667"></script><iframe sandbox="allow-scripts allow-same-origin" id="12e633054c26c87" frameborder="0" allowtransparency="true" marginheight="0" marginwidth="0" width="0" hspace="0" vspace="0" height="0" style="height:0px;width:0px;display:none;" scrolling="no" src="./linux-c-preload_files/async_usersync.html">
+    </iframe>
+
+<title>Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate programs | Rafał Cieślak's blog</title>
+<link rel="pingback" href="https://rafalcieslak.wordpress.com/xmlrpc.php">
+	<style type="text/css">
+		.infinite-scroll #infinite-handle span {
+			border-color: #953a6f !important;
+			color: #953a6f !important;
+		}
+		.infinite-scroll #infinite-handle span:hover {
+			background-color: #953a6f !important;
+			color: #fff;
+		}
+		#infinite-footer .blog-credits a,
+		#infinite-footer .blog-info a,
+		#infinite-footer .blog-credits a:hover,
+		#infinite-footer .blog-info a:hover {
+			color: #953a6f !important;
+		}
+	</style>
+
+<link rel="dns-prefetch" href="https://s2.wp.com/">
+<link rel="dns-prefetch" href="https://s1.wp.com/">
+<link rel="dns-prefetch" href="https://s0.wp.com/">
+<link rel="dns-prefetch" href="https://s.pubmine.com/">
+<link rel="dns-prefetch" href="https://x.bidswitch.net/">
+<link rel="dns-prefetch" href="https://static.criteo.net/">
+<link rel="dns-prefetch" href="https://ib.adnxs.com/">
+<link rel="dns-prefetch" href="https://aax.amazon-adsystem.com/">
+<link rel="dns-prefetch" href="https://bidder.criteo.com/">
+<link rel="dns-prefetch" href="https://cas.criteo.com/">
+<link rel="dns-prefetch" href="https://gum.criteo.com/">
+<link rel="dns-prefetch" href="https://ads.pubmatic.com/">
+<link rel="dns-prefetch" href="https://gads.pubmatic.com/">
+<link rel="dns-prefetch" href="https://tpc.googlesyndication.com/">
+<link rel="dns-prefetch" href="https://ad.doubleclick.net/">
+<link rel="dns-prefetch" href="https://googleads.g.doubleclick.net/">
+<link rel="dns-prefetch" href="https://www.googletagservices.com/">
+<link rel="dns-prefetch" href="https://cdn.switchadhub.com/">
+<link rel="dns-prefetch" href="https://delivery.g.switchadhub.com/">
+<link rel="dns-prefetch" href="https://delivery.swid.switchadhub.com/">
+<link rel="alternate" type="application/rss+xml" title="Rafał Cieślak&#39;s blog » Feed" href="https://rafalcieslak.wordpress.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Rafał Cieślak&#39;s blog » Comments Feed" href="https://rafalcieslak.wordpress.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="Rafał Cieślak&#39;s blog » Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate programs Comments Feed" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/feed/">
+	<script src="./linux-c-preload_files/client.js" async="" type="text/javascript"></script><script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+			<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s1.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1532082729h&ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="./linux-c-preload_files/wp-emoji-release.min.js" type="text/javascript" defer=""></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel="stylesheet" id="all-css-0-1" href="./linux-c-preload_files/saved_resource(1)" type="text/css" media="all">
+<link rel="stylesheet" id="print-css-1-1" href="./linux-c-preload_files/global-print.css" type="text/css" media="print">
+<link rel="stylesheet" id="all-css-2-1" href="./linux-c-preload_files/saved_resource(2)" type="text/css" media="all">
+<script type="text/javascript">
+/* <![CDATA[ */
+var related_posts_js_options = {"post_heading":"h4"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./linux-c-preload_files/saved_resource(3)"></script>
+<link rel="stylesheet" id="all-css-0-2" href="./linux-c-preload_files/style(1).css" type="text/css" media="all">
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='https://s2.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563h&#038;ver=20110606' type='text/css' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://rafalcieslak.wordpress.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s1.wp.com/wp-includes/wlwmanifest.xml"> 
+<link rel="prev" title="e4rat – decreasing bootup time on HDD drives" href="https://rafalcieslak.wordpress.com/2013/03/17/e4rat-decreasing-bootup-time-on-hdd-drives/">
+<link rel="next" title="A few drawings" href="https://rafalcieslak.wordpress.com/2013/11/29/a-few-drawings/">
+<meta name="generator" content="WordPress.com">
+<link rel="canonical" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/">
+<link rel="shortlink" href="https://wp.me/p2mw7T-3X">
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2Frafalcieslak.wordpress.com%2F2013%2F04%2F02%2Fdynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs%2F&amp;for=wpcom-auto-discovery"><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2Frafalcieslak.wordpress.com%2F2013%2F04%2F02%2Fdynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs%2F&amp;for=wpcom-auto-discovery">
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate programs">
+<meta property="og:url" content="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/">
+<meta property="og:description" content="This post assumes some basic C skills. Linux puts you in full control. This is not always seen from everyone’s perspective, but a power user loves to be in control. I’m going to show yo…">
+<meta property="article:published_time" content="2013-04-02T14:50:05+00:00">
+<meta property="article:modified_time" content="2014-08-15T19:38:19+00:00">
+<meta property="og:site_name" content="Rafał Cieślak&#39;s blog">
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:site" content="@wordpressdotcom">
+<meta name="twitter:text:title" content="Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate programs">
+<meta name="twitter:card" content="summary">
+<meta property="fb:app_id" content="249643311490">
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom">
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48">
+<link rel="icon" type="image/x-icon" href="https://s1.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48">
+<link rel="apple-touch-icon-precomposed" href="https://s2.wp.com/i/webclip.png">
+<link rel="openid.server" href="https://rafalcieslak.wordpress.com/?openidserver=1">
+<link rel="openid.delegate" href="https://rafalcieslak.wordpress.com/">
+<link rel="search" type="application/opensearchdescription+xml" href="https://rafalcieslak.wordpress.com/osd.xml" title="Rafał Cieślak&#39;s blog">
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com">
+<style type="text/css">
+	body, #wrapper, .commentlist .alt { background-color: #f4f1f1 } 
+	a, a:link, a:hover, a:visited, .sticky h2 a:hover { color: #953a6f } 
+	.sticky h2 a { background: #953a6f } 
+	#wrapper { color: #403333 } 
+	hr { background-color: #403333 } 
+	ul.primary-links li a, ul.primary-links li a:link, ul.primary-links li a:visited { background: transparent url('https://s2.wp.com/wp-content/themes/pub/garland/garland-image.php?src=bg-navigation-item.png&top=65465b&bottom=22032d') no-repeat 50% 0 } 
+	ul.primary-links li a:hover, ul.primary-links li a.active { background: transparent url('https://s2.wp.com/wp-content/themes/pub/garland/garland-image.php?src=bg-navigation-item.png&top=65465b&bottom=22032d') no-repeat 50% -48px } 
+	#navigation { background:  url('https://s2.wp.com/wp-content/themes/pub/garland/garland-image.php?src=bg-navigation.png&base=6c395b') repeat-x 50% 100% } 
+	#wrapper { background: #f4f1f1 url('https://s2.wp.com/wp-content/themes/pub/garland/garland-image.php?src=body.png&base=6c395b&top=65465b&bottom=22032d') repeat-x 50% 0 } 
+	#wrapper #container #center #squeeze { background: #fff url('https://s2.wp.com/wp-content/themes/pub/garland/garland-image.php?src=bg-content.png&base=6c395b&top=65465b&bottom=22032d') repeat-x 50% 0 } 
+	#wrapper #container #center .right-corner { background: transparent url('https://s2.wp.com/wp-content/themes/pub/garland/garland-image.php?src=bg-content-right.png&base=6c395b&top=65465b&bottom=22032d') no-repeat 100% 0 } 
+	#wrapper #container #center .right-corner .left-corner { background: transparent url('https://s2.wp.com/wp-content/themes/pub/garland/garland-image.php?src=bg-content-left.png&base=6c395b&top=65465b&bottom=22032d') no-repeat 0 0 } 
+</style>
+<meta name="application-name" content="Rafał Cieślak&#39;s blog"><meta name="msapplication-window" content="width=device-width;height=device-height"><meta name="msapplication-task" content="name=Subscribe;action-uri=https://rafalcieslak.wordpress.com/feed/;icon-uri=https://s1.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=https://s1.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=https://s1.wp.com/i/favicon.ico"><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=https://s1.wp.com/i/favicon.ico"><meta name="description" content="This post assumes some basic C skills. Linux puts you in full control. This is not always seen from everyone&#39;s perspective, but a power user loves to be in control. I&#39;m going to show you a basic trick that lets you heavily influence the behavior of most applications, which is not only fun, but also,…">
+		<script type="text/javascript">
+		function __ATA_CC() {var v = document.cookie.match('(^|;) ?personalized-ads-consent=([^;]*)(;|$)');return v ? 1 : 0;}
+		var __ATA_PP = { pt: 1, ht: 0, tn: 'garland', amp: false, siteid: 8982, consent: __ATA_CC() };
+		var __ATA = __ATA || {};
+		__ATA.cmd = __ATA.cmd || [];
+		__ATA.criteo = __ATA.criteo || {};
+		__ATA.criteo.cmd = __ATA.criteo.cmd || [];
+		</script>
+		<script type="text/javascript" src="./linux-c-preload_files/head.js" async=""></script><link rel="amphtml" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/amp/"><link rel="stylesheet" type="text/css" href="./linux-c-preload_files/shCore.css"><link rel="stylesheet" type="text/css" href="./linux-c-preload_files/shThemeDefault.css"><style type="text/css" id="syntaxhighlighteranchor"></style>
+<script type="text/javascript">
+	window.google_analytics_uacct = "UA-52447-2";
+</script>
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-52447-2']);
+	_gaq.push(['_setDomainName', 'wordpress.com']);
+	_gaq.push(['_initData']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})();
+</script><script type="text/javascript" async="" src="./linux-c-preload_files/ga.js"></script>
+<script src="./linux-c-preload_files/outstream.js" async=""></script><style type="text/css">
+.iowo-adv {
+   overflow: hidden;
+}
+.iowo-adv__header {
+   font-family: "Helvetica", Arial, sans-serif !important;
+   font-size: 11.5px !important;
+   text-align: center;
+   position: relative;
+   padding: 5px 0px;
+   letter-spacing: 0.3px !important;
+   font-weight: 300 !important;
+   text-transform: uppercase;
+   color: #aaa;
+}
+.iowo-adv__close-icon {
+   width: 24px;
+   height: 24px;
+   position: absolute;
+   right: 10px;
+   top: 34px;
+   z-index:10;
+   cursor: pointer;
+   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4gMQDS4lyDpzXgAAAKlJREFUWMPVV1sOgCAMo9yZU3Bo/THGRKaylTXuF9YW9mCgtbaVw3rvKAl25azWQgb5TcBqESNsWAvscFgceNuwkvy8gZUi3jAx68AkHwpgifiKgShA1BcsIK8PmKfxCKZdqTdkYCRVJF/CmT2ymYoBo7Yj5UprMN6GVYvY/hUCaRJKy1DaiKStWPoYSZ9j6UAiHcmkQ6l0LJd+TDLIn0TULHILu2aRWxw7NqDQ4pqt7KcAAAAASUVORK5CYII=");
+   background-size: contain;
+}
+.iowo-adv__close-icon_touch {
+   left: 10px;
+}
+.iowo-adv__sound-icon {
+   width: 32px;
+   cursor: pointer;
+   height: 32px;
+   position: absolute;
+   bottom:12px;
+   right:5px;
+   z-index:10;
+}
+.iowo-adv__sound-icon_on {
+   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QYcDigM2jawiwAAAbhJREFUWMPtl7FLHFEQxr+ZtwTytLDwmjSnhf+AYrpUBwGvS7F2YqFNQNjieCnsTlPscdxdZ2MVCORIEewMwf/AlEkRCRaSKqQMCrnbGZtVLPRye2/dJcSpdos33292vjfvLfAQ/3tQHkkajcYqM68YY3bjOD7NsjbwFXfOhSLyDgAPBgMBsJFlPXuK10TkLTNf5ZnKmoM9PvuSqh4w8yOfInjCyhcAHBLRtG8LeQLxJyLyiZkreRg4E0AURTOq+pGZ5/LahsEodwN4A+Dxfc6BUdsw9BF3zkWqOq2q+51O5+ckLWDP4p4R0Wtm/uqcW7wvkXFiVkT6YRiaQgGGw+Gaqn4AAGZeqFarTwsF6PV6F0R0eH3oEFUKBXDO1QBsX70bY74U7YGXAObT5/5dp2QRJuyLyGbmOaCq50Re14XYGPPqb/eDOwGCINhJkkRvHrGqOkNEtXHU2+32Z69JGMfxdwDrt5hrL+1vLpHZA9baLQDvSwNoNptirV0DcFQKQArxx1r7AsBxKQApxO8kSeoi8q0UAADodru/giB4LiI/0pl/UigAALRarTMiWhaRurV25+FX65+LSxNniSadskJNAAAAAElFTkSuQmCC");
+}
+.iowo-adv__sound-icon_off {
+   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAdBJREFUWIXt1b9r1GAcx/HP840u94jo6mD/Aae24I9NHZSCi5NDO5TO7fLkCTgdt15y4C6IdHFwEpxscRHc1dHB0UFBOvToks/Xxch53j3JExNB6XcMz+X1Ti5PApzO/zLD4fBMm99JF7hzbm86nZ6kafp02Rrv/apz7mrnAd77LRF5BCBR1fvLcJKHIvIqy7JrnQV47zdIPgFgAEBEfjvfDH4RwHmSW50EZFl2g+RzEfn535P8FsABYN9au/vHAc65K2VZvhSRwQz+JUmSjRA+GAy2R6MRZ89lWuArAN6KyKU5/PZ4PP4QgwNAcOs4524ZYy7/UmzMQwBLcefcGsmDJjgQuAPe+5sAXocCF+EAGuNA4BlQ1ZW+8WDA38BbBXSJRwfU4SSnMThQswvqcBE5BHChWiMiGoMDDe9AE7zt1Ab0idcG9I0HA0i+6xsHGn4LvPfrAA4a4Md5np+LCah9BuZxVX1G8mMM0jpgwZXvW2s3AdwB8LnXgEV49ZKZTCafVPUuyaNeAkJ4taYoivcico/kSacBTfBq8jx/Y4x5AKD8caicXxMdoKpnSSZ1eDVFUbwwxuwA+Kqqj2MDFm7DNE2vA9i01u7GvttP55+b71U6NuXe6u9vAAAAAElFTkSuQmCC");
+}
+.iowo-adv__timer {
+   position: absolute;
+   bottom:5px;
+   left:5px;
+   min-width: 60px;
+   padding: 3px;
+   color: #aaaaaa;
+   border-radius: 5px;
+   font-family: sans-serif;
+   text-align: center;
+   background-color:black;
+   z-index:10;
+}
+.iowo-timeline {
+   position: absolute;
+   bottom:0;
+   left:0;
+   width: 100%;
+   height: 5px;
+   background-color: rgba(0, 0, 0, 0.2);
+   z-index:10;
+}
+.iowo-timeline__runner {
+   position: relative;
+   height: 5px;
+   background-color: red;
+   -moz-transition: .5s;
+   -ms-transition: .5s;
+   -o-transition: .5s;
+   -webkit-transition: .5s;
+   transition: .5s;
+   transition-property: max-width;
+}</style><script src="./linux-c-preload_files/ima3.js"></script><link rel="preload" href="./linux-c-preload_files/f.txt" as="script"><script type="text/javascript" src="./linux-c-preload_files/f.txt"></script><link rel="stylesheet" type="text/css" id="gravatar-card-css" href="./linux-c-preload_files/hovercard.css"><link rel="stylesheet" type="text/css" id="gravatar-card-services-css" href="./linux-c-preload_files/services.css"></head>
+
+<body class="sidebars mp6 customizer-styles-applied highlander-enabled highlander-light">
+
+<div id="navigation"></div>
+
+<div id="wrapper">
+	<div id="container" class="clear-block">
+
+	<div id="header">
+		<div id="logo-floater">
+			<h1><a href="https://rafalcieslak.wordpress.com/">Rafał Cieślak's blog</a></h1>
+		</div>
+
+		<ul id="menu-main-menu" class="links primary-links"><li id="menu-item-36" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-36"><a href="https://rafalcieslak.wordpress.com/">Home</a></li>
+<li id="menu-item-10" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-10"><a title="About" href="https://rafalcieslak.wordpress.com/about/">About me</a></li>
+<li id="menu-item-199" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-199"><a href="https://rafalcieslak.wordpress.com/sofware/">My software</a></li>
+</ul>
+	</div> <!-- /header -->
+
+<div id="sidebar-left" class="sidebar">
+
+<ul class="menu">
+
+<li id="nav_menu-3" class="widget widget_nav_menu"><h2 class="widgettitle">Menu</h2>
+<div class="menu-main-menu-container"><ul id="menu-main-menu-1" class="menu"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-36"><a href="https://rafalcieslak.wordpress.com/">Home</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-10"><a title="About" href="https://rafalcieslak.wordpress.com/about/">About me</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-199"><a href="https://rafalcieslak.wordpress.com/sofware/">My software</a></li>
+</ul></div></li>
+<li id="nav_menu-4" class="widget widget_nav_menu"><h2 class="widgettitle">Posts by language</h2>
+<div class="menu-posts-by-language-container"><ul id="menu-posts-by-language" class="menu"><li id="menu-item-30" class="menu-item menu-item-type-taxonomy menu-item-object-post_tag menu-item-30"><a title="English only" href="https://rafalcieslak.wordpress.com/tag/english-2/">English only</a></li>
+<li id="menu-item-290" class="menu-item menu-item-type-taxonomy menu-item-object-post_tag menu-item-290"><a title="Tylko polski" href="https://rafalcieslak.wordpress.com/tag/polish/">Tylko polski</a></li>
+</ul></div></li>
+<li id="nav_menu-5" class="widget widget_nav_menu"><h2 class="widgettitle">Other sites</h2>
+<div class="menu-other-sites-container"><ul id="menu-other-sites" class="menu"><li id="menu-item-390" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-390"><a href="http://cielak.org/">cielak.org</a></li>
+</ul></div></li>
+</ul>
+
+</div>
+<div id="center"><div id="squeeze"><div class="right-corner"><div class="left-corner">
+<!-- begin content -->
+<div class="node" id="garland-content">
+
+<div class="post-245 post type-post status-publish format-standard hentry category-planetubuntu category-ubuntu tag-c tag-cheats tag-development tag-english-2 tag-hacking tag-ld tag-libraries tag-linker tag-programming tag-shared">
+
+<h2>Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate&nbsp;programs</h2>
+<span class="submitted">April 2, 2013 — Rafał Cieślak </span>
+
+<div class="content">
+<p><strong>This post assumes some basic C skills.</strong></p>
+<p>Linux puts you in full control. This is not always seen from everyone’s perspective, but a power user loves to be in control. I’m going to show you a basic trick that lets you heavily influence the behavior of most applications, which is not only fun, but also, at times, useful.</p>
+<h4>A motivational example</h4>
+<p>Let us begin with a simple example. Fun first, science later.</p>
+<div><div id="highlighter_753017" class="syntaxhighlighter  cpp"><table border="0" cellpadding="0" cellspacing="0"><caption>random_num.c:</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp preprocessor">#include &lt;stdio.h&gt;</code></div><div class="line number2 index1 alt1"><code class="cpp preprocessor">#include &lt;stdlib.h&gt;</code></div><div class="line number3 index2 alt2"><code class="cpp preprocessor">#include &lt;time.h&gt;</code></div><div class="line number4 index3 alt1">&nbsp;</div><div class="line number5 index4 alt2"><code class="cpp color1 bold">int</code> <code class="cpp plain">main(){</code></div><div class="line number6 index5 alt1"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp functions bold">srand</code><code class="cpp plain">(</code><code class="cpp functions bold">time</code><code class="cpp plain">(NULL));</code></div><div class="line number7 index6 alt2"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp color1 bold">int</code> <code class="cpp plain">i = 10;</code></div><div class="line number8 index7 alt1"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp keyword bold">while</code><code class="cpp plain">(i--)&nbsp;</code><code class="cpp functions bold">printf</code><code class="cpp plain">(</code><code class="cpp string">"%d\n"</code><code class="cpp plain">,</code><code class="cpp functions bold">rand</code><code class="cpp plain">()%100);</code></div><div class="line number9 index8 alt2"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp keyword bold">return</code> <code class="cpp plain">0;</code></div><div class="line number10 index9 alt1"><code class="cpp plain">}</code></div></div></td></tr></tbody></table></div></div>
+<p>Simple enough, I believe. I compiled it with no special flags, just</p>
+<blockquote>
+<pre>gcc random_num.c -o random_num</pre>
+</blockquote>
+<p>I hope the resulting output is obvious – ten randomly selected numbers 0-99, hopefully different each time you run this program.</p>
+<p>Now let’s pretend we don’t really have the source of this executable. Either delete the source file, or move it somewhere – we won’t need it. We will significantly modify this programs behavior, yet without touching it’s source code nor recompiling it.</p>
+<p>For this, lets create another simple C file:</p>
+<div><div id="highlighter_849940" class="syntaxhighlighter  cpp"><table border="0" cellpadding="0" cellspacing="0"><caption>unrandom.c:</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp color1 bold">int</code> <code class="cpp functions bold">rand</code><code class="cpp plain">(){</code></div><div class="line number2 index1 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp keyword bold">return</code> <code class="cpp plain">42; </code><code class="cpp comments">//the most random number in the universe</code></div><div class="line number3 index2 alt2"><code class="cpp plain">}</code></div></div></td></tr></tbody></table></div></div>
+<p>We’ll compile it into a shared library.</p>
+<blockquote>
+<pre>gcc -shared -fPIC unrandom.c -o unrandom.so</pre>
+</blockquote>
+<p>So what we have now is an application that outputs some random data, and a custom library, which implements the rand() function as a constant value of 42. &nbsp;Now… just run <em>random_num&nbsp;</em>this way,&nbsp;and watch the result:</p>
+<blockquote>
+<pre>LD_PRELOAD=$PWD/unrandom.so ./random_nums</pre>
+</blockquote>
+<p>If you are lazy and did not do it yourself (and somehow fail to guess what might have happened), I’ll let you know – the output consists of ten 42’s.</p>
+<p><span id="more-245"></span></p>
+<p><!--more-->This may be even more impressive it you first:</p>
+<blockquote>
+<pre>export LD_PRELOAD=$PWD/unrandom.so</pre>
+</blockquote>
+<p>and then run the program normally. An unchanged app run in an apparently usual manner seems to be affected by what we did in our tiny library…</p>
+<h6><strong>Wait, what? What did just happen?</strong></h6>
+<p>Yup, you are right, our program failed to generate random numbers, because it did not use the “real” rand(), but the one we provided – which returns 42 every time.</p>
+<h6><strong>But we *told* it to use the real one. We programmed it to use the real one. Besides, at the time we created that program, the fake rand() did not even exist!</strong></h6>
+<p>This is not entirely true. We did not choose which rand() we want our program to use. We told it just to use rand().</p>
+<p>When our program is started, certain libraries (that provide functionality needed by the program) are loaded. We can learn which are these using&nbsp;<em>ldd</em>:<em><br>
+</em></p>
+<blockquote>
+<pre>$ <strong>ldd random_nums</strong>
+linux-vdso.so.1 =&gt; (0x00007fff4bdfe000)
+libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f48c03ec000)
+/lib64/ld-linux-x86-64.so.2 (0x00007f48c07e3000)</pre>
+</blockquote>
+<p>What you see as the output is the list of libs that are needed by&nbsp;<em>random_nums</em>. This list is built into the executable, and is determined compile time. The exact output might slightly differ on your machine, but a <strong>libc.so</strong> must be there – this is the file which provides core C functionality. That includes the “real” rand().</p>
+<p>We can have a peek at what functions does libc provide. I used the following to get a full list:</p>
+<blockquote>
+<pre>nm -D /lib/libc.so.6</pre>
+</blockquote>
+<p>The <em>nm</em> command lists symbols found in a binary file. The -D flag tells it to look for dynamic symbols, which makes sense, as libc.so.6 is a dynamic library. The output is very long, but it indeed lists rand() among many other standard functions.</p>
+<p>Now what happens when we set up the environmental variable LD_PRELOAD? This variable&nbsp;<strong>forces some libraries to be loaded for a program</strong>. In our case, it loads <em>unrandom.so</em> for&nbsp;<em>random_num</em>, even though the program itself does not ask for it. The following command may be interesting:<em><br>
+</em></p>
+<blockquote>
+<pre>$ <strong>LD_PRELOAD=$PWD/unrandom.so ldd random_nums</strong>
+linux-vdso.so.1 =&gt;  (0x00007fff369dc000)
+/some/path/to/unrandom.so (0x00007f262b439000)
+libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f262b044000)
+/lib64/ld-linux-x86-64.so.2 (0x00007f262b63d000)</pre>
+</blockquote>
+<p>Note that it lists our custom library. And indeed this is the reason why it’s code get’s executed:&nbsp;<em>random_num</em>&nbsp;calls rand(), but if&nbsp;<em>unrandom.so</em> is loaded it is our library that provides implementation for rand(). Neat, isn’t it?</p>
+<h4>Being transparent</h4>
+<p>This is not enough. I’d like to be able to inject some code into an application in a similar manner, but in such way that it will be able to function normally. It’s clear if we implemented open() with a simple “<em>return 0;</em>“, the application we would like to hack should malfunction. The point is to be <strong>transparent</strong>, and to actually call the original open:</p>
+<div><div id="highlighter_366198" class="syntaxhighlighter  cpp"><table border="0" cellpadding="0" cellspacing="0"><caption>inspect_open.c:</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp color1 bold">int</code> <code class="cpp plain">open(</code><code class="cpp keyword bold">const</code> <code class="cpp color1 bold">char</code> <code class="cpp plain">*pathname, </code><code class="cpp color1 bold">int</code> <code class="cpp plain">flags){</code></div><div class="line number2 index1 alt1"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp comments">/* Some evil injected code goes here. */</code></div><div class="line number3 index2 alt2"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp keyword bold">return</code> <code class="cpp plain">open(pathname,flags); </code><code class="cpp comments">// Here we call the "real" open function, that is provided to us by libc.so</code></div><div class="line number4 index3 alt1"><code class="cpp plain">}</code></div></div></td></tr></tbody></table></div></div>
+<p>Hm. Not really. This won’t call the “original” open(…). Obviously, this is an endless recursive call.</p>
+<p>How do we access the “real” open function? It is needed to use the programming interface to the dynamic linker. It’s simpler than it sounds. Have a look at this complete example, and then I’ll explain what happens there:</p>
+<div><div id="highlighter_282333" class="syntaxhighlighter  cpp"><table border="0" cellpadding="0" cellspacing="0"><caption>inspect_open.c:</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp preprocessor">#define _GNU_SOURCE</code></div><div class="line number2 index1 alt1"><code class="cpp preprocessor">#include &lt;dlfcn.h&gt;</code></div><div class="line number3 index2 alt2">&nbsp;</div><div class="line number4 index3 alt1"><code class="cpp keyword bold">typedef</code> <code class="cpp color1 bold">int</code> <code class="cpp plain">(*orig_open_f_type)(</code><code class="cpp keyword bold">const</code> <code class="cpp color1 bold">char</code> <code class="cpp plain">*pathname, </code><code class="cpp color1 bold">int</code> <code class="cpp plain">flags);</code></div><div class="line number5 index4 alt2">&nbsp;</div><div class="line number6 index5 alt1"><code class="cpp color1 bold">int</code> <code class="cpp plain">open(</code><code class="cpp keyword bold">const</code> <code class="cpp color1 bold">char</code> <code class="cpp plain">*pathname, </code><code class="cpp color1 bold">int</code> <code class="cpp plain">flags, ...)</code></div><div class="line number7 index6 alt2"><code class="cpp plain">{</code></div><div class="line number8 index7 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp comments">/* Some evil injected code goes here. */</code></div><div class="line number9 index8 alt2">&nbsp;</div><div class="line number10 index9 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">orig_open_f_type orig_open;</code></div><div class="line number11 index10 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">orig_open = (orig_open_f_type)dlsym(RTLD_NEXT,</code><code class="cpp string">"open"</code><code class="cpp plain">);</code></div><div class="line number12 index11 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp keyword bold">return</code> <code class="cpp plain">orig_open(pathname,flags);</code></div><div class="line number13 index12 alt2"><code class="cpp plain">}</code></div></div></td></tr></tbody></table></div></div>
+<p>The <i>dlfcn.h</i> is needed for <em>dlsym</em> function we use later. That strange&nbsp;<em>#define</em> directive instructs the compiler to enable some non-standard stuff, we need it to enable&nbsp;<em>RTLD_NEXT</em> in&nbsp;<em>dlfcn.h</em>. That typedef is just creating an alias to a complicated pointer-to-function type, with arguments just as the original open – the alias name is&nbsp;<em>orig_open_f_type</em>, which we’ll use later.</p>
+<p>The body of our custom open(…) consists of some custom code. The last part of it creates a new function pointer&nbsp;<em>orig_open</em> which will point to the original open(…) function. In order to get the address of that function, we ask&nbsp;<em>dlsym</em>&nbsp;to find for us the next “open” function on dynamic libraries stack. Finally, we call that function (passing the same arguments as were passed to our fake “open”), and return it’s return value as ours.</p>
+<p>As the “evil injected code” I simply used:</p>
+<div><div id="highlighter_137327" class="syntaxhighlighter  cpp"><table border="0" cellpadding="0" cellspacing="0"><caption>inspect_open.c (fragment):</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp functions bold">printf</code><code class="cpp plain">(</code><code class="cpp string">"The victim used open(...) to access '%s'!!!\n"</code><code class="cpp plain">,pathname); </code><code class="cpp comments">//remember to include stdio.h!</code></div></div></td></tr></tbody></table></div></div>
+<p>To compile it, I needed to slightly adjust compiler flags:</p>
+<blockquote>
+<pre>gcc -shared -fPIC &nbsp;inspect_open.c -o inspect_open.so -ldl</pre>
+</blockquote>
+<p>I had to append&nbsp;<em>-ldl</em>, so that this shared library is linked to <em>libdl</em>, which provides the <em>dlsym</em> function. (Nah, I am not going to create a fake version of <em>dlsym</em>, though this might be fun.)</p>
+<p>So what do I have in result? A shared library, which implements the open(…) function so that it behaves&nbsp;<strong>exactly</strong> as the real open(…)… except it has a side effect of <em>printf</em>ing the file path :-)</p>
+<p>If you are not convinced this is a powerful trick, it’s the time you tried the following:</p>
+<blockquote>
+<pre>LD_PRELOAD=$PWD/inspect_open.so gnome-calculator</pre>
+</blockquote>
+<p>I encourage you to see the result yourself, but basically it lists every file this application accesses. In real time.</p>
+<p>I believe it’s not that hard to imagine why this might be useful for debugging or investigating unknown applications. Please note, however, that this particular trick is not quite complete, because <em>open()</em> is not the only function that opens files… For example, there is also&nbsp;<em>open64()</em> in the standard library, and for full investigation you would need to create a fake one too.</p>
+<h4><strong>Possible uses</strong></h4>
+<p>If you are still with me and enjoyed the above, let me suggest a bunch of ideas of what can be achieved using this trick. Keep in mind that you can do all the above&nbsp;without to source of the&nbsp;affected&nbsp;app!</p>
+<ol>
+<li><del>Gain root privileges.</del> Not really, don’t even bother, you won’t bypass any security this way. (A quick explanation for pros: no libraries will be preloaded this way if ruid != euid)</li>
+<li>Cheat games:&nbsp;<strong>Unrandomize.</strong> This is what I did in the first example. For a fully working case you would need also to implement a custom&nbsp;<em>random()</em>,&nbsp;<em>rand_r()</em><em>, random_r()</em>. Also some apps may be reading from&nbsp;<em>/dev/urandom</em> or so, you might redirect them to&nbsp;<em>/dev/null</em>&nbsp;by running the original <em>open()</em> with a modified file path. Furthermore, some apps may have their own random number generation algorithm, there is little you can do about that (unless: point 10 below). But this looks like an easy exercise for beginners.</li>
+<li>Cheat games: <b>Bullet time.&nbsp;</b>Implement all standard time-related functions pretend the time flows two times slower. Or ten times slower. If you correctly calculate new values for time measurement, timed <em>sleep</em> functions, and others, the affected application will believe the time runs slower (or faster, if you wish), and you can experience awesome bullet-time action.<br>
+Or go <strong>even one step further</strong> and let your shared library also be a DBus client, so that you can communicate with it real time. Bind some shortcuts to custom commands, and with some additional calculations in your fake timing functions you will be able to enable&amp;disable the slow-mo or fast-forward anytime you wish.</li>
+<li>Investigate apps:&nbsp;<strong>List accessed files.</strong> That’s what my second example does, but this could be also pushed further, by recording and monitoring all app’s file I/O.</li>
+<li>Investigate apps:&nbsp;<strong>Monitor internet access.</strong> You might do this with Wireshark or similar software, but with this trick you could actually gain control of what an app sends over the web, and not just look, but also affect the exchanged data. Lots of possibilities here, from detecting spyware, to cheating in multiplayer games, or analyzing &amp; reverse-engineering&nbsp;protocols of closed-source applications.</li>
+<li>Investigate apps:&nbsp;<strong>Inspect GTK structures.</strong>&nbsp;Why just limit ourselves to standard library? Let’s inject code in all GTK calls, so that we can learn what widgets does an app use, and how are they structured. This might be then rendered either to an image or even to a gtkbuilder file! Super useful if you want to learn how does some app manage its interface!</li>
+<li><strong>Sandbox unsafe applications.</strong> If you don’t trust some app and are afraid that it may wish to<em> rm -rf /&nbsp;</em>or do some other unwanted file activities, you might potentially redirect all it’s file IO to e.g. /tmp by appropriately&nbsp;modifying the arguments it passes to all file-related functions (not just <em>open</em>, but also e.g. removing directories etc.). It’s more difficult trick that a chroot, but it gives you more control. It would be only as safe as complete your “wrapper” was, and unless you really know what you’re doing, don’t actually run any&nbsp;malicious&nbsp;software this way.</li>
+<li><strong>Implement features.</strong> <a href="http://www.zlibc.linux.lu/index.html">zlibc</a> is an actual library which is run this precise way; it uncompresses files on the go as they are accessed, so that any application can work on compressed data without even realizing it.</li>
+<li><strong>Fix bugs.&nbsp;</strong>Another real-life example: some time ago (I am not sure this is still the case) Skype – which is closed-source – had problems capturing video from some certain webcams. Because the source could not be modified as Skype is not free software, this was fixed by preloading a library that would correct these problems with video.</li>
+<li>Manually <strong>access application’s own memory</strong>. Do note that you can access all app data this way. This may be not impressive if you are familiar with software like CheatEngine/scanmem/GameConqueror, but they all require root privileges to work. LD_PRELOAD does not. In fact, with a number of clever tricks your injected code might access all app memory, because, in fact, it gets executed by that application itself. You might modify everything this application can. You can probably imagine this allows a lot of low-level hacks… but I’ll post an article about it another time.</li>
+</ol>
+<p>These are only the ideas I came up with. I bet you can find some too, if you do – share them by commenting!</p>
+<hr>
+<div id="atatags-370373-5b78416db35be">
+        <script type="text/javascript">
+            __ATA.cmd.push(function() {
+                __ATA.initVideoSlot('atatags-370373-5b78416db35be', {
+                    sectionId: '370373',
+                    format: 'inread'
+                });
+            });
+        </script>
+    </div>		<div class="wpcnt">
+			<div class="wpa wpmrec">
+				<span class="wpa-about">Advertisements</span>
+				<div class="u">		<div style="padding-bottom:15px;width:300px;height:250px;float:left;margin-right:5px;margin-top:0px">
+		<div id="atatags-26942-5b78416db35f8" style="width: auto; height: auto;"><div style="width: 300px; height: 250px;"><iframe frameborder="0" scrolling="no" width="300" height="250" style="border:none;overflow:hidden;width:300px;height:250px;" src="./linux-c-preload_files/saved_resource(10).html"></iframe></div><div id="atatags-26942-5b78416db35f8__controls" style="width:300px;height:10px;text-align:right;line-height:6px;"><span id="atatags-26942-5b78416db35f8__complain-btn" style="font-size: 10px; color: rgb(109, 171, 210); text-decoration: underline; cursor: pointer; display: inline;">Report this ad</span></div></div></div>		<div style="padding-bottom:15px;width:300px;height:250px;float:left;margin-top:0px">
+		<div id="atatags-114160-5b78416db35fa" style="width: auto; height: auto;"><div style="width: 300px; height: 250px;"><iframe frameborder="0" scrolling="no" width="300" height="250" style="border:none;overflow:hidden;width:300px;height:250px;" src="./linux-c-preload_files/saved_resource(11).html"></iframe></div><div id="atatags-114160-5b78416db35fa__controls" style="width:300px;height:10px;text-align:right;line-height:6px;"><span id="atatags-114160-5b78416db35fa__complain-btn" style="font-size: 10px; color: rgb(109, 171, 210); text-decoration: underline; cursor: pointer; display: inline;">Report this ad</span></div></div></div></div>
+				
+			</div>
+		</div><div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-twitter"><a rel="nofollow noopener noreferrer" data-shared="sharing-twitter-245" class="share-twitter sd-button share-icon no-text" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?share=twitter&amp;nb=1" target="_blank" title="Click to share on Twitter"><span></span><span class="sharing-screen-reader-text">Click to share on Twitter (Opens in new window)</span></a></li><li class="share-facebook"><a rel="nofollow noopener noreferrer" data-shared="sharing-facebook-245" class="share-facebook sd-button share-icon no-text" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?share=facebook&amp;nb=1" target="_blank" title="Click to share on Facebook"><span></span><span class="sharing-screen-reader-text">Click to share on Facebook (Opens in new window)</span></a></li><li class="share-google-plus-1"><a rel="nofollow noopener noreferrer" data-shared="sharing-google-245" class="share-google-plus-1 sd-button share-icon no-text" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?share=google-plus-1&amp;nb=1" target="_blank" title="Click to share on Google+"><span></span><span class="sharing-screen-reader-text">Click to share on Google+ (Opens in new window)</span></a></li><li class="share-end"></li></ul></div></div></div><div class="sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-loaded" id="like-post-wrapper-34919385-245-5b78416db3b9e" data-src="//widgets.wp.com/likes/index.html?ver=20180319#blog_id=34919385&amp;post_id=245&amp;origin=rafalcieslak.wordpress.com&amp;obj_id=34919385-245-5b78416db3b9e" data-name="like-post-frame-34919385-245-5b78416db3b9e"><h3 class="sd-title">Like this:</h3><div class="likes-widget-placeholder post-likes-widget-placeholder" style="height: 55px; display: none;"><span class="button"><span>Like</span></span> <span class="loading">Loading...</span></div><iframe class="post-likes-widget jetpack-likes-widget" name="like-post-frame-34919385-245-5b78416db3b9e" height="55px" width="100%" frameborder="0" src="./linux-c-preload_files/index.html"></iframe><span class="sd-text-color"></span><a class="sd-link-color"></a></div>
+<div id="jp-relatedposts" class="jp-relatedposts" style="display: block;">
+	<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+<div class="jp-relatedposts-items jp-relatedposts-items-minimal"><p class="jp-relatedposts-post jp-relatedposts-post0" data-post-id="339" data-post-format="false"><span class="jp-relatedposts-post-title"><a class="jp-relatedposts-post-a" href="https://rafalcieslak.wordpress.com/2014/08/15/multi-os-gaming-wo-dual-booting-excelent-graphics-performance-in-a-vm-with-vga-passthrough/" title="Multi-OS gaming w/o dual-booting: Excelent graphics performance in a VM with VGA passthrough
+
+Note: This articles is a technology/technique outline, not a detailed guide and not a how-to. It explains what is VGA passthrough, why you might be interested in it, and where to start. Even with the current abundance of Linux native games (both indies and AAAs), with WINE reliably running almost…" rel="nofollow" data-origin="245" data-position="0">Multi-OS gaming w/o dual-booting: Excelent graphics performance in a VM with VGA passthrough</a></span><span class="jp-relatedposts-post-context">In "PlanetUbuntu"</span></p><p class="jp-relatedposts-post jp-relatedposts-post1" data-post-id="305" data-post-format="false"><span class="jp-relatedposts-post-title"><a class="jp-relatedposts-post-a" href="https://rafalcieslak.wordpress.com/2014/05/16/c11-stdthreads-managed-by-a-designated-class/" title="C++11: std::threads managed by a designated class
+
+Recently I have noticed an unobvious problem that may appear when using std::threads as class fields. I believe it is more than likely to meet if one is not careful enough when implementing C++ classes, due to it&#39;s tricky nature. Also, its solution provides an elegant example of what has…" rel="nofollow" data-origin="245" data-position="1">C++11: std::threads managed by a designated class</a></span><span class="jp-relatedposts-post-context">In "PlanetUbuntu"</span></p><p class="jp-relatedposts-post jp-relatedposts-post2" data-post-id="92" data-post-format="false"><span class="jp-relatedposts-post-title"><a class="jp-relatedposts-post-a" href="https://rafalcieslak.wordpress.com/2012/08/29/usb-midi-controllers-and-making-music-with-ubuntu/" title="USB MIDI controllers &amp;amp; making music with Ubuntu
+
+If you own an external USB MIDI controller (keyboard) or plan to buy one, you may be interested in how these things work with Ubuntu. Usually they  are shipped with a CD that contains a Windows/Mac drivers &amp; some music-making applications. Therefore it is common to see a note on…" rel="nofollow" data-origin="245" data-position="2">USB MIDI controllers &amp; making music with Ubuntu</a></span><span class="jp-relatedposts-post-context">In "PlanetUbuntu"</span></p></div></div></div></div>
+
+<div class="meta">
+Posted in <a href="https://rafalcieslak.wordpress.com/category/planetubuntu/" rel="category tag">PlanetUbuntu</a>, <a href="https://rafalcieslak.wordpress.com/category/ubuntu/" rel="category tag">Ubuntu</a>. Tags: <a href="https://rafalcieslak.wordpress.com/tag/c/" rel="tag">c</a>, <a href="https://rafalcieslak.wordpress.com/tag/cheats/" rel="tag">cheats</a>, <a href="https://rafalcieslak.wordpress.com/tag/development/" rel="tag">development</a>, <a href="https://rafalcieslak.wordpress.com/tag/english-2/" rel="tag">english</a>, <a href="https://rafalcieslak.wordpress.com/tag/hacking/" rel="tag">hacking</a>, <a href="https://rafalcieslak.wordpress.com/tag/ld/" rel="tag">ld</a>, <a href="https://rafalcieslak.wordpress.com/tag/libraries/" rel="tag">libraries</a>, <a href="https://rafalcieslak.wordpress.com/tag/linker/" rel="tag">linker</a>, <a href="https://rafalcieslak.wordpress.com/tag/programming/" rel="tag">programming</a>, <a href="https://rafalcieslak.wordpress.com/tag/shared/" rel="tag">shared</a>. <a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comments">33 Comments »</a></div>
+
+</div>
+
+	<h3 id="comments">33 Responses to “Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate&nbsp;programs”</h3>
+
+	<ol class="commentlist">
+	<li class="comment even thread-even depth-1 parent highlander-comment" id="comment-1170">
+	<div id="div-comment-1170">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/a1cd81c5894eee9598a28df9aa636260.png" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-a1cd81c5894eee9598a28df9aa636260-0">	<cite class="fn">Jim</cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1170" title="">April 2, 2013 at 5:33 pm</a> </small>
+
+	<p>This cannot be used for sandboxing, because applications don’t have to go through dynamically loaded libraries to do anything.  They can simply make system calls directly, and you would need to use Linux kernel features to intercept those.</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1170#respond" onclick="return addComment.moveForm( &quot;div-comment-1170&quot;, &quot;1170&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Jim">Reply</a>	</div>
+	</div>
+<ul class="children">
+<li class="comment byuser comment-author-rafalcieslak256 bypostauthor odd alt depth-2 highlander-comment" id="comment-1171">
+	<div id="div-comment-1171">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/dd96660141f4a2c4650b4f8cf0a71b7c" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-dd96660141f4a2c4650b4f8cf0a71b7c-0">	<cite class="fn"><a href="http://harmonyseq.wordpress.com/" rel="external nofollow" class="url">Rafał Cieślak</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1171" title="">April 2, 2013 at 5:39 pm</a> </small>
+
+	<p>True. You are indeed right that this way one can never be guaranteed success, which is precisely why I discourage from sandboxing applications this way. However, I consider this as a useful example of what can be done with a number of hooks.</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1171#respond" onclick="return addComment.moveForm( &quot;div-comment-1171&quot;, &quot;1171&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Rafał Cieślak">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="pingback even thread-odd thread-alt depth-1 highlander-comment" id="comment-1263">
+	<div id="div-comment-1263">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="http://incolumitas.com/2014/01/26/the-art-of-cheating-making-a-chess-com-chess-bot-using-a-unusual-approach/" rel="external nofollow" class="url">The art of cheating: Making a chess.com chess bot using a unusual approach! | Incolumitas</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1263" title="">January 26, 2014 at 4:01 pm</a> </small>
+
+	<p>[…] drawbacks: Hooking is very platform depended. On linux we could hook with kernel modules or the LD_PRELOAD trick. On Windows we'd need other hooking techniques like IAT hooking, using the microsoft hooking […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1263#respond" onclick="return addComment.moveForm( &quot;div-comment-1263&quot;, &quot;1263&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to The art of cheating: Making a chess.com chess bot using a unusual approach! | Incolumitas">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1 parent highlander-comment" id="comment-1279">
+	<div id="div-comment-1279">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/c5df2a9b2b3e1897bf84b85e84dcd4ee" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-c5df2a9b2b3e1897bf84b85e84dcd4ee-0">	<cite class="fn">herison</cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1279" title="">March 4, 2014 at 12:32 pm</a> </small>
+
+	<p>Great article !<br>
+I have a programme which require libc.so.6( GLIBC_2.14 ) so I take new libc.so.6 and tried to preload libc.so.6 but I don’t work. Have you a solution ?</p>
+<p>Thank for this article.</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1279#respond" onclick="return addComment.moveForm( &quot;div-comment-1279&quot;, &quot;1279&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to herison">Reply</a>	</div>
+	</div>
+<ul class="children">
+<li class="comment byuser comment-author-rafalcieslak256 bypostauthor even depth-2 parent highlander-comment" id="comment-1280">
+	<div id="div-comment-1280">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/dd96660141f4a2c4650b4f8cf0a71b7c" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-dd96660141f4a2c4650b4f8cf0a71b7c-1">	<cite class="fn"><a href="http://harmonyseq.wordpress.com/" rel="external nofollow" class="url">Rafał Cieślak</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1280" title="">March 4, 2014 at 11:55 pm</a> </small>
+
+	<p>I am not sure what are you trying to do. Do you wish to force an application to use a different libc.so.6 version? Some background information on what are you trying to achieve and how exactly is it not working the way you expect it to work would be great.</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1280#respond" onclick="return addComment.moveForm( &quot;div-comment-1280&quot;, &quot;1280&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Rafał Cieślak">Reply</a>	</div>
+	</div>
+<ul class="children">
+<li class="comment odd alt depth-3 highlander-comment" id="comment-1287">
+	<div id="div-comment-1287">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/c5df2a9b2b3e1897bf84b85e84dcd4ee" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-c5df2a9b2b3e1897bf84b85e84dcd4ee-1">	<cite class="fn">herison</cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1287" title="">March 10, 2014 at 12:39 pm</a> </small>
+
+	<p>I would compile a C++11 application on the redhat, I got precompiled binary of g++ but when I launch g++ :<br>
+-bash-4.1$ ./g++<br>
+./g++: /lib64/libc.so.6: version `GLIBC_2.14′ not found (required by ./g++)</p>
+<p>I saw that libc is executable:<br>
+-bash-4.1$ /lib64/libc.so.6 | head -1<br>
+GNU C Library stable release version 2.12, by Roland McGrath et al.</p>
+<p>My libc is too old, I got last precompiled libc.so.6 and when I preload it.<br>
+-bash-4.1$ LD_PRELOAD=$PWD/lib64/libc.so.6 ./usr/bin/g++<br>
+ERROR: ld.so: object ‘/auto/herison/my_env/dl/hermetic/lib64/libc.so.6′ from LD_PRELOAD cannot be preloaded: ignored.<br>
+./usr/bin/g++: /lib64/libc.so.6: version `GLIBC_2.14’ not found (required by ./usr/bin/g++)</p>
+<p>And when I execute last libc.so.6 :<br>
+-bash-4.1$ $PWD/lib64/libc.so.6<br>
+/auto/herison/my_env/dl/hermetic/lib64/libc.so.6: relocation error: /auto/herison/my_env/dl/hermetic/lib64/libc.so.6: symbol _dl_starting_up, version GLIBC_PRIVATE not defined in file ld-linux.so.2 with link time reference</p>
+<p>Thanks for your help</p>
+	<div class="reply">
+			</div>
+	</div>
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even depth-2 highlander-comment" id="comment-2134">
+	<div id="div-comment-2134">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/e3f6ad69727a56746bfdde3768929f79" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-e3f6ad69727a56746bfdde3768929f79-0">	<cite class="fn"><a href="http://www.gonoph.net/" rel="external nofollow" class="url">Billy Holmes</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-2134" title="">March 18, 2016 at 1:19 am</a> </small>
+
+	<p>You can use LD_LIBRARY_PATH for this. </p>
+<p>Though, it’d probably be easier to just run a docker image of a newer version of linux, like fedora:22 docker image, or even the rhel:7.2 docker image.</p>
+<p>Sounds like you’re on RHEL 6 (mentioned below). You could run your compile on RHEL7 (comes with glibc 2.17), or install docker on a fedora or rhel7 box, and run your compile that way (probably the most stable option).</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=2134#respond" onclick="return addComment.moveForm( &quot;div-comment-2134&quot;, &quot;2134&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Billy Holmes">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="comment odd alt depth-2 highlander-comment" id="comment-3245">
+	<div id="div-comment-3245">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/0816b68c89f79c233ec6048193a6143f" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-0816b68c89f79c233ec6048193a6143f-0">	<cite class="fn">andoryu</cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-3245" title="">February 17, 2018 at 9:13 am</a> </small>
+
+	<p>You probably want to specify a newer ld.so to do such:<br>
+env LD_PRELOAD=/path/to/libc.so.6 /path/to/ld/ld-linux.so EXE</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=3245#respond" onclick="return addComment.moveForm( &quot;div-comment-3245&quot;, &quot;3245&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to andoryu">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="pingback even thread-odd thread-alt depth-1 highlander-comment" id="comment-1377">
+	<div id="div-comment-1377">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="http://www.agilephp.net/2014/07/how-to-hook-a-system-call/" rel="external nofollow" class="url">如何hook一个系统调用 | AgilePHP</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1377" title="">July 21, 2014 at 3:15 pm</a> </small>
+
+	<p>[…] 这篇 […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1377#respond" onclick="return addComment.moveForm( &quot;div-comment-1377&quot;, &quot;1377&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to 如何hook一个系统调用 | AgilePHP">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback odd alt thread-even depth-1 highlander-comment" id="comment-1379">
+	<div id="div-comment-1379">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="http://www.viruss.eu/security/diving-deep-into-mayhem/" rel="external nofollow" class="url">Diving Deep into Mayhem | Virus / malware / hacking / security news</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1379" title="">July 24, 2014 at 5:23 pm</a> </small>
+
+	<p>[…] is responsible for clean up and for executing the malware. It accomplishes this using the so called ‘LD_PRELOAD’ -technique in which an environment variable, ‘LD_PRELOAD’ is set with the path to the dropped […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1379#respond" onclick="return addComment.moveForm( &quot;div-comment-1379&quot;, &quot;1379&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Diving Deep into Mayhem | Virus / malware / hacking / security news">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1 parent highlander-comment" id="comment-1549">
+	<div id="div-comment-1549">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/12d79ae5d71f53bd0ac932a669fd2f57.jpeg" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-12d79ae5d71f53bd0ac932a669fd2f57-0">	<cite class="fn"><a href="http://gravatar.com/bluework" rel="external nofollow" class="url">Cataclismo</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1549" title="">December 24, 2014 at 6:28 pm</a> </small>
+
+	<p>I have an application with a class called “A”, for example, and a function in this class called “toast”. I know exactly how is declared the function “toast”. How can I intercept this function using a library? My application is compiled using G++ 4.8 with C++ 11.<br>
+I tried to make a library with function “A::toast()”, but my app it’s calling the good one. Why? I created library using G++ aswell.<br>
+Can you tell me the flags I need in order to work and also what I have to declare to work? I heard something about “extern “C”“ or something.</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1549#respond" onclick="return addComment.moveForm( &quot;div-comment-1549&quot;, &quot;1549&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Cataclismo">Reply</a>	</div>
+	</div>
+<ul class="children">
+<li class="comment byuser comment-author-rafalcieslak256 bypostauthor odd alt depth-2 parent highlander-comment" id="comment-1554">
+	<div id="div-comment-1554">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/dd96660141f4a2c4650b4f8cf0a71b7c" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-dd96660141f4a2c4650b4f8cf0a71b7c-2">	<cite class="fn"><a href="http://harmonyseq.wordpress.com/" rel="external nofollow" class="url">Rafał Cieślak</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1554" title="">December 30, 2014 at 8:12 pm</a> </small>
+
+	<p>Hello! The reason why you are unable to get this trick to work is because you are working with C++. The example I used was pure C, and it is indeed easier in such case. The point is that C++ uses <a href="http://en.wikipedia.org/wiki/Name_mangling" rel="nofollow">name mangling</a>, so you need to take that into account when naming your functions.<br>
+Furthermore, and more importantly, you will not see any changes if toast() is defined within your application. The trick described in this article can only substitute functions that come from shared libraries. A function that is defined within the app itself is not processed by the dynamic linker, so it cannot be substituted. It is not possible to simply exchange a function within a program. If you are interested in details, I recommend you to learn about static and dynamic linking ;-)</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1554#respond" onclick="return addComment.moveForm( &quot;div-comment-1554&quot;, &quot;1554&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Rafał Cieślak">Reply</a>	</div>
+	</div>
+<ul class="children">
+<li class="comment byuser comment-author-bluework even depth-3 highlander-comment" id="comment-1555">
+	<div id="div-comment-1555">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/12d79ae5d71f53bd0ac932a669fd2f57.jpeg" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-12d79ae5d71f53bd0ac932a669fd2f57-1">	<cite class="fn"><a href="http://bluework.wordpress.com/" rel="external nofollow" class="url">bluework</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1555" title="">December 30, 2014 at 10:28 pm</a> </small>
+
+	<p>I’ve seen people doing it… :(</p>
+	<div class="reply">
+			</div>
+	</div>
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="pingback odd alt thread-even depth-1 highlander-comment" id="comment-1662">
+	<div id="div-comment-1662">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="https://siguniang.wordpress.com/2015/05/15/override-functions-with-ld_preload/" rel="external nofollow" class="url">LD_PRELOADで動的ライブラリ関数を上書きする | Siguniang's Blog</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1662" title="">May 15, 2015 at 3:48 pm</a> </small>
+
+	<p>[…] 実務家向けに必要なことはだいたいここに書かれている <a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject&amp;#8230" rel="nofollow">https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject&amp;#8230</a>; […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1662#respond" onclick="return addComment.moveForm( &quot;div-comment-1662&quot;, &quot;1662&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to LD_PRELOADで動的ライブラリ関数を上書きする | Siguniang&#39;s Blog">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback even thread-odd thread-alt depth-1 highlander-comment" id="comment-1759">
+	<div id="div-comment-1759">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="https://research.g0blin.co.uk/flick-2-vulnhub-writeup/" rel="external nofollow" class="url">Flick 2 VulnHub Writeup » g0blin Research</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1759" title="">September 1, 2015 at 10:17 pm</a> </small>
+
+	<p>[…] refreshing my memory (thanks to this post), I create a little shared library that overrides the rand method. After running […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1759#respond" onclick="return addComment.moveForm( &quot;div-comment-1759&quot;, &quot;1759&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Flick 2 VulnHub Writeup » g0blin Research">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback odd alt thread-even depth-1 highlander-comment" id="comment-1988">
+	<div id="div-comment-1988">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="https://paradise2-yjregionleader.rhcloud.com/2015/11/15/ld_preload/" rel="external nofollow" class="url">LD_PRELOAD | Paradise2</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-1988" title="">November 15, 2015 at 5:37 pm</a> </small>
+
+	<p>[…] 其文章內容參考、翻譯自:Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate programs […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=1988#respond" onclick="return addComment.moveForm( &quot;div-comment-1988&quot;, &quot;1988&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to LD_PRELOAD | Paradise2">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-tower98 even thread-odd thread-alt depth-1 highlander-comment" id="comment-2215">
+	<div id="div-comment-2215">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/c27175ccddabd4cc7cf414f70b273662.png" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-c27175ccddabd4cc7cf414f70b273662-0">	<cite class="fn">tower98</cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-2215" title="">May 8, 2016 at 10:34 pm</a> </small>
+
+	<p>Already using this idea to “fix” Cisco VPN client which messes up my iptables and routing table while running. Found that hack somewhere online. Thank You for explaining how this works!</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=2215#respond" onclick="return addComment.moveForm( &quot;div-comment-2215&quot;, &quot;2215&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to tower98">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1 highlander-comment" id="comment-2264">
+	<div id="div-comment-2264">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/photo.jpg" class="avatar avatar-32" height="32" width="32">	<cite class="fn"><a href="https://plus.google.com/116238287437585890293" rel="external nofollow" class="url">Sebastian Parschauer</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-2264" title="">June 20, 2016 at 4:05 pm</a> </small>
+
+	<p>You should have a look at <a href="https://github.com/ugtrain/ugtrain" rel="nofollow">https://github.com/ugtrain/ugtrain</a>. ugtrain is a game trainer with dynamic memory support (hooks malloc(), free(), etc. with LD_PRELOAD), runs the game itself and doesn’t require any root privileges – not even for scanmem. Btw.: I also maintain scanmem/GameConqueror since last year at: <a href="https://github.com/scanmem/scanmem/" rel="nofollow">https://github.com/scanmem/scanmem/</a>. We have it in the scanmem man page now why scanmem requires root privileges (Yama security module).</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=2264#respond" onclick="return addComment.moveForm( &quot;div-comment-2264&quot;, &quot;2264&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Sebastian Parschauer">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback even thread-odd thread-alt depth-1 highlander-comment" id="comment-2306">
+	<div id="div-comment-2306">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="https://www.hkpug.net/2016/08/08/centos-7-%e4%b8%8b%e5%ae%89%e5%85%a8%e9%85%8d%e7%bd%ae-ssh-%e4%ba%8c/" rel="external nofollow" class="url">CentOS 7 下安全配置 SSH (二) « 香港網頁開發網誌</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-2306" title="">August 8, 2016 at 11:45 am</a> </small>
+
+	<p>[…] LD_PRELOAD […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=2306#respond" onclick="return addComment.moveForm( &quot;div-comment-2306&quot;, &quot;2306&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to CentOS 7 下安全配置 SSH (二) « 香港網頁開發網誌">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback odd alt thread-even depth-1 highlander-comment" id="comment-2466">
+	<div id="div-comment-2466">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/87f77c32218a9d7591cb2142708d4123.jpeg" class="avatar avatar-32" height="32" width="32">	<cite class="fn"><a href="https://itunsecurity.wordpress.com/2016/12/29/vulnhub-flickii-to-the-root-walkthrough-part2/" rel="external nofollow" class="url">vulnhub: flickII – to the root – walkthrough part2 | IT-Unsecurity</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-2466" title="">December 29, 2016 at 4:23 am</a> </small>
+
+	<p>[…] If youre not familiar with the LD_PRELOAD technique google it quickly or read up on this well written post of it. […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=2466#respond" onclick="return addComment.moveForm( &quot;div-comment-2466&quot;, &quot;2466&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to vulnhub: flickII – to the root – walkthrough part2 | IT-Unsecurity">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1 parent highlander-comment" id="comment-2496">
+	<div id="div-comment-2496">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/e3a7d6f271ed4aa8cd2a607035764f4b" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-e3a7d6f271ed4aa8cd2a607035764f4b-0">	<cite class="fn">Brian</cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-2496" title="">January 15, 2017 at 11:36 am</a> </small>
+
+	<p>How about I bypass you by issuing the open syscall directly ;)</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=2496#respond" onclick="return addComment.moveForm( &quot;div-comment-2496&quot;, &quot;2496&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Brian">Reply</a>	</div>
+	</div>
+<ul class="children">
+<li class="comment byuser comment-author-rafalcieslak256 bypostauthor odd alt depth-2 highlander-comment" id="comment-2497">
+	<div id="div-comment-2497">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/dd96660141f4a2c4650b4f8cf0a71b7c" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-dd96660141f4a2c4650b4f8cf0a71b7c-3">	<cite class="fn"><a href="http://harmonyseq.wordpress.com/" rel="external nofollow" class="url">Rafał Cieślak</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-2497" title="">January 15, 2017 at 2:01 pm</a> </small>
+
+	<p>How about I ptrace your program ;)</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=2497#respond" onclick="return addComment.moveForm( &quot;div-comment-2497&quot;, &quot;2497&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Rafał Cieślak">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="pingback even thread-even depth-1 highlander-comment" id="comment-2633">
+	<div id="div-comment-2633">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="https://www.datawire.io/code-injection-on-linux-and-macos/" rel="external nofollow" class="url">"This will only hurt for a moment": code injection on Linux and macOS | @datawireio</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-2633" title="">April 19, 2017 at 5:32 pm</a> </small>
+
+	<p>[…] Cieślak wrote an excellent intro to LD_PRELOAD; I borrowed the dlsym code from […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=2633#respond" onclick="return addComment.moveForm( &quot;div-comment-2633&quot;, &quot;2633&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to &quot;This will only hurt for a moment&quot;: code injection on Linux and macOS | @datawireio">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback odd alt thread-odd thread-alt depth-1 highlander-comment" id="comment-2641">
+	<div id="div-comment-2641">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="http://www.liusongzuo.com/2017/04/29/ld_preload/" rel="external nofollow" class="url">LD_PRELOAD | Luca's Blog!</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-2641" title="">April 28, 2017 at 11:15 pm</a> </small>
+
+	<p>[…] googled “LD_PRELOAD hacks”, clicked on Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate programs, and we were up and […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=2641#respond" onclick="return addComment.moveForm( &quot;div-comment-2641&quot;, &quot;2641&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to LD_PRELOAD | Luca&#39;s Blog!">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-hitechangel even thread-even depth-1 highlander-comment" id="comment-2811">
+	<div id="div-comment-2811">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/39cdbe47fde550c8a47f365079f1d673" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-39cdbe47fde550c8a47f365079f1d673-0">	<cite class="fn"><a href="http://hitechangel.wordpress.com/" rel="external nofollow" class="url">Hi-Angel</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-2811" title="">July 18, 2017 at 8:49 pm</a> </small>
+
+	<p>Thanks!</p>
+<p>Note for readers: if you overload `malloc()` to use `printf()` inside it, it gonna cause segfault. Probably `printf()` is calling malloc, causes infinite recursion and crash. What’s really bad: for some reason even gdb doesn’t handle this situation, it just says `During startup program terminated with signal SIGSEGV`, and leaves you in a lone confusion.</p>
+<p>The solution is to use `fprintf()` instead.</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=2811#respond" onclick="return addComment.moveForm( &quot;div-comment-2811&quot;, &quot;2811&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Hi-Angel">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback odd alt thread-odd thread-alt depth-1 highlander-comment" id="comment-3122">
+	<div id="div-comment-3122">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="http://www.themetabytes.com/2017/11/25/ld_preload-hacks/" rel="external nofollow" class="url">LD_PRELOAD hacks – The Meta Bytes</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-3122" title="">November 25, 2017 at 8:30 am</a> </small>
+
+	<p>[…] Some of the content for this post was inspired by (lifted from) this post. […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=3122#respond" onclick="return addComment.moveForm( &quot;div-comment-3122&quot;, &quot;3122&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to LD_PRELOAD hacks – The Meta Bytes">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback even thread-even depth-1 highlander-comment" id="comment-3137">
+	<div id="div-comment-3137">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/cropped-images.jpeg" class="avatar avatar-32" height="32" width="32">	<cite class="fn"><a href="https://clusterassets.wordpress.com/2017/12/04/new-top-story-on-hacker-news-linker-tricks-using-ld_preload-to-inject-features-and-investigate-programs/" rel="external nofollow" class="url">New top story on Hacker News: Linker tricks: Using LD_PRELOAD to inject features and investigate programs – ÇlusterAssets Inc.,</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-3137" title="">December 4, 2017 at 6:54 am</a> </small>
+
+	<p>[…] Linker tricks: Using LD_PRELOAD to inject features and investigate programs 6 by striking | 0 comments on Hacker News. […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=3137#respond" onclick="return addComment.moveForm( &quot;div-comment-3137&quot;, &quot;3137&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to New top story on Hacker News: Linker tricks: Using LD_PRELOAD to inject features and investigate programs – ÇlusterAssets Inc.,">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1 highlander-comment" id="comment-3138">
+	<div id="div-comment-3138">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/ad5389c693ff8045f2263aa817eb5163" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-ad5389c693ff8045f2263aa817eb5163-0">	<cite class="fn">Juha</cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-3138" title="">December 4, 2017 at 11:42 am</a> </small>
+
+	<p>Notice the third optional argument to open(2), creation mode.  It isn’t passed along.</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=3138#respond" onclick="return addComment.moveForm( &quot;div-comment-3138&quot;, &quot;3138&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Juha">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-oleandre even thread-even depth-1 highlander-comment" id="comment-3143">
+	<div id="div-comment-3143">
+	<span class="comment-author vcard">
+	<img alt="" src="./linux-c-preload_files/1f003db5ca435fa7e4c1571c1233b41d.jpeg" class="avatar avatar-32 grav-hashed grav-hijack" height="32" width="32" id="grav-1f003db5ca435fa7e4c1571c1233b41d-0">	<cite class="fn"><a href="http://oleandre.wordpress.com/" rel="external nofollow" class="url">oleandre</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-3143" title="">December 4, 2017 at 3:17 pm</a> </small>
+
+	<p>Taking this one step further, one could use LD_PRELOAD with Frida and write the instrumentation logic in JavaScript:<br>
+<a href="https://www.frida.re/docs/gadget/" rel="nofollow">https://www.frida.re/docs/gadget/</a><br>
+This also supports monitoring the .js file for changes and reloading the instrumentation logic live, which is great for game tweaks. Just save the file and instantly see the results.</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=3143#respond" onclick="return addComment.moveForm( &quot;div-comment-3143&quot;, &quot;3143&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to oleandre">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback odd alt thread-odd thread-alt depth-1 highlander-comment" id="comment-3148">
+	<div id="div-comment-3148">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="https://www.cronweekly.com/issue-109/" rel="external nofollow" class="url">cron.weekly issue #109: PostgreSQL, GIF, VLC, containerd, Docker, NTP &amp; more</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-3148" title="">December 10, 2017 at 8:55 am</a> </small>
+
+	<p>[…] Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate programs […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=3148#respond" onclick="return addComment.moveForm( &quot;div-comment-3148&quot;, &quot;3148&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to cron.weekly issue #109: PostgreSQL, GIF, VLC, containerd, Docker, NTP &amp; more">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback even thread-even depth-1 highlander-comment" id="comment-3177">
+	<div id="div-comment-3177">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="http://www.pearltrees.com/s243a/lib-managment-linux/id19421905/item216077293" rel="external nofollow" class="url">Lib managment (Linux) | Pearltrees</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-3177" title="">December 20, 2017 at 9:35 am</a> </small>
+
+	<p>[…] might try this tommorow and see what happens P.S. Fakechroot(1): gives fake chroot environment. Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate programs | Rafał …. This post assumes some basic C skills. Linux puts you in full control. This is not always seen […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=3177#respond" onclick="return addComment.moveForm( &quot;div-comment-3177&quot;, &quot;3177&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to Lib managment (Linux) | Pearltrees">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback odd alt thread-odd thread-alt depth-1 highlander-comment" id="comment-3195">
+	<div id="div-comment-3195">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="https://2rot13.wordpress.com/2018/01/03/ld_preload-inject-new-functions/" rel="external nofollow" class="url">LD_PRELOAD, inject new functions – Security blogs, collected</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-3195" title="">January 3, 2018 at 12:22 pm</a> </small>
+
+	<p>[…] <a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject&amp;#8230" rel="nofollow">https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject&amp;#8230</a>; […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=3195#respond" onclick="return addComment.moveForm( &quot;div-comment-3195&quot;, &quot;3195&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to LD_PRELOAD, inject new functions – Security blogs, collected">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+<li class="pingback even thread-even depth-1 highlander-comment" id="comment-3399">
+	<div id="div-comment-3399">
+	<span class="comment-author vcard">
+		<cite class="fn"><a href="http://mattfife.com/?p=3549" rel="external nofollow" class="url">LD_PRELOAD and stealing function calls – Matt's Homepage</a></cite> Says:	</span>
+		<br>
+
+	<small class="comment-meta commentmetadata"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-3399" title="">April 25, 2018 at 7:07 pm</a> </small>
+
+	<p>[…] Dynamic linker tricks: Using LD_PRELOAD to cheat, inject features and investigate&nbsp;programs […]</p>
+	<div class="reply">
+		<a rel="nofollow" class="comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/?replytocom=3399#respond" onclick="return addComment.moveForm( &quot;div-comment-3399&quot;, &quot;3399&quot;, &quot;respond&quot;, &quot;245&quot; )" aria-label="Reply to LD_PRELOAD and stealing function calls – Matt&#39;s Homepage">Reply</a>	</div>
+	</div>
+</li><!-- #comment-## -->
+	</ol>
+	<div class="navigation">
+		<div class="alignleft"></div>
+		<div class="alignright"></div>
+	</div>
+	<br>
+
+
+	<div id="respond" class="comment-respond js">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#respond" style="display:none;">Cancel reply</a></small></h3>			<form action="https://rafalcieslak.wordpress.com/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+				<input type="hidden" id="highlander_comment_nonce" name="highlander_comment_nonce" value="6e4fc6887b"><input type="hidden" name="_wp_http_referer" value="/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/">
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest">
+
+<div class="comment-form-field comment-textarea">
+	
+	<div id="comment-form-comment"><textarea tabindex="-1" style="position: absolute; top: -999px; left: 0px; right: auto; bottom: auto; border: 0px; padding: 0px; box-sizing: content-box; word-wrap: break-word; overflow: hidden; transition: none; height: 0px !important; min-height: 0px !important; font-family: Arial, Helvetica, Tahoma, Verdana, sans-serif; font-size: 14px; font-weight: 400; font-style: normal; letter-spacing: 0px; text-transform: none; text-decoration: none solid rgba(0, 0, 0, 0.7); word-spacing: 0px; text-indent: 0px; line-height: 22.4px; width: 778px;" class="autosizejs "></textarea><textarea id="comment" name="comment" title="Enter your comment here..." placeholder="Enter your comment here..." style="height: 42px; overflow: hidden; word-wrap: break-word; resize: none;"></textarea></div>
+</div>
+
+<div id="comment-form-identity" style="display: none;">
+	<div id="comment-form-nascar">
+		<p>Fill in your details below or click an icon to log in:</p>
+		<ul>
+			<li class="selected" style="display:none;">
+				<a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-form-guest" id="postas-guest" class="nascar-signin-link" title="Login via Guest">
+									</a>
+			</li>
+			<li>
+				<a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-form-load-service:WordPress.com" id="postas-wordpress" class="nascar-signin-link" title="Login via WordPress.com">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24"><rect x="0" fill="none" width="24" height="24"></rect><g><path fill="#0087be" d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.05-.18 2.986-.51-.024-.037-.046-.078-.065-.123l-2.762-7.57zM3.008 12c0 3.56 2.07 6.634 5.068 8.092L3.788 8.342c-.5 1.117-.78 2.354-.78 3.658zm15.06-.454c0-1.112-.398-1.88-.74-2.48-.456-.74-.883-1.368-.883-2.11 0-.825.627-1.595 1.51-1.595.04 0 .078.006.116.008-1.598-1.464-3.73-2.36-6.07-2.36-3.14 0-5.904 1.613-7.512 4.053.21.008.41.012.58.012.94 0 2.395-.114 2.395-.114.484-.028.54.684.057.74 0 0-.487.058-1.03.086l3.275 9.74 1.968-5.902-1.4-3.838c-.485-.028-.944-.085-.944-.085-.486-.03-.43-.77.056-.742 0 0 1.484.114 2.368.114.94 0 2.397-.114 2.397-.114.486-.028.543.684.058.74 0 0-.488.058-1.03.086l3.25 9.665.897-2.997c.456-1.17.684-2.137.684-2.907zm1.82-3.86c.04.286.06.593.06.924 0 .912-.17 1.938-.683 3.22l-2.746 7.94c2.672-1.558 4.47-4.454 4.47-7.77 0-1.564-.4-3.033-1.1-4.314zM12 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"></path></g></svg>				</a>
+			</li>
+			<li>
+			<iframe id="googleplus-sign-in" name="googleplus-sign-in" src="./linux-c-preload_files/saved_resource(12).html" width="24" height="24" scrolling="no" allowtransparency="true" seamless="seamless" frameborder="0"></iframe>
+			</li>
+			<li>
+				<a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-form-load-service:Twitter" id="postas-twitter" class="nascar-signin-link" title="Login via Twitter">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24"><rect x="0" fill="none" width="24" height="24"></rect><g><path fill="#1DA1F2" d="M22.23 5.924c-.736.326-1.527.547-2.357.646.847-.508 1.498-1.312 1.804-2.27-.793.47-1.67.812-2.606.996C18.325 4.498 17.258 4 16.078 4c-2.266 0-4.103 1.837-4.103 4.103 0 .322.036.635.106.935-3.41-.17-6.433-1.804-8.457-4.287-.353.607-.556 1.312-.556 2.064 0 1.424.724 2.68 1.825 3.415-.673-.022-1.305-.207-1.86-.514v.052c0 1.988 1.415 3.647 3.293 4.023-.344.095-.707.145-1.08.145-.265 0-.522-.026-.773-.074.522 1.63 2.038 2.817 3.833 2.85-1.404 1.1-3.174 1.757-5.096 1.757-.332 0-.66-.02-.98-.057 1.816 1.164 3.973 1.843 6.29 1.843 7.547 0 11.675-6.252 11.675-11.675 0-.178-.004-.355-.012-.53.802-.578 1.497-1.3 2.047-2.124z"></path></g></svg>				</a>
+			</li>
+			<li>
+				<a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#comment-form-load-service:Facebook" id="postas-facebook" class="nascar-signin-link" title="Login via Facebook">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24"><rect x="0" fill="none" width="24" height="24"></rect><g><path fill="#3B5998" d="M20.007 3H3.993C3.445 3 3 3.445 3 3.993v16.013c0 .55.445.994.993.994h8.62v-6.97H10.27V11.31h2.346V9.31c0-2.325 1.42-3.59 3.494-3.59.993 0 1.847.073 2.096.106v2.43h-1.438c-1.128 0-1.346.537-1.346 1.324v1.734h2.69l-.35 2.717h-2.34V21h4.587c.548 0 .993-.445.993-.993V3.993c0-.548-.445-.993-.993-.993z"></path></g></svg>				</a>
+			</li>
+		</ul>
+	</div>
+
+	<div id="comment-form-guest" class="comment-form-service selected">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank">				<img src="./linux-c-preload_files/ad516503a11cd5ca435acc9bb6523536" alt="Gravatar" width="25" class="no-grav">
+</a>			</div>
+
+				<div class="comment-form-fields">
+				<div class="comment-form-field comment-form-email">
+					<label for="email">Email <span class="required">(required)</span> <span class="nopublish">(Address never made public)</span></label>
+					<div class="comment-form-input"><input id="email" name="email" type="email" value=""></div>
+				</div>
+				<div class="comment-form-field comment-form-author">
+					<label for="author">Name <span class="required">(required)</span></label>
+					<div class="comment-form-input"><input id="author" name="author" type="text" value=""></div>
+				</div>
+				<div class="comment-form-field comment-form-url">
+					<label for="url">Website</label>
+					<div class="comment-form-input"><input id="url" name="url" type="url" value=""></div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+
+	<div id="comment-form-wordpress" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./linux-c-preload_files/ad516503a11cd5ca435acc9bb6523536" alt="WordPress.com Logo" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value="">
+				<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value="">
+				<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value="">
+						<p class="comment-form-posting-as pa-wordpress">
+			<strong></strong>
+			You are commenting using your WordPress.com account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( &#39;wordpress&#39; );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24"><rect x="0" fill="none" width="24" height="24"></rect><g><path fill="#0087be" d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.05-.18 2.986-.51-.024-.037-.046-.078-.065-.123l-2.762-7.57zM3.008 12c0 3.56 2.07 6.634 5.068 8.092L3.788 8.342c-.5 1.117-.78 2.354-.78 3.658zm15.06-.454c0-1.112-.398-1.88-.74-2.48-.456-.74-.883-1.368-.883-2.11 0-.825.627-1.595 1.51-1.595.04 0 .078.006.116.008-1.598-1.464-3.73-2.36-6.07-2.36-3.14 0-5.904 1.613-7.512 4.053.21.008.41.012.58.012.94 0 2.395-.114 2.395-.114.484-.028.54.684.057.74 0 0-.487.058-1.03.086l3.275 9.74 1.968-5.902-1.4-3.838c-.485-.028-.944-.085-.944-.085-.486-.03-.43-.77.056-.742 0 0 1.484.114 2.368.114.94 0 2.397-.114 2.397-.114.486-.028.543.684.058.74 0 0-.488.058-1.03.086l3.25 9.665.897-2.997c.456-1.17.684-2.137.684-2.907zm1.82-3.86c.04.286.06.593.06.924 0 .912-.17 1.938-.683 3.22l-2.746 7.94c2.672-1.558 4.47-4.454 4.47-7.77 0-1.564-.4-3.033-1.1-4.314zM12 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"></path></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-googleplus" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./linux-c-preload_files/ad516503a11cd5ca435acc9bb6523536" alt="Google+ photo" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="googleplus_avatar" id="googleplus-avatar" class="comment-meta-googleplus" value="">
+				<input type="hidden" name="googleplus_user_id" id="googleplus-user_id" class="comment-meta-googleplus" value="">
+				<input type="hidden" name="googleplus_access_token" id="googleplus-access_token" class="comment-meta-googleplus" value="">
+						<p class="comment-form-posting-as pa-googleplus">
+			<strong></strong>
+			You are commenting using your Google+ account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( &#39;googleplus&#39; );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" x="0px" y="0px" viewBox="0 0 60 60"><path fill="#519bf7" d="M56.3,30c0,-1.6 -0.2,-3.4 -0.6,-5h-3.1H42.2H30v10.6h14.8C44,39.3 42,42 39.1,43.9l8.8,6.8C53,46 56.3,39 56.3,30z"></path><path fill="#3db366" d="M30,57.5c6.7,0 13.1,-2.4 17.9,-6.8l-8.8,-6.8c-2.5,1.6 -5.6,2.4 -9.1,2.4c-7.2,0 -13.3,-4.7 -15.4,-11.2l-9.3,7.1C9.8,51.3 19.1,57.5 30,57.5z"></path><path fill="#fdc600" d="M5.3,42.2l9.3,-7.1c-0.5,-1.6 -0.8,-3.3 -0.8,-5.1s0.3,-3.5 0.8,-5.1l-9.3,-7.1C3.5,21.5 2.5,25.6 2.5,30S3.5,38.5 5.3,42.2z"></path><path fill="#f15b44" d="M40.1,17.4l8,-8C43.3,5.1 37,2.5 30,2.5C19.1,2.5 9.8,8.7 5.3,17.8l9.3,7.1c2.1,-6.5 8.2,-11.1 15.4,-11.1C33.9,13.7 37.4,15.1 40.1,17.4z"></path></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-twitter" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./linux-c-preload_files/ad516503a11cd5ca435acc9bb6523536" alt="Twitter picture" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value="">
+				<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value="">
+				<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value="">
+						<p class="comment-form-posting-as pa-twitter">
+			<strong></strong>
+			You are commenting using your Twitter account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( &#39;twitter&#39; );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24"><rect x="0" fill="none" width="24" height="24"></rect><g><path fill="#1DA1F2" d="M22.23 5.924c-.736.326-1.527.547-2.357.646.847-.508 1.498-1.312 1.804-2.27-.793.47-1.67.812-2.606.996C18.325 4.498 17.258 4 16.078 4c-2.266 0-4.103 1.837-4.103 4.103 0 .322.036.635.106.935-3.41-.17-6.433-1.804-8.457-4.287-.353.607-.556 1.312-.556 2.064 0 1.424.724 2.68 1.825 3.415-.673-.022-1.305-.207-1.86-.514v.052c0 1.988 1.415 3.647 3.293 4.023-.344.095-.707.145-1.08.145-.265 0-.522-.026-.773-.074.522 1.63 2.038 2.817 3.833 2.85-1.404 1.1-3.174 1.757-5.096 1.757-.332 0-.66-.02-.98-.057 1.816 1.164 3.973 1.843 6.29 1.843 7.547 0 11.675-6.252 11.675-11.675 0-.178-.004-.355-.012-.53.802-.578 1.497-1.3 2.047-2.124z"></path></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-facebook" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="./linux-c-preload_files/ad516503a11cd5ca435acc9bb6523536" alt="Facebook photo" width="25" class="no-grav">
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value="">
+				<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value="">
+				<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value="">
+						<p class="comment-form-posting-as pa-facebook">
+			<strong></strong>
+			You are commenting using your Facebook account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( &#39;facebook&#39; );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24"><rect x="0" fill="none" width="24" height="24"></rect><g><path fill="#3B5998" d="M20.007 3H3.993C3.445 3 3 3.445 3 3.993v16.013c0 .55.445.994.993.994h8.62v-6.97H10.27V11.31h2.346V9.31c0-2.325 1.42-3.59 3.494-3.59.993 0 1.847.073 2.096.106v2.43h-1.438c-1.128 0-1.346.537-1.346 1.324v1.734h2.69l-.35 2.717h-2.34V21h4.587c.548 0 .993-.445.993-.993V3.993c0-.548-.445-.993-.993-.993z"></path></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+
+	<div id="comment-form-load-service" class="comment-form-service">
+		<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Cancel</a></div>
+		<p>Connecting to %s</p>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+var highlander_expando_javascript = function(){
+	var input = document.createElement( 'input' ),
+	    comment = jQuery( '#comment' );
+
+	if ( 'placeholder' in input ) {
+		comment.attr( 'placeholder', jQuery( '.comment-textarea label' ).remove().text() );
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	jQuery( '#comment-form-identity' ).hide();
+	jQuery( '#comment-form-subscribe' ).hide();
+	jQuery( '#commentform .form-submit' ).hide();
+
+	comment.css( { 'height':'10px' } ).one( 'focus', function() {
+		var timer = setInterval( HighlanderComments.resizeCallback, 10 )
+		jQuery( this ).animate( { 'height': HighlanderComments.initialHeight } ).delay( 100 ).queue( function(n) { clearInterval( timer ); HighlanderComments.resizeCallback(); n(); } );
+		jQuery( '#comment-form-identity' ).slideDown();
+		jQuery( '#comment-form-subscribe' ).slideDown();
+		jQuery( '#commentform .form-submit' ).slideDown();
+	});
+}
+jQuery(document).ready( highlander_expando_javascript );
+</script>
+
+<div id="comment-form-subscribe" style="display: none;">
+	<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;"> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Notify me of new comments via email.</label></p></div>
+
+
+
+
+<p class="form-submit" style="display: none;"><input name="submit" type="submit" id="comment-submit" class="submit" value="Post Comment"> <input type="hidden" name="comment_post_ID" value="245" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="3fce1f2834"></p>
+<input type="hidden" name="genseq" value="1534607725">
+<p style="display: none;"></p>			<input type="hidden" id="ak_js" name="ak_js" value="1534607749804"></form>
+			</div><!-- #respond -->
+	<div style="clear: both"></div>
+
+<div class="nextprev">
+<div class="alignleft"> « <a href="https://rafalcieslak.wordpress.com/2013/03/17/e4rat-decreasing-bootup-time-on-hdd-drives/" rel="prev">e4rat – decreasing bootup time on HDD&nbsp;drives</a></div><br>
+<div class="alignright"> <a href="https://rafalcieslak.wordpress.com/2013/11/29/a-few-drawings/" rel="next">A few drawings</a> »</div>
+</div>
+
+						</div><!-- end content -->
+						<div id="footer">
+							<a href="https://wordpress.com/?ref=footer_blog">Blog at WordPress.com.</a>
+							
+													</div>
+					</div>
+				</div>
+			</div>
+		</div> <!-- .left-corner, .right-corner, #squeeze, #center -->
+		<div id="sidebar-right" class="sidebar">
+
+<ul class="menu">
+
+		<li id="recent-posts-2" class="widget widget_recent_entries">		<h2 class="widgettitle">Recent Posts</h2>
+		<ul>
+											<li>
+					<a href="https://rafalcieslak.wordpress.com/2017/03/01/cmake-ide/">Recommended Emacs package:&nbsp;cmake-ide</a>
+									</li>
+											<li>
+					<a href="https://rafalcieslak.wordpress.com/2016/10/05/coffee-maker-360-render/">Coffee Maker 360&nbsp;Render</a>
+									</li>
+											<li>
+					<a href="https://rafalcieslak.wordpress.com/2016/08/24/rgkrt/">My raytracer</a>
+									</li>
+											<li>
+					<a href="https://rafalcieslak.wordpress.com/2016/02/06/exploring-neural-networks-p-3/">Exploring Neural Networks, p.&nbsp;3</a>
+									</li>
+											<li>
+					<a href="https://rafalcieslak.wordpress.com/2016/01/23/exploring-neural-networks-p-2/">Exploring Neural Networks, p.&nbsp;2</a>
+									</li>
+					</ul>
+		</li>
+<li id="archives-2" class="widget widget_archive"><h2 class="widgettitle">Archives</h2>
+		<ul>
+			<li><a href="https://rafalcieslak.wordpress.com/2017/03/">March 2017</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2016/10/">October 2016</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2016/08/">August 2016</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2016/02/">February 2016</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2016/01/">January 2016</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2015/11/">November 2015</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2015/10/">October 2015</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2015/08/">August 2015</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2015/06/">June 2015</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2015/04/">April 2015</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2014/08/">August 2014</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2014/05/">May 2014</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2013/11/">November 2013</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2013/04/">April 2013</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2013/03/">March 2013</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2013/02/">February 2013</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2013/01/">January 2013</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2012/12/">December 2012</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2012/11/">November 2012</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2012/10/">October 2012</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2012/09/">September 2012</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2012/08/">August 2012</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2012/05/">May 2012</a></li>
+	<li><a href="https://rafalcieslak.wordpress.com/2012/04/">April 2012</a></li>
+		</ul>
+		</li>
+<li id="search-2" class="widget widget_search"><form role="search" method="get" id="searchform" class="searchform" action="https://rafalcieslak.wordpress.com/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s">
+					<input type="submit" id="searchsubmit" value="Search">
+				</div>
+			</form></li>
+<li id="text-2" class="widget widget_text">			<div class="textwidget">This page is likely to leave cookies. If you have anything against that, leave it.</div>
+		</li>
+</ul>
+</div>
+	</div><!-- container -->
+</div><!-- layout -->
+<!--  -->
+<script type="text/javascript" src="./linux-c-preload_files/gprofiles.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./linux-c-preload_files/wpgroho.js"></script>
+
+	<script>
+		//initialize and attach hovercards to all gravatars
+		jQuery( document ).ready( function( $ ) {
+
+			if (typeof Gravatar === "undefined"){
+				return;
+			}
+
+			if ( typeof Gravatar.init !== "function" ) {
+				return;
+			}			
+
+			Gravatar.profile_cb = function( hash, id ) {
+				WPGroHo.syncProfileData( hash, id );
+			};
+			Gravatar.my_hash = WPGroHo.my_hash;
+			Gravatar.init( 'body', '#wp-admin-bar-my-account' );
+		});
+	</script>
+
+		<div style="display:none">
+	<div class="grofile-hash-map-a1cd81c5894eee9598a28df9aa636260">
+	</div>
+	<div class="grofile-hash-map-dd96660141f4a2c4650b4f8cf0a71b7c">
+	</div>
+	<div class="grofile-hash-map-c5df2a9b2b3e1897bf84b85e84dcd4ee">
+	</div>
+	<div class="grofile-hash-map-e3f6ad69727a56746bfdde3768929f79">
+	</div>
+	<div class="grofile-hash-map-0816b68c89f79c233ec6048193a6143f">
+	</div>
+	<div class="grofile-hash-map-12d79ae5d71f53bd0ac932a669fd2f57">
+	</div>
+	<div class="grofile-hash-map-12d79ae5d71f53bd0ac932a669fd2f57">
+	</div>
+	<div class="grofile-hash-map-c27175ccddabd4cc7cf414f70b273662">
+	</div>
+	<div class="grofile-hash-map-1efce2fd1bd29e7001f49461ac1e955c">
+	</div>
+	<div class="grofile-hash-map-e3a7d6f271ed4aa8cd2a607035764f4b">
+	</div>
+	<div class="grofile-hash-map-39cdbe47fde550c8a47f365079f1d673">
+	</div>
+	<div class="grofile-hash-map-ad5389c693ff8045f2263aa817eb5163">
+	</div>
+	<div class="grofile-hash-map-1f003db5ca435fa7e4c1571c1233b41d">
+	</div>
+	</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"https:\/\/rafalcieslak.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"https:\/\/rafalcieslak.wordpress.com\/wp-login.php?action=logout&_wpnonce=869630c31c","homeURL":"https:\/\/rafalcieslak.wordpress.com\/","postID":"245","gravDefault":"identicon","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"0","userIsLoggedIn":"","isJetpack":"","text_direction":"ltr"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./linux-c-preload_files/saved_resource(4)"></script>
+
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https:\/\/rafalcieslak.wordpress.com\/2013\/04\/02\/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs\/":245};
+	</script>
+<script type="text/javascript" src="./linux-c-preload_files/saved_resource(5)"></script>
+<script type="text/javascript">
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://s1.wp.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.getElementsByTagName("head")[0].insertBefore( corecss, document.getElementById("syntaxhighlighteranchor") );
+		var themecssurl = "https://s2.wp.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?m=1363304414h&amp;ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		//document.getElementById("syntaxhighlighteranchor").appendChild(themecss);
+		document.getElementsByTagName("head")[0].insertBefore( themecss, document.getElementById("syntaxhighlighteranchor") );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+// Infinite scroll support
+jQuery( function( $ ) {
+	$( document.body ).on( 'post-load', function() {
+		SyntaxHighlighter.highlight();
+	} );
+} );
+</script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var actionbardata = {"siteID":"34919385","siteName":"Rafa\u0142 Cie\u015blak's blog","siteURL":"http:\/\/rafalcieslak.wordpress.com","icon":"<img alt='' src='https:\/\/s2.wp.com\/i\/logo\/wpcom-gray-white.png' class='avatar avatar-50' height='50' width='50' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/garland","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/rafalcieslak.wordpress.com\/wp-login.php?redirect_to=https%3A%2F%2Frafalcieslak.wordpress.com%2F2013%2F04%2F02%2Fdynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs%2F","themeURL":"","xhrURL":"https:\/\/rafalcieslak.wordpress.com\/wp-admin\/admin-ajax.php","nonce":"b9e6e838af","isSingular":"1","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"ffac34e778\" \/>","referer":"https:\/\/rafalcieslak.wordpress.com\/2013\/04\/02\/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs\/","canFollow":"1","feedID":"2479970","statusMessage":"","customizeLink":"https:\/\/rafalcieslak.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2Frafalcieslak.wordpress.com%2F2013%2F04%2F02%2Fdynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs%2F","postID":"245","shortlink":"https:\/\/wp.me\/p2mw7T-3X","canEditPost":"","editLink":"https:\/\/wordpress.com\/post\/rafalcieslak.wordpress.com\/245","statsLink":"https:\/\/wordpress.com\/stats\/post\/245\/rafalcieslak.wordpress.com","i18n":{"view":"View site","follow":"Follow","following":"Following","edit":"Edit","login":"Log in","signup":"Sign up","customize":"Customize","report":"Report this content","themeInfo":"Get theme: Garland","shortlink":"Copy shortlink","copied":"Copied","followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","editSubs":"Manage subscriptions","viewReader":"View site in Reader","viewReadPost":"View post in Reader","subscribe":"Sign me up","enterEmail":"Enter your email address","followers":"","alreadyUser":"Already have a WordPress.com account? <a href=\"https:\/\/rafalcieslak.wordpress.com\/wp-login.php?redirect_to=https%3A%2F%2Frafalcieslak.wordpress.com%2F2013%2F04%2F02%2Fdynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs%2F\">Log in now.<\/a>","stats":"Stats"}};
+/* ]]> */
+</script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var sharing_js_options = {"lang":"en","counts":"1"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./linux-c-preload_files/saved_resource(6)"></script><div class="widget widget_eu_cookie_law_widget" style="display: block;"><div class="hide-on-button ads-active" data-hide-timeout="30" data-consent-expiration="180" id="eu-cookie-law">
+	<form method="post">
+		<input type="submit" value="Close and accept" class="accept">
+
+		Privacy &amp; Cookies: This site uses cookies. By continuing to use this website, you agree to their use. <br>
+To find out more, including how to control cookies, see here:
+		<a href="https://automattic.com/cookies">
+			Cookie Policy		</a>
+ </form>
+</div>
+</div><div id="actionbar" class="actnbr-pub-garland actnbr-has-follow"><ul><li class="actnbr-btn actnbr-hidden"> 			    	<a class="actnbr-action actnbr-actn-follow" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/"><svg class="gridicon gridicon__follow" height="24px" width="24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 16v2h-3v3h-2v-3h-3v-2h3v-3h2v3h3zM20 2v9h-4v3h-3v4H4c-1.1 0-2-.9-2-2V2h18zM8 13v-1H4v1h4zm3-3H4v1h7v-1zm0-2H4v1h7V8zm7-4H4v2h14V4z"></path></g></svg><span>Follow</span></a> 			    	<div class="actnbr-popover tip tip-top-left actnbr-notice"> 			    		<div class="tip-arrow"></div> 			    		<div class="tip-inner actnbr-follow-bubble"></div> 			    	</div> 			    </li><li class="actnbr-ellipsis actnbr-hidden"> 			  <svg class="gridicon gridicon__ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><circle cx="5" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle></g></svg> 			  <div class="actnbr-popover tip tip-top-left actnbr-more"> 			  	<div class="tip-arrow"></div> 			  	<div class="tip-inner"> 				  <ul> 				    <li class="actnbr-sitename actnbr-hidden"><a href="http://rafalcieslak.wordpress.com/"><img alt="" src="./linux-c-preload_files/wpcom-gray-white.png" class="avatar avatar-50" height="50" width="50"> Rafał Cieślak's blog</a></li> 				   	<li class="actnbr-folded-customize actnbr-hidden"><a href="https://rafalcieslak.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Frafalcieslak.wordpress.com%2F2013%2F04%2F02%2Fdynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs%2F"><svg class="gridicon gridicon__customize" height="20px" width="20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z" data-reactid=".2.1.1:0.1b.0"></path></g></svg><span>Customize<span></span></span></a></li> 				    <li class="actnbr-folded-follow actnbr-hidden"><a class="actnbr-action actnbr-actn-follow" href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/"><svg class="gridicon gridicon__follow" height="24px" width="24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M23 16v2h-3v3h-2v-3h-3v-2h3v-3h2v3h3zM20 2v9h-4v3h-3v4H4c-1.1 0-2-.9-2-2V2h18zM8 13v-1H4v1h4zm3-3H4v1h7v-1zm0-2H4v1h7V8zm7-4H4v2h14V4z"></path></g></svg><span>Follow</span></a></li> 					<li class="actnbr-signup actnbr-hidden"><a href="https://wordpress.com/start/">Sign up</a></li> 				    <li class="actnbr-login actnbr-hidden"><a href="https://rafalcieslak.wordpress.com/wp-login.php?redirect_to=https%3A%2F%2Frafalcieslak.wordpress.com%2F2013%2F04%2F02%2Fdynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs%2F">Log in</a></li> 				     				    <li class="actnbr-shortlink actnbr-hidden"><a href="https://wp.me/p2mw7T-3X">Copy shortlink</a></li> 				    <li class="flb-report actnbr-hidden"><a href="http://en.wordpress.com/abuse/">Report this content</a></li> 				     				     				    <li class="actnbr-subs actnbr-hidden"><a href="https://subscribe.wordpress.com/">Manage subscriptions</a></li> 				    <li class="actnbr-fold actnbr-hidden"><a href="https://rafalcieslak.wordpress.com/2013/04/02/dynamic-linker-tricks-using-ld_preload-to-cheat-inject-features-and-investigate-programs/">Collapse this bar</a></li> 			      </ul> 			    </div> 		      </div> 		    </li> 	      </ul></div>
+<script type="text/javascript">
+var windowOpen;
+			jQuery( document.body ).on( 'click', 'a.share-twitter', function() {
+				// If there's another sharing window open, close it.
+				if ( 'undefined' !== typeof windowOpen ) {
+					windowOpen.close();
+				}
+				windowOpen = window.open( jQuery( this ).attr( 'href' ), 'wpcomtwitter', 'menubar=1,resizable=1,width=600,height=350' );
+				return false;
+			});
+var windowOpen;
+			jQuery( document.body ).on( 'click', 'a.share-facebook', function() {
+				// If there's another sharing window open, close it.
+				if ( 'undefined' !== typeof windowOpen ) {
+					windowOpen.close();
+				}
+				windowOpen = window.open( jQuery( this ).attr( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+				return false;
+			});
+var windowOpen;
+			jQuery( document.body ).on( 'click', 'a.share-google-plus-1', function() {
+				// If there's another sharing window open, close it.
+				if ( 'undefined' !== typeof windowOpen ) {
+					windowOpen.close();
+				}
+				windowOpen = window.open( jQuery( this ).attr( 'href' ), 'wpcomgoogle-plus-1', 'menubar=1,resizable=1,width=480,height=550' );
+				return false;
+			});
+</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>		<iframe src="./linux-c-preload_files/master.html" scrolling="no" id="likes-master" name="likes-master" style="display:none;"></iframe>
+		<div id="likes-other-gravatars"><div class="likes-text"><span>%d</span> bloggers like this:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+<script src="./linux-c-preload_files/w.js" type="text/javascript" async="" defer=""></script>
+<script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'34919385','blog_tz':'2','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'34919385','v':'wpcom','tz':'2','user_id':'0','post':'245','subd':'rafalcieslak'}]);
+_stq.push(['extra', {'crypt':'UE5XaGUuOTlwaD85flAmcm1mcmZsaDhkV11YdTdvUG14Q2VDQTR4LlUsLi82dU1mai9BMmcxPytqWkpxbS9HflVuSnZoRGUwTnJ+Y1V4cDIlUm9+NF9sYUUsZURieklOQXNlX3B4K2lMUGdoRl9MR2pjQ3RLSitjLWpEQj0lbkIyaVpocEtidXdHajMvMHQxc20ucitkST9Eem5qT3E3NEdVYXMyOS5sPXotdFoyem84fHVdYXFJU3RobEJWT3R4S0U1dCsyJjBXQk5+d0NFWVlMSStTPWxHPWN4Ty40aDJpeVc0dn5pNnk4LGNKdmNiVn5zUVgueFl3aE4zPVlNb1JbZFA3QklEaXMlRnhuJlRdMCZPVD8sVUN4bFB8cA=='}]);
+_stq.push([ 'clickTrackerInit', '34919385', '245' ]);
+	</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt="" /></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script>
+<img src="./linux-c-preload_files/g.gif" alt=":)" id="wpstats"></body></html>
