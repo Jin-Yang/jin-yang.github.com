@@ -86,6 +86,76 @@ https://www.cnblogs.com/zeweiwu/p/5485711.html
 * 字符串比较可以直接使用 `>` `<` 无需转义，也可以使用 `&&` `||` 逻辑判断；
 * 字符串或者 `${}` 变量默认会进行模式和元字符匹配，也可以使用 `""` 进行严格匹配；
 
+## 数组
+
+数组有如下的几种处理方式。
+
+{% highlight bash %}
+#----- 使用[]操作符
+foobar[0]="Hello"
+foobar[1]="World"
+foobar[2]="!!!"
+
+#----- 使用()直接赋值，如下两种方式相同
+foobar=("Hello" "World" "!!!")
+foobar=([0]="Hello" [1]="World" [2]="!!!")
+
+#----- declare -a 定义一个空的数组，如果已经定义则不会清零
+declare -a foobar
+
+#----- 也可以从文件中读取，每行作为其一个元素，注意可能会失败报错
+foobar=(`cat 'foobar.txt'`)
+
+# 读取数组
+foobar=("Hello" "World" "!!!")
+#----- 可以直接通过下标读取
+echo ${foobar[0]}
+
+#----- 获取数组长度
+echo ${#foobar[@]}
+
+#----- 未定义的下标不会占用个数
+foobar=([0]="Hello" [1]="World" [5]="!!!")
+echo ${#foobar[@]}
+
+#----- 获取数组的一部分，会使用上述的下标
+echo ${foobar[@]:4:5}
+
+#----- 合并两个数组
+hello=("Hi" "Foobar")
+all=(${foobar[@]} ${hello[@]})
+echo ${#all[@]}
+{% endhighlight %}
+
+使用 `@` 这个特殊的下标，可以将数组扩展成列表，然后就可以使用 bash 中的获取变量长度的操作符 `#` 来获取数组中元素的个数。
+
+注意，没有定义的数组下标，并不会占用数组中元素的个数，如上所述。
+
+模式操作符对数组也是有效的，可以使用它来替换数组中的元素
+
+{% highlight bash %}
+#----- 修改数组，这里是临时替换，也可以重新保存一个
+echo ${foobar[@]/World/Foobar}
+nfoobar=(${foobar[@]/World/Foobar})
+{% endhighlight %}
+
+数组遍厉如下。
+
+{% highlight text %}
+for foo in ${foobar[@]}; do
+       echo ${foo}
+done
+
+len=${#adobe[@]}
+for ((i = 0; i < $len; i++));do
+	echo ${adobe[$i]}
+done
+{% endhighlight %}
+
+<!--
+http://blog.zengrong.net/post/1518.html
+-->
+
 ## for 循环
 
 使用 `for` 循环时，基本有如下的几种方法。
@@ -150,6 +220,8 @@ foobar 1 2 "3 4"
 {% endhighlight %}
 
 ## 函数
+
+其中 `$#` 表示所有入参的数量，位置参数 `$1` `$2` ... `$N` 代表了各个参数，而 `$0` 代表了第一个参数，也就是脚本的名字。
 
 函数的返回值需要小于 `255` ，可以通过 `$?` 获取。
 

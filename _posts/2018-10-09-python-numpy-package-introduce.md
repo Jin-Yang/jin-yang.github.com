@@ -122,11 +122,15 @@ plt.show()
 此时生成的是区间为 `[0, 1]` 的均匀分布随机数。
 https://www.jianshu.com/p/214798dd8f93
 
+-->
 
+## 常用技巧
 
 ### linspace()
 
+{% highlight python %}
 numpy.linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None)
+{% endhighlight %}
 
 在指定的范围内生成间隔均匀的数字，开始值、终值和元素个数创建表示等差数列的一维数组，可以通过 endpoint 参数指定是否包含终值，默认值为 True，即包含终值。
 
@@ -136,17 +140,16 @@ numpy.linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None)
 
 简单来说，就是生成网格，最常用的是将在两个坐标轴上的点在平面上画网格，如下是一个简单的示例：
 
+{% highlight python %}
 import numpy as np
 import matplotlib.pyplot as plt
 
 X, Y = np.meshgrid(np.linspace(0, 1, 5), np.linspace(0, 1, 3))
 plt.plot(X, Y, marker='.', color='blue', linestyle='none')
 plt.show()
+{% endhighlight %}
 
 这在很多的示例中会使用，后面再详细介绍。
--->
-
-## 常用技巧
 
 {% highlight text %}
 {% endhighlight %}
