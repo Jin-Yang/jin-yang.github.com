@@ -26,6 +26,8 @@ Gogs 的功能类似于 GitHub 或者 GitLab ，不过相比来说是一款极�
 # systemctl start gogs
 {% endhighlight %}
 
+假设配置了域名，例如 `http://gogs.cargo.com:3000` 那么可以直接访问 [gogs.cargo.com:3000](http://gogs.cargo.com:3000) 。
+
 ### 创建用户
 
 在使用时增加 git 用户，用于处理 ssh 相关的内容，直接执行 `adduser git` 命令即可。
@@ -100,6 +102,20 @@ Host gogs.cargo.com
 -->
 
 免密码登陆可以参考 [Git 使用杂项]({{ site.production_url }}/post/git-tips.html) 中的相关介绍。
+
+## 备份
+
+只需要备份配置、数据库、仓库数据即可。
+
+{% highlight text %}
+mkdir /tmp/gogs && cd /tmp/gogs
+#----- 数据库备份，使用的是SQLite可以直接复制文件
+cp /usr/local/gogs/data/gogs.db .
+#----- 备份配置文件
+cp /usr/local/gogs/custom/conf/app.ini .
+#----- 备份仓库，这里使用的是git账户
+tar zcf gogs-repositories-20180830.tar.gz /home/git/gogs-repositories
+{% endhighlight %}
 
 ## 参考
 

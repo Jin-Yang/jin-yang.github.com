@@ -142,6 +142,28 @@ $ npm install --dev
 {% endhighlight %}
 
 
+## Yarn
+
+Yarn 是由 Facebook、Google、Exponent 和 Tilde 联合推出了一个新的 JS 包管理工具，主要是为了弥补 npm 的一些缺陷。
+
+在 CentOS 中可以通过如下方法安装。
+
+{% highlight html %}
+# curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo -o /etc/yum.repos.d/yarn.repo
+# yum install -y yarn
+{% endhighlight %}
+
+npm 和 yarn 的使用方式如下。
+
+{% highlight text %}
+npm install                   yarn
+npm install react --save      yarn add react
+npm uninstall react --save    yarn remove react
+npm install react --save-dev  yarn add react --dev
+npm update --save             yarn upgrade
+{% endhighlight %}
+
+
 ## PhantomJS
 
 PhantomJS 提供了一个浏览器环境的命令行接口，可以把它看作一个 "虚拟浏览器"，其内核采用 WebKit 引擎，除了不能浏览，其他与正常浏览器一样。

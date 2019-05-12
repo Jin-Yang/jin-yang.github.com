@@ -11,6 +11,7 @@ gems:
     - jekyll-paginate
 production_url: 'https://jin-yang.github.io'
 example_repository: 'https://github.com/Jin-Yang/examples/tree/master'
+aspire_repository: 'https://github.com/Jin-Yang/aspire/tree/master'
 kernel_docs_url: 'https://www.kernel.org/doc'
 
 description: > # this means to ignore newlines until "baseurl:"

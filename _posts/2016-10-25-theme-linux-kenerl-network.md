@@ -34,6 +34,16 @@ description:
 * [Linux Wireshark](/post/network-wireshark.html)，介绍 Linux 中的 Wireshark 使用方式。
 -->
 
+## DNS
+
+在通过浏览器访问某个网站时，或者说访问网络上的服务器时，可以直接使用 IP 地址，但是对于人类来说很难记忆，为此引入了域名。
+
+而为了可以做到自动解析，于时就有了 DNS 。
+
+* [DNS 协议简介](/post/network-dns-basic-introduce.html) 介绍 DNS 协议相关的内容，dig nslookup 等工具使用。
+* [DNSmasq 使用](/post/linux-dnsmasq-introduce.html) 一个本地的 DNS 解决方案，可以提供 DNS DHCP 等功能。
+* [resolv.conf 简介](/post/network-dns-resolv-conf-usage-introduce.html) 也就是 `/etc/resolv.conf` 配置文件的使用。
+* [c-ares 异步 DSN 简介](/post/network-dns-async-resolve-introduce.html) cares 提供了简单的异步 DSN 解析，很多开源工具使用。
 
 {% highlight text %}
 {% endhighlight %}

@@ -106,6 +106,19 @@ http://wjp2013.github.io/other/uuids-and-ulids/
 
 简单介绍在使用时的详细内容。
 
+#### 日志级别
+
+{% highlight text %}
+log_fatal       致命日志，一般是系统级的错误，例如关键路径内存不足
+log_error       错误信息，会影响到业务的运行
+log_warning     警告信息，业务仍然可以运行
+log_info
+log_debug       调试信息
+log_trace       会打印比调试信息更详细的内容
+{% endhighlight %}
+
+如上所述，除此之外还提供了 `log_audit()` 用来打印审计日志，该日志无论如何都不会被关闭。
+
 #### 通用规范
 
 1. 提供毫秒级的时间戳，大部分平台当调用 `time(NULL)` 函数时，实际上等价于 `gettimeofday()` ，而该函数会精确到微秒；

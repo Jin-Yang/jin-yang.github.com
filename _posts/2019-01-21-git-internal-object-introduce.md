@@ -1,5 +1,5 @@
 ---
-title: git 对象简介
+title: Git 对象简介
 layout: post
 comments: true
 language: chinese

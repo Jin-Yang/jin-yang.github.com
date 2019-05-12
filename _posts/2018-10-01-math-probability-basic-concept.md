@@ -135,13 +135,6 @@ https://www.zhihu.com/question/26441147
 
 ## 参考
 
-数学公式的编写可以参考 [MathJax Demo](https://www.mathjax.org/#demo)。
-
-<!--
-https://blog.csdn.net/Mage_EE/article/details/75309174
-https://www.zybuluo.com/knight/note/96093
-https://www.zybuluo.com/codeep/note/163962  比较全
--->
 
 {% highlight text %}
 {% endhighlight %}

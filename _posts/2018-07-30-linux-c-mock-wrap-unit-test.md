@@ -261,10 +261,8 @@ SQLite数据库完整性检查以及数据库备份
 https://www.cnblogs.com/huahuahu/p/jian-chasqlite-shu-ju-ku-wan-zheng-xing.html
 https://www.sqlite.org/backup.html
 
-http://www.dapenti.com/blog/more.asp?name=xilei&id=139296
-http://www.dapenti.com/blog/more.asp?name=xilei&id=139450
-http://www.dapenti.com/blog/more.asp?name=xilei&id=139752
-http://www.dapenti.com/blog/more.asp?name=xilei&id=139844
+
+
 
 GCC 中的建议性参数定义
 __attribute__ ((deprecated))
@@ -275,6 +273,34 @@ __attribute__ ((__format__ (__printf__, a, b)))
 
 最近发现两个很牛掰的库用来作单元测试以及Server+Client测试，正式我所需的内容
 -->
+
+
+## 最佳实践
+
+在测试时添加一个 `__TEST__` 宏，同时对于一些静态函数为了方便测试，可以增加如下的宏定义。
+
+{% highlight c %}
+#ifdef __TEST__
+	/* Make some internal functions visible for testing */
+	#define STATIC_TESTABLE
+#else
+	#defein STATIC_TESTABLE static
+#endif
+{% endhighlight %}
+
+对于内存分配函数来说，例如 `malloc()` `realloc()` `strdup()` ，可以通过自定义的函数直接覆盖，也可以通过连接器的 wrap 功能实现，但是这有可能会影响到其它的一些工具，例如代码覆盖率等。
+
+所以，这里建议的方式是采用宏或者 `inline` 定义一些替换函数，例如 `xxx_malloc()` 等。
+
+{% highlight c %}
+#ifdef __TEST__
+	#define xmalloc mock_malloc
+#else
+	#defein xmalloc malloc
+#endif
+{% endhighlight %}
+
+这样，可以将 `mock_malloc()` 作为一个通用的实现。
 
 ## 参考
 
@@ -292,7 +318,8 @@ https://stackoverflow.com/questions/44073243/how-to-mock-socket-in-c
 https://github.com/martinpitt/umockdev
 -->
 
-介绍如何写 C 的单元测试 [Unit testing C code with CMocka](https://blog.microjoe.org/2017/unit-tests-c-cmocka-coverage-cmake.html) 。
+* 介绍如何写 C 的单元测试 [Unit testing C code with CMocka](https://blog.microjoe.org/2017/unit-tests-c-cmocka-coverage-cmake.html) 。
+* 一个简单的示例 [Github Aspire Coverage]({{ site.aspire_repository }}/coverage) 。
 
 {% highlight text %}
 {% endhighlight %}

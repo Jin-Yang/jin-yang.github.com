@@ -151,5 +151,40 @@ plt.show()
 
 这在很多的示例中会使用，后面再详细介绍。
 
+### histogram()
+
+用来统计一个数组的直方库，也可以使用 `plt.hit()` 函数直接绘制一个图。
+
+{% highlight python %}
+import numpy as np
+import matplotlib.pyplot as plt
+   
+arr = np.array([22, 87, 5, 43, 56, 73, 55, 54, 11, 20, 51, 5, 79, 31, 27])
+hist, bins = np.histogram(arr, bins = [0, 20, 40, 60, 80, 100])
+
+plt.hist(arr, bins = [0, 20, 40, 60, 80, 100])
+plt.title("histogram")
+plt.show()
+{% endhighlight %}
+
+### cumsum()
+
+`cumsum()` 函数用于计算累加，可以有如下的几种方式。
+
+{% highlight python %}
+import numpy as np
+
+# 1 2
+# 2 3
+a = np.cumsum([[1, 2], [2, 3]])
+print(a)   #[1 3 5 8] 由前面的值依次累加
+
+b = np.cumsum([[1, 2], [2, 3]], axis=0)
+print(b)   # [[1 2] [3 5]] 每列累加
+
+c = np.cumsum([[1,2],[2,3]],axis=1)
+print(c)   # [[1 3] [2 5]] 每行累加
+{% endhighlight %}
+
 {% highlight text %}
 {% endhighlight %}

@@ -61,7 +61,7 @@ DevOps 的三大原则：
 
 #### Servers
 
-根据不同的功能进行划分。
+根据不同的功能进行划分，其中前端的 DashBoard 主要包括了容量、性能、风险信息，可以是每天聚合后的信息。
 
 * [Cargo](/projects/devops/platform-server-cargo.html) 基础的通用服务，包括了单点登陆系统、用户信息、Portal等。
 * [Aspire](/projects/devops/platform-server-aspire.html) BootAgent 的服务端，用于 Agent 的安装部署、升级、状态统计等。

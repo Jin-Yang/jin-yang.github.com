@@ -37,7 +37,8 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 * [GoLang 语法简介](/post/golang-basic-syntax-introduce.html)，简单介绍常见的语法，例如 import、异常处理、反射等。
 * [GoLang 并发控制](/post/golang-concurrenct-control-introduce.html)，常见的并发控制方法，例如 WaitGroup、Context 等。
 * [GoLang 异常处理](/post/golang-basic-error-panic-introduce.html)，这是一个经常被讨论的话题，简单介绍其使用方法。
-* [GoLang 语法之接口](/post/golang-syntax-interface-introduce.html)，相比来说接口要复杂很多，这里拆出来单独讨论。
+* [GoLang 语法之接口](/post/golang-syntax-interface-introduce.html) 相比来说接口要复杂很多，这里拆出来单独讨论。
+* [GoLang 语法之结构体](/post/golang-syntax-structure-introduce.html) 类似于 C 中的结构体，各种对象的集合，但是使用更加复杂。
 * [GoLang 包管理](/post/golang-basic-package-introduce.html)，Go 的包管理简单明了，不过也有一定的规范。
 * [GoLang 闭包简介](/post/golang-basic-closure-introduce.html)，与其它语言中的闭包概念相同，介绍下 GoLang 中的使用。
 

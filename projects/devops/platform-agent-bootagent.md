@@ -26,16 +26,26 @@ BootAgent 就是为了管理各个 Agent ，同时保证机制简单、功能稳
 
 注意，客户端上报周期并非严格设置，可能会在连接服务端失败时导致延迟。
 
-## 实现功能
+### 实现功能
 
 其中主要功能点包括了。
 
 {% highlight text %}
+process.c   提供异步进程的实现
+{% endhighlight %}
+
+{% highlight text %}
+1. 子进程管理。
+   1.1 任务接口，包括安装、卸载、启动、停止。
+   1.2 状态管理。
+       自动拉起，可以配置是否在启动时拉起进程。
+       状态检查、资源限制。
+
+
 1. 任务管理。
    1.1 修改配置。
-2. 子进程管理。
-   2.1 任务接口，包括安装、卸载、启动、停止。
-   2.2 状态管理，包括自动拉起、状态检查、资源限制。
+
+
 3. 事件上报机制。
    3.1 子进程异常。
 4. 状态信息上报。与BootAgent相关的状态信息。
@@ -46,7 +56,79 @@ BootAgent 就是为了管理各个 Agent ，同时保证机制简单、功能稳
 
 如果任务执行失败，只能等待下次 BootAgent 上报数据时处理。
 
-### 1. 任务管理
+## 1. 子进程管理
+
+默认会在配置目录下保存相关的配置，配置文件的后缀需要确保是 `*.json`，默认配置目录可以通过 `BootAgent -h` 查看。在管理进程时，会将配置的名称作为唯一标示，如果有重复则会忽略后面的配置。
+
+另外，配置文件的名称需要与文件中 `name` 字段的名称保持一致。
+
+其中的配置文件示例如下，文件名为 `BasicAgent.json` ，文件最大为 16K(`PRG_FILE_MAXSIZE`)。
+
+{% highlight text %}
+{
+        "name": "BasicAgent",                          # 必选，子Agent的名称
+        "version": "1.2.3",                            # 必选，子Agent的版本号
+        "exec": "/bin/bash /usr/bin/gearman",          # 必选
+
+        "comm": "basicagent",                          # 可选，需要与/proc/PID/comm中的名称相同，默认为name
+        "type": "simple",                              # 可选，以不同的方式启动 (默认是simple)
+                                                       #       simple 以fork+exec方式运行，作为子进程
+                                                       #       fork 子进程会fork子进程，也就是常驻进程
+
+        "pidfile": "/var/run/cargo/gearman.pid",
+        "user": "root",                                # 可选，默认是root
+        "group": "root",
+
+        "envs": {                                      # 可选
+                "PATH": "/usr/bin:/usr/local/bin",
+                "LANG": "en_US.UTF-8"
+        },
+
+        "limits": {                                    # 可选，会通过cgroup进行资源限制或者周期检查
+                "method": "cgroup",                    # 可选，资源检查方式，可以设置为cgroup或者period，默认使用cgroup
+                "CPU": 10,                             # CPU资源限制，单位是%
+                "MEM": 3000                            # 内存限制，单位是KB
+        },
+
+        "autostart": true,                             # 可选，是否在安装或者启动BootAgent时自动拉起该进程
+        "autorestart": "yes",                          # 可选，失败之后的启动方式，默认或者非法是yes
+                                                       #       no 不再重启，无论退出的状态是什么
+                                                       #       yes 一直尝试重启，同样无论退出的状态是什么
+                                                       #       unexpect 只有退出码不在exitcode中时才会重启
+        "retries": 100,                                # 可选，重试次数，包括了启动、异常退出等状态时的重试
+
+        "exitcodes": "0,9",                            # 可选，认为正常的退出码，不会再重启，只支持正值
+        "restartsecs": 20,                             # 可选，失败之后启动前sleep时间
+        "startsecs": 20,                               # 可选，启动多久之后认为正常
+        "checksecs": 20,                               # 可选，Health Check的时间间隔
+        "stopsecs": 20,                                # 可选，超过多久之后直接向进程发送SIGKILL
+        "stopasgroup": true,                           # 可选，在kill进程时以组方式
+        "stopsignal": "SIGTERM"                        # 可选，在退出时向进程发送的信号，默认为SIGTERM
+                                                       #       支持信号TERM HUP INT QUIT KILL USR1 USR2
+}
+{% endhighlight %}
+
+注意，在匹配时会检查 `/proc/PID/comm` 中的命令，需要保证与配置文件中的 `comm` 相同。
+
+#### 常见场景
+
+简单列举一些常见的使用场景。
+
+##### 一直尝试拉起
+
+直接忽略退出状态，一直尝试重新拉起，参数设置包括 `"autorestart": "yes"`、`"restartsecs": 20`，其中后者主要是为了防止重复拉起导致异常，例如由于 cgroup OOM 。
+
+#### 注意事项
+
+子进程需要处理好部分状态，其中部分场景列举如下：
+
+##### 退出异常
+
+如果 BootAgent 接收到了停止命令，并向子进程发送了退出信号，而子进程还没有退出；此时，如果 BootAgent 又收到启动命令，那么会立即再启动一个进程。
+
+所以，子进程需要处理好该场景，例如可以只保留一个进程。同时，也就意味着需要注意 `startsecs` 参数的设置。
+
+## 2. 任务管理
 
 BootAgent 不会持久化任务信息，因此实现的各种任务需要保证任务的可重入性，也就是可以重复执行多次不会带来逻辑上的问题。
 
@@ -54,7 +136,7 @@ BootAgent 不会持久化任务信息，因此实现的各种任务需要保证�
 
 每次上报信息时会带上正在执行的任务信息，不过需要注意，如果报文非法(`id` 或者 `action` 不存在)、内存不足 那么不会返回相应的任务状态，此时就需要依赖上层重试。
 
-#### 任务状态
+### 任务状态
 
 任务的基本状态处理流程如下。
 
@@ -69,11 +151,11 @@ VALID  任务已经添加到任务列表。
 START  已经开始处理任务。
 {% endhighlight %}
 
-#### 任务
+### 任务类型
 
 包括了异步任务和同步任务，同步任务在下发解析时会立即开始执行(实现时一般为异步)，而异步任务则会串行执行，例如对于下载任务来说，为了防止带宽不可控。
 
-**注意** 任务必须确保 `id` `action` `name` `version` 存在，如果 `id` 和 `action` 不存在，则会直接忽略任务。
+**注意** 任务必须确保 `id` `action` `name` `version` 字段存在，如果 `id` 和 `action` 不存在，则会直接忽略任务；其中 `name` 和 `version` 用来确定操作的对象 (如果是全局配置不需要)。
 
 {% highlight text %}
 ----- 安装任务，异步，用于第一次安装 注意，如果已经安装则尝试升级
@@ -134,73 +216,6 @@ START  已经开始处理任务。
 	"step": 1200                                  # 全局配置，状态上报时间间隔，单位是秒，其范围为[60, 3600]
 }
 {% endhighlight %}
-
-### 2. 子进程管理
-
-默认会在配置目录下保存相关的配置，配置文件的后缀需要确保是 `*.json`，配置目录可以通过 `BootAgent -h` 查看。在管理进程时，会将配置的名称作为唯一标示，如果有重复则会忽略后面的配置。
-
-其中的配置文件示例如下，文件名为 `BasicAgent.json` ，文件最大为 8K(`PRG_FILE_MAXSIZE`)。
-
-{% highlight text %}
-{
-        "name": "BasicAgent",                          # 必选，子Agent的名称，注意需要与/proc/PID/comm中的名称相同
-        "version": "1.2.3",                            # 必选，子Agent的版本号
-        "exec": "/bin/bash /usr/bin/gearman",          # 必选
-
-        "type": "simple",                              # 可选，以不同的方式启动
-                                                       #       simple 以fork+exec方式运行，作为子进程
-                                                       #       fork 子进程会fork子进程，也就是常驻进程
-
-        "pidfile": "/var/run/cargo/gearman.pid",
-        "user": "root",                                # 可选，默认是root
-        "group": "root",
-
-        "envs": {                                      # 可选
-                "PATH": "/usr/bin:/usr/local/bin",
-                "LANG": "en_US.UTF-8"
-        },
-
-        "limits": {                                    # 可选，通过cgroup进行资源限制
-                "CPU": 10,                             # CPU资源限制，单位是%
-                "MEM": 3000                            # 内存限制，单位是KB
-        },
-
-        "autostart": true,                             # 可选，是否在安装或者启动BootAgent时自动拉起该进程
-        "autorestart": "yes",                          # 可选，失败之后的启动方式，默认或者非法是yes
-                                                       #       no 不再重启，无论退出的状态是什么
-                                                       #       yes 一直尝试重启，同样无论退出的状态是什么
-                                                       #       unexpect 只有退出码不在exitcode中时才会重启
-
-        "exitcodes": "0,9",                            # 可选，认为正常的退出码，不会再重启，只支持正值
-        "restartsecs": 20,                             # 可选，失败之后启动前sleep时间
-        "startsecs": 20,                               # 可选，启动多久之后认为正常
-        "checksecs": 20,                               # 可选，Health Check的时间间隔
-        "stopsecs": 20,                                # 可选，超过多久之后直接向进程发送SIGKILL
-        "stopasgroup": true,                           # 可选，在kill进程时以组方式
-        "stopsignal": "SIGTERM"                        # 可选，在退出时向进程发送的信号，默认为SIGTERM
-                                                       #       支持信号TERM HUP INT QUIT KILL USR1 USR2
-}
-{% endhighlight %}
-
-注意，在匹配时会检查 `/proc/PID/comm` 中的命令，需要保证与配置文件中的 name 相同。
-
-#### 常见场景
-
-简单列举一些常见的使用场景。
-
-##### 一直尝试拉起
-
-直接忽略退出状态，一直尝试重新拉起，参数设置包括 `"autorestart": "yes"`、`"restartsecs": 20`，其中后者主要是为了防止重复拉起导致异常，例如由于 cgroup OOM 。
-
-#### 注意事项
-
-子进程需要处理好部分状态，其中部分场景列举如下：
-
-##### 退出异常
-
-如果 BootAgent 接收到了停止命令，并向子进程发送了退出信号，而子进程还没有退出；此时，如果 BootAgent 又收到启动命令，那么会立即再启动一个进程。
-
-所以，子进程需要处理好该场景，例如可以只保留一个进程。同时，也就意味着需要注意 `startsecs` 参数的设置。
 
 
 ### 3. 事件上报
@@ -357,10 +372,20 @@ $ ./contrib/package.sh BootAgent 1.2.1-1
 
 #### bootctl
 
-一般用来调试使用，可以通过 `BOOTAGENT_TRACE` 环境变量来查看 `bootctl` 与 `bootagent` 的命令交互过程。
+一般用来调试、检查状态等使用，可以通过 `BOOTAGENT_TRACE` 环境变量来查看 `bootctl` 与 `bootagent` 的命令交互过程。
+
+##### 检查当前配置
+
+##### 设置日志级别
 
 {% highlight text %}
 export BOOTAGENT_TARCE=1; ./daemon/bootctl config setlog trace
+{% endhighlight %}
+
+##### 检查文件 SHA256
+
+{% highlight text %}
+./daemon/bootctl sha256 <YourFile>
 {% endhighlight %}
 
 

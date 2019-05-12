@@ -22,7 +22,7 @@ description:
    2.1 修改BootAgent配置。上报时间间隔、Tags列表。
    2.2 Agent管理命令，也就是1.1的内容。
 3. 前端展示。分为三个TAB页进行管理。
-   3.1 DashBoard。主机总数、在线数；Agent的部署数量、在线数。采用离线统计。
+   3.1 DashBoard。主机总数、在线数、API 调用次数；Agent的部署数量、在线数。采用离线统计。
    3.2 主机展示。显示基本信息，包括AgentSN、Region分组、主机名、管理IP、OS类型、架构、版本类型、状态(在线、离线、删除)、最近更新时间(状态变化时才会修改)。下拉展示TAG信息。
    3.3 Agent版本管理。包括了BootAgent及其子Agent的版本信息，包括Agent名称、版本号、OS类型、架构、文件路径、安装命令、SHA256。
    3.4 TAG管理。包括TAG的Key/Value、绑定主机数、更新时间。
@@ -35,6 +35,31 @@ description:
 另外一类是全局任务，这一类任务在主机数过大时会导致生成任务列表耗时过大，因此会置位一个全局标记，在 BootAgent 上报状态信息时匹配对应的字段，如果不符合则执行对应的操作。(暂时不实现)
 
 ## Agent API
+
+### 自动注册
+
+在 BootAgent 第一次启动时会尝试注册到服务端。
+
+{% highlight text %}
+----- POST /api/v1/agent/register
+{
+	"hostname": "127.0.0.1",                            # 可以通过hostname命令查看
+	"ipaddr": "127.0.0.1",                              # 在发送注册信息时与服务端建立连接的IP
+	"agentsn": "bfdcc18c-b6b9-4725-9c47-37fd93dba5b6"   # 本地生成的UUID用来唯一标识一台主机
+	"tags": "svc=ecs,cmpt=DB",                          # TODO: 可以根据固定的模版生成
+}
+
+----- 返回信息
+{
+	"status": 0,
+	"agentsn": "dcb886e9-04ed-41bb-9c12-4d2de12cd59b",  # 如果上层判断有冲突，则返回合法的AgentSN
+	"tags": "svc=ecs,cmpt=DB",                          # 这里的tag一般是根据自动规则生成的
+}
+{% endhighlight %}
+
+在注册时，需要保证 AgentSN 的唯一，如果有相同的 AgentSN 那么会再次检查 ipaddr 是否相同，如果相同那么认为是重复注册，此时会直接返回成功。否则，生成新的 AgentSN 。
+
+### 状态上报
 
 {% highlight text %}
 pyresttest http://booter.cargo.com:8180 contrib/tests/register.yaml --print-bodies=true --log=debug
@@ -62,21 +87,50 @@ pyresttest http://booter.cargo.com:8180 contrib/tests/register.yaml --print-bodi
 }
 {% endhighlight %}
 
-### 安装包管理
-
-会根据入参自动生成一个相对路径，一般为 `$PACKAGE_PATH/{OS}/{ARCH}/{FILENAME}` 。
+### 主机管理
 
 {% highlight text %}
------ POST   /api/v1/server/package 上传包
+----- GET  /api/v1/server/host?agentsn="845d6374-7d4e-402f-87cc-2a780e794dd6"
+{
+
+}
+{% endhighlight %}
+
+### 包 VS. Agent 管理
+
+会根据入参自动生成一个相对路径，一般为 `$PACKAGE_PATH/{OS}/{ARCH}/{FILENAME}` ，实际上包含了两类操作，分别是：A) 包管理；B) 元数据管理。
+
+<!-- repos/CentOS/7/local/x86_64/RPMS -->
+
+#### 包管理
+
+{% highlight text %}
+PUT    /api/v1/server/package/upload/CentOS/x86_64/BootAgent-1.2.3-rc1.x86_64.rpm
+GET    /api/v1/server/package/download/CentOS/x86_64/BootAgent-1.2.3-rc1.x86_64.rpm
+DELETE /api/v1/server/package/file/CentOS/x86_64/BootAgent-1.2.3-rc1.x86_64.rpm
+{% endhighlight %}
+
+<!--
+curl -v -X PUT -F "file=@/home/andy/Videos/RAFT.mp4" "http://localhost:8180/api/v1/server/package/upload/os/x86_64/RAFT.mp4"
+curl -v -X DELETE "http://localhost:8180/api/v1/server/package/file/os/x86_64/RAFT.mp4"
+curl -v -o RAFT.mp4 "http://localhost:8180/api/v1/server/package/download/os/x86_64/RAFT.mp4"
+-->
+
+#### Agent 管理
+
+通过 `name` `version` `arch` `os` 唯一确定一个安装包。
+
+{% highlight text %}
+----- POST   /api/v1/server/agent        上传包相关的元数据信息
 {
 	"name":"FoobarAgent",
 	"version":"1.2.3-rc1",
 	"arch":"x86_64",
-	"os":"linux",
+	"os":"CentOS",
 	"file":"FoobarAgent-1.2.3-rc1.x86_64.rpm"
 }
 
------ GET    /api/v1/server/package?name=FoobarAgent&version=1.2.4.-rc1&offset=0&limit=10&order=asc&sortby=id
+----- GET    /api/v1/server/agent?name=FoobarAgent&version=1.2.4.-rc1&offset=0&limit=10&order=asc&sortby=id
 {
 	"count": 2,
 	"offset": 0,
@@ -94,40 +148,8 @@ pyresttest http://booter.cargo.com:8180 contrib/tests/register.yaml --print-bodi
 	}]
 }
 
------ DELETE /api/v1/server/package?name=FoobarAgent&version=1.2.4.-rc1&offset=0&limit=10&order=asc&sortby=id
+----- DELETE /api/v1/server/agent?name=FoobarAgent&version=1.2.4.-rc1&offset=0&limit=10&order=asc&sortby=id
 {% endhighlight %}
-
-### Agent管理
-
-{% highlight text %}
------ POST /api/v1/server/task 下发任务
-{
-	"command": "install",                 # 必选，任务类型
-	"agents": [                           # 服务器列表
-		"9b62aabb-eda4-4d62-b036-b605d887bde3",
-		"845d6374-7d4e-402f-87cc-2a780e794dd6"
-	],
-	"parameters": {
-		"url": "http://xxxx",
-		"url": "command://yum install MiniAgent -y",   # 通过命令安装
-	}
-}
-
-{
-	"id": 135,                               # 自动生成的任务ID
-	"status": 0,                             # 状态码，0 表示成功
-	"message": "success",                    # 返回的信息，可能是报错
-	"results": [{
-		"AgentSN": "9b62aabb-eda4-4d62-b036-b605d887bde3",
-	}, {
-		"AgentSN": "845d6374-7d4e-402f-87cc-2a780e794dd6",
-	}]
-}
-
-
------ GET  /api/v1/server/agent?agentsn="845d6374-7d4e-402f-87cc-2a780e794dd6"
-{% endhighlight %}
-
 
 ### 任务管理
 

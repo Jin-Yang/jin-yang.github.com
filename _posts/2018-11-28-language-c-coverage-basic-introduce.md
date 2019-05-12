@@ -148,7 +148,7 @@ $ lcov --extract foobar.info '*/src/*' '*/lib/*' -o foobar.info.reserved
 
 ### CMake
 
-详细的可以参考示例，通过如下方式编译。
+详细的可以参考示例 [Github Aspire Coverage]({{ site.aspire_repository }}/coverage) ，通过如下方式编译。
 
 {% highlight text %}
 $ cmake .. -DWITH_UNIT_TESTS=ON -DWITH_CONVERAGE=ON -DCMAKE_BUILD_TYPE=Debug

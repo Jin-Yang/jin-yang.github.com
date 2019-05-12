@@ -32,7 +32,10 @@ Git 是一免费、开源的分布式版本控制系统，可有效、高速的�
 * [Git Cherry Pick 使用](/post/git-cherry-pick-introduce.html) 将某个分值的提交到其它的分支上。
 * [Git 清理空间](/post/git-cleanup-method-introduce.html) 常见的是如何清理大文件、做开源的准备等。
 
+## gogs
 
+
+* [Gogs 仓库使用](/post/linux-git-gogs-introduce.html) 类似 GitLab 或者 GitHub，但是搭建起来更容易搭建。
 
 {% highlight text %}
 {% endhighlight %}

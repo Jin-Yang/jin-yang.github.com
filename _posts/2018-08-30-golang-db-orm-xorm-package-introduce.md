@@ -21,8 +21,12 @@ engine.SetMapper(core.SameMapper{})
 
 
 
-
+<!--
 http://www.xorm.io/
+
+更简单的SQLx
+https://github.com/jmoiron/sqlx
+-->
 
 {% highlight text %}
 {% endhighlight %}

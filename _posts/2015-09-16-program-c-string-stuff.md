@@ -300,6 +300,24 @@ ANSI C 规范定义了 ```stof()```、```atoi()```、```atol()```、```strtod()`
 
 <!-- 如何通过宏定义判断是否支持后面的函数。-->
 
+### strtod
+
+在比较浮点数时，可以使用 `float.h` 中的几个相关的宏定义，包括了 `FLT_EPSILON`、`DBL_EPSILON`、`LDBL_EPSILON` ，另外还有 MAX 和 MIN 的值。
+
+实际上 MAX 和 MIN 的值在 `limits.h` 文件中也存在，不过这个是 Linux 扩展头文件。
+
+对于浮点数的最大最小值，最好通过科学表达式表示，例如对于 double 类型来说，最大最小值分别对应了 `1.79769e+308` `2.225074e-308` 。
+
+如果溢出 (包括向上或者向下)，返回的 ptr 仍然会向前移动，此时会将 errno 设置为 `ERANGE(34)` 。
+
+需要注意的是，如果转换成功，实际上是不会将 errno 设置为 0 的，所以如果要通过 errno 判断是否转换成功，应该在调用函数之前将 errno 设置为 0 。
+
+另外，需要注意的是，如果是 `nan(12)` 则会整体转换为 `nan` ，不过括号里只能由数字、拉丁字母和下划线构成。
+
+#### 总结
+
+对于 `strtof()` `strtod()` `strtold()` 类型的转换，实际上可以直接通过 `buff == ptr || errno == ERANGE` 来判断异常，前者表示无合法字符，后者表示超过范围。
+
 ### 示例
 
 {% highlight c %}
@@ -346,6 +364,96 @@ double strtod (const char* str, char** endptr);
 会自动扫描参数 `str` 字符串，并跳过空白字符 (通过 isspace 函数检测)，直到遇上数字或正负符号才开始做转换，当出现非数字时停止转换，其中 `endptr` 返回第一个不能转换的字符指针。
 
 当 `endptr` 为 `NULL` 或者 等于 `str` 时表示转换失败。
+
+<!--
+
+
+#define IS_NAN    1024
+#define IS_INF    1025
+        struct {
+                const char *str;
+                double result;
+                int offset;
+                int flag;
+        } cases[] = { {
+                .str = " ++++ Your data",
+                .result = 0,
+                .offset = 0,
+                .flag = 0,
+        }, {
+                .str = " Your data",
+                .result = 0,
+                .offset = 0,
+                .flag = 0,
+        }, {
+                .str = " 12.3 Your data",
+                .result = 12.3,
+                .offset = sizeof("12.3"), /* including head space */
+                .flag = 0,
+        }, {
+                .str = " 12e3 Your data",
+                .result = 12000,
+                .offset = sizeof("12e3"),
+                .flag = 0,
+        }, {
+                .str = " 1.79769e+408 Your data", /* MAX: 1.79769e+308 */
+                .result = 0,
+                .offset = sizeof("1.79769e+308"),
+                .flag = ERANGE,
+        }, {
+                .str = " 1.79769e-408 Your data", /* MIN: 2.225074e-308 */
+                .result = 0,
+                .offset = sizeof("1.79769e-408"),
+                .flag = ERANGE,
+        }, {
+                .str = " NAN Your data",
+                .result = 0,
+                .offset = sizeof("NAN"),
+                .flag = IS_NAN,
+        }, {
+                .str = " NAN(xx) Your data",
+                .result = 0,
+                .offset = sizeof("NAN(xx)"),
+                .flag = IS_NAN,
+        }, {
+                .str = " INF Your data",
+                .result = 0,
+                .offset = sizeof("INF"),
+                .flag = IS_INF,
+        }, {
+                .str = " INFINITY Your data",
+                .result = 0,
+                .offset = sizeof("INFINITY"),
+                .flag = IS_INF,
+        },
+        // 0X1.BC70A3D70A3D7P+6 also works.
+        }, *c;
+
+        for (i = 0; i < (int)(sizeof(cases)/sizeof(cases[0])); i++) {
+                c = &cases[i];
+                errno = 0;
+                res = strtod(c->str, &ptr);
+#if 0
+                if (ptr == c->str || errno) { }
+                printf("result errno %d, ptr %p, res %p(%f), distance %ld, len %d\n", 
+                                errno, ptr, c->str, res, ptr - c->str, c->offset);
+#endif
+                if (c->flag > 0) {
+                        if (c->flag == IS_NAN) {
+                                assert(isnan(res));
+                        } else if (c->flag == IS_INF) {
+                                assert(isinf(res));
+                        } else {
+                                assert(errno == c->flag);
+                        }
+                } else {
+                        assert(abs(res - c->result) < DBL_EPSILON);
+                }
+                assert(c->str + c->offset == ptr);
+        }
+
+        return 0;
+-->
 
 ## 字符串查找
 

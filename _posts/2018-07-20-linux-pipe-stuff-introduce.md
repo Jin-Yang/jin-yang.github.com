@@ -39,9 +39,84 @@ description:
 
 Linux 在 `linux/limits.h` 头文件中，通过 `PIPE_BUF` 宏定义了该值。
 
+## popen
+
+简单来说，`popen()` 会 `fork()` 一个子进程，然后建立管道，并通过管道读取相关的数据。
+
+注意处理时需要注意如下的异常场景。
+
+#### 1. 提前关闭
+
+读取部分数据后直接调用了 `pclose()` ，提前关闭了一段的管道，那么接下来的行为要依赖调用命令了，列举如下：
+
+1. 如果调用的命令没有输出任何内容，那么对应的命令可以正常运行。
+2. 调用命令同时输出了，因为此时管道的对端关闭了，那么命令输出时实际会接收 `SIGPIPE` 信号，默认是直接退出。
+
+#### 2. 异常处理
+
+因为是标准的 C 库，实际上可以使用 `strerror(errno)` 打印错误信息，包括了 `popen()` `pclose()` ，当然对于 `popen()` 内存申请失败，实际上是不会设置 `errno` 的。
+
+在循环读取数据时，建议使用 `fgets()`，理由如下。
+
+`fgets()` 如果获取的数据超过了 buffer 的大小，实际获取的数据是 `sizeof(buffer) - 1` ，而且最后会填充一个 `'\0'` 作为字符串的结束。
+
+### 总结
+
+不是特别喜欢用类似 `popen()` 这样的封装，理由如下：
+
+1. 同步命令。目前为了保证性能大部分的代码用的是异步调用方式，这样的话 `popen()` 实际使用场景有限。
+2. 超时处理。如果要设置命令执行的超时，那么在调用命令的时候需要添加 `timeout` 命令，一般建议为 `timeout --signal=INT --kill-after=10 YOUR CMD` 这种方式。
+3. 无返回结果。通过脚本的错误输出可以获取很多有效信息，例如退出码、是否core、是否收到信号等等，然后根据这些信息去做相关处理。
+
+{% highlight bash %}
+#!/bin/bash
+trap "echo 'pipe error' > /tmp/pipe.err" PIPE
+for i in {1..100}; do
+        #echo "Current count ${i}" >> /tmp/pipe.out
+        echo "Current count ${i}"
+        sleep 1
+done
+{% endhighlight %}
+
+{% highlight c %}
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+
+int main(void)
+{
+        FILE *fp;
+        int count = 0;
+        char buff[10];
+
+        fp = popen("bash /tmp/pipe.sh", "r");
+        if (fp == NULL) {
+                fprintf(stderr, "popen() failed, %s.\n", strerror(errno));
+                return -1;
+        }
+
+        fprintf(stdout, "Output BEGIN\n");
+        while(fgets(buff, sizeof(buff), fp) != NULL) {
+                fprintf(stdout, "xxx%s", buff); /* including '\n' for fgets() */
+                if (++count > 10)
+                        break;
+        }
+        fprintf(stdout, "Output -END-\n");
+        if (pclose(fp) < 0)
+                fprintf(stderr, "pclose() failed, %s.\n", strerror(errno));
+
+
+        return 0;
+}
+{% endhighlight %}
+
+
+
+
+
 ## 其它
 
-### Broken Pipe 
+### Broken Pipe
 
 一般来说就是尝试写入数据的时候，对端已经关闭，包括了 Socket 以及 Pipe 。
 

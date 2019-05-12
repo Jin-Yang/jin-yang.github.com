@@ -488,33 +488,22 @@ Time To Live, TTL 生存时间，表示解析记录在 DNS 服务器中的缓存
 
 例如在访问 `www.foobar.com` 时，如果在 DNS 服务器的缓存中没有该记录，就会向 NS 服务器发出请求，获得该记录后，该记录会在 DNS 服务器上缓存 TTL 的时间长度，在 TTL 有效期内访问 `www.foobar.com` 时，会直接返回。
 
-#### resolv.conf 配置
+#### DNS 服务器地址
 
-注意，dig、nslook 只会解析 `/etc/resolv.conf` 的内容，而不会解析 `/etc/hosts` 里面内容，可以使用 `getent hosts baidu.com` 查看。
-
-{% highlight text %}
-options timeout:2 attempts:3 rotate single-request-reopen
-{% endhighlight %}
-
-Linux 系统下域名解析的配置文件是 `/etc/resolv.conf`，一般会配置上两个或更多的 `nameserver`，这样在一个服务器挂掉后还能正常解析域名。
-
-但是失败后重试的场景和策略是什么呢？
+通过 `dig` 命令查询时，默认会依次查询 `/etc/resolv.conf` 文件中的地址，至于是从哪个 DNS 服务器地址查询到，可以查看返回结果中的 `SERVER` 字段，例如：
 
 {% highlight text %}
-options timeout:1 attempts:1 rotate
-nameserver 10.0.0.1
-nameserver 10.0.0.2
-nameserver 10.0.0.3
+;; Query time: 1 msec
+;; SERVER: 10.0.52.180#53(10.0.52.180)
+;; WHEN: Thu May 09 15:38:04 CST 2017
+;; MSG SIZE  rcvd: 101
 {% endhighlight %}
 
-这里大概讲下几个选项的含义，详细可以通过 `man 5 resolv.conf` 查看：
+当然，可以在执行时通过 `@` 指定，例如如下的方式。
 
-* nameserver DNS服务器的IP地址，最多能设三个
-* timeout 查询一个NS的超时时间，单位是秒，默认是5，最大为30；
-* attempts 所有服务器查询的整个都尝试一遍的次数，默认是2；
-* rotate 随机选取一个作为首选DNS服务器，默认是从上到下；
-
-另外，也可以在本机起 dnsmasq 并监听本地的 UDP 53 端口，用来监听来自于本地的解析请求，该进程会维护上游服务器的健康状况，不会把解析请求发到挂掉的上游服务器上。
+{% highlight text %}
+$ dig @8.8.8.8 www.baidu.com
+{% endhighlight %}
 
 ## 参考
 

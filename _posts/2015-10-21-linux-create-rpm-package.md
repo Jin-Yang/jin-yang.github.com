@@ -600,78 +600,6 @@ $ rpm --define='_without_foobar 1' --define='with_foobar 0%{!?_without_foobar:1}
 foobar:0
 {% endhighlight %}
 
-
-### 其它
-
-如下是 ```%if``` 判断的使用。
-
-{% highlight text %}
-%if 0%{?rhel} == 6
-%global compatver             5.1.17
-BuildRequires:  systemd
-%else
-%global compatver             5.1.17
-BuildRequires:  sysv
-%endif
-{% endhighlight %}
-
-可以使用 Requires(pre)、Requires(post) 等都是针对不同阶段的依赖设置；可以通过 ```%package PACKAGE-NAME``` 设置生成不同的 RPM 分支包。
-
-另外，可以生成 GPG 签名，在此不再赘述。
-
-#### 添加用户
-
-可以在 ```%pre``` 段中添加如下内容。
-
-{% highlight text %}
-/usr/sbin/groupadd -g 66 -o -r monitor >/dev/null 2>&1 || :
-
-参数：
-  --gid/-g
-    指定group id；
-  --non-unique/-o
-    group id可以不唯一，此时相当于指定了一个 alias；
-  --system/-r
-    创建系统分组；
-
-/usr/sbin/useradd -M %{!?el5:-N} -g monitor -o -r -d %{_libdir}/%{name} -s /bin/false \
-    -c "Uagent Server" -u 66 monitor >/dev/null 2>&1 || :
-参数：
-  --no-create-home/-M
-    不创建HOME目录；
-  --no-user-group/-N
-    不创建相同用户名的分组；
-  --non-unique/-o
-    user id可以不唯一，此时相当于指定了一个 alias；
-  --system/-r
-    创建系统用户；
-  --home-dir/-d HOME_DIR
-    指定HOME目录，如果不存在则会创建；
-  --shell/-s SHELL
-    指定默认的shell；
-{% endhighlight %}
-
-
-#### 初始宏定义
-
-很多的宏，是在 ```/etc/rpm``` 目录下定义的，如上面的 ```dist``` 在 ```/etc/rpm/macros.dist``` 文件中定义。
-
-
-#### RPM包查看
-
-对于生成的 RPM 包，只能查看头部信息和脚本内容，指令分别如下。
-
-{% highlight text %}
-$ rpm --info -qp XXX.rpm
-$ rpm --scripts -qp XXX.rpm
-{% endhighlight %}
-
-#### 变量定义
-
-在定义 `Version` 时，如果使用 `%{?package_version:1.0.0}` 可以工作但是，使用 `%{!?package_version:1.0.0}` 却无效。
-
-而且这里的参数不能通过类似 `rpmbuld --define='package_version 1.9.1' foobar.spec` 的方式传入。
-
 ### 测试脚本
 
 如下是一个测试用的脚本，可以用来生成简单的测试 SPEC 脚本，并执行。
@@ -788,6 +716,109 @@ $ mkdir ~/src && cd ~/src && curl --progress https://collectd.org/files/collectd
 {% endhighlight %}
 
 也可以参考 [本地文档](/reference/linux/how_to_build_rpms.html) 。
+
+## 其它
+
+如下是 ```%if``` 判断的使用。
+
+{% highlight text %}
+%if 0%{?rhel} == 6
+%global compatver             5.1.17
+BuildRequires:  systemd
+%else
+%global compatver             5.1.17
+BuildRequires:  sysv
+%endif
+{% endhighlight %}
+
+可以使用 Requires(pre)、Requires(post) 等都是针对不同阶段的依赖设置；可以通过 ```%package PACKAGE-NAME``` 设置生成不同的 RPM 分支包。
+
+另外，可以生成 GPG 签名，在此不再赘述。
+
+### 添加用户
+
+可以在 ```%pre``` 段中添加如下内容。
+
+{% highlight text %}
+/usr/sbin/groupadd -g 66 -o -r monitor >/dev/null 2>&1 || :
+
+参数：
+  --gid/-g
+    指定group id；
+  --non-unique/-o
+    group id可以不唯一，此时相当于指定了一个 alias；
+  --system/-r
+    创建系统分组；
+
+/usr/sbin/useradd -M %{!?el5:-N} -g monitor -o -r -d %{_libdir}/%{name} -s /bin/false \
+    -c "Uagent Server" -u 66 monitor >/dev/null 2>&1 || :
+参数：
+  --no-create-home/-M
+    不创建HOME目录；
+  --no-user-group/-N
+    不创建相同用户名的分组；
+  --non-unique/-o
+    user id可以不唯一，此时相当于指定了一个 alias；
+  --system/-r
+    创建系统用户；
+  --home-dir/-d HOME_DIR
+    指定HOME目录，如果不存在则会创建；
+  --shell/-s SHELL
+    指定默认的shell；
+{% endhighlight %}
+
+### 初始宏定义
+
+很多的宏，是在 `/etc/rpm` 目录下定义的，如上面的 `dist` 在 `/etc/rpm/macros.dist` 文件中定义。
+
+### RPM包查看
+
+对于生成的 RPM 包，只能查看头部信息和脚本内容，指令分别如下。
+
+{% highlight text %}
+$ rpm --info -qp XXX.rpm
+$ rpm --scripts -qp XXX.rpm
+{% endhighlight %}
+
+### 变量定义
+
+在定义 `Version` 时，如果使用 `%{?package_version:1.0.0}` 可以工作但是，使用 `%{!?package_version:1.0.0}` 却无效。
+
+而且这里的参数不能通过类似 `rpmbuld --define='package_version 1.9.1' foobar.spec` 的方式传入。
+
+## 依赖检查
+
+如果在安装时有些环境或者平台的检查，例如只支持某些平台，那么需要添加到 `%pre` 段中，其退出码非 0 ；注意，如果使用 `%post` 不会生效。
+
+另外，在卸载时，如果 `%preun` 的退出码非 0 则会导致卸载失败；与安装类似，如果使用 `%postun` 同样不会生效。
+
+对于如上场景可以使用 `--noscripts` 忽略，该参数等价于 `--nopre` `--nopost` `--nopreun` `--nopostun`，例如。
+
+{% highlight text %}
+# rpm --noscripts -ivh foobar-1.0.0-1.x86_64.rpm
+# rpm --noscripts -evh foobar
+{% endhighlight %}
+
+如果想查看执行的是那些脚本，可以通过 `rpm -q --scripts package` 命令查看，当机器上有多个版本时，如果要删除所有版本可以使用 `--allmatches` 参数。
+
+### debuginfo
+
+rpmbuild 默认会生成 debuginfo 包，如果要关闭，可以通过如下的几种方式设置。
+
+{% highlight text %}
+----- 修改配置文件，可以是用户级别，或者是全局的/etc/rpm/macros
+$ echo '%debug_package %{nil}' >> ~/.rpmmacros
+$ echo '%define debug_package %{nil}' >> ~/.rpmmacros
+
+----- 也可以在命令行中添加参数
+$ rpmbuild --define "debug_package %{nil}"
+{% endhighlight %}
+
+注意，如果要使用 rpm 的 debuginfo 包，在编译的时候就需要添加 `-g` 参数，否则即使生成了 debuginfo 包，也有可能会导致没有提取到完整的 debuginfo 包，在使用 gdb 时会报如下的错误。
+
+{% highlight text %}
+separate debug info file has no debug info
+{% endhighlight %}
 
 ## 参考
 

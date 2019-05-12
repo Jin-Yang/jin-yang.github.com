@@ -46,6 +46,17 @@ description:
 
 注意，在 CMake 中使用 `__FILE__` 时默认是文件的全路经，如果要使用相对路径可以参考 [CMake 自动编译]({{ site.production_url }}/post/linux-cmake-auto-compile-introduce.html) 中相关介绍。
 
+#### 实现细节
+
+针对不同的场景对应了不同的实现，主要分为如下几类。
+
+{% highlight text %}
+liblog-process.a        单进程，在init会打开文件，切割时无需加锁
+liblog-multi-process.a  多进程，每次写入时打开文件，原子写入，然后关闭，切割时无加文件锁
+liblog-thread.a         多线程，在init时打开文件，每次写入时打开文件，原子写入，然后关闭，切割时需要加线程锁
+liblog-stdout.a         直接写入到标准输出，注意不区分标准输出还是标准错误输出
+{% endhighlight %}
+
 #### TODO
 
 * 日志压缩。
