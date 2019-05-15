@@ -31,6 +31,7 @@ Git 是一免费、开源的分布式版本控制系统，可有效、高速的�
 * [Git 多个远程库](/post/git-multi-remote-repos.html) 也就是同时配置多个远端仓库地址。
 * [Git Cherry Pick 使用](/post/git-cherry-pick-introduce.html) 将某个分值的提交到其它的分支上。
 * [Git 清理空间](/post/git-cleanup-method-introduce.html) 常见的是如何清理大文件、做开源的准备等。
+* [Git 撤销操作](/post/git-cancel-reset-operation-introduce.html) 对于不同的场景，一些常见的撤销处理方法。
 
 ## gogs
 

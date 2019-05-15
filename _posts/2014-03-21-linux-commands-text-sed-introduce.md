@@ -18,20 +18,31 @@ sed 是一个精简的、非交互式的编辑器，可以提供与编辑器 VIM
 
 常用操作如下。
 
+<!--
+d 表示删除
+-->
+
+sed 默认会打印所有的处理行，可以通过 `-n` 参数取消默认的打印，例如，可以通过 `/Pattern/p` 参数，那么此时只会打印匹配的行。
+
 {% highlight text %}
+----- 全局替换匹配行，s 替换，g 全局
+$ sed -i 's/^a.*/haha/g' filename
+
 ----- 文件头部添加一行，命令1表示第一行，i表示插入，之后是内容
-sed -i "1ifoobar" filename
+$ sed -i "1ifoobar" filename
   i 行前插入 insert
   a 行后插入 append
   c 行替换   change
 ----- 规则匹配行前插入
-sed -i "/foobar/ifoo" filename
+$ sed -i "/foobar/ifoo" filename
 
 ----- 删除指定行，$表示最后一行
 $ sed -i '1d' filename
 $ sed -i '$d' filename
 $ sed -i '/foobar/d' filename
 {% endhighlight %}
+
+注意，通过 `-i` 参数会直接替换原文件的内容，否则只会在打印的信息中进行相关处理，而非修改原文件。
 
 <!--
 sed '0,/^520/{//d;b};0,/131$/d'
@@ -45,6 +56,32 @@ sed '/^520/{:a;N;/131$/!ba;d}'
 $ sed '0,/^#YOUR-MARK-BEGIN$/{//d;b};0,/^#YOUR-MARK-END$/d'    # 只删除第一个匹配
 $ sed '/^#YOUR-MARK-BEGIN$/, /^#YOUR-MARK-END$/d'              # 删除所有匹配
 $ sed -i -e '0,/^#YOUR-MARK-BEGIN$/{//d;b};0,/^#YOUR-MARK-END$/d'
+{% endhighlight %}
+
+## 示例
+
+### crontab 替换
+
+因为会涉及到文件路径，而其中的匹配字符 `/` 会与其冲突，可以使用 `%` ，示例如下。
+
+{% highlight text %}
+----- 只替换文件的路径
+sed -i -n 's%/Your/File/Path%/Your/New/File/Path%g' /etc/crontab
+----- 替换整行
+sed -i -n 's%^.* /Your/File/Path .*$%* */5 * * * root /Your/New/File/Path >/dev/null 2>\&1%g' /etc/crontab
+{% endhighlight %}
+
+当然，也可以先删除，然后再在最后一行添加。
+
+{% highlight text %}
+sed -i '/\/Your\/File\/Path/d' /etc/crontab
+sed -i '$a * */10 * * * root /Your/New/File/Path >/dev/null 2>&1' /etc/crontab
+{% endhighlight %}
+
+注意，如果是只打印，没有找到太好的方法。
+
+{% highlight text %}
+sed -n '/\/Your\/File\/Path/g' /etc/crontab
 {% endhighlight %}
 
 ### 多行替换
@@ -137,6 +174,10 @@ sed 's/^/HEAD&/g' test.file
 sed 's/$/&TAIL/g' test.file
 sed '/./{s/^/HEAD&/;s/$/&TAIL/}' test.file
 -->
+
+## 参考
+
+详细内容可以查看官方手册 [sed, a stream editor](https://www.gnu.org/software/sed/manual/sed.html) 中的内容。
 
 {% highlight text %}
 {% endhighlight %}

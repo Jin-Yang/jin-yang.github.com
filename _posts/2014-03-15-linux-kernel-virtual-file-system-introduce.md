@@ -1,13 +1,14 @@
 ---
-Date: October 19, 2013
 title: Linux VFS 文件系统
 layout: post
 comments: true
 language: chinese
 category: [linux]
+keywords: linux,lvs
+description: 在次重申下，*nix 的设计理念是：一切都是文件！ 也就是在 Linux 中，一切设备皆是以文件的形式进行操作，如网络套接字、硬件设备等。这一切都是通过一个中间层实现的，被称为 VFS (Virtual File System) 。
 ---
 
-在此重申下，*nix 的设计理念是：一切都是文件！
+在次重申下，*nix 的设计理念是：一切都是文件！
 
 也就是在 Linux 中，一切设备皆是以文件的形式进行操作，如网络套接字、硬件设备等。这一切都是通过一个中间层实现的，被称为 VFS (Virtual File System) 。
 
@@ -23,7 +24,7 @@ category: [linux]
 
 VFS 除了为所有文件系统的实现提供一个通用接口外，还提供了一些文件相关数据结构的磁盘高速缓存。例如最近最常使用的目录项对象被放在所谓目录项高速缓存（dentry cache）的磁盘高速缓存中，从而加速从文件路径名到最后一个路径分量的索引节点的转换过程。
 
-## 数据结构
+### 数据结构
 
 对于文件，主要包括了两部分信息：A) 存储的数据本身；B) 该文件的组织和管理的信息。
 
@@ -31,16 +32,9 @@ VFS 除了为所有文件系统的实现提供一个通用接口外，还提供�
 
 在内存中, 每个文件都有一个 dentry(目录项) 和 inode (索引节点) 结构，dentry 记录着文件名，上级目录等信息，正是它形成了我们所看到的树状结构；而有关该文件的组织和管理的信息主要存放 inode 里面，它记录着文件在存储介质上的位置与分布。
 
-另外，dentry->d_inode 指向相应的 inode 结构，dentry 与 inode 是多对一的关系，因为有可能一个文件有好几个文件名，如硬链接。
+另外，`dentry->d_inode` 指向相应的 inode 结构，dentry 与 inode 是多对一的关系，因为有可能一个文件有好几个文件名，如硬链接。
 
-
-
-
-
-
-
-
-## dentry 和 inode 的关系
+### dentry 和 inode 的关系
 
 在 Linux 进程中，是通过目录项 (dentry) 和索引节点 (inode) 描述文件的，而所谓 "文件" 就是按一定的格式存储在介质上的信息，所以一个文件其实包含了两方面的信息，一是存储的数据本身，二是有关该文件的组织和管理的信息。
 
@@ -64,17 +58,20 @@ inode 代表的是物理意义上的文件，通过 inode 可以得到一个数�
 
 
 
-# 文件系统
+## 文件系统
 
-磁盘上的文件内容通过文件系统组织一系列的文件，通常这些文件保存在磁盘的不同分区上，当然不同的分区可能包含不同的文件系统类型，如 EXT2、EXT3、FAT16、NTFS 等。
+磁盘上的文件内容通过文件系统组织一系列的文件，通常这些文件保存在磁盘的不同分区上，当然不同的分区可能包含不同的文件系统类型，如 ext2、ext3、fat16、ntfs 等。
 
-可以通过 cat /proc/filesystems 查看已经注册的文件系统。
+可以通过 `cat /proc/filesystems` 查看已经注册的文件系统。
 
 对于每个文件系统，同时会有代码，或者是模块，来告诉我们如何操作这些文件。因此，在使用具体的文件之前，需要告诉内核该文件系统的相关信息，主要包括 A) 文件系统名称；B) 知道如何挂载；C) 如何查找文件的路径；D) 如何查找文件的内容。
 
-## 数据结构
+### 数据结构
 
-其中 struct file_system_type 包括了文件系统的主要参数，如下之列出了主要部分。
+
+#### file system
+
+其中 `struct file_system_type` 包括了文件系统的主要参数，如下之列出了主要部分。
 
 {% highlight c %}
 struct file_system_type {
@@ -89,36 +86,73 @@ struct file_system_type {
 };
 {% endhighlight %}
 
-另外，存在一个全局变量 file_systems，用于保存所有已经注册的文件系统。
+另外，存在一个全局变量 `file_systems`，用于保存所有已经注册的文件系统。
 
 {% highlight c %}
 static struct file_system_type *file_systems;
 static DEFINE_RWLOCK(file_systems_lock);
 {% endhighlight %}
 
-文件系统信息通过单向链表保存，其中 file_systems 全局变量作为链头，同时对应一个 file_systems_lock 锁，当需要读写时需要先加锁，如上，可以通过 cat /proc/filesystems 查看已经注册的文件系统。
+文件系统信息在内核中会通过单向链表保存，其中 `file_systems` 全局变量作为链头，同时对应一个 `file_systems_lock` 锁，当需要读写时需要先加锁，如上，可以通过 `cat /proc/filesystems` 查看已经注册的文件系统。
 
+#### operation
+
+与文件相关的操作包括了三部分：
+
+* SuperBlock 包含了文件系统的元数据信息；
+* Inode 与文件相关的信息；
+* File 保存的文件主体。
+
+针对这三部分同时也对应了三类的操作 API 接口函数。
+
+{% highlight c %}
+struct super_operations {
+	struct inode *(*alloc_inode)(struct super_block *);
+	void (*destroy_inode)(struct inode *);
+
+	int (*sync_fs)(struct super_block *sb, int wait);
+	int (*statfs) (struct dentry *, struct kstatfs *);
+	// ... ...
+};
+
+struct inode_operations {
+	struct dentry * (*lookup) (struct inode *,struct dentry *, unsigned int);
+	int (*create) (struct inode *,struct dentry *, umode_t, bool);
+	int (*link) (struct dentry *,struct inode *,struct dentry *);
+	int (*mkdir) (struct inode *,struct dentry *,umode_t);
+	// ... ...
+};
+
+struct file_operations {
+	loff_t (*llseek) (struct file *, loff_t, int);
+	ssize_t (*read) (struct file *, char __user *, size_t, loff_t *);
+	ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *);
+	int (*open) (struct inode *, struct file *);
+	// ... ...
+};
+{% endhighlight %}
 
 ## 文件系统注册
 
-在上面的结构体中包含了文件系统的名称，以及如何产生一个保存在内存中的 super_block 结构体。主要，通过 register_filesystem() 向 VFS 注册，对于编译到内核中的文件系统则是在内核初始化的时候注册，当然也可以在模块初始化的时候注册。
+这是最简单的，也就是直接添加到全局列表中。
 
-文件系统注册通过 int register_filesystem(struct file_system_type * fs) 来完成，该函数唯一的操作是将相应的结构体添加到 file_systems 链表中。
+在上面的结构体中包含了文件系统的名称，以及如何产生一个保存在内存中的 `super_block` 结构体。主要，通过 `register_filesystem()` 向 VFS 注册，对于编译到内核中的文件系统则是在内核初始化的时候注册，当然也可以在模块初始化的时候注册。
 
-在 struct file_system_type 中通过链表与 file_systems 链头相连，而 register_filesystem() 也就是将对应的类型添加到链表中。
+文件系统注册通过 `int register_filesystem(struct file_system_type * fs)` 来完成，该函数唯一的操作是将相应的结构体添加到 `file_systems` 链表中。
 
-然后在通过 mount 命令挂载时，会指定相应的文件系统，然后通过对应的 mount() 函数从文件系统 (extN 是从硬盘上) 读取 super_block 并初始化。
+在 `struct file_system_type` 中通过链表与 `file_systems` 链头相连，而 `register_filesystem()` 也就是将对应的类型添加到链表中。
 
-新建 inode 实际通过 new_inode() 完成，而该函数最终会调用 super_block->s_op->alloc_inode() 完成。
+然后在通过 mount 命令挂载时，会指定相应的文件系统，然后通过对应的 `mount()` 函数从文件系统 (extN 是从硬盘上) 读取 `super_block` 并初始化。
 
+新建 inode 实际通过 `new_inode()` 完成，而该函数最终会调用 `super_block->s_op->alloc_inode()` 完成。
 
-# Mount 挂载
+## Mount 挂载
 
-挂载就是将一个文件系统添加到一个目录上，对应的文件系统通常为磁盘文件系统，如 EXT2/3/4、NTFS、XFS、FAT16 等；当然也包括虚拟文件，如 proc、sysfs 等。
+挂载就是将一个文件系统添加到一个目录上，对应的文件系统通常为磁盘文件系统，如 EXTN、NTFS、XFS、FAT16 等；当然也包括虚拟文件，如 proc、sysfs 等。
 
 挂载时通常包括 A) 一个设备，可以是磁盘、软盘、CDROM 、U盘等；B) 一个对应的目录挂载点；C) 指定相应的文件系统。
 
-一个挂载命令 mount 通常如下，包括了几个重要参数 fstype、devname、mountpoint、options，可以通过 man 8 mount 查看，对于函数的原型可以通过 man 2 mount 查看。
+一个挂载命令 mount 通常如下，包括了几个重要参数 fstype、devname、mountpoint、options，可以通过 `man 8 mount` 查看，对于函数的原型可以通过 `man 2 mount` 查看。
 
 {% highlight text %}
 # mount -t ext4 /dev/sda1 /mnt -o ....
@@ -149,9 +183,9 @@ $ ./mount_test                                         # 执行命令挂载
 $ findmnt /dev/sda1                                    # 查看执行结果
 {% endhighlight %}
 
-对于 mount() 函数，source 是要挂载的设备名，target 是要挂载到哪，filesystemtype 就是文件系统类型名，而剩余的两个参数 flags 和 data 对应于传入的参数。
+对于 `mount()` 函数，source 是要挂载的设备名，target 是要挂载到哪，filesystemtype 就是文件系统类型名，而剩余的两个参数 flags 和 data 对应于传入的参数。
 
-其中 flags 相应宏定义在 include/uapi/linux/fs.h 中，如 MS_RDONLY、MS_NOATIME 等，这些 flags 会在 VFS 层被解析使用。而 data 则是每个文件系统各自支持的挂载选项，可以通过 strace 查看最终调用 mount() 接口是调用的命令。
+其中 flags 相应宏定义在 `include/uapi/linux/fs.h` 中，如 `MS_RDONLY`、`MS_NOATIME` 等，这些 flags 会在 VFS 层被解析使用。而 data 则是每个文件系统各自支持的挂载选项，可以通过 strace 查看最终调用 `mount()` 接口是调用的命令。
 
 {% highlight text %}
 $ strace mount /dev/loop0 /mnt/foobar -o noquota,nodev
@@ -162,9 +196,9 @@ mount("/dev/loop0", "/mnt/foobar", "xfs", MS_MGC_VAL|MS_NODEV, "noquota") = 0
 
 其中 nodev 被解释为 flag，noquota 被当作了 mount data。
 
-## 挂载过程
+### 挂载过程
 
-在内核中，struct mount 代表着一个 mount 实例，每次挂载都会新建一个该结构体，其中 struct vfsmount mnt 成员是它最核心的部分，过去所有的成员都保存在 vfsmount 结构体中，后来只保留了核心部分在 vfsmount ，这样使得 vfsmount 的内容更加精简，在很多情况下只需要传递 vfsmount。
+在内核中，`struct mount` 代表着一个 mount 实例，每次挂载都会新建一个该结构体，其中 `struct vfsmount mnt` 成员是它最核心的部分，过去所有的成员都保存在 vfsmount 结构体中，后来只保留了核心部分在 vfsmount ，这样使得 vfsmount 的内容更加精简，在很多情况下只需要传递 vfsmount。
 
 {% highlight c %}
 // fs/mount.h
@@ -189,9 +223,9 @@ struct path {
 };
 {% endhighlight %}
 
-在全局文件系统树上要想确定一个位置不能由 dentry 唯一确定，因为有了挂载关系，一切都变的复杂了，比如一个文件系统可以挂装载到不同的挂载点。所以文件系统树的一个位置要由 (mount, dentry) 二元组，或者说 (vfsmount, dentry) 来确定，在内核中通过 struct path 表示。
+在全局文件系统树上要想确定一个位置不能由 dentry 唯一确定，因为有了挂载关系，一切都变的复杂了，比如一个文件系统可以挂装载到不同的挂载点。所以文件系统树的一个位置要由 `(mount, dentry)` 二元组，或者说 `(vfsmount, dentry)` 来确定，在内核中通过 `struct path` 表示。
 
-下面查看 sys_mount() 的执行过程，实际上，mount 操作的过程就是新建一个 struct mount，然后将此结构和挂载点关联。之后，目录查找时就能沿着 mount 挂载点一级级向下查找文件。
+下面查看 `sys_mount()` 的执行过程，实际上，mount 操作的过程就是新建一个 `struct mount`，然后将此结构和挂载点关联。之后，目录查找时就能沿着 mount 挂载点一级级向下查找文件。
 
 {% highlight text %}
 sys_mount()
@@ -218,11 +252,11 @@ sys_mount()
        |-graft_tree()                   # 将newmount添加到全局文件系统中
 {% endhighlight %}
 
-在调用 vfs_kern_mount() 时，只有文件系统类型、挂载标记、设备名和挂载选项信息为参数，并没有 mountpoint 参数，其时这里只是用 type 中的 mount 回调函数读取设备的 superblock 信息，填充 mnt 结构，然后把 flag 和 data 解析后填充到 mnt 结构中。
+在调用 `vfs_kern_mount()` 时，只有文件系统类型、挂载标记、设备名和挂载选项信息为参数，并没有 mountpoint 参数，其时这里只是用 type 中的 mount 回调函数读取设备的 superblock 信息，填充 mnt 结构，然后把 flag 和 data 解析后填充到 mnt 结构中。
 
-也就是说，通过 vfs_kern_mount() 会调用具体文件系统的 mount() 函数，最终生成 struct mount，最后通过 do_add_mount() 添加到全局的文件系统中。
+就是说，通过 `vfs_kern_mount()` 会调用具体文件系统的 `mount()` 函数，生成 `struct mount`，最后通过 `do_add_mount()` 添加到全局的文件系统中。
 
-# 系统调用
+## 系统调用
 
 对于文件的常见操作如下：
 
@@ -232,32 +266,33 @@ sys_mount()
 #include <stdlib.h>
 #include <unistd.h
 
-int main(int argc, char **argv)
+int main(void)
 {
-    int fd, ret;
-    fd = open("syscall.txt", O_RDWR | O_CREAT, 0644);   // man 2 open
-    if(fd == -1) {
-        printf("Error try to open 'syscall.txt'");
-        exit(EXIT_FAILURE);
-    }
-    ret = write(fd, "just for test\n", 14);
-    if(ret == -1) {
-        printf("Error try to write 'syscall.txt'");
-        close(fd);
-        exit(EXIT_FAILURE);
-    }
-    close(fd);
+	int fd, ret;
 
-    return 0;
+	fd = open("syscall.txt", O_RDWR | O_CREAT, 0644);   // man 2 open
+	if(fd == -1) {
+		printf("Error try to open 'syscall.txt'");
+		exit(EXIT_FAILURE);
+	}
+
+	ret = write(fd, "just for test\n", 14);
+	if(ret == -1) {
+		printf("Error try to write 'syscall.txt'");
+		close(fd);
+		exit(EXIT_FAILURE);
+	}
+	close(fd);
+
+	return 0;
 }
 {% endhighlight %}
 
-在 Linux 内核中，每个打开的文件均由一个文件描述符 struct file 表示，而返回给用户的是在 fd_array[] 中的位置索引。
+在 Linux 内核中，每个打开的文件均由一个文件描述符 `struct file` 表示，而返回给用户的是在 `fd_array[]` 中的位置索引。
 
-也即，该描述符在特定进程的数组中充当位置索引，这也意味着包括 open() 数组是 task_struct -&gt; files -&gt; fd_arry，该数组的元素包含了 file 结构，其中包括每个打开文件的所有必要信息。
+也即，该描述符在特定进程的数组中充当位置索引，这也意味着包括 `open()` 数组是 `task_struct -> files -> fd_arry`，该数组的元素包含了 file 结构，其中包括每个打开文件的所有必要信息。
 
-
-## sys_open
+### sys_open
 
 对于 open() 系统调用的的主要执行操作在 do_sys_open() 中，下面介绍其主要操作。
 
@@ -375,7 +410,7 @@ struct file {
 
 另外，可以参考 [Linux 系统调用 open 七日游](http://blog.chinaunix.net/uid-20522771-id-4419666.html) 相当不错的介绍文件系统打开的过程。
 
-## sys_read
+### sys_read
 
 sys_read() 会根据用户空间传入的文件描述符 fd 取出对应的 struct file 结构体，获取 struct file 结构体的当前偏移量指针，从文件读取内容，存放到用户空间内存区，如果读取成功，唤醒相关等待进程，更新文件的当前指针，如果需要则释放对 file 结构的引用。
 
