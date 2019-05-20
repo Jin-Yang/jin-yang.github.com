@@ -405,9 +405,6 @@ struct file {
 对于后续的 read()、write() 操作，实际调用的是 struct file_operations 指定的接口，如上述的 open() 函数接口，也就是 inode->i_fop 指定的值。
 
 
-
-
-
 另外，可以参考 [Linux 系统调用 open 七日游](http://blog.chinaunix.net/uid-20522771-id-4419666.html) 相当不错的介绍文件系统打开的过程。
 
 ### sys_read
@@ -473,6 +470,98 @@ struct file_operations {
 <!--
 dentry与inode有什么联系和区别
 http://blog.chinaunix.net/uid-26557245-id-3432038.html
+
+
+
+
+## 源码
+
+与文件系统相关的绝大部分代码都保存在 fs 目录下，包括了 VFS、Buffer Cache、可执行文件的格式等等，而不同的文件系统则保存在子目录下，例如 `fs/ext4` 。
+
+## 挂载
+
+以下的讲解都以 ext4 为例，其对应的代码在 `fs/ext4` 目录下。
+
+在系统启动时，会通过 `register_filesystem()` 注册一个文件系统，注册过程实际上将表示各实际文件系统的 `struct file_system_type` 数据结构实例化，并添加到一个链表，内核中用一个名为 `file_systems` 的全局变量来指向该链表的表头。
+
+struct file_system_type {
+	const char *name;  # 文件系统的名称，唯一标示
+	int fs_flags;
+	struct dentry *(*mount) (struct file_system_type *, int,
+			const char *, void *);   # 关键的mount操作，用于挂在文件系统
+	void (*kill_sb) (struct super_block *);
+	struct module *owner;
+	struct file_system_type * next; # 链表指针
+	struct hlist_head fs_supers;
+};
+
+对于每个 mount 的文件系统，都会为它创建一个 `struct super_block` 的数据结构，该结构体保存了文件系统以及挂载点的相关信息。
+
+由于可以在不同的路径挂载同一个文件系统，例如 `/`、`/home`、`/opt` 都挂载了 `ext4` 文件系统，因此同一个文件系统类型会对应多个 `struct super_block` 结构体，而 `fs_supers` 成员就把这个文件系统类型对应的所有 `struct super_block` 都链接起来。
+
+其中比较关键的是 `mount` 回调函数，它是 VFS 能够和底层文件系统交互的起始点，用于处理用户空间的 mount 命令，会读取磁盘数据并实例化一个对应的 `struct super_block` 结构体，对应到 ext4 中就是 `ext4_mount()` 函数。
+
+struct super_block {
+	struct file_system_type *s_type;     // 指向文件系统的反向指针
+	const struct super_operations *s_op; // 与super block相关的核心操作
+};
+
+
+### 总结
+
+挂载就是实例化一个 `struct super_block` 结构体，并添加到 `fs_supers` 链表上，每个挂载点会对应一个 `struct super_block` 实例。
+
+##
+
+关于各个结构体之间的相互关联关系，有不错的图表可供参考
+https://www.linux.it/~rubini/docs/vfs/vfs.html
+
+https://blog.csdn.net/jasonchen_gbd/article/details/51511261
+https://blog.csdn.net/u010424605/article/details/41842877
+http://hushi55.github.io/2015/10/19/linux-kernel-vfs
+https://lihaoquan.me/2019/2/16/linux-vfs.html
+
+
+该函数是不能放在super_block结构中的，因为super_block是在get_sb执行之后才能建立的。get_sb从底层文件系统获取super_block的信息，是和底层文件系统相关的。
+
+## VFS
+
+虚拟文件系统有四个主要对象类型：
+（1）superblock 表示特定加载的文件系统。
+（2）inode 表示特定的文件。
+（3）dentry 表示一个目录项，路径的一个组成部分。
+（4）file 表示进程打开的一个文件。
+
+
+Superblock
+
+超级块（spuerblock）对象由各自的文件系统实现，用来存储文件系统的信息。这个对 象对应为文件系统超级块或者文件系统控制块，它存储在磁盘特定的扇区上。不是基于磁盘 的文件系统（基于内存的虚拟文件系统，如sysfs）临时生成超级块，并保存在内存中。
+
+Inode
+
+索引节点对象包含了内核在操作文件或目录时需要的全部信息。对于Unix文件系统来 说，这些信息可以从磁盘索引节点直接读入。如果一个文件系统没有索引节点，那么，不管 这些相关信息在磁盘上是怎么存放的，文件系统都必须从中提取这些信息。
+
+Dentry
+
+为了方便查找，VFS引入目录项的概念。每个dentry代表路径中一个特定部分。对于 /bin/ls来说，/、bin和ls都是目录项对象。前面是两个目录，最后一个是普通文件。在路径中， 包括普通文件在内，每一个部分都是目录项对象。解析一个路径是一个耗时的、常规的字符 串比较过程。
+
+File
+
+VFS最后一个主要对象是文件对象。文件对象表示进程已打开的文件。如果我们站在用 户空间的角度考虑VFS，文件对象会首先进入我们的视野。进程直接处理的是文件，而不是 超级块、索引节点或目录项。文件对象包含我们非常熟悉的信息（如访问模式、当前偏移等）， 同样道理，文件操作和我们非常熟悉的系统调用read（）和write（）等也很类似。
+
+文件对象是已打开的文件在内存中的表示。该对象（不是物理文件）由相应的open（） 系统调用创建，由close（）系统调用销毁，所有这些文件相关的调用实际上都是文件操作 表中定义的方法。
+
+## 参考
+
+[A tour of the Linux VFS](https://www.tldp.org/LDP/khg/HyperNews/get/fs/vfstour.html) 关于虚拟文件系统的概览介绍。
+
+图片不错
+https://lihaoquan.me/2019/2/16/linux-vfs.html
+在 NUMA 系统上，由于不同 CPU 访问本地内存和远端内存的时间相差很大，所以为了更好地调度 Linux 内核引入了 Scheduling Domain 概念。
+
+https://www.linux.it/~rubini/docs/vfs/vfs.html
+
+http://www.haifux.org/lectures/119/linux-2.4-vfs/vfs_relations_static.png
 -->
 
 {% highlight text %}

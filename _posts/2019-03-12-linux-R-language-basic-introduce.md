@@ -3,7 +3,7 @@ title: R 语言简介
 layout: post
 comments: true
 language: chinese
-category: [program]
+category: [program,linux,misc]
 keywords: r,language
 description: R 语言作为统计学一门语言，一直属于一个小众的工具集，直到大数据爆发后，越来越多的人开始使用 R 语言进行数据分析。是一套开源的数据分析解决方案，为统计计算和绘图而生的语言和环境，几行简答的代码就可以实现很复杂的功能。
 ---

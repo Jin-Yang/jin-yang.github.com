@@ -31,6 +31,10 @@ $ git checkout YourFile    # 恢复单个文件
 $ git checkout .           # 恢复整个目录
 {% endhighlight %}
 
+如果只想从缓存中删除，可以使用 `git rm --cached "/Your/File/Path"` 或者 `git rm --cached "/Your/Path" -r` ，此时不会删除物理文件。
+
+注意，如果不加 `--cached` 参数，实际上会直接删除物理文件。
+
 ### add 本地未 push
 
 此时已经添加到了 Stage 中，但是还没有提交到本地，可以通过 `reset` 从 Stage 恢复到 Working Tree ，如果需要撤销可以参考上一场景。

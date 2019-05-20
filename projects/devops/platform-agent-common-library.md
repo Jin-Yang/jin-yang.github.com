@@ -10,7 +10,11 @@ description:
 
 ## MiniAgent
 
-这里实际上是一个通用的示例模版。
+这里实际上是一个通用的示例模版，可以通过如下方式进行编译测试。
+
+{% highlight text %}
+$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DWITH_EXAMPLES=true -DWITH_UNIT_TESTS=true
+{% endhighlight %}
 
 ### 常用脚本
 
@@ -38,6 +42,16 @@ description:
 
 ## 常用库
 
+这里的通用库采用 git 的 submodule 方式添加到各个项目中，大致的使用方式如下。
+
+{% highlight text %}
+----- 以submodule方式添加库
+$ git submodule add git@gogs.cargo.com:cargo/clib-liblog.git libs/liblog
+
+----- 对于所有的submodule拉取最新的代码
+$ git submodule foreach --recursive git pull
+{% endhighlight %}
+
 ### liblog
 
 一个非常简单的日志库，支持简单的日志打印、级别设置、日志切割等功能，同时针对线程、进程编程进行了简单的优化。
@@ -46,7 +60,9 @@ description:
 
 注意，在 CMake 中使用 `__FILE__` 时默认是文件的全路经，如果要使用相对路径可以参考 [CMake 自动编译]({{ site.production_url }}/post/linux-cmake-auto-compile-introduce.html) 中相关介绍。
 
-#### 实现细节
+#### API
+
+#### 日志模型
 
 针对不同的场景对应了不同的实现，主要分为如下几类。
 
@@ -171,6 +187,75 @@ https://github.com/clibs/clib/wiki/Packages
 https://yq.aliyun.com/articles/160854
 https://liam.page/2018/04/28/debug-in-Linux-kernel-jprobe/
 https://blog.csdn.net/dog250/article/details/78879600
+
+
+
+## dump 进程
+
+假设有这么一个场景，有个进程卡死在了某个系统调用，例如 `futex` 接口处。
+
+gcore [-o filename] pid
+
+
+例如可以按照如下步骤操作。
+
+$ gcore -o /tmp/foobar.core 8059
+$ gdb -c /tmp/foobar.core.8059
+>
+
+查找cache目录下不是html的文件
+find ./cache ! -name '*.html' -type f
+
+根据文件属性查找：
+find . -type f -name "*config*" ! -path "./tmp/*" ! -path "./scripts/*" ! -path "./node_modules/*"
+
+https://fedoraproject.org/wiki/Packaging:Debuginfo
+
+https://xiaohui-p.iteye.com/blog/1171927
+
+如果当进程出问题之后如何更好的打印日志信息。
+
+键入info variables以列出“所有全局和静态变量名称”。
+键入info locals以列出“当前堆栈框架的局部变量”(名称和值)，包括该函数中的静态变量。
+键入info args以列出“当前堆栈框架的参数”(名称和值)。
+
+#define BUG() do {
+	log_fatal("BUG: failure at %s:%d/%s()!", __FILENAME__, __LINE__, __func__);
+		panic("BUG!");
+} while(0)
+#define BUG_ON(cond)  do { if (unlikely(cond)) BUG(); } while(0)
+
+https://zhuanlan.zhihu.com/p/31630417
+https://blog.csdn.net/littlefang/article/details/42295803
+https://www.cnblogs.com/muahao/p/7610645.html
+https://www.cnblogs.com/welhzh/p/4813778.html
+https://www.linuxjournal.com/article/6391
+https://blog.csdn.net/astrotycoon/article/details/8142588
+http://velep.com/archives/1032.html
+https://spin.atomicobject.com/2013/01/13/exceptions-stack-traces-c/
+https://www.quora.com/How-do-you-get-a-stack-trace-on-Linux
+https://github.com/gustafsson/backtrace
+https://github.com/daddinuz/panic
+
+
+
+https://paper.seebug.org/481/
+https://paper.seebug.org/
+
+Stack Overflow 作者，里面包含了很多架构相关的内容
+https://nickcraver.com/
+https://riboseyim.github.io/2016/07/17/OpenSource-StackOverflow/
+https://zhuanlan.zhihu.com/p/22353191
+
+检查内存中的敏感数据
+https://github.com/rek7/mXtract
+
+http://cwndmiao.github.io/2014/03/10/percpu/
+http://cwndmiao.github.io/programming%20tools/2013/11/26/Dwarf/
+死锁检测
+https://github.com/rouming/dla
+https://cloud.tencent.com/developer/article/1176832
+https://yq.aliyun.com/articles/579470
 -->
 
 {% highlight text %}

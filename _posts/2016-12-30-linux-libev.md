@@ -98,6 +98,28 @@ libev 是一个事件循环，首先需要注册感兴趣的事件，libev 会�
 4. 启动监控<br>启动上步注册的事件，如 ev_io_start()、ev_timer_start() 等。
 5. 启动 libev<br>重复 1,2 步，然后启动 libev 事件循环，直接执行 ev_run() 即可。
 
+### 初始化方式
+
+这里以 `struct ev_io` 为例，有如下的两种设置方式。
+
+将回调函数和关心的事件同时注册。
+
+{% highlight c %}
+struct ev_io wstdin;
+ev_io_init(&wstdin, stdin_hook, /*STDIN_FILENO*/ 0, EV_READ);
+ev_io_start(EV_A &wstdin);
+{% endhighlight %}
+
+一般来说，在设置了回调函数之后，很少会进行修改，在首次调用的时候需要修改关注的事件，那么此时就可以将设置回调和设置事件分开。
+
+{% highlight c %}
+struct ev_io wstdin;
+ev_init(&wstdin, stdin_hook);
+... ... /* some time later. */
+ev_io_set(&wstdin, /*STDIN_FILENO*/ 0, EV_READ);
+ev_io_start(EV_A &wstdin);
+{% endhighlight %}
+
 ## 源码详解
 
 libev 通过观察器 (watcher) 来监听各种事件，watcher 包括了事件类型、优先级、触发条件和回调函数等参数；将其注册到事件循环上，在满足注册的条件时，会触发观察器，调用它的回调函数。

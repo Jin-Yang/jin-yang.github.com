@@ -188,6 +188,137 @@ DNS常见的攻击、异常操作
 https://www.zybuluo.com/xunuo/note/1075101
 直接通过Socket发送接收请求的示例
 https://payloads.online/archivers/2018-02-10/1
+
+
+
+
+static void cares_search_hook(void *arg, int status, int timeouts, unsigned char *abuf, int alen)
+{
+        (void) arg;
+        struct hostent *host = NULL;
+
+        log_info("invoking search result callback, status %d timeouts %d.", status, timeouts);
+        if (status != ARES_SUCCESS) {
+                log_error("fail to send query, %s.", ares_strerror(status));
+                return;
+        }
+
+        status = ares_parse_a_reply(abuf, alen, &host, NULL, NULL);
+        if (status != ARES_SUCCESS) {
+                log_error("failed to lookup, %s.", ares_strerror(status));
+                return;
+        }
+        dump_hostent(host);
+}
+        /* set DNS server instead of /etc/resolv.conf */
+        struct ares_addr_node svrs = {
+                .next = NULL,
+                .family = AF_INET, /* OR AF_INET6 */
+                .addr.addr4.s_addr = inet_addr("10.0.32.117"),
+                //.addr.addr4.s_addr = inet_addr("10.0.32.118"),
+                //.addr.addr4.s_addr = inet_addr("10.0.35.134"), /* valid */
+        };
+        rc = ares_set_servers(dns.ares.channel, &svrs);
+        if (rc != ARES_SUCCESS) {
+                log_error("c-ares library init error, %s.", ares_strerror(rc));
+                return -1;
+        }
+
+#ifdef CARES_GETHOSTADDR
+        /* NOTE: this depends on how the DNS server implied. */
+        struct in_addr ip;
+        inet_aton("8.8.8.8", &ip);
+        ares_gethostbyaddr(dns.ares.channel, &ip, sizeof(ip), AF_INET6, cares_gethostaddr_hook, NULL);
+#endif
+
+        ares_search(dns.ares.channel, "www.baidu.com", C_IN, T_A, cares_search_hook, NULL);
+
+static void dump_hostent(struct hostent *host)
+{
+        int i;
+        char ipaddr[INET6_ADDRSTRLEN];
+        const char *type = "Unknown";
+
+        log_info("====> dump host name, official '%s' address length %dBytes",
+                        host->h_name, host->h_length);
+        log_info("---- hostname alias:");
+        for (i = 0; host->h_aliases[i]; i++)
+                log_info("    %s", host->h_aliases[i]);
+
+        if (host->h_addrtype == AF_INET)
+                type = "IPv4";
+        else if (host->h_addrtype == AF_INET6)
+                type = "IPv6";
+        log_info("---- %s address list:", type);
+        for (i = 0; host->h_addr_list[i]; ++i) {
+                inet_ntop(host->h_addrtype, host->h_addr_list[i], ipaddr, sizeof(ipaddr));
+                log_info("    IP[%d]: %s", i, ipaddr);
+        }
+}
+
+
+A VS. CNAME
+
+##
+
+其中域名的 A(Address) 记录保存的是域名与 IP 对应的记录，一个域名可以对应多个 IP 地址，从而做到负载均衡。
+
+CNAME(Canonical Name) 记录了一个域名和别名对应的记录，那么当 DNS 查询到的主机名对应的是一个 CNAME 类型时，会继续查询其右面的名称再进行查询，一直追踪到最后的 PTR 或 A 名称，成功查询后才会做出回应。
+
+通过 CNAME 记录允许将多个名字映射到同一台计算机。
+
+与 A 记录不同的是，CNAME 别名记录设置的可以是一个域名的描述而不一定是 IP 地址，通常用于同时提供 WWW 和 MAIL 服务的计算机。
+
+URL转发： 如果没有一台独立的服务器（也就是没有一个独立的IP地址）或者还有一个域名 B ，想访问 A 域名时访问到 B 域名的内容，这时就可以通过 URL 转发来实现。
+
+转发的方式有两种：隐性转发和显性转发
+
+隐性转发的时候 www.abc.com 跳转到 www.123.com 的内容页面以后，地址栏的域名并不会改变（仍然显示 www.abc.com ）。网页上的相对链接都会显示 www.abc.com
+
+#include <netdb.h>
+
+struct hostent {
+  char  *h_name;      // official name 所谓的规范名，例如www.baidu.com的为www.a.shifen.com
+  char **h_aliases;   // 一般来说只有一个，不过为了方便记录也可能会有多个
+  int    h_addrtype;  // 主机IP的类型，包括了IPv4(AF_INET) IPv6(AF_INET6)
+  int    h_length;    // IP地址的长度，通常是为了方便转换
+  char **h_addr_list; // 地址的列表，是一个二维的数组，单个长度通过h_length定义
+}
+#define h_addr h_addr_list[0]  /* for backward compatibility */
+
+glibc 中提供了一个阻塞类型的 DNS 解析函数，也就是 `gethostbyname(3)` 函数，该函数会返回一个 `struct hostent` 指针，代表了 DNS 的解析结果。
+
+ares_timeout() 用于计算超时时间，一般用于设置像select这类的等待超时时间
+
+测试场景：
+1. 向服务端发送请求，服务端会返回报错 (ServFail)；
+2. 通过UDP、TCP发送请求，但是服务端没有返回；
+
+
+
+
+异步 DNS
+
+https://lrita.github.io/2017/05/01/c-ares/
+
+域名解析在网络应用中几乎不可避免，而系统本身的 `gethostbyname()` API 是同步的，会严重阻塞程序运行，为了提高 DNS 查询的速度，通常有几种解决方法。
+
+1. 本地 DNS Cache Server ，常见的是 dnsmasq 。
+2. 代码中增加 DNS Cache，这个在很多网络应用程序中都很常见，比如 squid 。
+3. 异步 DNS 查询，在解析的过程中，不会影响到业务逻辑的正常运行。
+
+对于异步 DNS 解析来说，其中的解决方案包括了：adns [tadns](https://github.com/davidgfnet/tadns)(适合了解原型实现) 。
+https://github.com/vstakhov/librdns
+
+GNU adns
+https://www.gnu.org/software/adns/
+https://github.com/kbandla/adns
+https://github.com/wahern/dns
+https://github.com/c-ares/c-ares
+https://blog.csdn.net/mumumuwudi/article/details/47164531
+https://github.com/getdnsapi/getdns
+http://wangxuemin.github.io/2015/07/31/c-ares%20%E4%B8%80%E4%B8%AAC%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BC%82%E6%AD%A5DNS%E8%A7%A3%E6%9E%90%E5%BA%93/
+
 -->
 
 ## 参考

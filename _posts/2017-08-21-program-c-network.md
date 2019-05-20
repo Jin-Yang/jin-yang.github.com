@@ -14,21 +14,45 @@ description: 简单介绍下，在 Linux C 中进行网络编程时常用到的�
 
 ## 结构体
 
-在网络编程时，可以看到多种结构体，例如 `struct sockaddr` 、`struct `，这些结构体的大小一致，可以直接用来相互转换。
+在 Linux C 的网络编程中包含了 4 个比较核心的数据结构，包括了 `struct sockaddr_in` `struct sockaddr_in6` `struct sockaddr` `struct sockaddr_storage`，其大小分别为 16Bytes、28Bytes、16Bytes、128Bytes 。
 
-一般来说，`struct sockaddr` 是通用的 socket 地址，其定义如下：
+对于 IPv4 来说，`struct sockaddr` 是通用的 socket 地址，其定义如下：
 
 {% highlight c %}
+#include <netinet/in.h>
+
+// IPv4 AF_INET
 struct sockaddr {
-	unsigned short sa_family;
-	char sa_data[14];
+    unsigned short   sa_family;     //  2 bytes address family, AF_xxx
+    char             sa_data[14];   // 14 bytes of protocol address
+};
+struct sockaddr_in {
+    short            sin_family;    //  2 bytes e.g. AF_INET, AF_INET6
+    unsigned short   sin_port;      //  2 bytes e.g. htons(3490)
+    struct in_addr   sin_addr;      //  4 bytes see struct in_addr, below
+    char             sin_zero[8];   //  8 bytes zero this if you want to
+};
+struct in_addr {
+    unsigned long s_addr;           //  4 bytes load with inet_pton()
 };
 
-struct sockaddr_in {
-	short int            sin_family;
-	unsigned short int   sin_port;
-	struct in_addr       sin_addr;
-	unsigned char        sin_zero[8];
+// IPv6 AF_INET6
+struct sockaddr_in6 {
+	short             sin6_family;    //  2 bytes AF_INET6
+	unsigned short    sin6_port;      //  2 bytes Transport layer port
+	uint32_t          sin6_flowinfo;  //  4 bytes IPv6 flow information 
+	struct in6_addr   sin6_addr;      // 16 bytes IPv6 address
+	uint32_t          sin6_scope_id;  //  4 bytes IPv6 scope-id
+};
+struct in6_addr {
+	union {
+		uint8_t u6_addr8[16];
+		uint16_t u6_addr16[8];
+		uint32_t u6_addr32[4];
+	} in6_u;
+#define s6_addr       in6_u.u6_addr8
+#define s6_addr16     in6_u.u6_addr16
+#define s6_addr32     in6_u.u6_addr32
 };
 {% endhighlight %}
 
@@ -40,7 +64,7 @@ struct in_addr {
 };
 {% endhighlight %}
 
-在使用的时候，一般使用 `struct sockaddr_in` 作为函数 (如 `bind()`) 的参数传入，使用时再转换为 `struct sockaddr` 即可，毕竟都是 16 个字符长。
+对于 IPv4 在使用的时候，一般使用 `struct sockaddr_in` 作为函数 (如 `bind()`) 的参数传入，使用时再转换为 `struct sockaddr` 即可，毕竟都是 16 个字符长。
 
 使用示例如下：
 
@@ -57,6 +81,20 @@ sockfd = socket(AF_INET, SOCK_STREAM, 0);
 bind(sockfd, (struct sockaddr *)&addr, sizeof(struct sockaddr));
 {% endhighlight %}
 
+实际上，最开始只有 IPv4 ，也就是为什么看到 `struct sockaddr` 和 `struct sockaddr_in` 的大小是相同的，而 `struct sockaddr_in6` 却大于两者。
+
+出现了 IPv6 之后，为了兼容所有的协议，才出现了 `struct sockaddr_storage` 这一结构体。
+
+### 总结
+
+可以使用 `struct sockaddr_storage` 保存当前所有协议的地址信息，但是如果只支持 IPv4 和 IPv6 功能，在空间上会有些浪费，所以实际上建议使用 `union` 扩展一个。
+
+<!--
+inet_pton inet_addr 两者的区别，如何判断返回值是否合法，或者如何检测一个 IP 是否合法。
+
+inet_pton(AF_INET, "127.0.0.1", &servaddr.sin_addr);
+connect(sockfd, (struct sockaddr *)&addr, sizeof(struct sockaddr)); // 连接到服务端
+-->
 
 ## getaddrinfo
 

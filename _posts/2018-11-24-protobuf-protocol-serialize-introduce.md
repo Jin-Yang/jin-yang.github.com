@@ -26,5 +26,12 @@ ProtoBuf 实际上是通过 TLV 进行保存，也就是 `Tag Length Value` 方�
 
 其它相关的 C 实现可以参考 [Nanopb protocol buffers with small code size](http://jpa.kapsi.fi/nanopb/) 中的实现，另外还有 minipb 。
 
+<!--
+https://github.com/squidfunk/protobluff
+
+对应了protobuf-c/protobuf-c.c
+https://github.com/protobuf-c/protobuf-c
+-->
+
 {% highlight text %}
 {% endhighlight %}

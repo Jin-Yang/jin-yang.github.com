@@ -24,6 +24,10 @@ description:
 
 * [Linux 系统调用](/post/kernel-syscall.html) 系统包括了用户态和内核态，内核态用于执行一些权限较高的任务。
 
+## VFS
+
+* [Linux Write API 简介](/post/linux-kernel-vfs-multi-write-methods-introduce.html) 介绍 VFS 提供的不同 API 调用方式。
+
 ## 进程相关
 
 * [Linux 进程执行](/post/linux-kernel-process-introduce.html) 与进程相关的操作，主要是执行命令、守护进程等。

@@ -635,11 +635,10 @@ ps -o ruser,pid,ppid,lwp,psr,nice,class,%cpu,%mem,vsz,rss,lstart,etime,comm Hp `
 相关的使用资源也可以通过 `getrusage()` 函数获取。
 
 https://blog.51cto.com/dangzhiqiang/1742901
+
+针对nproc问题的讨论
+http://blog.yufeng.info/archives/2568
 -->
-
-
-
-
 
 
 {% highlight text %}

@@ -139,7 +139,9 @@ int main(void)
                         WTERMSIG(status), WCOREDUMP(status) ? " (core file generated)" : "");
         } else if (WIFSTOPPED(status)) {
                 log_info("child stopped, signal number = %d.", WSTOPSIG(status));
-        }
+        } else {
+                log_info("unknown exit code %d.", status);
+	}
 
         exit(0);
 }

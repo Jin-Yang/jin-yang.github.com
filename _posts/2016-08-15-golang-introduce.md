@@ -460,5 +460,52 @@ can't load package: package color: cannot find package "color" in any of:
 
 另外，[Github - Golang](https://github.com/golang) 提供了很多 golang.org/x/ 的镜像包，只需要下载并保存到 $GOPATH/src 目录下。
 
+<!--
+在 `$GOPATH` 目录下会保存三个子目录 `bin` `pkg` `src` 。
+
+#### bin目录
+
+用于通过 `go install` 安装二进制程序，如果设置了 `GOBIN` 环境变量则以此为准，如果 `GOPATH` 有多个目录，同样需要设置 `GOBIN` 。
+
+#### pkg目录
+
+在编译过程中生成的 `.a` 归档文件，一般都是代码包的名字，所有文件都会被存放到该目录下平台相关的目录中，例如 Linux 平台上为 `linux_amd64` 。
+
+其中平台目录与 `GOOS` 和 `GOARCH` 这两个环境变量相关，系统默认自带不需要进行设置，分别表示操作系统类型和计算架构，而平台相关目录是以 `$GOOS_$GOARCH` 格式命名，对于 Linux 平台上这个目录名就是 `linux_amd64` 。
+
+#### src目录
+
+以代码包的形式组织并保存 Go 源码文件的，每个代码包都和 src 目录下的文件夹一一对应，每个子目录都是一个代码包。
+
+源码包括了命令源码文件(为 `main` 包，含有 `main()` 入口函数)，库源码文件(需要保存在 `src` 目录下)，测试源码文件。
+
+## 编译过程
+
+与编译相关的子命令包括了 `build`、`get`、`install`、`run` 四个，其中有些通用的命令参数简介如下。
+
+### 编译选项
+
+* `-a` 强制重新编译所有涉及的代码包(含标准包)，即使它们已经是最新的了。
+* `-n` 仅打印执行过程中所使用到的命令，而不是真正执行。
+* `-race` 检测并报告程序中存在的数据竞争问题，尤其是在使用并发编程时非常重要。
+* `-v` 打印命令执行过程中所涉及的代码包，包括了直接或者间接依赖的那些代码包。
+* `-work` 打印命令执行过程中生成和使用的临时工作目录，而且命令执行完后不会删除。
+* `-x` 打印在执行过程中所有使用到的命令，同时执行它们。
+
+### go run
+
+专门用来运行命令源码文件的命令，注意，**不是所有 Go 的源码文件** ！只能接受一个命令源码文件以及若干个 `main` 库源码文件作为参数，且不能接受测试源码文件。
+
+详细示例
+https://halfrost.com/go_command/
+关于动态链接的示例
+http://wiki.jikexueyuan.com/project/go-command-tutorial/0.1.html
+从源码开始分析
+https://blog.csdn.net/free2o/article/details/38417293
+
+Golang语法
+https://blog.csdn.net/u013210620/article/details/78404805?locationNum=8&fps=1
+-->
+
 {% highlight text %}
 {% endhighlight %}

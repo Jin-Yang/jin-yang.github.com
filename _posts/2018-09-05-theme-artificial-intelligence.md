@@ -26,11 +26,22 @@ description:
 * [数理统计基本概念](/post/math-statistics-basic-concept.html)
 * [贝叶斯简介](/post/math-statistics-basic-concept-bayes-theorem-introduce.html)
 
+### R 语言
+
+R 语言作为统计学一门语言，一直属于一个小众的工具集，直到大数据爆发后，越来越多的人开始使用 R 语言进行数据分析。
+
+* [R 语言简介](/post/linux-R-language-basic-introduce.html) 介绍 R 语言的基本概念。
+* [R 绘图简介](/post/linux-R-language-graph-function-introduce.html) R 语言提供了非常强大的绘图功能，这里简单介绍。
+
+#### 参考
+
+* 官方文档 [www.rdocumentation.org](https://www.rdocumentation.org/) ，可以直接搜索相关的主题。
+
 ## 机器学习 100 天
 
 也就是 [Github 100 Days Of ML Code](https://github.com/Avik-Jain/100-Days-Of-ML-Code) 中的学习，可以参考 [Github 机器学习 100 天](https://github.com/MLEveryday/100-Days-Of-ML-Code) 。
 
-* [数理统计基本概念](/post/artificial-intelligence-100-days-01.html)
+* [AI 100 天 \-\- 01](/post/artificial-intelligence-100-days-01.html)
 
 <!--
 https://blog.csdn.net/ybdesire/article/details/67701289

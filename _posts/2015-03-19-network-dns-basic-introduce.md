@@ -316,6 +316,17 @@ http://blog.51yip.com/server/1348.html                                    linux 
 
 现在使用的 DNS 服务器地址可以通过 `cat /etc/resolv.conf` 查看。
 
+### getent
+
+实际上 dig 会直接使用 DNS 协议查询，如果要考虑 `/etc/hosts` 可以使用 `getent` 名利，示例如下。
+
+{% highlight text %}
+$ getent hosts 127.0.0.1
+$ getent hosts www.baidu.com
+{% endhighlight %}
+
+这将会使用 `nsswitch.conf` 中的配置项。
+
 ### nslookup
 
 用来查 DNS 信息的，可以使用交互以及非交互模式。
