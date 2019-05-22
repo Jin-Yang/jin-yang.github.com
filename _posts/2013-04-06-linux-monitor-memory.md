@@ -14,7 +14,6 @@ description:
 <!-- more -->
 
 <!--
-
 # 简介
 
 为了提高磁盘存取效率，Linux 做了一些精心的设计，除了对 dentry 进行缓存（用于 VFS，加速文件路径名到 inode 的转换），还采取了两种主要 Cache 方式：Buffer Cache 和 Page Cache。前者针对磁盘块的读写，后者针对文件 inode 的读写。这些 Cache 有效缩短了 I/O 系统调用（比如 read，write，getdents）的时间。
@@ -481,8 +480,6 @@ http://linuxperf.com/?cat=7
 
 <a href="http://blog.csdn.net/shanshanpt/article/details/39258373">Linux文件系统(五)---三大缓冲区之buffer块缓冲区</a>，不错的文章，介绍 buffer 的。
 -->
-
-
 
 {% highlight text %}
 {% endhighlight %}

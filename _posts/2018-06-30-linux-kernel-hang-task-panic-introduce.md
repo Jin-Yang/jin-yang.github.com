@@ -93,6 +93,8 @@ https://www.cnblogs.com/muahao/p/7562324.html
 
 <!--
 https://learning-kernel.readthedocs.io/en/latest/kernel-notifier.html
+
+https://e-mailky.github.io/2017-01-18-kernel-daedlock-check
 -->
 
 {% highlight text %}

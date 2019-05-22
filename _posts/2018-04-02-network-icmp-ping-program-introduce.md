@@ -345,14 +345,34 @@ Quality of Service, QoS 服务质量，提供的质量越好，表示有越低�
 
 在第二层(Link Layer)和第三层(IP)都有标示位，其中 IP 层采用的是 8Bits，包括 IPv4 和 IPv6 都有，只是其位置不同。
 
+## 套接字
 
+ICMP 套接字的目的是允许在不设置 SUID 或者 CAP_NET_RAW 权限的时候允许 ping 程序的使用，详细的实现可以查看内核的邮件列表 [add IPPROTO_ICMP socket kind](https://lkml.org/lkml/2011/5/10/389) 。
+
+是否支持是通过内核的 `net.ipv4.ping_group_range` 指定，这是一对整数，指定了允许使用 ICMP 套接字的组 ID 的范围，默认为 `1 0` 也就意味着没有人能够使用这个特性。
+
+可以通过如下命令修改。
+
+{% highlight text %}
+# sysctl -w net.ipv4.ping_group_range='0 10'
+{% endhighlight %}
+
+然后可以通过如下方式创建 ICMP 的套接字。
+
+{% highlight text %}
+import socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_ICMP)
+{% endhighlight %}
+
+如果系统不支持这个特性，在创建套接字的时候会得到 `Protocol not supported` 的错误，而如果没有权限，则会得到 `Permission denied` 的错误。
+
+它的类型和 UDP 套接字一样，是 `SOCK_DGRAM` 而非 `SOCK_RAW`，这也就意味着你不会收到 20 字节的 IP 头，而且内核会计算校验和，并且填充 ICMP ID，在接收到响应后，内核会只把相应 ID 的 ICMP 响应返回给程序，不需要自己或者要求内核过滤了。
 
 ## 参考
 
 可以参考 [Github liboping](https://github.com/octo/liboping) 。
 
 关于各个操作系统的默认 TTL 可以参考 [Default TTL (Time To Live) Values of Different OS](https://subinsb.com/default-device-ttl-values/) 。
-
 
 <!--
 http://gienmin.blogspot.com/2013/12/qos_18.html

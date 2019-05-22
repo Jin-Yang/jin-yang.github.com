@@ -79,6 +79,8 @@ Jaromil 在 2002 年通过 Bash 设计了最为精简的一个 fork 炸弹的实
 
 也就是说，通过硬限制来控制用户的软限制，而通过软限制控制用户对资源的使用。其中可以配置的资源选项可以通过 `man 3 prlimit` 查看。
 
+注意，Linux 中的 `ulimit` 命令只对当前会话有效，已启动进程没法用这个命令修改限制，在 2.6.36 内核版本之后，新增了 `prlimit` API 用于动态修改某个进程的 rlimits ，也可以直接使用 `prlimit` 命令进行修改。
+
 ### ulimit
 
 该命令是 bash 内键命令，可以通过 `type ulimit` 查看，它具有一套参数集，用来为由它生成的 shell 进程及其子进程的资源使用设置限制，针对的是 Per-Process 而非 Per-User 。
@@ -638,8 +640,138 @@ https://blog.51cto.com/dangzhiqiang/1742901
 
 针对nproc问题的讨论
 http://blog.yufeng.info/archives/2568
--->
 
+
+
+
+这里测试时有问题
+ulimit -u 12
+https://blog.csdn.net/gatieme/article/details/51058797
+
+如果内存超过了大小，那么会导致
+https://blog.csdn.net/yzpbright/article/details/51464872
+
+634 blocked for more than 120 seconds 报错
+https://blog.csdn.net/electrocrazy/article/details/79377214
+
+
+对于进程的 rlimit 限制在内核中保存在 `struct task_struct` 中的 `struct signal_struct` 结构体，对应了一个数组类型。
+
+
+其中 `RLIMIT_RSS` 实际上只在低版本的内核中(2.4.x)有效，如果要对内存进行限制建议使用 cgroup 。
+
+
+kernel/sys.c:1373:                      retval = security_task_setrlimit(tsk->group_leader,
+kernel/sys.c:1471:SYSCALL_DEFINE2(setrlimit, unsigned int, resource, struct rlimit __user *, rlim)
+
+实际上，也可以通过 `echo -n 'Max processes=10240:10240' > /proc/<pid>/limits`  这种方式进行修改。
+
+竟然还可以通过gdb进行修改，没有尝试过
+https://xiezhenye.com/tag/prlimit
+
+
+通过 `/proc/<PID>/limis` 可以查看或者修改 rlimits 的配置，实际上在内核中在 `fs/proc/base.c` 中实现，其中 `RLIM_NLIMITS` 对应了最大值。
+
+
+1. 在父进程设置了 rlimits 限制之后，子进程会继承相关的配置内容。
+
+-n 当超过了soft limit后，会直接报 `Too many open files` 错误，注意默认会打开 0 1 2 三个标准输入输出。
+
+
+core file size          (blocks, -c) 0            # CoreDump文件大小
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0            # 进程优先级设置
+file size               (blocks, -f) unlimited    # 文件大小设置
+pending signals                 (-i) 63360
+max locked memory       (kbytes, -l) 64
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) 1024         # 最大文件描述符
+pipe size            (512 bytes, -p) 8
+POSIX message queues     (bytes, -q) 819200
+real-time priority              (-r) 0
+stack size              (kbytes, -s) 8192
+cpu time               (seconds, -t) unlimited    # CPU调度分配的时间
+max user processes              (-u) 4096
+virtual memory          (kbytes, -v) unlimited
+file locks                      (-x) unlimited
+
+## 文件描述符
+
+简单来说，对应了 `RLIMIT_NOFILE` 或者 `ulimit -n` 的参数，
+
+alloc_fd()
+ |-__alloc_fd()
+ 
+### 内核实现
+
+在每个进程的结构体 `struct task_struct` 中，保存了与文件描述符相关的内容。
+
+struct task_struct {
+	...
+	/* open file information */
+	struct files_struct *files;  // 保存了一个进程访问的所有文件
+	...
+};
+
+
+        struct rlimit rilim = {
+                .rlim_cur = 2,
+                .rlim_max = 1024
+        };
+        if (setrlimit(RLIMIT_SIGPENDING, &rilim) < 0) {
+                log_error("failed to set signal pending limits, %s.", strerror(errno));
+                return -1;
+        }
+
+        pid = fork();
+        if (pid < 0) {
+                log_error("fork failed, %s.", strerror(errno));
+                return -1;
+        } else if (pid == 0) {
+                //execvp(argv[optind], argv + optind);
+                //execlp("ls", "ls", "-l", NULL);
+                //execlp("sleep", "sleep", "10000", NULL);
+                //execl("/tmp/ulimits/overflow", "overflow", "-n", NULL);
+                //execl("/tmp/ulimits/overflow", "overflow", "-l", NULL);
+                execl("/tmp/ulimits/overflow", "overflow", "-i", NULL);
+                log_error("execvp failed, %s.", strerror(errno));
+                exit(EXIT_FAILURE);
+        }
+        log_info("child PID %d.", pid);
+
+进程描述符中存放了一个进程所访问的所有文件，上述的 `struct files_struct` 结构体中就保存了所有的信息。
+
+struct files_struct {
+        atomic_t count;
+        struct fdtable __rcu *fdt;
+        struct fdtable fdtab;
+        spinlock_t file_lock ____cacheline_aligned_in_smp;
+        int next_fd;
+        unsigned long close_on_exec_init[1]; // 位图
+        unsigned long open_fds_init[1];      // 位图
+        struct file __rcu * fd_array[NR_OPEN_DEFAULT];  //文件描述符数组
+};
+
+其中的 `fdt` `fdtab` 用于管理文件描述符。
+
+struct fdtable {
+        unsigned int max_fds;
+        struct file __rcu **fd;
+        unsigned long *close_on_exec;
+        unsigned long *open_fds;
+        struct rcu_head rcu;
+};
+
+这里的 `struct file` 就是用来表示一个文件。
+
+
+Linux 大部分都是通过文件表示，包括了设备、网络通讯、进程通讯等等，如下是三段简化后的代码。
+
+https://blog.csdn.net/jake9602/article/details/77524981
+
+Linux 内核文件描述符表的演变
+https://zhuanlan.zhihu.com/p/34280875
+-->
 
 {% highlight text %}
 {% endhighlight %}
