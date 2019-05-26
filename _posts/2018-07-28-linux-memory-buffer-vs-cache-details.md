@@ -333,9 +333,24 @@ Mem:        8070604     3245032     3218528     1094868      267196     1339848 
 Swap:       8127484      300172     7827312
 {% endhighlight %}
 
-<!--
- 结论：
+找个比较大的文件，然后通过 cat 命令读取，可以看到对应的 cache 会增加。
 
+{% highlight text %}
+# sync
+# echo 3 > /proc/sys/vm/drop_caches
+# free -wk; cat /your/big/file/path; free -wk
+              total        used        free      shared     buffers       cache   available
+Mem:        8070604     3244516     3486124     1094648         932      423384     3451048
+Swap:       8127484      300172     7827312
+532480+0 records in
+532480+0 records out
+272629760 bytes (273 MB) copied, 0.612241 s, 445 MB/s
+              total        used        free      shared     buffers       cache   available
+Mem:        8070604     3245032     3218528     1094868        2354     1019960     3427012
+Swap:       8127484      300172     7827312
+{% endhighlight %}
+
+<!--
 free 命令所显示的 “buffers” 表示块设备(block device)所占用的缓存页，包括直接读写块设备、以及文件系统元数据(metadata)如SuperBlock所使用的缓存页；
 而 “cached” 表示普通文件所占用的缓存页。
 -->

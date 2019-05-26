@@ -386,6 +386,38 @@ int main()
 
 ## 非阻塞链接
 
+Windows 平台上无论利用 `socket()` 函数还是 `WSASocket()` 创建的 socket 都是阻塞模式的，而 Linux 上可以在创建 Socket 时将其指定为异步，例如。
+
+{% highlight text %}
+socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP);
+{% endhighlight %}
+
+如果已经创建了 Socket (实际上其它的描述符也是支持的)，还可以通过以下 API 函数来设置。
+
+Linux 平台上可以调用 `fcntl()` 或者 `ioctl()` 函数，实例如下：
+
+{% highlight text %}
+fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL, 0) | O_NONBLOCK);  
+ioctl(sockfd, FIONBIO, 1);  /* 1: NONBLOCK, 0: BLOCK */
+{% endhighlight %}
+
+### Accept
+
+默认，Windows 和 Linux 上的 `accept()` 函数返回的 socekt 也是阻塞的，而 Linux 另外提供了一个 `accept4()` 函数，可以直接将返回的 socket 设置为非阻塞模式。
+
+{% highlight text %}
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+int accept4(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags);
+{% endhighlight %}
+
+只要将 `accept4()` 最后一个参数 flags 设置成 `SOCK_NONBLOCK` 即可。
+
+### Recv & Send
+
+实际上在接收和发送数据的时候，Linux 中也就对应了 `send()` `sendto()` `recv()` `recvfrom()` 之类的函数，可以在调用的时候将其中的 flags 设置为 `MSG_DONTWAIT` 即可。
+
+### 建立链接
+
 对于面向连接的 socket 类型，如 SOCK_STREAM，在通过 `connect()` 函数建立链接时，对于 TCP 需要三次握手过程。
 
 {% highlight c %}

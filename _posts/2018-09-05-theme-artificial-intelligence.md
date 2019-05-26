@@ -22,8 +22,12 @@ description:
 
 ## 概率论与数理统计
 
+统计推断的三个重要内容：抽样分布、参数估计、假设检验。
+
 * [概率论基本概念](/post/math-probability-basic-concept.html)
 * [数理统计基本概念](/post/math-statistics-basic-concept.html)
+* [似然估计](/post/math-statistics-likelihood-function-introduce.html)
+* [核密度函数](/post/math-statistics-kernel-density-estimates-introduce.html)
 * [贝叶斯简介](/post/math-statistics-basic-concept-bayes-theorem-introduce.html)
 
 ### R 语言
@@ -32,6 +36,7 @@ R 语言作为统计学一门语言，一直属于一个小众的工具集，直
 
 * [R 语言简介](/post/linux-R-language-basic-introduce.html) 介绍 R 语言的基本概念。
 * [R 绘图简介](/post/linux-R-language-graph-function-introduce.html) R 语言提供了非常强大的绘图功能，这里简单介绍。
+* [R 概率函数](/post/linux-R-language-some-statistic-function-introduce.html) 一些常用概率函数的使用方法。
 
 #### 参考
 

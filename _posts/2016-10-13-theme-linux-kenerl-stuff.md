@@ -27,6 +27,7 @@ description:
 ## VFS
 
 * [Linux Write API 简介](/post/linux-kernel-vfs-multi-write-methods-introduce.html) 介绍 VFS 提供的不同 API 调用方式。
+* [Linux Direct IO](/post/linux-direct-io-introduce.html)
 
 ## 进程相关
 

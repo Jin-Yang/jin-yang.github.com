@@ -582,6 +582,161 @@ FAQ
 数据库管理很不错的页面
 https://severalnines.com/blog/how-cluster-your-proxysql-load-balancers
 
+
+
+
+
+## 延迟任务系统
+
+常见应用场景：
+
+1. 订单支付成功之后，通知工单系统，创建工单用于跟进用户。
+2. 习题考试截止前 3 天，给未提交用户发送消息。
+3. 用户下单后，30分钟内未付款，关闭订单。
+
+简单来说，这种系统不需要进行类似 RPC 的同步操作，只需要异步重试即可。其统一的特点就是延迟执行，或者说准实时运行，允许指定重试策略。
+
+原子操作、并发操作
+
+1. 读取消息后，如果 Worker 崩溃了，如何保证这条消息不丢失？
+2. 消息处理异常时，如何记录这是第几次失败？
+
+1. 支持并发任务、串行执行任务。例如对于运维系统来说，可能包含了一系列原子操作的编排，也可能是单个原子操作。
+
+
+串行执行的任务，在某个任务阻塞时，当查询某个任务时同时返回被阻塞任务的信息。
+
+对于顺序的确认，可以是时间戳(需要保证在某个精度内只会有一个任务)，也可以是自定义的 ID (需要保证单调递增)。注意对于后者，如果采用的是整形，那么同时需要确认如何处理回环。
+
+https://juejin.im/post/5ad01fda6fb9a028ca536085
+https://juejin.im/entry/577c6bc8c4c9710066a78162
+http://blog.jobbole.com/113984/
+https://sq.163yun.com/blog/article/167374378538516480
+https://yxkemiya.github.io/2018/02/21/kafka-retry-consumer/
+
+
+
+
+system.load.1min:2.3|c|@1.2|#tags1=value2
+
+#include <stdio.h>
+#include <string.h>
+#include "testing.h"
+
+#define STATSD_METRIC_MAX        200U
+#define STATSD_ERR_FORMAT       -2
+#define STATSD_ERR_NAME_TOOLANG -3
+
+struct statsd_info {
+        char *metric;
+        char *value;
+        char *type;
+        char *extra;
+        char *tags;
+};
+
+int parse_line(char *line, struct statsd_info *info)
+{
+        char *tmp;
+
+        info->metric = line;
+        tmp = strchr(line, '|');
+        if (tmp == NULL)
+                return STATSD_ERR_FORMAT;
+        *tmp = 0;
+        tmp++;
+        info->type = tmp;
+
+        tmp = strrchr(info->metric, ':');
+        if (tmp == NULL)
+                return STATSD_ERR_FORMAT;
+        if (tmp - info->metric > STATSD_METRIC_MAX)
+                return STATSD_ERR_NAME_TOOLANG;
+        *tmp = 0;
+        tmp++;
+        info->value = tmp;
+
+        tmp = strchr(info->type, '|');
+        if (tmp != NULL) {
+                *tmp = 0;
+                tmp++;
+                if (tmp[0] == '#') {
+                        info->tags = tmp;
+                        return 0;
+                } else if (tmp[0] != '@') {
+                        return STATSD_ERR_FORMAT;
+                }
+                info->extra = tmp;
+                tmp = strchr(tmp, '|');
+                if (tmp != NULL) {
+                        *tmp = 0;
+                        tmp++;
+                        if (tmp[0] != '#')
+                                return STATSD_ERR_FORMAT;
+                        info->tags = tmp;
+                }
+        }
+        return 0;
+}
+
+int main(void)
+{
+        int rc;
+        char line[1024];
+        struct statsd_info info;
+
+        strncpy(line, "system.load.1min:2.3|c|@1.2|#tags1=value2", sizeof(line));
+        memset(&info, 0, sizeof(struct statsd_info));
+        rc = parse_line(line, &info);
+        EXPECT_EQ_INT(0, rc);
+        EXPECT_EQ_STR("system.load.1min", info.metric);
+        EXPECT_EQ_STR("2.3", info.value);
+        EXPECT_EQ_STR("c", info.type);
+        EXPECT_EQ_STR("@1.2", info.extra);
+        EXPECT_EQ_STR("#tags1=value2", info.tags);
+
+        strncpy(line, "system.load.1min:2.3|c|#tags1=value2", sizeof(line));
+        memset(&info, 0, sizeof(struct statsd_info));
+        rc = parse_line(line, &info);
+        EXPECT_EQ_INT(0, rc);
+        EXPECT_EQ_STR("system.load.1min", info.metric);
+        EXPECT_EQ_STR("2.3", info.value);
+        EXPECT_EQ_STR("c", info.type);
+        CHECK_NULL(info.extra);
+        EXPECT_EQ_STR("#tags1=value2", info.tags);
+
+        strncpy(line, "system.load.1min:2.3|c", sizeof(line));
+        memset(&info, 0, sizeof(struct statsd_info));
+        rc = parse_line(line, &info);
+        EXPECT_EQ_INT(0, rc);
+        EXPECT_EQ_STR("system.load.1min", info.metric);
+        EXPECT_EQ_STR("2.3", info.value);
+        EXPECT_EQ_STR("c", info.type);
+        CHECK_NULL(info.extra);
+        CHECK_NULL(info.tags);
+
+        strncpy(line, "system.load.1min:2.3|c|@1.2", sizeof(line));
+        memset(&info, 0, sizeof(struct statsd_info));
+        rc = parse_line(line, &info);
+        EXPECT_EQ_INT(0, rc);
+        EXPECT_EQ_STR("system.load.1min", info.metric);
+        EXPECT_EQ_STR("2.3", info.value);
+        EXPECT_EQ_STR("c", info.type);
+        EXPECT_EQ_STR("@1.2", info.extra);
+        CHECK_NULL(info.tags);
+
+        return 0;
+}
+
+https://www.jianshu.com/p/13d46e5d2d2a
+https://being23.wordpress.com/2013/04/12/%E4%BD%BF%E7%94%A8zlib%E5%AE%9E%E7%8E%B0gzip%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8E%8B%E7%BC%A9%E5%92%8C%E8%A7%A3%E5%8E%8B%E7%BC%A9/
+https://www.jianshu.com/p/cca8e5c858fc
+https://blog.51cto.com/yiluohuanghun/1278943
+https://www.cnblogs.com/wunaozai/p/3960494.html
+https://blog.csdn.net/chenjiayi_yun/article/details/8942506
+https://blog.csdn.net/turingo/article/details/8178510
+https://blog.csdn.net/zhoudaxia/article/details/8039540
+https://tonybai.com/2015/06/17/appdash-distributed-systems-tracing-in-go/
 -->
 
 

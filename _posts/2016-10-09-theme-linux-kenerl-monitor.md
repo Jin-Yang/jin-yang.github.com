@@ -10,12 +10,24 @@ description:
 
 <!-- more -->
 
+
+## 基本监控
+
 记录与监控相关的内容。
 
 * [Linux 监控](/post/linux-monitor.html)，简单记录一下在 Linux 监控中一些比较常见的工具、网站、资料等信息。
-* [Linux 监控之 CPU](/post/linux-monitor-cpu.html)，简单介绍下 Linux 中与 CPU 监控相关的内容。
+* [Linux 监控之 CPU](/post/linux-monitor-cpu.html) 简单介绍下 Linux 中与 CPU 监控相关的内容。
 * [Linux 监控之 IO](/post/linux-monitor-io.html)，简单介绍下 Linux 中与 IO 监控、测试相关的内容。
-* [Linux 监控杂项](/post/linux-monitor-misc.html)，简单列举一些常见的监控工具 (sar, top)，以及配置方式等。
+
+* [Linux 进程监控](/post/linux-monitor-process-introduce.html) 与进程相关的一些监控指标。
+* [Linux CGroup 监控](/post/linux-monitor-cgroup-introduce.html)
+* [Linux 监控工具](/post/linux-monitor-misc.html) 简单列举一些常见的监控工具 (sar top ps)，以及配置方式等。
+
+### 其它
+
+这里整理下基本的概念。
+
+* [CPU 物理结构](/post/linux-cpu-physical-arch-introduce.html)
 
 ## 内存相关
 

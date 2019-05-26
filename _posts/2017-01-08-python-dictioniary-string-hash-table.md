@@ -60,7 +60,7 @@ for key, value in info.items():
 Python 地址中有一个 `setdefault` 函数，主要是用于获取信息，如果获取不到就按照它的参数设置该值。
 
 {% highlight python %}
-a = { "key": "hello world" }  
+a = { "key": "hello world" }
 a.setdefault("key", "456"))   # 因为之前已经设置了key对应的值，此时不会设置
 
 a.setdefault("key_sth", "123"))   # 之前没有设置，此时会设置
@@ -149,6 +149,148 @@ PyDict_SetItem()
 
 TODO:
   校验下，循环中可以替换，但是无法新增或者删除。
+
+https://morepypy.blogspot.com/2015/01/faster-more-memory-efficient-and-more.html
+https://www.laurentluce.com/posts/python-dictionary-implementation/
+https://www.hongweipeng.com/index.php/archives/1230/
+https://zhuanlan.zhihu.com/p/25071851
+https://github.com/Junnplus/blog/issues/15
+https://juejin.im/entry/5bc57c8ef265da0a972e49d1
+https://arianx.me/2018/12/30/walkthrough-cpython3.7-dict-source-code/
+https://blog.csdn.net/weixin_33975951/article/details/89698890
+https://www.cnblogs.com/adinosaur/p/7259814.html
+https://github.com/clibs/logfmt
+这里的 Hash 表实际上有两类，分别是 Key-Value 结构，以及 Hash-Object，也就是前者需要在对象中同时保存 Key 和 Value 的值，而后者则直接以 Object 方式存储，只有用户需要知道具体值的含义。
+
+在 Python 3.6 版本中，对字典对象进行了较大的优化，尤其是内存使用效率方面，其基本的东西改动不太大，例如 Hash 值计算方法、冲突解决策略等。
+
+这里简单介绍其实现的详细细节。
+
+## 简介
+
+对于内存的优化有很多方面。
+
+### 成员对象
+
+内存中 dict 对象的成员如下。
+
++---------------+
+| dk_refcnt     |
+| dk_size       |   哈希表indices的大小
+| dk_lookup     |
+| dk_usable     |
+| dk_nentries   |
++---------------+
+| dk_indices    |   实际hash表，保存了entries中的序列
+|               |
++---------------+
+| dk_entries    |
+|               |
++---------------+
+
+为了尽量减少空间的使用，会根据不同的 dk_size 选择不同类型的整数，也就是 `dk_entreis` 中的序号，方法如下。
+
+int8  for          dk_size <= 128
+int16 for 256   <= dk_size <= 2**15
+int32 for 2**16 <= dk_size <= 2**31
+int64 for 2**32 <= dk_size
+
+其中 `dk_entries` 是 `PyDictKeyEntry` 类型的数组，保存了真正的对象，可以通过 `DK_ENTRIES(dk)` 获取 `dk_entries` 的指针。
+
+之所以采用索引 `dk_indices` 和对象 `dk_entreis` 分离，主要是为了节省空间。
+
+    d = {'timmy': 'red', 'barry': 'green', 'guido': 'blue'}
+    entries = [['--', '--', '--'],
+               [-8522787127447073495, 'barry', 'green'],
+               ['--', '--', '--'],
+               ['--', '--', '--'],
+               ['--', '--', '--'],
+               [-9092791511155847987, 'timmy', 'red'],
+               ['--', '--', '--'],
+               [-6480567542315338377, 'guido', 'blue']]
+    indices =  [None, 1, None, None, None, 0, None, 2]
+    entries =  [[-9092791511155847987, 'timmy', 'red'],
+                [-8522787127447073495, 'barry', 'green'],
+                [-6480567542315338377, 'guido', 'blue']]
+### Combined VS. Split
+
+在 `PyDictObject` 中的注释可以看到，实际上在 dict 内存中会保存两种形式：
+
+* Combined `ma_values=NULL dk_refcnt=1` 而对应的 Keys Values 会保存在 ma_keys 中；
+* Split `ma_values != NULL dk_refcnt >= 1` 此时 Keys Values 会分别存储在 ma_keys 和 ma_values 中。
+
+新版的 dict 有两种形式，分别是 combined 和 split，后者主要用在优化对象存储属性的 `tp_dict` 上。
+
+这种字典的 key 是共享的，此时会有一个引用计数器 `dk_refcnt` 来维护当前被引用的个数，这一场景使用比较多的是实例对象上的属性字典 tp_dict 。
+
+主要对应这样的场景：
+
+1. 一个类会创建出很多个对象；
+2. 这些对象的属性，能在一开始就确定下来，并且后续不会增加删除。
+
+如果能满足上述两个条件，那么可以使用一种更高效、更省内存的方式，来存储对象的属性。
+
+也就是，属于一个类的所有对象共享同一份属性字典的 key，而 value 以数组的方式存储在每个对象的身上，这样只需要维护一份对象属性即可，而值则可以更加紧凑的方式组织在内存中。
+
+PEP 412 -- Key-Sharing Dictionary
+https://www.python.org/dev/peps/pep-0412/
+
+
+## 源码介绍
+
+与字典相关的对象实现在 `Objects/dictobject.c` `Include/dictobject.h` `Objects/dict-common.h` 文件中，
+
+### 结构体
+
+#### Key Value
+
+// Objects/dict-common.h
+typedef struct {
+    Py_hash_t me_hash; // 缓存计算的hash值
+    PyObject *me_key;
+    PyObject *me_value;
+} PyDictKeyEntry;
+
+每次向字典写入数据时，实际上就会向哈希表中插入一个 PyDictKeyEntry，包括了 Key 和 Value 的值。其中 `Py_hash_t` 一般是 `ssize_t` ，所以如果是 64 位的系统，那么整个结构体会占用 24 字节。
+
+#### 字典
+
+在 `PyDictKeysObject` 对象中储存了实际的哈希表，但是这里保存的大部分是与该字典相关的元数据，没有对应 `PyDictKeyEntry` 数组之类的成员来保存 Hash 表。
+
+实际上，对应的是 `dk_indices` ，这是一个指针，在 3.6 之后为了提高内存使用效率做了双重映射，老版本的实际会保存一个 `PyDictKeyEntry*` 的数组。
+
+#### 解析器对象
+
+上述介绍的都是 CPython 内部实现的一些结构体，而真正暴露给解析器的对象是 `PyDictObject` 。
+
+typedef struct {
+    PyObject_HEAD               // 对象通用的头
+    Py_ssize_t ma_used;         // 字典元素个数，len()函数依赖该字段，所以在这里暴露出来
+    uint64_t ma_version_tag;    // 全局版本，优化后面讲
+    PyDictKeysObject *ma_keys;
+    PyObject **ma_values;       // 用来保存split table的数据
+} PyDictObject;
+
+#### 其它
+
+对于 `PyDictKeysObject` 来说，
+
+## 操作 Hash 表
+
+首先看下内部是怎么使用 Hash 表的，而对外提供的 Python 接口都是对这些函数的封装。
+
+###
+
+dk_get_index() 通过dk_indices获取在dk_entries中的索引
+dk_set_index()
+
+lookdict() 查询HASH表，这就是核心的函数
+
+## 参考
+
+[More compact dictionaries with faster iteration](https://mail.python.org/pipermail/python-dev/2012-December/123028.html) 新的数据结构如何对内存进行优化的。
+
+
 -->
 
 ## 参考

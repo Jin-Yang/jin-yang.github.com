@@ -28,11 +28,12 @@ y2<-c(1, 25, 21, 3, 2, 1)
 
 两者都可以通过 `plot()` 函数进行绘制，区别是前者使用默认的 type 值，也就是 `type="p"`；后者需要设置为 `type="b"`。
 
-{% highlight r %}
+{% highlight text %}
 plot(x, y1, col="red", pch=1, xlim=c(0,6), ylim=c(0,30), xlab="DAY", ylab="DATA")
 参数：
   col="red" 点的颜色
   pch=1 符号属性 0~25 常见的如，0 正方形、1 原形、2 三角形等
+  bg="green" 设置点的填充色，注意，只有形状为21~25的点是有填充色的
   xlim=c(0,6) ylim=c(0,30) 坐标刻度范围
   xlab="DAY" ylab="DATA" 坐标标题
   type="p" 绘图类型，p 点、l 线、b 点线
@@ -43,12 +44,17 @@ plot(x, y1, col="red", pch=1, xlim=c(0,6), ylim=c(0,30), xlab="DAY", ylab="DATA"
 {% highlight r %}
 plot(1:5, 1:5, xlim=c(0,6), ylim=c(0,30), type = "n")
 points(x, y1, type="p")
+参数：
+  cel=1/c(2,4) 用来表示大小
+  lwd=1/c(2,4) 设置点的边框的宽度
 {% endhighlight %}
 
 对于折线图，也可以通过 `lines()` 函数绘制。
 
 {% highlight r %}
 lines(x, y2, col="green", pch=16, xlim=c(0,6), ylim=c(0,30), xlab="WEEK", ylab="STUDENT", type="b")
+参数：
+  lty=N  1 实线连接 2 虚线 3 点线
 {% endhighlight %}
 
 #### 光滑曲线
@@ -60,6 +66,12 @@ plot(sp1, col="red", type="l" ,xlim=c(0,6), ylim=c(0,30))
 {% endhighlight %}
 
 首先需要通过 `spline()` 函数生成相关的数据集，其中 `n` 表示插值的数量。
+
+### 保存图片
+
+{% highlight text %}
+> savePlot(filename="foobar.png", type="png", device=dev.cur())
+{% endhighlight %}
 
 ## 其它
 

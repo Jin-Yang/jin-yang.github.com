@@ -32,9 +32,6 @@ description:
 * [Linux IO 多路复用](/post/linux-program-io-multiplexing.html)，通过 IO 多路复用提高系统性能，包括了 select、poll、epoll 。
 * [Linux AIO](/post/linux-program-aio.html)，简单介绍下 Linux 平台下的异步读写模型。
 
-
-
-
 ### 测试
 
 * [Linux C Mock Wrap](/post/linux-c-mock-wrap-unit-test.html) 介绍在 C 中如何进行单元测试。
@@ -63,6 +60,7 @@ description:
 * [Linux C Flock 使用](/post/linux-c-flock-introduce.html) Linux 中实现的一个建议性锁，通常用于 PIDFile 的实现。
 * [Linux C 位域和大小端](/post/language-c-bit-field-and-endian-introduce.html) C 语言提供的位域以及大小端，常用在通讯协议的处理。
 * [UDP 通讯优化](/post/linux-c-udp-optimize-introduce.html) UDP 并非一个面向连接的协议，与 TCP 不同，有其相关的优化方法。
+* [Linux C 网络编程](/post/program-c-network.html) 整理了 Linux C 经常使用的网络编程技巧。
 
 ## libev
 
@@ -83,6 +81,26 @@ https://github.com/tinycthread/tinycthread
 
 * [GCC 原子操作](/post/linux-c-gcc-atomic-operation-introduce.html) GCC 实际上已经提供了一些简单的原子操作，这里简单介绍。
 * [Lock Free 编程](/post/linux-c-program-lock-free-queue-introduce.html)
+
+<!--
+## C 跨平台支持
+
+### 目标判断
+
+在编写跨平台 C 代码时，往往需要根据平台区分代码，这就需要依赖编译器中预定义的宏，然后在源代码中利用它们判断目标操作系统。
+
+#### Windows
+
+详细可以参考官方提供的宏定义 [Predefined Macros](https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros)，用于判断操作系统类型的宏如下：
+
+* `_WIN32` 定义为 1 时编译目标是 32 位以及 64 位，可以是 ARM 或 x86；
+* `_WIN64` 定义为 1 时编译目标是 64 位 ARM 或 x86。
+
+需要注意的是，对于 64 位 Windows 系统，`_WIN32` 和 `_WIN64` 都会定义。
+
+https://blog.masterliu.net/gcc-predefined-macros/
+-->
+
 
 {% highlight text %}
 {% endhighlight %}

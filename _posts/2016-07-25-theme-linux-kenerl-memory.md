@@ -12,20 +12,23 @@ description:
 
 ## 简介
 
-* [Kernel 物理映射](/post/kernel-memory-virtual-physical-map.html)，x86 中逻辑地址到物理地址的映射关系，包括了具体的实验。
-* [Kernel 内存-用户空间](/post/kernel-memory-management-from-userspace-view.html)，用户空间的内存管理，包括了内存的布局、内存申请等操作。
-* [Kernel 内存-内核空间](/post/kernel-memory-management-from-kernel-view.html)，包括了内核中与内存相关内容，包括了初始化、内存分配等。
+* [Linux 内存简介](/post/linux-memory-basic-introduce.html) 一些关于 Linux 中内存相关的介绍。
+
+* [Kernel 物理映射](/post/kernel-memory-virtual-physical-map.html) x86 中逻辑地址到物理地址的映射关系，包括了具体的实验。
+* [Kernel 内存-用户空间](/post/kernel-memory-management-from-userspace-view.html) 用户空间的内存管理，包括了内存的布局、内存申请等操作。
+* [Kernel 内存-内核空间](/post/kernel-memory-management-from-kernel-view.html) 包括了内核中与内存相关内容，包括了初始化、内存分配等。
 
 * [Linux 共享内存简介](/post/linux-program-shared-memory.html)，Linux 中与共享内存相关的内容。
 * [Linux 通用内存监控](/post/linux-monitor-memory.html)，简单介绍下 Linux 中与 Memory 监控相关的内容。
 * [Linux 映射文件](/post/kernel-memory-mmap-introduce.html)，也就是 mmap() 函数的使用方法。
 * [Kernel 内存杂项](/post/kernel-memory-tips.html)，简单介绍下内核中与内存相关的内容，以及常见的故障处理。
 
-* [Kernel Cache VS. Buffer](/post/linux-memory-buffer-vs-cache-details.html)，Buffer 和 Cache 相关的概念比较难理解，这里仅简单介绍其皮毛。
+* [Cache VS. Buffer](/post/linux-memory-buffer-vs-cache-details.html) 介绍两者的基本概念，并通过实验进行测试验证。
+* [Cache 能否回收](/post/linux-monitor-memory-cache-buffer-introduce.html) 正常大部分对 Cache 可以回收，但是仍有部分是无法回收的。
+* [Page Cache 介绍](/post/linux-page-cache-concept-introduce.html)
+
 * [Kernel CGroup Memory](/post/kernel-cgroup-memory-introduce.html)
 * [Kernel OOM Killer](/post/kernel-memory-oom-killer-introduce.html)
-
-* [Cache 能否回收](/post/linux-monitor-memory-cache-buffer-introduce.html)
 
 
 <!--

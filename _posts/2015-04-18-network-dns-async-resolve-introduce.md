@@ -319,6 +319,91 @@ https://blog.csdn.net/mumumuwudi/article/details/47164531
 https://github.com/getdnsapi/getdns
 http://wangxuemin.github.io/2015/07/31/c-ares%20%E4%B8%80%E4%B8%AAC%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BC%82%E6%AD%A5DNS%E8%A7%A3%E6%9E%90%E5%BA%93/
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+`ares_query()` 和 `ares_search()` 都是用来通过 DNS 查找对应的信息，注意，不会查看 `/etc/hosts` 信息，但是两者的执行逻辑略有区别。
+
+`ares_query()` 会直接执行一次 DNS 查询，也就是发送请求，然后接收数据进行处理。而 `ares_search()` 会模拟 `resolv.conf` 中的行为，基本流程如下：
+
+1. 根据 RFC-7686 规定，对于 `.onion` 会直接忽略；
+2. 判断是否为单个域名 (也就是最后一个字符是否为句点)，如果是则直接调用 `ares_query()` 查询；
+3. 模拟 ndots 和 search 的行为，当查询域名句点数小于 ndots 时，会遍历 search 中的选项。
+
+`ares_search()` 和 `ares_query()` 的入参相同，
+
+void ares_query(ares_channel channel, const char *name, int dnsclass, int type,
+    ares_callback callback, void *arg);
+入参：
+    name 需要查询的域名；
+
+ares_query() 这是真正单个查找的接口，其它的接口实际上是封装部分处理逻辑
+ |-ares_create_query() 会将请求按照DNS通讯协议进行序列化
+ |-ares_send() 因为支持异步，这里会设置一个异步的回调函数qcallback
+   |-ares__send_query() 在此实现失败的重试机制
+     |-open_udp_socket()
+
+ares_gethostbyaddr() 将IP地址反向映射到域名信息
+
+这里的很多选项可以参考 adig.c 的实现方式，
+
+struct ares_options {
+	int flags;  // cares库所具备的部分能力
+};
+
+
+发送缓冲区通过链表连接，为了防止空间无限增长，可以采用如下的几种方式：
+
+1. 限制链表的长度，超过了指定长度后直接丢弃。缺点是会保留历史数据，丢弃新数据。
+2. 采用循环列表或者LRU，保存新数据，丢弃老数据。
+3. 优先队列，可以参考 HTTP2 的处理方式。
+
+
+在 `ares__send_query()` 函数中，如果是 UDP 协议会直接通过 `socket_write()` 写入，而 TCP 实际上会添加到链表中，同时调用 socket 的回调函数，同时会设置 RW 标志位。
+
+skip_server() next_server()
+
+
+可以将 Channel 理解为对应一个 `/etc/resolv.conf` 配置，包括了服务器地址、查找策略、
+
+
+
+对应了所有的请求数据处理过程，基本上覆盖了
+ares_process_fd()
+ |-processfds()
+   |-read_udp_packets()
+   | |-socket_recvfrom()
+   | | |-recvfrom()
+   | |-process_answer() 处理接收到的报文，核心的如id、rcode
+   |   |-ares__send_query() 发送数据，分为了TCP UDP
+   |     |-open_udp_socket()
+   |     |-socket_write()
+   |-process_broken_connections()
+
+libdaemon
+libproto
+用于实现一些通用异步协议的解析，例如 ICMP、DNS 等等。
+
+
+
+https://github.com/estamos/Validate-IPv4-Address/blob/master/valid_ipv4.c
+https://github.com/z0noxz/ip2cidr
+https://github.com/jiashuChen/IP-Address-Validator
+http://www.voidcn.com/article/p-fntbvdwa-bav.html
+https://www.cnblogs.com/wenqiang/p/5959835.html
+https://blog.csdn.net/stpeace/article/details/38933031
+
 -->
 
 ## 参考

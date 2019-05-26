@@ -229,6 +229,144 @@ int main()
 <!--
 线程与信号的使用经典案例
 https://www.ibm.com/developerworks/cn/linux/l-cn-signalsec/index.html
+
+
+
+
+libev的signal处理
+https://blog.csdn.net/gqtcgq/article/details/49688027
+内核处理信号的相关介绍
+http://www.cnblogs.com/mickole/articles/3189764.html
+
+一般来说，在 Linux 中的 `pthread_t` 类型是通过 `typedef unsigned long int pthread_t` 重定义的，忘了在哪里看到的
+
+在如下的测试用例中。
+
+while (1) {
+	kill(pid, SIGTERM);
+	sleep(10);
+}
+
+假设在 `sleep(10)` 时收到了外部信号，那么会直接退出 `sleep()` 函数，并返回剩余的睡眠秒数。
+
+如果在主进程中注册了信号处理函数，那么可以通过 `kill(pid, SIGINT)` 发送信号给主进程，通过 `pthread_kill(tid, SIGINT)` 发送给其它线程。
+
+
+#include <errno.h>
+#include <stdio.h>
+#include <signal.h>
+#include <string.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
+
+#define THDNUM_WORKER 5
+
+void *worker_thread(void *args)
+{
+        (void) args;
+        pthread_t tid = pthread_self();
+
+        pthread_detach(tid);
+        while (1) {
+                //printf("#%ld Worker thread working.\n", syscall(__NR_gettid));
+                sleep(10);
+        }
+}
+
+#if 0
+void *sigmgr_thread(void *args)
+{
+        (void) args;
+        int rc;
+        siginfo_t info;
+        sigset_t waitset;
+        pthread_t tid = pthread_self();
+
+        rc = pthread_detach(tid);
+        if (rc)
+                fprintf(stderr, "detach manager thread failed, %s.\n",
+                                strerror(rc));
+        sigemptyset(&waitset);
+        sigaddset(&waitset, SIGRTMIN);
+        sigaddset(&waitset, SIGUSR1);
+
+        fprintf(stdout, "[info] start signal manager thread 0x%lx.\n", tid);
+        while (1)  {
+                rc = sigwaitinfo(&waitset, &info);
+                if (rc < 0) {
+                        fprintf(stderr, "fetch the signal failed, %s.\n", strerror(errno));
+                        continue;
+                }
+                fprintf(stdout, "Manager thread got signal %d.\n", rc);
+                if (info.si_signo == SIGUSR1) {
+                        printf("Manager thread 0x%lx, receive SIGUSR1.\n", tid);
+                } else if (info.si_signo == SIGRTMIN) {
+                        printf("Manager thread 0x%lx, receive SIGRTMIN.\n", tid);
+                }
+        }
+}
+#endif
+
+void signal_handler(int signum)
+{
+        printf("#%ld Thread got a signal %d.\n", syscall(__NR_gettid), signum);
+}
+
+int main(void)
+{
+        int i;
+        pid_t pid;
+        pthread_t wtid[THDNUM_WORKER];
+
+#if 0
+        int rc;
+        pthread_t ppid;
+        sigset_t bset, oset;
+
+        /*
+         * Block SIGRTMIN and SIGUSR1 which will be handled in dedicated
+         * thread sigmgr_thread(). Newly created threads will inherit the
+         * pthread mask from its creator.
+         */
+        sigemptyset(&bset);
+        sigaddset(&bset, SIGRTMIN);
+        sigaddset(&bset, SIGUSR1);
+        rc = pthread_sigmask(SIG_BLOCK, &bset, &oset);
+        if (rc != 0)
+                fprintf(stderr, "Set pthread mask failed, %s.\n", strerror(errno));
+
+        /*
+         * Create the dedicated thread sigmgr_thread() which will handle
+         * SIGUSR1 and SIGRTMIN synchronously.
+         */
+        pthread_create(&ppid, NULL, sigmgr_thread, NULL);
+#endif
+        signal(SIGTERM, signal_handler);
+
+        /* Create 5 worker threads */
+        for (i = 0; i < (int)(sizeof(wtid) / sizeof(wtid[0])); i++)
+                pthread_create(&wtid[i], NULL, worker_thread, NULL);
+
+        printf("#%ld Main thread start.\n", syscall(__NR_gettid));
+        /* send out 50 SIGUSR1 and SIGRTMIN signals. */
+        pid = getpid();
+        for (i = 0; i < 50; i++) {
+                //kill(pid, SIGUSR1);
+                //printf("#%d Main thread, send SIGUSR1, %d times.\n", pid, i);
+                //kill(pid, SIGRTMIN);
+                //kill(pid, SIGTERM);
+                pthread_kill(wtid[0], SIGTERM);
+                printf("#%d Main thread, send SIGRTMIN, %d times.\n", pid, i);
+                sleep(10);
+        }
+
+        return 0;
+}
+
+为了提高服务器的处理性能，在网络编程时大部分都会采用非阻塞式的 Socket ，不同的接口修改的方式略有区别，这里简单介绍。
+
 -->
 
 {% highlight text %}

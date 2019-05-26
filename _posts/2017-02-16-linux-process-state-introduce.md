@@ -30,38 +30,27 @@ static const char * const task_state_array[] = {
 };
 {% endhighlight %}
 
+其中进程的转换过程如下所示。
+
+![process]({{ site.url }}/images/linux/process-status-transform.gif "process"){: .pull-center width="70%" }
+
+##### R (TASK_RUNNING，可执行状态)
+
+只有在该状态的进程才可能在 CPU 上运行，这些进程的 `struct task_struct` 会被放入对应 CPU 的可执行队列中，进程调度器会从可执行队列中分别选择一个进程在该 CPU 上运行。
+
+##### S (TASK_INTERRUPTIBLE，可中断的睡眠状态)
+
+在等待某事件的发生 (例如 socket 连接、信号量等) 而被挂起，对应的 TCB 被放入对应事件的等待队列中，当事件发生时 (由外部中断触发或由其它进程触发)，对应的等待队列中的一个或多个进程将被唤醒。
+
+##### D (TASK_UNINTERRUPTIBLE，不可中断的睡眠状态)
+
+进程同样处于睡眠状态，但该进程是不可中断的，也就是进程不响应异步信号，即使使用 `kill -9` 信号。
+
+##### T (TASK_STOPPED or TASK_TRACED，暂停状态或跟踪状态)
+
+向进程发送一个 SIGSTOP 信号，它就会因响应该信号而进入该状态，其中 SIGSTOP 与 SIGKILL 信号一样，是强制的，不允许用户进程通过 signal 系列的系统调用重新设置对应的信号处理函数。
+
 <!--
-#### R (TASK_RUNNING，可执行状态)
-
-只有在该状态的进程才可能在 CPU 上运行。而同一时刻可能有多个进程处于可执行状态，这些进程的 task_struct 结构（进程控制块）被放入对应 CPU 的可执行队列中（一个进程最多只能出现在一个 CPU 的可执行队列中）。进程调度器的任务就是从各个 CPU 的可执行队列中分别选择一个进程在该 CPU 上运行。<br><br>
-
-    很多教科书将正在 CPU 上执行的进程定义为 RUNNING 状态、而将可执行但是尚未被调度执行的进程定义为 READY 状态，这两种状态在 Linux 下统一为 TASK_RUNNING 状态。</li><br><li>
-
-    S (TASK_INTERRUPTIBLE，可中断的睡眠状态)<br>
-    处于这个状态的进程因为等待某某事件的发生（比如等待 socket 连接、等待信号量），而被挂起。这些进程的 task_struct 结构被放入对应事件的等待队列中。当这些事件发生时（由外部中断触发、或由其他进程触发），对应的等待队列中的一个或多个进程将被唤醒。<br><br>
-
-    通过 ps 命令我们会看到，一般情况下，进程列表中的绝大多数进程都处于 TASK_INTERRUPTIBLE 状态（除非机器的负载很高）。毕竟 CPU 就这么一两个，进程动辄几十上百个，如果不是绝大多数进程都在睡眠， CPU 又怎么响应得过来。</li><br><li>
-
-    D (TASK_UNINTERRUPTIBLE，不可中断的睡眠状态)<br>
-    与 TASK_INTERRUPTIBLE 状态类似，进程处于睡眠状态，但是此刻进程是不可中断的。不可中断，指的并不是 CPU 不响应外部硬件的中断，而是指进程不响应异步信号。<br><br>
-
-    绝大多数情况下，进程处在睡眠状态时，总是应该能够响应异步信号的。否则你将惊奇的发现， kill -9 竟然杀不死一个正在睡眠的进程了！<br><br>
-
-    而 TASK_UNINTERRUPTIBLE 状态存在的意义就在于，内核的某些处理流程是不能被打断的。如果响应异步信号，程序的执行流程中就会被插入一段用于处理异步信号的流程（这个插入的流程可能只存在于内核态，也可能延伸到用户态），于是原有的流程就被中断了。<br><br>
-
-    在进程对某些硬件进行操作时（比如进程调用 read 系统调用对某个设备文件进行读操作，而 read 系统调用最终执行到对应设备驱动的代码，并与对应的物理设备进行交互），可能需要使用 TASK_UNINTERRUPTIBLE 状态对进程进行保护，以避免进程与设备交互的过程被打断，造成设备陷入不可控的状态。这种情况下的 TASK_UNINTERRUPTIBLE 状态总是非常短暂的，通过 ps 命令基本上不可能捕捉到。</li><br><li>
-
-    T (TASK_STOPPED or TASK_TRACED，暂停状态或跟踪状态)<br>
-    向进程发送一个 SIGSTOP 信号，它就会因响应该信号而进入 TASK_STOPPED 状态（除非该进程本身处于 TASK_UNINTERRUPTIBLE 状态而不响应信号）。SIGSTOP 与 SIGKILL 信号一样，是强制的，不允许用户进程通过 signal 系列的系统调用重新设置对应的信号处理函数。<br><br>
-
-    向进程发送一个 SIGCONT 信号，可以让其从 TASK_STOPPED 状态恢复到 TASK_RUNNING 状态。<br><br>
-
-    当进程正在被跟踪时，它处于 TASK_TRACED 这个特殊的状态。“正在被跟踪”指的是进程暂停下来，等待跟踪它的进程对它进行操作。比如在 gdb 中对被跟踪的进程下一个断点，进程在断点处停下来的时候就处于 TASK_TRACED 状态。而在其他时候，被跟踪的进程还是处于前面提到的那些状态。<br><br>
-
-    对于进程本身来说， TASK_STOPPED 和 TASK_TRACED 状态很类似，都是表示进程暂停下来。而 TASK_TRACED 状态相当于在 TASK_STOPPED 之上多了一层保护，处于 TASK_TRACED 状态的进程不能响应 SIGCONT 信号而被唤醒。只能等到调试进程通过 ptrace 系统调用执行 PTRACE_CONT 、 PTRACE_DETACH 等操作（通过 ptrace 系统调用的参数指定操作），或调试进程退出，被调试的进程才能恢复 TASK_RUNNING 状态。
-</li></ul>
-
-
 有一类垃圾却并非这么容易打扫，那就是我们常见的状态为 D (Uninterruptible sleep) ，以及状态为 Z (Zombie) 的垃圾进程。这些垃圾进程要么是求而不得，像怨妇一般等待资源(D)，要么是僵而不死，像冤魂一样等待超度(Z)，它们在 CPU run_queue 里滞留不去，把 Load Average 弄的老高老高，没看过我前一篇blog的国际友人还以为这儿民怨沸腾又出了什么大事呢。怎么办？开枪！kill -9！看你们走是不走。但这两种垃圾进程偏偏是刀枪不入的，不管换哪种枪法都杀不掉它们。无奈，只好reboot，像剿灭禽流感那样不分青红皂白地一律扑杀！
 
 贫僧还是回来说正题。怨妇 D，往往是由于 I/O 资源得不到满足，而引发等待，在内核源码 fs/proc/array.c 里，其文字定义为“ "D (disk sleep)", /* 2 */ ”（由此可知 D 原是Disk的打头字母），对应着 include/linux/sched.h 里的“ #define TASK_UNINTERRUPTIBLE 2 ”。举个例子，当 NFS 服务端关闭之时，若未事先 umount 相关目录，在 NFS 客户端执行 df 就会挂住整个登录会话，按 Ctrl+C 、Ctrl+Z 都无济于事。断开连接再登录，执行 ps axf 则看到刚才的 df 进程状态位已变成了 D ，kill -9 无法杀灭。正确的处理方式，是马上恢复 NFS 服务端，再度提供服务，刚才挂起的 df 进程发现了其苦苦等待的资源，便完成任务，自动消亡。若 NFS 服务端无法恢复服务，在 reboot 之前也应将 /etc/mtab 里的相关 NFS mount 项删除，以免 reboot 过程例行调用 netfs stop 时再次发生等待资源，导致系统重启过程挂起。
@@ -72,19 +61,25 @@ D是处于TASK_UNINTERRUPTIBLE的进程，深度睡眠，不响应信号。 一�
 注意：不是所有状态为Z的进程都是无法收拾的，很可能是那个短暂的状态刚好被你发现了。
 -->
 
-
-### 特殊状态处理
-
-`TASK_STOPPED`，进程终止，通常是由于向进程发送了 `SIGSTOP`、`SIGTSTP`、`SIGTTIN`、`SIGTTOU` 信号，此时可以通过 `kill -9(SIGKILL) pid` 尝试杀死进程，如果不起作用则 `kill -18 pid` ，也就是发个 `SIGCONT` 信号过去。
-
-
-#### defunct
+## 特殊状态
 
 子进程是通过父进程创建的，子进程的结束和父进程的运行是一个异步过程，父进程永远无法预测子进程到底什么时候结束。当一个进程完成它的工作终止之后，它的父进程需要调用 `wait()` 或者 `waitpid()` 取得子进程的终止状态。
 
-孤儿进程：一个父进程退出，相应的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。孤儿进程将被 init 进程所收养，并由 init 进程收集它们的完成状态。注意，孤儿进程没有危害，最终仍然回被 init 回收。
+当父子进程在不同时间点退出时，那么就可能会进入到异常状态。
 
-僵尸进程：一个进程使用 fork 创建子进程，如果子进程退出，而父进程并没有调用 wait 或 waitpid 获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中，仍然占用进程表，显示为 defunct 状态。可以通过重启或者杀死父进程解决。
+#### 孤儿进程
+
+一个父进程退出，相应的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。
+
+孤儿进程将被 `init` 进程所收养，并由 `init` 进程收集它们的完成状态，也就是说，孤儿进程没有危害，最终仍然回被 `init` 回收。
+
+#### 僵尸进程
+
+一个进程使用 `fork` 创建子进程，如果子进程退出后父进程没有调用 `wait` 或 `waitpid` 获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中，仍然占用进程表，显示为 `defunct` 状态。
+
+可以通过重启或者杀死父进程解决。
+
+### 示例
 
 在 Linux 中，进程退出时，内核释放该进程所有的部分资源，包括打开的文件、占用的内存等。但仍为其保留一定的信息，包括进程号 PID、退出的状态、运行时间等，直到父进程通过 `wait()` 或 `waitpid()` 来获取时才释放。
 
@@ -150,6 +145,54 @@ int main ()
 
 第一个是孤儿进程，第二次输出时其父进程 PID 变成了 `init(PID=1)`；第二个是僵尸进程，进程退出时会产生 `SIGCHLD` 信号，父进程可以通过捕获该信号进行处理。
 
+
+### TASK_STOPPED
+
+`TASK_STOPPED`，进程终止，通常是由于向进程发送了 `SIGSTOP`、`SIGTSTP`、`SIGTTIN`、`SIGTTOU` 信号，此时可以通过 `kill -9(SIGKILL) pid` 尝试杀死进程，如果不起作用则 `kill -18 pid` ，也就是发个 `SIGCONT` 信号过去。
+
+## 孤儿进程接管
+
+如上所述，所谓的孤儿进程是指，当父进程被 `kill` 掉，其子进程就会成为孤儿进程 `Orphaned Process`，并被 `init(PID=1)` 所接管。
+
+那么，孤儿进程如何被接管的？
+
+在 Linux 内核中，有如下的代码 [Kernel find_new_reaper()](https://github.com/torvalds/linux/blob/eae21770b4fed5597623aad0d618190fa60426ff/kernel/exit.c#L479) ，其开头的注释摘抄如下：
+
+{% highlight text %}
+/*
+ * When we die, we re-parent all our children, and try to:
+ * 1. give them to another thread in our thread group, if such a member exists
+ * 2. give it to the first ancestor process which prctl'd itself as a
+ *    child_subreaper for its children (like a service manager)
+ * 3. give it to the init process (PID 1) in our pid namespace
+ */
+{% endhighlight %}
+
+也就是说，接管分三步：A) 找到相同线程组里其他可用的线程；B) 如果没有找到则进行第二步；C) 最后交由 `PID=1` 的进程管理。
+
+### SubReaper
+
+当一个进程被标记为 `SubReaper` 后，这个进程所创建的所有子进程，包括子进程的子进程，都将被标记拥有一个 `SubReaper` 。
+
+当某个进程成为孤儿进程时，会沿着它的进程树向祖先进程找一个最近的是 `SubReaper` 且运行着的进程，这个进程将会接管这个孤儿进程。
+
+<!--
+http://adoyle.me/blog/orphaned-process-and-zombie-process-and-docker.html
+-->
+
+### tinit
+
+其功能类似于 `init` 进程，实际上就是模拟 `init` 进程的僵尸进程回收，一般用于容器中，用于回收容器中退出的进程。
+
+<!--
+https://github.com/krallin/tini
+https://github.com/Yelp/dumb-init
+
+在编译静态二进制文件时会依赖 glibc 的静态库，对于 CentOS 来说，需要通过 `yum install glibc-static` 安装。
+
+可以通过该工程查看 CMake 的编写，以及编写类似 init 进程的注意事项。
+-->
+
 ## Uninterruptable
 
 Linux 中有一个 `uninterruptable` 状态，此时的进程不接受任何的信号，包括了 `kill -9` ，通常是在等待 IO，比如磁盘、网络、其它外设等。如果 IO 设备出现了问题，或者 IO 响应慢，那么就会有很多进程处于 D 状态。
@@ -160,9 +203,9 @@ Linux 中有一个 `uninterruptable` 状态，此时的进程不接受任何的�
 
 ### 正常 Sleep
 
-一般来说，当一个进程在系统调用中正常休眠时，它会收到异步的信号，例如 SIGINT，此时会做如下的处理：
+一般来说，当一个进程在系统调用中正常休眠时，它会收到异步的信号，例如 `SIGINT`，此时会做如下的处理：
 
-1. 系统调用立即返回，并返回 -EINTR 错误码；
+1. 系统调用立即返回，并返回 `-EINTR` 错误码；
 2. 设置的信号回调函数被调用；
 3. 如果进程仍然在运行，那么会获取到系统调用返回的错误码，并决定是否继续运行。
 
