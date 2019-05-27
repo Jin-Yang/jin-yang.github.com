@@ -61,6 +61,7 @@ description:
 * [Linux C 位域和大小端](/post/language-c-bit-field-and-endian-introduce.html) C 语言提供的位域以及大小端，常用在通讯协议的处理。
 * [UDP 通讯优化](/post/linux-c-udp-optimize-introduce.html) UDP 并非一个面向连接的协议，与 TCP 不同，有其相关的优化方法。
 * [Linux C 网络编程](/post/program-c-network.html) 整理了 Linux C 经常使用的网络编程技巧。
+* [Linux umask 使用](/post/linux-umask-and-open-introduce.html) 通过 umask 可以在不修改代码直接调整文件的默认打开权限。
 
 ## libev
 

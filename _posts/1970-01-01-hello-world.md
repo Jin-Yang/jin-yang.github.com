@@ -4282,7 +4282,7 @@ Leader 会通过 Progress 维护各个 Follower 的状态，会根据该状态�
 
 对应的实现在 `raft/progress.go` 中，其中包括了两个重要的属性：
 
-* match 
+* match
 
 
 ins *inflights 发送数据的滑动窗口，最大值为MaxSizePerMsg
