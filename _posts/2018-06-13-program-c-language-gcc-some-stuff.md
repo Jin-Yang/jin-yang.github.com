@@ -35,11 +35,13 @@ Clang 是一个 C++ 编写，基于 LLVM 的 C/C++、Objective-C 语言的轻量
 #pragma clang diagnostic pop
 {% endhighlight %}
 
-## \_\_attribute\_\_
+## attribute
 
-### \_\_attribute\_\_((format))
+gcc 会通过 `__attribute__((XXX))` 做一些特殊的检查，这里简单介绍一些常见的使用方法。
 
-该属性用于自实现的字符串格式化参数添加类似 printf() 的格式化参数的校验，判断需要格式化的参数与入参是否相同。
+### format
+
+`__attribute__((format))` 该属性用于自实现的字符串格式化参数添加类似 `printf()` 的格式化参数的校验，判断需要格式化的参数与入参是否相同。
 
 {% highlight text %}
 format (archetype, string-index, first-to-check)
@@ -66,50 +68,55 @@ extern void myprint(const char *format,...) __attribute__((format(printf,1,2)));
 
 int myprint(char *fmt, ...)
 {
-    int result;
-    va_list args;
-    va_start(args, fmt);
-    fputs("foobar: ", stderr);
-    result = vfprintf(stderr, fmt, args);
-    va_end(args);
-    return result;
+	int result;
+	va_list args;
+
+	fputs("foobar: ", stderr);
+
+	va_start(args, fmt);
+	result = vfprintf(stderr, fmt, args);
+	va_end(args);
+
+	return result;
 }
+
 int main(int argc, char **argv)
 {
-    myprint("i=%d\n",6);
-    myprint("i=%s\n",6);
-    myprint("i=%s\n","abc");
-    myprint("%s,%d,%d\n",1,2);
- return 0;
+	myprint("i=%d\n",6);
+	myprint("i=%s\n",6);
+	myprint("i=%s\n","abc");
+	myprint("%s,%d,%d\n",1,2);
+	return 0;
 }
 {% endhighlight %}
 
 编译时添加 `-Wall` 就会打印 Warning 信息，如果去除，实际上不会显示任何信息，通常可以提前发现常见的问题。
 
-### \_\_attribute\_\_((constructor))
+### constructor/destructor
 
-这是 GCC 的扩展机制，通过上述的属性，可以使程序在开始执行或停止时调用指定的函数。
+可以设置程序在开始执行或停止时调用指定的函数。
 
-```__attribute__((constructor))``` 在 main() 之前执行，```__attribute__((destructor))``` 在 main() 执行结束之后执行。
+`__attribute__((constructor))` 在 `main()` 之前执行，`__attribute__((destructor))` 在 `main()` 执行结束之后执行。
 
 {% highlight c %}
 #include <stdio.h>
 #include <stdlib.h>
 
-static  __attribute__((constructor)) void before()
+static __attribute__((constructor)) void before()
 {
-    printf("Hello World\n");
+	printf("Hello World\n");
 }
 
-static  __attribute__((destructor)) void after()
+static __attribute__((destructor)) void after()
 {
-    printf("Bye World!\n");
+	printf("Bye World!\n");
 }
 
 int main(int args,char ** argv)
 {
-    printf("Live...\n");
-    return EXIT_SUCCESS;
+	printf("Live...\n");
+
+	return EXIT_SUCCESS;
 }
 {% endhighlight %}
 
@@ -119,35 +126,35 @@ int main(int args,char ** argv)
 #include <stdio.h>
 #include <stdlib.h>
 
-static  __attribute__((constructor(102))) void before102()
+static __attribute__((constructor(102))) void before102()
 {
-    printf("Hello World 102\n");
+	printf("Hello World 102\n");
 }
 
-static  __attribute__((destructor(102))) void after102()
+static __attribute__((destructor(102))) void after102()
 {
-    printf("Bye World! 102\n");
+	printf("Bye World! 102\n");
 }
 
-static  __attribute__((constructor(101))) void before101()
+static __attribute__((constructor(101))) void before101()
 {
-    printf("Hello World 101\n");
+	printf("Hello World 101\n");
 }
 
 static  __attribute__((destructor(101))) void after101()
 {
-    printf("Bye World! 101\n");
+	printf("Bye World! 101\n");
 }
 
 int main(int args,char ** argv)
 {
-    printf("Live...\n");
-    return EXIT_SUCCESS;
+	printf("Live...\n");
+
+	return EXIT_SUCCESS;
 }
 {% endhighlight %}
 
 在使用时也可以先声明然再定义
-
 
 {% highlight c %}
 #include <stdio.h>
@@ -158,20 +165,32 @@ void after() __attribute__((destructor));
 
 void before()
 {
-    printf("Hello World\n");
+	printf("Hello World\n");
 }
 
 void after()
 {
-    printf("Bye World!\n");
+	printf("Bye World!\n");
 }
 
 int main(int args,char ** argv)
 {
-    printf("Live...\n");
-    return EXIT_SUCCESS;
+	printf("Live...\n");
+	return EXIT_SUCCESS;
 }
 {% endhighlight %}
+
+### hot/cold
+
+也就是 `__attribute__((hot))` `__attribute__((cold))` 用于分支预测的一些处理。
+
+其中 hot 表示该函数会被经常调用到，在编译链接时要对其优化，或说是将它和其它同样热 (hot) 的函数放到一块，这样有利于缓存的存取。
+
+而 cold 表示该函数比较冷门，这样在分支预测机制里就不会对该函数进行预取，或说是将它和其它同样冷门 (cold) 的函数放到一块，这样它就很可能不会被放到缓存中来，而让更热门的指令放到缓存中。
+ 
+
+
+
 
 ### \_\_attribute\_\_((visibility))
 

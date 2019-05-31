@@ -65,7 +65,10 @@ description:
 
 ## libev
 
-* [libev 事件库](/post/linux-libev.html)，一个 C 编写的高性能事件循环库，类似库还有 libevent、libubox 等。
+libev 是一个基础的高性能事件库，提供了跨平台能力，而且代码很少，使用非常灵活。除了基础的 IO、定时器、信号的处理之外，同时还提供了一些循环中经常使用的 hook 处理，以及常用
+
+* [libev 事件库](/post/linux-libev.html) 一个 C 编写的高性能事件循环库，简单介绍其使用方法。
+* [libev 源码详解](/post/linux-libev-source-code-details-introduce.html) 详细介绍 libev 内部的使用原理。
 * [libev 时间处理](/post/linux-libev-timers.html)，简单介绍下 libev 库中与时间相关的内容。
 
 ## 线程编程

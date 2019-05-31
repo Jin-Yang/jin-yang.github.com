@@ -4339,10 +4339,6 @@ https://blog.csdn.net/liuxuejiang158blog/article/details/14100897
 
 
 
-/post/details-about-dstat.html
-页面优化
-
-
 类似于top命令，但是监控的是进程的网络带宽
 https://github.com/raboof/nethogs
 https://zhoujianshi.github.io/articles/2017/Linux%20%E8%8E%B7%E5%8F%96TCP%E8%BF%9E%E6%8E%A5%E4%B8%8Epid%E7%9A%84%E6%98%A0%E5%B0%84%EF%BC%8C%E5%8F%8A%E7%9B%91%E6%B5%8B%E8%BF%9B%E7%A8%8B%E7%9A%84TCP%E6%B5%81%E9%87%8F/index.html
@@ -4413,7 +4409,99 @@ Keeping Redundancy Effective, KRE 保持冗余有效性
 1. 这个系统有没有采用两道以上的冗余保护？
 2. 是否有机制确保每一道保护在任何时候都是有效的，一旦失效能够及时发现（自动检测、管理手段等）？
 3. 是否有方法和工具用最短的时间恢复？
+
+
+
+
+
+
+
+
+
+
+
+
+
+IO 线程可以和工作线程绑定，也可以分开，主要看通讯的压力。
+
+如果绑定那么对应的处理流程为：A) Read IO；B) 处理业务逻辑，获取结果；C) Write IO。
+
+这种方式的处理流程简单，解析好请求后就能直接在同一线程中处理，省去了线程切换的开销，非常适合业务处理流程简单的请求。
+
+但是，当单个任务的处理时间过长时，就可能会导致后面的任务被阻塞，影响请求的响应。
+
+http://oserror.com/backend/libeasy-all/
+
+
+一般 Socket 的处理流程分为了发送和接收。
+
+发送流程：
+
+1. 业务生成数据结构，发送到缓冲队列 (可以是队列、环、优先队列)，并通知 Socket 线程；Tips#1
+2. 在 Socket 线程中，进行序列化操作，保存到统一的发送缓冲区中。Tips#3
+3. 然后写入，此时可以通过异步 IO 进行处理；Tips#2
+
+接收流程：
+
+1. 接收到数据后保存到接收缓冲区，判断是否接收到一个完整的包。
+
+Tips
+
+1. 默认是在 Socket 线程中进行序列化，如果说性能不满足，那么可以将序列化在发送缓冲队列前进行处理，这时，只需要简单的发送缓冲队列的数据即可。
+2. 这里可能会出现只发送了缓冲队列中一部分数据的情况，需要注意如何进行处理。
+3. 这里的序列化采用的是一个相同的缓冲区，那么可以节省内存使用，而 Tips#1 中的使用方式，实际上是以内存换取效率。
+
+当与服务端建立连接之后，建议只使用一个 Socket 连接，然后通过异步 IO 提高连接上的吞吐量，同时，如果需要也可以进行流量控制，这样会方便很多。
+
+如果说吞吐量不够，一般是 Socket 的处理逻辑封装了很多业务逻辑，此时可以将业务逻辑拆出来，然后使用单独线程只做 Socket 收发。
+
+
+缓存超过之后的策略：
+
+1. 本地持久化，并周期重试。注意：本地持久化需要限制大小。
+2. 业务失败，当前不可用。
+
+1. 支持 IPv4 IPv6 。
+
+union sockinfo {
+	struct sockaddr_in  v4;
+	struct sockaddr_in6 v6;
+};
+
+struct abuff {
+	char *start, *end, *tail;
+#ifdef BUFF_AUTO_RESIZE
+	int real, max, min;
+#endif
+};
+
+struct svrinfo {
+	union sockinfo sock;
+	struct abuff sndbuf, rcvbuf;
+};
+
+glibc 提供了内置的位运算符。
+
+int __builtin_ffs (unsigned int x)
+返回x的最后一位1的是从后向前第几位，比如7368（1110011001000）返回4。
+
+//----- 前导的0的个数
+int __builtin_clz(unsigned int x);
+
+
+int __builtin_ctz (unsigned int x)
+返回后面的0个个数，和__builtin_clz相对。
+int __builtin_popcount (unsigned int x)
+返回二进制表示中1的个数。
+int __builtin_parity (unsigned int x)
+返回x的奇偶校验位，也就是x的1的个数模2的结果。
+
+此外，这些函数都有相应的usigned long和usigned long long版本，只需要在函数名后面加上l或ll就可以了，比如int __builtin_clzll。
+
+
+
 -->
+
 
 {% highlight text %}
 {% endhighlight %}

@@ -1,5 +1,5 @@
 ---
-title: HTTP2 协议使用
+title: HTTP2 协议简介
 layout: post
 comments: true
 language: chinese
@@ -38,188 +38,112 @@ HTTP2 传输的数据是二进制的，相比 HTTP1.X 的纯文本数据，二�
 
 ![http2 multiplexing]({{ site.url }}/images/network/http2-multiplexing.svg "http2 multiplexing"){: .pull-center width="70%" }
 
-### 优先级
+## 优先级
+
+优先级是为了设置对端在并发的多个流之间分配资源的方式，尤其是当发送容量有限时，可以选择优先发送的流。
+
+流之间可以相互依赖，只有当所依赖的流完成后，才会再处理当前流，同时每个依赖后都跟着一个权重 (weight)，用来确定依赖于相同的流的可分配可用资源的相对比例。
+
+### 简介
 
 每个资源都获取一个 Stream ID 来标识连接上的资源，有三个参数用于定义资源优先级：
 
-* 父级数据流 (Parent Stream)：这个数据流是一个“依赖”资源或者应该在之后被传递的数据流。有一个所有数据流共享的虚拟root stream 0。
-* 权重(Weight)：1到256之间的数字，用于标识在多个数据流共享连接时分配给此数据流的带宽量。带宽是相对于所有其他活动的数据流的权重分配的，而不是绝对值。
-* 独占位(Exclusive bit)：一个标志，表示应该在不与任何其他数据流共享带宽的情况下下载。
+* 流依赖 Stream Dependencies。只有当依赖的流数据发送完成之后，才会发送当前流，默认使用共享的 Stream0 。
+* 权重 Weight。分配 1~256 之间的数字，标识在多个数据流共享连接时分配给此数据流的带宽量，按照权重比例分配。
+* 独占位 Exclusive Bit。用来表示在不与任何其它数据流共享带宽的情况下下载。
 
-浏览器不一定同时知道所有资源，因此服务器能够在新请求到达时重新确定请求的优先级也很关键。
+浏览器不一定同时知道所有资源，因此服务器能够在新请求到达时确定请求的优先级也很关键。
 
-## 示例
+### 流依赖
 
-简单介绍下两个基本概念：
+注意，因为流可以在不同状态之间切换，如果被依赖的流不在当前依赖树中 (如流的状态为 idle )，被依赖的流会使用一个默认优先级。
 
-* h2 基于 TLS 构建的 HTTP2，其中 ALPN 标识符为 0x68 0x32 ，也就是 https 。
-* h2c 直接在 TCP 之上构建的 HTTP2，也就是 http 。
+当依赖一个流时，该流会添加进父级的依赖关系中，共享相同父级的依赖流不会相对于彼此进行排序，比如 B 和 C 依赖 A，新添加一个依赖流 D，BCD 的顺序是不固定的。
 
-### 示例
-
-如果不启用 TLS ，默认只支持 HTTP1.1 ，
-
-{% highlight go %}
-package main
-
-import (
-	"fmt"
-	"golang.org/x/net/http2"
-	"html"
-	"net/http"
-)
-
-func main() {
-	var server http.Server
-
-	http2.VerboseLogs = true
-	server.Addr = ":8990"
-
-	http2.ConfigureServer(&server, &http2.Server{})
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "URL: %q\n", html.EscapeString(r.URL.Path))
-		ShowRequestInfoHandler(w, r)
-	})
-
-	server.ListenAndServe() // 不启用https则默认只支持http1.x
-	//server.ListenAndServeTLS("localhost.cert", "localhost.key")
-}
-
-func ShowRequestInfoHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
-
-	fmt.Fprintf(w, "Method: %s\n", r.Method)
-	fmt.Fprintf(w, "Protocol: %s\n", r.Proto)
-	fmt.Fprintf(w, "Host: %s\n", r.Host)
-	fmt.Fprintf(w, "RemoteAddr: %s\n", r.RemoteAddr)
-	fmt.Fprintf(w, "RequestURI: %q\n", r.RequestURI)
-	fmt.Fprintf(w, "URL: %#v\n", r.URL)
-	fmt.Fprintf(w, "Body.ContentLength: %d (-1 means unknown)\n", r.ContentLength)
-	fmt.Fprintf(w, "Close: %v (relevant for HTTP/1 only)\n", r.Close)
-	fmt.Fprintf(w, "TLS: %#v\n", r.TLS)
-	fmt.Fprintf(w, "\nHeaders:\n")
-
-	r.Header.Write(w)
-}
+{% highlight text %}
+    A                 A
+   / \      ==>      /|\
+  B   C             B D C
 {% endhighlight %}
 
-{% highlight go %}
-package main
+可以通过独占标识 (exclusive) 插入一个新层级，这会导致该流成为父级的唯一依赖流，而其它依赖流变为其子级。例如插入一个新带有独占标识的依赖流 E 。
 
-import (
-	"crypto/tls"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net"
-	"net/http"
-
-	"golang.org/x/net/http2"
-)
-
-func main() {
-	url := "http://localhost:8990/"
-	client(url)
-}
-
-func client(url string) {
-	log.SetFlags(log.Llongfile)
-	tr := &http2.Transport{ // 服务端退化成了 http1.x
-		AllowHTTP: true, // 充许非加密的链接
-		//TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		DialTLS: func(netw, addr string, cfg *tls.Config) (net.Conn, error) {
-			return net.Dial(netw, addr)
-		},
-	}
-
-	httpClient := http.Client{Transport: tr}
-
-	resp, err := httpClient.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		fmt.Println("resp StatusCode:", resp.StatusCode)
-		return
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("resp.Body:\n", string(body))
-}
+{% highlight text %}
+                      A
+    A                 |
+   /|\      ==>       E
+  B D C              /|\
+                    B D C
 {% endhighlight %}
 
-通过 `tcpdump -X -nnn -i lo tcp port 8990 and host 127.0.0.1` 可以发现，服务器向客户端发了一个 http1.1 的包，并且服务端还关闭了连接。
+在依赖关系树中，只有当一个流依赖的所有流被关闭或者无法继续时，这个流才应该被分配资源。
 
-此时服务端需要考虑使用更低一层的 http2 库实现，也就是使用 ServCon 直接替换掉 `net/http` 中的 serv 函数，例如。
+### 权重
 
-{% highlight go %}
-package main
+相同父级的依赖流按权重比例分配资源，比如 B 和 C 都依赖于 A ，其权重值分别为 4 和 12 ，那么理论上 B 能分配的资源只有 C 的三分之一。
 
-import (
-	"fmt"
-	"golang.org/x/net/http2"
-	"net/http"
+### 优先级调整
 
-	"net"
-	"time"
-)
+在正常使用流的过程中，可以通过 PRIORITY 帧来调整流优先级。
 
-type serverHandler struct {
-}
+如果父级重新设置了优先级，则依赖流会随其父级流一起移动；若调整优先级的流带有独占标识，会导致新的父流的所有子级依赖于这个流
 
-func (sh *serverHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	fmt.Println(req)
-	w.Header().Set("server", "h2test")
-	w.Write([]byte("this is a http2 test sever"))
-}
+如果一个流 A 调整为依赖自己的一个子级 (包括孙子) D，则首先将子级 D 移至 A 的父级之下(即同一层)，然后再移动 A 的整棵子树，移动的依赖关系保持其权重。
 
-func main() {
-	server := &http.Server{
-		Addr:         ":8990",
-		Handler:      &serverHandler{},
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
-	}
-	//http2.Server.ServeConn()
-	s2 := &http2.Server{
-		IdleTimeout: 1 * time.Minute,
-	}
-	http2.ConfigureServer(server, s2)
-	l, _ := net.Listen("tcp", ":8990")
-	defer l.Close()
-
-	fmt.Println("Start server...")
-	for {
-		rwc, err := l.Accept()
-		if err != nil {
-			fmt.Println("accept err:", err)
-			continue
-		}
-		go s2.ServeConn(rwc, &http2.ServeConnOpts{BaseConfig: server})
-
-	}
-	//http.ListenAndServe(":8888",&serverHandler{})
-}
+{% highlight text %}
+    X                X                X                 X
+    |               / \               |                 |
+    A              D   A              D                 D
+   / \            /   / \            / \                |
+  B   C     ==>  F   B   C   ==>    F   A       OR      A
+     / \                 |             / \             /|\
+    D   E                E            B   C           B C F
+    |                                     |             |
+    F                                     E             E
+               (intermediate)   (non-exclusive)    (exclusive)
 {% endhighlight %}
+
+如上示例将 A 调整依赖 D ，调整的步骤为：A) 现将 D 移至 X 之下；B) 把 A 调整为 D 的子树；C) 如果 A 调整时带有独占标识根据第一点 F 也归为 A 子级。
+
+### 优先级管理
+
+当依赖树中的某个节点被删除，那么子级会调整为了依赖父级，权重会根据被删除节点和自身的权重重新计算。
+
+{% highlight text %}
+          X(v:1.0)               X(v:1.0)
+         / \                    /|\
+        /   \                  / | \
+      *A     B       ==>      /  |  \
+    (w:16) (w:16)            /   |   \
+      / \                   C   *D    B
+     /   \                (w:8)(w:8)(w:16)
+    C    *D
+ (w:16) (w:16)
+ R(C)=16/(16+16)=1/2 ==>  R(C)=8/(8+16)=1/3
+{% endhighlight %}
+
+如果上述 A D 不可用，那么图中的 B C 就会各占一半的资源，当 A 被移除后，C 和 D 会按照权重分配 A 的权重，也就是都变成了 8 ，此时 D 仍然不可用，那么 A 会占用 1/3 的资源。
 
 <!--
-https://blog.csdn.net/xcl168/article/details/53869911
--->
+可以在 HEADERS 帧中的 PRIORITY 字段指定一个新建流的优先级，也可以通过 PRIORITY 帧调整流优先级。
 
-整个协议建立连接过程如下。
+http2_scheduler_open() 建立依赖关系，并设置优先级、
 
-![start up process]({{ site.url }}/images/network/http2-start-up-process.png "start up"){: .pull-center }
+可以参考 [gRPC over HTTP2](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md) 中的介绍，也就是 gRPC 如何使用 HTTP2 的。
+https://github.com/h2o/h2o/issues/2002
 
-<!--
-详见
-http://www.blogjava.net/yongboy/archive/2015/03/18/423570.html
+微内核与宏内核的区别
+https://www.zhihu.com/question/20314255
+
+## nghttp2
+
+这个库里面实际上有很多不错的脚本。
+
+nghttp2_session_send() 对应了真正发送数据
+ |-nghttp2_session_pop_next_ob_item()
+   |-nghttp2_outbound_queue_top() 我去，貌似使用的是队列
+nghttp2_session_reprioritize_stream()
+ |-nghttp2_stream_dep_add_subtree()
 -->
 
 ## 帧 Frame
@@ -323,6 +247,33 @@ https://blog.csdn.net/zqjflash/article/details/50179235
 
 这里的blog有很多不错的关于HTTP2协议的介绍
 https://imququ.com/post/content-encoding-header-in-http.html
+
+
+## HTTP2 Priority
+
+* 每个 Stream 通过一个 `1~256` 的数字来表示权重；
+* 每个 Stream 都应该标明它的依赖有哪些。
+
+https://segmentfault.com/a/1190000006923359
+
+被依赖的应该先发送，然后按照优先级进行发送。
+https://http2.github.io/http2-spec/
+
+HTTP2 非常非常详细的介绍
+https://juejin.im/post/5b88a4f56fb9a01a0b31a67e
+
+## 流量控制
+
+流控的目标是通过流量窗口进行约束，给接收端控制当下想要接受的流量大小。具体的算法流程为：
+
+* 两端设置一个流量控制窗口 Window 初始值；
+* 每次发送 DATA 帧都会减小 Window 值，减小的是帧的大小，如果 Window 小于帧大小，那么这个帧会被拆分；
+* 当窗口等于 0 时，将不会发送任何帧；
+* 接收端可以通过 WINDOW_UPDATE 帧指定窗口的增量。
+
+比如说，发送端的初始 Window 为 100，当发送了一个 DATA 帧长度 70，这时 Window 值为 30；如果接收端回送 WINDOW_UPDATE(70)，那么发送端的 Window 恢复到 100 。
+
+do_emit_writereq()
 -->
 
 
