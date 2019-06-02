@@ -384,6 +384,20 @@ int main()
 
 直接编译运行，然后通过 `netstat -atunp | grep 8888` 查看。
 
+### Unix
+
+如果使用的是 Unix Domain Socket 那么可以获取到对端的 PID UID GID 信息，可以用来判断对方是否有相应的权限。
+
+客户端在发送的时候也可以指定用户，但是必须要有 `CAP_SYS_ADMIN` 权限才可以。
+
+{% highlight text %}
+struct ucred cred;
+socklen_t len;
+len = sizeof(struct ucred);
+getsockopt(client_fd, SOL_SOCKET, SO_PEERCRED, &cred, &len);
+printf("Credentials from SO_PEERCRED: pid=%d, uid=%d, gid=%d\n", cred.pid, cred.uid, cred.gid);
+{% endhighlight %}
+
 ## 非阻塞链接
 
 Windows 平台上无论利用 `socket()` 函数还是 `WSASocket()` 创建的 socket 都是阻塞模式的，而 Linux 上可以在创建 Socket 时将其指定为异步，例如。

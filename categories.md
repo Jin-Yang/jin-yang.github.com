@@ -20,7 +20,7 @@ title: Categories
 
 Programs must be written for people to read, and only incidentally for machines to execute.
 
-* [版本管理](/post/theme-version-control.html) 主要是通过 git 来进行版本管理。
+* [开发环境](/post/theme-develop-workspace.html) 包括了基本的版本管理工具、IDE 开发环境等。
 * [C/C++ 语言专题](/post/theme-language-ccpp.html)
 * [Shell 语言专题](/post/theme-language-bash.html) 包括了 Bash 的使用方法，以及相关的编程语言。
 * [GoLang 语言专题](/post/theme-language-golang.html)

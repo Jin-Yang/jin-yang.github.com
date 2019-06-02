@@ -412,10 +412,6 @@ HMAC 的一个典型应用是用在 ```Challenge/Response``` 身份认证中，�
 3. 客户端将收到的随机数与客户保存的密码做 HMAC-MD5 计算，并将结果作为认证证据传给服务器 (Response)。
 4. 服务器同样执行 HMSC-MD5 运算，与客户端传回的响应结果比较，如果相同则认为客户端是一个合法用户。
 
-## 参考
-
-对各种密码保存方案的评估，例如安全性，可以直接参考 [On The Security of Password Manager Database Formats](https://www.cs.ox.ac.uk/files/6487/pwvault.pdf) 。
-
 <!--
 Password Safe库信息
 https://pwsafe.org/readmore.shtml
@@ -437,7 +433,6 @@ MatrixSSL (http://www.matrixssl.org/)  GPLv2
 axTLS (http://sourceforge.net/projects/axtls/) BSD License
 
 http://china.safenet-inc.com/webback/UploadFile/DownloadDoc/416b8c01-c42f-4251-a68d-16eb3e192ec1.pdf
-
 
 
 调用链判断
@@ -493,8 +488,6 @@ PASSWD=soopersekrit
 
 
 <!--
-AES Padding的方式
-http://www.demonk.cn/2018/07/02/aes-padding-native-java/
 AES包括了一些常用的加密模式
 https://github.com/kokke/tiny-AES-c
 
@@ -504,8 +497,10 @@ HMAC算法相关
 https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-MAC-algorithms.html
 -->
 
+
 ## 参考
 
+* 对各种密码保存方案的评估，例如安全性，可以直接参考 [On The Security of Password Manager Database Formats](https://www.cs.ox.ac.uk/files/6487/pwvault.pdf) 。
 * Padding 标准 [PKCS #5](https://tools.ietf.org/html/rfc2898) [PKCS #7](https://tools.ietf.org/html/rfc2315) [PKCS #1: RSA Encryption](https://tools.ietf.org/html/rfc2313) 。
 
 {% highlight text %}

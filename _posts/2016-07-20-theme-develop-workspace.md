@@ -1,5 +1,5 @@
 ---
-title: 【专题】版本管理
+title: 【专题】开发环境
 layout: post
 comments: true
 language: chinese
@@ -9,6 +9,8 @@ description:
 ---
 
 <!-- more -->
+
+## GIT
 
 ![Git Logo]({{ site.url }}/images/misc/git-logo.jpg "Git Logo"){: .pull-center width="230" }
 
@@ -35,8 +37,9 @@ Git 是一免费、开源的分布式版本控制系统，可有效、高速的�
 * [Git 统计工具](/post/git-some-statistic-commands-and-tools-introduce.html) 对于一些常见指标的统计。
 * [Git Patch 使用](/post/git-some-basic-patch-comand-usage.html) 通过 git 可以很容易将 Patch 提取出来。
 
-## gogs
+### GOGS
 
+Gogs 的功能类似于 GitHub 或者 GitLab ，不过相比来说是一款极易搭建的 Git 服务，其目标是打造一个最简单、最快速和最轻松的方式搭建自助 Git 服务。
 
 * [Gogs 仓库使用](/post/linux-git-gogs-introduce.html) 类似 GitLab 或者 GitHub，但是搭建起来更容易搭建。
 

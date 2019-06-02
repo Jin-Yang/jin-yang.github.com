@@ -12,6 +12,12 @@ libev 内部结构比较简单，只提供了基本的处理逻辑，其中核�
 
 <!-- more -->
 
+
+### 时间触发
+
+每次事件准备好之后，会通过
+
+
 ## 简介
 
 libev 通过观察器 (watcher) 来监听各种事件，watcher 包括了事件类型、优先级、触发条件和回调函数等参数；将其注册到事件循环上，在满足注册的条件时，会触发观察器，调用它的回调函数。
@@ -649,9 +655,9 @@ ev_run()
 -->
 
 
-### IO Watcher
+## IO Watcher
 
-对 IO 事件的监控的函数，会在 loop_init() 中初始化 backend_poll 变量，正是通过该函数监控 io 事件，如下是一个简单的示例。
+对 IO 事件的监控的函数，会在 `loop_init()` 中初始化 `backend_poll` 函数变量，正是通过该函数监控 IO 事件，如下是一个简单的示例。
 
 {% highlight text %}
 void cb (struct ev_loop *loop, ev_io *w, int revents)
@@ -664,7 +670,39 @@ ev_io_init (&watcher, cb, STDIN_FILENO, EV_READ);  // 初始化，第三个是�
 ev_io_start (loop, &watcher);
 {% endhighlight %}
 
-其中，ev_io_init() 用来设置结构体的参数，除了初始化通用的变量之外，还包括 io 观察器对应的 fd 和 event 。
+其中，`ev_io_init()` 用来设置结构体的参数，除了初始化通用的变量之外，还包括 IO 观察器对应的 fd 和 event 。
+
+### 数据结构
+
+对于 IO 事件，无非就是添加到列表中，然后判断是否需要通过类似 `epoll` 系统接口进行修改。
+
+{% highlight c %}
+typedef ev_watcher *W;
+typedef ev_watcher_list *WL;
+
+typedef struct {
+	WL head;
+	unsigned char events;
+	unsigned char reify;
+	unsigned char emask;
+	unsigned char unused;
+	unsigned int egen;
+} ANFD;
+
+typedef struct {
+	W w;
+	int events;
+} ANPENDING;
+
+ANFD andfs[];    // 保存了所有IO事件
+
+int fchangecnt;  // 记录被修改的fd个数，用来判断是否调用epoll
+int fdchanges[]; // 每次循环时需要修改的句柄
+{% endhighlight %}
+
+在 Linux 中，文件句柄会按照顺序增加，在 libev 中直接使用数组保存已经打开的文件句柄，而对应的数组序号就是文件句柄。
+
+这也就意味着，如果中间有句柄没有注册事件，那么就可能会有空洞。
 
 #### ev_io_start()
 
@@ -692,17 +730,15 @@ void noinline ev_io_start (EV_P_ ev_io *w) EV_THROW
 
 ![libev io watcher]({{ site.url }}/images/programs/libev_io_watcher_anfds.png "libev io watcher"){: .pull-center }
 
-调用 ev_run() 开始等待事件的触发，该函数中首先会调用 fd_reify()，该函数根据 fdchanges[] 中记录的描述符，将该描述符上的事件添加到 backend 所使用的数据结构中；调用 time_update() 更新当前时间。
+调用 `ev_run()` 开始等待事件的触发，该函数中首先会调用 `fd_reify()`，该函数根据 `fdchanges[]` 中记录的描述符，将该描述符上的事件添加到 backend 所使用的数据结构中；调用 `time_update()` 更新当前时间。
 
-接着计算超时时间，并调用 backend_poll() 开始等待事件的发生，如果事件在规定时间内触发的话，则会调用 fd_event() 将触发的监视器记录到 pendings 中；
+接着计算超时时间，并调用 `backend_poll()` 开始等待事件的发生，如果事件在规定时间内触发的话，则会调用 `fd_event()` 将触发的监视器记录到 pendings 中；
 
-backend 监听函数 (如 select()、poll()、epoll_wait()等) 返回后，再次调用 time_update() 更新时间，然后调用 ev_invoke_pending() ，依次处理 pendings 中的监视器，调用该监视器的回调函数。
+backend 监听函数 (如 `select()`、`poll()`、`epoll_wait()` 等) 返回后，再次调用 `time_update()` 更新时间，然后调用 `ev_invoke_pending()` ，依次处理 pendings 中的监视器，调用该监视器的回调函数。
 
+### fd_reify()
 
-
-#### fd_reify()
-
-该函数在 ev_run() 的每轮循环中都会调用；会将 fdchanges 中记录的这些新事件一个个的处理，并调用后端 IO 复用的 backend_modify 宏。
+该函数在 `ev_run()` 的每轮循环中都会调用；会将 fdchanges 中记录的这些新事件一个个的处理，并调用后端 IO 复用的 backend_modify 宏。
 
 <!--
 这里需要注意fd_reify()中的思想，anfd[fd] 结构体中，还有一个events事件，它是原先的所有watcher 的事件的 "|" 操作，向系统的epoll 从新添加描述符的操作 是在下次事件迭代开始前进行的，当我们依次扫描fdchangs，找到对应的anfd 结构，如果发现先前的events 与 当前所有的watcher 的"|" 操作结果不等，则表示我们需要调用epoll_ctrl 之类的函数来进行更改，反之不做操作。
@@ -718,8 +754,7 @@ fd_event 会有一个导致触发的事件，依次检查对应的 wathers-list 
 当我们启用 watcher 优先级模式时，pendings 是个 2 维数组，此时仅考虑普通模式。
 -->
 
-
-#### 多路复用
+### 多路复用
 
 当前支持的多路复用通过如下方式定义，
 
@@ -750,7 +785,7 @@ enum {
 # endif
 {% endhighlight %}
 
-之后调用 ev_recommended_backends() 得到当前系统支持的 backend 类型，比如 select、poll、epoll 等；然后，接下来就是根据系统支持的 backend，按照一定的优先顺序，去初始化 backend 。
+之后调用 `ev_recommended_backends()` 得到当前系统支持的 backend 类型，比如 select、poll、epoll 等；然后，接下来就是根据系统支持的 backend，按照一定的优先顺序，去初始化 backend 。
 
 <!--
 接下来，初始化loop中的ev_prepare监视器pending_w，以及ev_io监视器pipe_w
@@ -759,99 +794,6 @@ loop_init返回后，backend已经初始化完成，接着，初始化并启动�
 
 至此，初始化默认loop的工作就完成了。
 -->
-
-### Fork Watcher
-
-在 libev 中提供了一个 fork 事件的监控，libev 会在循环中自动检测是否调用了 `fork()` 函数，如果是那么会重新设置事件驱动回调函数。
-
-除了自动判断，也可以在 `fork()` 子进程之后调用 `ev_loop_fork()` 函数。
-
-{% highlight c %}
-#include "ev.h"
-#include <stdio.h>
-
-static void fork_callback(EV_P_ ev_fork *w, int revents)
-{
-        (void) w;
-        (void) revents;
-
-        printf("[%d] fork callback\n", getpid());
-}
-
-static void timeout_callback(EV_P_ ev_timer *w,int revents)
-{
-        (void) w;
-        (void) revents;
-
-        printf("[%d] time out\n", getpid());
-        //ev_break(EV_A_ EVBREAK_ALL);
-}
-
-int main(void)
-{
-        EV_P EV_DEFAULT;
-        ev_fork wfork;
-        ev_timer wtimer;
-
-        ev_fork_init(&wfork, fork_callback);
-        ev_fork_start(EV_A_ &wfork);
-
-        ev_timer_init(&wtimer, timeout_callback, 1., 1.);
-        ev_timer_start(EV_A_ &wtimer);
-
-        pid_t pid;
-
-        pid = fork();
-        if (pid < 0) {
-                return -1;
-        } else if (pid == 0) {
-                printf("[%d] Child\n", getpid());
-                //ev_loop_fork(EV_A_);
-                ev_run(EV_A_ 0);
-                ev_loop_destroy(EV_A_);
-                return 0;
-        }
-
-        printf("[%d] Parent\n", getpid());
-
-        ev_run(EV_A_ 0);
-        ev_loop_destroy(EV_A_);
-
-        return 0;
-}
-{% endhighlight %}
-
-在如上的示例中，会在子进程中重新执行，所以最好的方式是，如果不需要最好直接关闭。
-
-另外，在创建 epoll 对象时，入参使用了 `EPOLL_CLOEXEC` 参数，也就意味着在 fork 进程时会自动关闭文件描述符。
-
-### Child Watcher
-
-fork 一个新进程，给它安装一个 child 处理器等待进程结束，实际上会等待接受 `SIGCHLD` 信号，然后调用相应的事件。
-
-{% highlight text %}
-ev_child cw;
-static void child_cb (EV_P_ ev_child *w, int revents)
-{
-	ev_child_stop (EV_A_ w);
-	printf ("process %d exited with status %x\n", w->rpid, w->rstatus);
-}
-pid_t pid = fork ();
-if (pid < 0) {            // error
-	perror("fork()");
-	exit(EXIT_FAILURE);
-} else if (pid == 0) {    // child
-	// the forked child executes here
-	sleep(1);
-	exit (EXIT_SUCCESS);
-} else {                  // parent
-	ev_child_init (&cw, child_cb, pid, 0);
-	ev_child_start (EV_DEFAULT_ &cw);
-}
-{% endhighlight %}
-
-实际上，是通过注册一个 `SIGCHILD` 信号进行处理的，其回调函数是 `childcb` 。
-
 
 ### Filestat Watcher
 
@@ -887,139 +829,29 @@ ev_idle 当没有其他watcher被触发时被触发。ev_idle也是按优先级�
 -->
 
 
+## Async Watcher
 
-## 信号处理
+在 libev 库中，有很大一部分的数据结构是通过数组存储，以 async 的信号处理为例，其大致的处理过程如下。
 
-Linux 中的信号时异步发生的，一般是从内核态切换到用户态时进行检查，从而从用户代码角度看，就是异步处理。
+async 的所有信号保存在 `ev_async *[]` 数组中，其中 `asyncmax` 保存了当前内存空间支持的最大事件数，而 `asynccnt` 为当前有效事件数。
 
-采用的是将异步信号同步化处理，同步化方案有，`signalfd`、`eventfd`、`pipe`、`sigwaitinfo` 等，这里采用的是前三种，将对异步信号的处理，转化成对文件描述符的处理，也就是将 `ev_signal` 转化为处理 `ev_io` ；而最后一种，需要单独起一个信号处理线程。
-
-### 源码解析
-
-使用示例如下。
-
-{% highlight c %}
-#include <stdio.h>
-#include <libev/ev.h>
-
-static void sigint_cb (EV_P_ ev_signal *w, int revents)
-{
-        puts("catch SIGINT");
-        ev_break (EV_A_ EVBREAK_ALL);
-}
-
-int main (void)
-{
-        EV_P EV_DEFAULT;
-        static ev_signal signal_watcher;
-
-        ev_signal_init (&signal_watcher, sigint_cb, SIGINT);
-        ev_signal_start(EV_A_ &signal_watcher);
-
-        ev_loop(EV_A_ 0);
-
-        return 0;
-}
-{% endhighlight %}
-
-#### 数据结构
-
-对应的结构体展开后的成员对象如下：
-
-{% highlight c %}
-typedef struct ev_signal {  
-	int active;
-	int pending;
-	int priority;
-	void *data;
-	void (*cb)(EV_P_ struct ev_signal *w, int revents);
-	struct ev_watcher_list *next;
-	int signum;
-} ev_signal;  
-{% endhighlight %}
-
-包括 cb 在内之前的都是比较标准的成员，其中 signum 记录了信号量，成员结构体通过 list 链接。另外，在 ev.c 内部，通过 `ANSIG` 结构体维护了一个数组结构，用来组织 `ev_signal` 结构体。
-
-{% highlight c %}
-typedef struct {
-    sig_atomic_t volatile pending;   // 信号处于未决状态，也就是触发但尚未处理
-#if EV_MULTIPLICITY
-    struct ev_loop *loop;
-#endif
-    ev_watcher_list *head;           // 该信号所注册的信号处理回调函数
-} ANSIG;
-static ANSIG signals [EV_NSIG - 1];
-{% endhighlight %}
-
-`signals` 是 ANSIG 类型的数组，它的下标就是相应的信号值 - 1，也就是说，每个信号都有对应的 ANSIG 结构。
-
-### 信号同步处理
-
-在 Linux 平台上，libev 信号同步机制采用的顺序为：signalfd、eventfd、pipe 。
-
-#### signalfd
-
-signalfd 是最简单方便的信号同步机制，可以很容易的将异步的信号的监听转化成对文件描述符的监听。
-
-下面首先看一下使用 signalfd 时的信号处理流程，其函数声明为。
+如下是启动时的数组处理。
 
 {% highlight text %}
-#include <sys/signalfd.h>
-int signalfd(int fd, const sigset_t*mask, intflags);
-
-参数:
-    fd: -1 生成新文件描述符；或者指定存在有效的 fd ，而 mask 会替换掉之前相关联的信号集。
-    mask: 这个文件描述符接受的信号集，可以通过sigsetops()宏初始化。
+ev_start(EV_A_ (W)w, ++asynccnt);  // 将w->active设置为序号
+array_needsize(ev_async *, asyncs, asyncmax, asynccnt, EMPTY2); // 判断空间是否足够
+asyncs[asynccnt - 1] = w;          // 添加到数组中
 {% endhighlight %}
 
-函数使用示例如下：
+停止时的处理流程如下，也就是将最后一个事件与 w 对应事件交换。
 
-{% highlight c %}
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/signalfd.h>
-
-#define handle_error(msg) do {           \
-        perror(msg); exit(EXIT_FAILURE); \
-} while (0)
-
-int main(void)
-{
-        int sfd;
-        ssize_t rc;
-        struct signalfd_siginfo fdsi;
-
-        sigset_t mask;
-        sigemptyset(&mask);
-        sigaddset(&mask, SIGINT);
-        sigaddset(&mask, SIGQUIT);
-
-        if (sigprocmask(SIG_BLOCK, &mask, NULL) == -1)
-                handle_error("sigprocmask");
-
-        if ((sfd = signalfd(-1, &mask, 0)) == -1)
-                handle_error("signalfd");
-
-        while(1) {
-                rc = read(sfd, &fdsi, sizeof(struct signalfd_siginfo));
-                if (rc != sizeof(struct signalfd_siginfo))
-                        handle_error("read");
-
-                if (fdsi.ssi_signo == SIGINT) {
-                        printf("Got SIGINT\n");
-                } else if (fdsi.ssi_signo == SIGQUIT) {
-                        printf("Got SIGQUIT\n");
-                        exit(EXIT_SUCCESS);
-                } else {
-                        printf("Read unexpected signal\n");
-                }
-        }
-
-        return 0;
-}
+{% highlight text %}
+active = ev_active(w);
+asyncs[active - 1] = asyncs[--asynccnt];
+ev_active(asyncs[active - 1]) = active;
 {% endhighlight %}
+
+这里实际上会使用 pipe 将异步信号转换为文件的句柄操作，因为 pipe 写满会导致阻塞，所以在代码中有很大一部分时对触发事件的同步处理。
 
 ## 杂项
 
@@ -1050,9 +882,12 @@ libev 可以通过很多宏进行调优，默认会通过 EV_FEATURES 宏定义�
 用来做深度的定制化操作，例如在调用 `epoll_wait()` 之前可以设置回调函数，替换掉默认的 `ev_invoke_pending()` 函数，对循环调用次数做统计等等。
 
 
+
+
+
 ### 内存分配
 
-可以看到很多数组会通过 `array_needsize()` 函数分配内存，简单来说，为了防止频繁申请内存，每次都会尝试申请 `MALLOC_ROUND` 宏指定大小的内存，一般是 4K 。
+实际上，在代码中，可以看到很多数组会通过 `array_needsize()` 函数分配内存，简单来说，为了防止频繁申请内存，每次都会尝试申请 `MALLOC_ROUND` 宏指定大小的内存，一般是 4K 。
 
 如下是在 `ev_timer_start()` 函数中的使用方法。
 
@@ -1074,6 +909,7 @@ pendingmax[PRI]; 最大数组
 pendingcnt[PRI]; 当前事件数
 {% endhighlight %}
 
+### 优先级
 
 
 ## 参考
@@ -1113,6 +949,13 @@ http://dist.schmorp.de/libev/
 
 https://github.com/mreiferson/libevbuffsock
 -->
+
+统计信息
+
+{% highlight python %}
+activecnt  活跃的事件计数
+{% endhighlight %}
+
 
 
 

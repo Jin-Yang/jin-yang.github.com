@@ -107,14 +107,60 @@ Host gogs.cargo.com
 
 只需要备份配置、数据库、仓库数据即可。
 
-{% highlight text %}
-mkdir /tmp/gogs && cd /tmp/gogs
-#----- 数据库备份，使用的是SQLite可以直接复制文件
-cp /usr/local/gogs/data/gogs.db .
-#----- 备份配置文件
-cp /usr/local/gogs/custom/conf/app.ini .
-#----- 备份仓库，这里使用的是git账户
-tar zcf gogs-repositories-20180830.tar.gz /home/git/gogs-repositories
+{% highlight bash %}
+#!/bin/bash
+
+TMP__PATH="/tmp/gogs"
+APP__PATH="/usr/local/gogs"
+REPO_PATH="/home/git/gogs-repositories"
+CURR_DATE=`date "+%Y%m%d%H%M%S"`
+
+if [[ $# -lt 1 ]]; then
+	echo "Usage: $0 <backup|restore>"
+	exit 1
+fi
+
+if [[ ! -d "${TMP__PATH}" ]]; then
+	mkdir -p "${TMP__PATH}"
+fi
+
+if [[ "${1}" == "backup" ]]; then
+	echo "Start to backup '${REPO_PATH}'."
+
+	pushd "${TMP__PATH}"
+	#----- 数据库备份，使用的是SQLite可以直接复制文件
+	cp "${APP__PATH}/data/gogs.db" .
+	#----- 备份配置文件
+	cp "${APP__PATH}/custom/conf/app.ini" .
+	#----- 备份仓库，这里使用的是git账户
+	cp -rf "${REPO_PATH}" "gogs-repo"
+
+	popd
+	tar zcf "gogs-backup-${CURR_DATE}.tar.gz" -C "${TMP__PATH}" .
+	rm -rf "${TMP__PATH}"
+elif [[ "${1}" == "restore" ]]; then
+	if [[ $# -lt 2 ]]; then
+		echo "Usage: $0 restore <backup file>"
+		exit 1
+	fi
+	echo "Start to restore '${2}'."
+
+	umask 022
+	tar -xf "${2}" -C "${TMP__PATH}"
+	pushd "${TMP__PATH}"
+
+	#----- 数据库恢复，使用的是SQLite可以直接复制文件
+	cp "gogs.db" "${APP__PATH}/data/gogs.db"
+	#----- 恢复配置文件
+	cp "app.ini" "${APP__PATH}/custom/conf/app.ini" .
+	#----- 恢复仓库，这里使用的是git账户
+	cp -rf "gogs-repo" "${REPO_PATH}"
+	chown git:git "${REPO_PATH}"
+else
+	echo "Unsupport method."
+	exit 1
+fi
+
 {% endhighlight %}
 
 ## 参考

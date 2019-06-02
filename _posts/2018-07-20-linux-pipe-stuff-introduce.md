@@ -31,14 +31,6 @@ description:
 
 有两个 file 数据结构，但它们定义文件操作例程地址是不同的，其中一个是向管道中写入数据的例程地址，而另一个是从管道中读出数据的例程地址。这样，用户程序的系统调用仍然是通常的文件操作，而内核却利用这种抽象机制实现了管道这一特殊操作。
 
-## 原子操作
-
-所谓的原子操作，简单来说就是这次写入要么成功要么失败，不会存在着中间状态。
-
-对于 PIPE 来说，可以参考 [Atomic Operations with Pipes](https://www.tldp.org/LDP/lpg/node13.html) 中的介绍，也就是说 POSIX 规定了 `512` 字节的写入是原子的，而 Linux 实际上是 `4096` 。
-
-Linux 在 `linux/limits.h` 头文件中，通过 `PIPE_BUF` 宏定义了该值。
-
 ## popen
 
 简单来说，`popen()` 会 `fork()` 一个子进程，然后建立管道，并通过管道读取相关的数据。
@@ -113,16 +105,15 @@ int main(void)
 {% endhighlight %}
 
 
+## 原子操作
 
+所谓的原子操作，简单来说就是这次写入要么成功要么失败，不会存在着中间状态。
 
+对于 PIPE 来说，可以参考 [Atomic Operations with Pipes](https://www.tldp.org/LDP/lpg/node13.html) 中的介绍，也就是说 POSIX 规定了 `512` 字节的写入是原子的，而 Linux 实际上是 `4096` 。
 
-## 其它
+Linux 在 `linux/limits.h` 头文件中，通过 `PIPE_BUF` 宏定义了该值。
 
-### Broken Pipe
-
-一般来说就是尝试写入数据的时候，对端已经关闭，包括了 Socket 以及 Pipe 。
-
-## 示例
+### 示例
 
 {% highlight c %}
 #include <errno.h>
@@ -277,6 +268,11 @@ int main(void)
 }
 {% endhighlight %}
 
+## 其它
+
+### Broken Pipe
+
+一般来说就是尝试写入数据的时候，对端已经关闭，包括了 Socket 以及 Pipe 。
 
 {% highlight text %}
 {% endhighlight %}
