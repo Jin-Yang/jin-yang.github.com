@@ -2102,18 +2102,6 @@ onion_listen_point_read_ready()
 
 
 
-Micro Transport Protocol, μTP，因为 μ 输入困难 μTP 通常被写为 uTP 。这是一个由 BitTorrent 公司开发的协议，在 UDP 协议之上实现可靠传输与拥塞控制等特性，可以克服多数防火墙和 NAT 的阻碍，从而大大提高用户的连接性以及下载速度。
-
-关于该协议的详细内容可以参考 [uTorrent Transport Protocol](http://www.bittorrent.org/beps/bep_0029.html) 中的内容。
-
-max_window 最大窗口，在传输过程中 (in-flight) 可能的最大字节，也就是已经被发送但是还没有收到响应的报文；
-cur_window 当前窗口，当前正在传输中的字节数。
-wnd_size   窗口大小，也就是对端建议使用的窗口大小，同时会限制传输过程中的字节数。
-
-只有当 (cur_window + packet_size) <= min(max_window, wnd_size) 时才可以发送数据，
-
-A socket may only send a packet if cur_window + packet_size is less than or equal to min(max_window, wnd_size). The packet size may vary, see the packet sizes section.
-
 
 cJSON_CreateObject()    创建新的对象，设置对应的type类型
  |-cJSON_New_Item()     新申请cJSON结构内存，并初始化为0

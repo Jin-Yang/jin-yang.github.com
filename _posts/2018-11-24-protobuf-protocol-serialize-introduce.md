@@ -22,6 +22,47 @@ ProtoBuf 实际上是通过 TLV 进行保存，也就是 `Tag Length Value` 方�
 
 当然，其中的 Length 是可选的。
 
+![protobuf tlv]({{ site.url }}/images/programs/protobuf-tlv-format.png "protobuf tlv"){: .pull-center width="60%" }
+
+支持的格式有。
+
+{% highlight text %}
+WireType          Encoding     Length(Bytes)   Method             Type
+       0            Varint              1~10      T-V   int32 int64 uint32 uint64
+       1            Varint              1~10      T-V   int32 int64 uint32 uint64
+       2  Length Delimited            Length    T-L-V   string bytes embeded repeated
+
+       5    32-Bits     4-Bytes          TV      fixed32,sfixed32,float
+{% endhighlight %}
+
+### Varint
+
+这是一种变长的编码方式，值越小的数字，使用的字节越少。
+
+例如，对于 int32 类型的数字，一般需要 4 字节，当采用 Varint 编码，对于很小的数值只需要一个字节表示即可，当然，如果很大的值可能需要 5 个字节来表示，不会一般很少出现。
+
+通过每个字节的最高位标示是否有后续的字节：0) 这是最后一个字节，并用剩余 7 位来表示数字；1) 后续的字节也是该数字一部分。
+
+#### Zigzag
+
+不过有个问题是，如果是负数，一般会被表示为很大的整数，为此提供了一种 Zigzag 的编码方式。
+
+### Tag
+
+ProtoBuf 中的 Tag 保存了 WireType 和 FieldNumber 两类信息，例如如下的示例。
+
+{% highlight text %}
+message person {
+	// wire type = 0，field_number =1
+	required int32     id = 1;
+
+	// wire type = 2，field_number =2
+	required string    name = 2;
+}
+{% endhighlight %}
+
+而 Tag 则是通过 `(field_number << 3) | wire_type` 这种方式计算，并通过 Varint 和 Zigzag 进行编码。
+
 ## 参考
 
 其它相关的 C 实现可以参考 [Nanopb protocol buffers with small code size](http://jpa.kapsi.fi/nanopb/) 中的实现，另外还有 minipb 。

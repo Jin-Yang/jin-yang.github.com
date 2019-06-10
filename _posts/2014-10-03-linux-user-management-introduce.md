@@ -232,6 +232,133 @@ http://zhidao.baidu.com/link?url=xLcMH0cokvN585CPxKf3QVmmN1wDtgESTpAhl1_cxhPQZ0B
 -->
 
 
+## CAPI
+
+在 C 语言中可以通过如下的示例读取用户信息，然后切换到用户。
+
+Linux 中进程在运行的时候，会有多个 UID 信息，可以通过 `/proc/PID/status` 查看当前进程的 UID 信息，包括了四列，分别为：
+
+1. RUID Real 实际用户，也就是指进程的执行者；
+2. EUID Effective 有效用户，进程执行时的访问权限；
+3. SUID Saved 保存设置用户，作为 EUID 的副本，可以再次恢复到 EUID；
+4. FSUID FileSystem 一般与 EUID 是相同的。
+
+在如上的示例中，当通过 `setuid()` 接口切换用户时，对应的所有 ID 都会切换，那么这几个 UID 的用途是什么。
+
+其中 FSUID 用于 NFS 使用，不过不太清楚如何使用，这里暂时忽略。
+
+### UID VS. EUID
+
+切换用户时，有两种方式，A) 通过 `setuid()` 永久切换；B) 利用 `seteuid()` 临时切换。
+
+前者类似上面的示例，所有的 UID 参数都会被修改，不过此时切换之后无法切换回来，而 `seteuid()` 可以做到。
+
+{% highlight c %}
+#include <pwd.h>
+#include <stdio.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+int main(void)
+{
+        char *buff;
+        int size, rc, ouid;
+        struct passwd mpwd, upwd, *result;
+        char cmd[1024];
+
+        snprintf(cmd, sizeof(cmd), "grep -rne '^Uid:' /proc/%d/status", getpid());
+
+        size = sysconf(_SC_GETPW_R_SIZE_MAX);
+        if (size < 0) {
+                fprintf(stderr, "get passwd size failed.\n");
+                size = 4096;
+        }
+
+        buff = (char *)malloc(size);
+        if (buff == NULL) {
+                fprintf(stderr, "malloc buffer(%d) failed, out of memory.\n", size);
+                return -1;
+        }
+
+        rc = getpwnam_r("monitor", &mpwd, buff, size, &result);
+        if (result == NULL) {
+                if (rc == 0)
+                        fprintf(stderr, "user 'monitor' doesn't exists.\n");
+                else
+                        fprintf(stderr, "get user 'monitor' info failed, %d:%s.",
+                                        rc, strerror(rc));
+                free(buff);
+                return -1;
+        }
+
+        rc = getpwnam_r("foobar", &upwd, buff, size, &result);
+        if (result == NULL) {
+                if (rc == 0)
+                        fprintf(stderr, "user 'monitor' doesn't exists.\n");
+                else
+                        fprintf(stderr, "get user 'monitor' info failed, %d:%s.",
+                                        rc, strerror(rc));
+                free(buff);
+                return -1;
+        }
+
+        ouid = getuid();
+        fprintf(stdout, "Monitor UID %d, Fooobar UID %d\n", mpwd.pw_uid, upwd.pw_uid);
+        fprintf(stdout, "Before  RUID=%d, EUID=%d\n", getuid(), geteuid());
+        system(cmd);
+
+        if (seteuid(mpwd.pw_uid) == -1) {
+                fprintf(stderr, "Set monitor user id(%d) failed, %d:%s.\n",
+                                mpwd.pw_uid, errno, strerror(errno));
+        }
+        fprintf(stdout, "Monitor RUID=%d, EUID=%d\n", getuid(), geteuid());
+        system(cmd);
+
+        if (setuid(ouid) == -1) {
+                fprintf(stderr, "Restore user id(%d) failed, %d:%s.\n",
+                                ouid, errno, strerror(errno));
+        }
+        fprintf(stdout, "Restore RUID=%d, EUID=%d\n", getuid(), geteuid());
+        system(cmd);
+
+        if (setuid(upwd.pw_uid) == -1) {
+                fprintf(stderr, "Set fooobar user id(%d) failed, %d:%s.\n",
+                                upwd.pw_uid, errno, strerror(errno));
+        }
+        fprintf(stdout, "Fooobar RUID=%d, EUID=%d\n", getuid(), geteuid());
+        system(cmd);
+
+        return 0;
+}
+{% endhighlight %}
+
+执行的结果如下。
+
+{% highlight text %}
+Monitor UID 1005, Fooobar UID 1006
+Before  RUID=0, EUID=0
+9:Uid:  0       0       0       0
+Monitor RUID=0, EUID=1005
+9:Uid:  0       1005    0       1005
+Restore RUID=0, EUID=0
+9:Uid:  0       0       0       0
+Fooobar RUID=1006, EUID=1006
+9:Uid:  1006    1006    1006    1006
+{% endhighlight %}
+
+注意，没有 C 接口获取 `SUID` 和 `FSUID`，需要直接查看 `/proc/<PID>/status` 文件。
+
+### 安全性
+
+`getpwnam()` 函数会使用 glibc 中的静态内存，返回的结果实际上就指向这块内存，每次调用该接口会覆盖。这也就意味着，如果多次调用，实际上只会获取到最后的一次结果。
+
+另外，需要注意 `getpwnam_r()` 函数不是信号安全的，内部会对线程加锁，不要在信号处理函数中调用，可能会造成死锁。
+
 ## 杂项
 
 简单记录常用的使用技巧。

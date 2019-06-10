@@ -1411,6 +1411,22 @@ double d = -1.3e2; // c = -130
 
 需要注意，指数只能是整数，包括正负 0 ，不能将浮点数、变量等作为 e 的指数。
 
+#### snprintf
+
+标准库的 snprintf 不会在末尾添加 `\0` 终止符，返回的长度同样不含 `\0` ，正常应该做如下的处理。
+
+{% highlight text %}
+int len;
+char buff[3];
+
+len = snprintf(buff, sizeof(buff), "%d\n", 10);
+assert(len > 0 && len < sizeof(buff));
+if (len < 0 || len >= (int)sizeof(buff)) {
+        printf("format failed or no enough buff, rc %d.\n", len);
+		return -1;
+}
+{% endhighlight %}
+
 ## 参考
 
 [Schemaless Benchmarking Suite](https://github.com/ludocode/schemaless-benchmarks)

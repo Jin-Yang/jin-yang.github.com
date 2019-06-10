@@ -60,7 +60,47 @@ $ git submodule foreach --recursive git pull
 
 注意，在 CMake 中使用 `__FILE__` 时默认是文件的全路经，如果要使用相对路径可以参考 [CMake 自动编译]({{ site.production_url }}/post/linux-cmake-auto-compile-introduce.html) 中相关介绍。
 
+#### 配置
+
+大部分的配置都是以宏的方式提供，用户可以编译的时候指定。
+
+{% highlight text %}
+----- 默认使用MAX缓存，可以当内存不足时自动扩容
+#define LOG_USE_AUTOBUFF        1
+
+----- 是否缩减缓存
+#define LOG_SHRINK_TIMES        10
+
+----- 日志文件的最大，以及保留日志文件数
+#define LOG_FILE_SIZE_MAX       1024 * 1024 * 50
+#define LOG_FILE_NUMS_MAX       4
+
+----- 是否使用文件名+行号打印日志
+#define LOG_USE_FILENO          0
+
+----- 缓存的最大最小值
+#define LOG_BUFFER_MIN          1024
+#define LOG_BUFFER_MAX          16 * 1024
+{% endhighlight %}
+
 #### API
+
+{% highlight text %}
+----- 日志打印，可以将log开头替换为logh
+log_fatal(...)
+log_error(...)
+log_warning(...)
+log_notice(...)
+log_info(...)
+log_debug(...)
+log_trace(...)
+
+int log_level_inc(void); /* less logs */
+int log_level_dec(void); /* more logs */
+int log_set_level(int level);
+int log_get_level(const char *level);
+const char *log_get_name(const int level);
+{% endhighlight %}
 
 #### 日志模型
 

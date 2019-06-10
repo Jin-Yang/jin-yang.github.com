@@ -12,7 +12,7 @@ BootAgent 就是为了管理各个 Agent ，同时保证机制简单、功能稳
 
 用来管理上述列表中最基本的 Agent，提供基本的功能。通过最简单的方式与服务端进行通讯，也就是利用 `HTTP/1.1` 短链接与服务端通讯，只提供简单的 PUSH 机制，由 BootAgent 主动发起。
 
-简单来说，尽量保证 BootAgent 的功能简单稳定，通过尽量少的资源实现其功能，这也同时意味着，很多的功能无法保证其时效性。
+简单来说，尽量保证 BootAgent 功能的简单稳定，通过尽量少的资源实现其功能，这也同时意味着，很多的功能无法保证其时效性。
 
 单个二进制文件即可运行，配置使用命令行参数，无需配置文件。当然安装包会包含了很多辅助程序，可以用来调测等。
 
@@ -31,6 +31,7 @@ BootAgent 就是为了管理各个 Agent ，同时保证机制简单、功能稳
 其中主要功能点包括了。
 
 {% highlight text %}
+client.c    作为客户端与服务端进行通讯
 process.c   提供异步进程的实现
 {% endhighlight %}
 
@@ -68,9 +69,8 @@ process.c   提供异步进程的实现
 {
         "name": "BasicAgent",                          # 必选，子Agent的名称
         "version": "1.2.3",                            # 必选，子Agent的版本号
-        "exec": "/bin/bash /usr/bin/gearman",          # 必选
+        "exec": "/bin/bash /usr/bin/gearman",          # 必选，注意，命令行必须是绝对路径，用来匹配进程
 
-        "comm": "basicagent",                          # 可选，需要与/proc/PID/comm中的名称相同，默认为name
         "type": "simple",                              # 可选，以不同的方式启动 (默认是simple)
                                                        #       simple 以fork+exec方式运行，作为子进程
                                                        #       fork 子进程会fork子进程，也就是常驻进程
@@ -89,6 +89,21 @@ process.c   提供异步进程的实现
                 "CPU": 10,                             # CPU资源限制，单位是%
                 "MEM": 3000                            # 内存限制，单位是KB
         },
+
+	"check": [{
+		"method":"process",                    # 检查进程资源
+		"limits":{
+			"cpu":30,                      # CPU使用率
+			"memory":102400,               # RSS内存
+			"fds":1000                     # 文件描述符
+		}
+	}, {
+		"method":"tcp",                        # TCP HTTP UNIX
+		"args":"192.168.9.1:90",               # 参数信息 127.1:90/health /var/run/pro.sock
+		"match":"success"                      # 正则表达式
+	}],
+	"checktimes": 5,                               # 多少次失败后尝试执行action
+	"checkaction": "restart",                      # 检查超限后的动作，目前只支持重启
 
         "autostart": true,                             # 可选，是否在安装或者启动BootAgent时自动拉起该进程
         "autorestart": "yes",                          # 可选，失败之后的启动方式，默认或者非法是yes

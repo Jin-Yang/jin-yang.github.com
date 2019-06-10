@@ -268,7 +268,7 @@ int check_pidfile(char *file)
 
 ### /proc/locks
 
-可以从 `/proc/locks` 文件查看所有的文件锁信息，示例如下：
+对于文件锁，无论是 POSIX fcntl 还是 BSD flock 机制，都可以通过 `/proc/locks` 文件查看，示例如下：
 
 {% highlight text %}
 1: POSIX  ADVISORY  READ  3633 08:08:1612502 1073741826 1073742335
@@ -276,7 +276,23 @@ int check_pidfile(char *file)
 3: FLOCK  ADVISORY  WRITE 2367 08:07:2236373 0 EOF
 {% endhighlight %}
 
+各个列分别对应了：
+
+{% highlight text %}
+1. 锁的序列号；
+2. 锁机制，可以是 FLOCK POSIX ；
+3. 锁类型，可以是 Advisory 或者 Mandatory ；
+4. 包含锁的 PID；
+5. MAJOR-DEVICE:MINOR-DEVICE:INODE-NUMBER；
+6. 9~10 标识加锁的起止字节范围。
+{% endhighlight %}
+
 <!--
+lsof -p 14555
+fuser /tmp/mydata
+http://book.51cto.com/art/200807/82083.htm
+
+
 1) POSIX FLOCK 这个比较明确，就是哪个类型的锁。flock系统调用产生的是FLOCK，fcntl调用F_SETLK，F_SETLKW或者lockf产生的是POSIX类型，有次可见两种调用产生的锁的类型是不同的；
 
 2) ADVISORY表明是劝告锁；
