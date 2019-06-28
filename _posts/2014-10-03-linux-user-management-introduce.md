@@ -78,9 +78,13 @@ int main(void)
 {
 	struct passwd * pw;
 
+	errno = 0;
 	pw = getpwnam("monitor"); // 注意，入参不能为NULL
 	if (pw == NULL) {
-		printf("User is not exist\n");
+		if (errno == 0)
+			printf("user is not exist\n");
+		else
+			printf("get user failed, %d:%s.", errno, strerror(errno));
 		return -1;
 	}
 
@@ -352,6 +356,39 @@ Fooobar RUID=1006, EUID=1006
 {% endhighlight %}
 
 注意，没有 C 接口获取 `SUID` 和 `FSUID`，需要直接查看 `/proc/<PID>/status` 文件。
+
+### 重试
+
+需要注意，如果在获取用户信息的时候，刚好有添加用户之类的操作，包括了保存 `/etc/passwd` 文件，可能会导致获取用户失败，而且 `errno` 仍然为 0 。
+
+所以，此时最好增加重试机制，带来的副作用是，如果用户真的不存在可能会浪费资源。
+
+{% highlight c %}
+int get_user_unsafe(const char *name)
+{
+        int i;
+        struct passwd *pw;
+
+        for (i = 0; i < 3; i++) {
+                pw = getpwnam(name); /* getpwuid(uid); */
+                if (pw == NULL) {
+                        if (errno == 0) {
+                                //fprintf(stderr, "no such user '%s'.\n", name);
+                                usleep(20000);
+                                continue;
+                        }
+                        fprintf(stderr, "get user info failed, %d:%s.\n",
+                                        errno, strerror(errno));
+                        break;
+                }
+                break;
+        }
+        if (i > 0)
+                fprintf(stderr, "get user info in %d times.\n", i);
+
+        return 0;
+}
+{% endhighlight %}
 
 ### 安全性
 

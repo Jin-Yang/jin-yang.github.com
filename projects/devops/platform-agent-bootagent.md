@@ -84,23 +84,22 @@ process.c   提供异步进程的实现
                 "LANG": "en_US.UTF-8"
         },
 
-        "limits": {                                    # 可选，会通过cgroup进行资源限制或者周期检查
-                "method": "cgroup",                    # 可选，资源检查方式，可以设置为cgroup或者period，默认使用cgroup
+        "cgroup": {                                    # 可选，会通过cgroup进行资源限制
                 "CPU": 10,                             # CPU资源限制，单位是%
                 "MEM": 3000                            # 内存限制，单位是KB
         },
 
-	"check": [{
+	"check": [{                                    # 可选，健康检查，超时时间是70%*checksecs
 		"method":"process",                    # 检查进程资源
 		"limits":{
-			"cpu":30,                      # CPU使用率
-			"memory":102400,               # RSS内存
-			"fds":1000                     # 文件描述符
+			"CPU":30,                      # CPU使用率，单位%
+			"MEM":102400,                  # RSS内存，单位KB
+			"FDS":1000                     # 文件描述符
 		}
 	}, {
-		"method":"tcp",                        # TCP HTTP UNIX
-		"args":"192.168.9.1:90",               # 参数信息 127.1:90/health /var/run/pro.sock
-		"match":"success"                      # 正则表达式
+		"method":"tcp",                        # 使用Socket通讯，可以是TCP HTTP UNIX
+		"path":"http://192.168.9.1:90/health", # 参数信息
+		"match":"regex:success"                # 对返回信息进行检查，可以使用正则(regex)或字符串(string)
 	}],
 	"checktimes": 5,                               # 多少次失败后尝试执行action
 	"checkaction": "restart",                      # 检查超限后的动作，目前只支持重启
@@ -114,8 +113,8 @@ process.c   提供异步进程的实现
 
         "exitcodes": "0,9",                            # 可选，认为正常的退出码，不会再重启，只支持正值
         "restartsecs": 20,                             # 可选，失败之后启动前sleep时间
-        "startsecs": 20,                               # 可选，启动多久之后认为正常
-        "checksecs": 20,                               # 可选，Health Check的时间间隔
+        "startsecs": 20,                               # 可选，启动多久之后认为正常，其中fork默认为60
+        "checksecs": 20,                               # 可选，Health Check的时间间隔，默认60
         "stopsecs": 20,                                # 可选，超过多久之后直接向进程发送SIGKILL
         "stopasgroup": true,                           # 可选，在kill进程时以组方式
         "stopsignal": "SIGTERM"                        # 可选，在退出时向进程发送的信号，默认为SIGTERM
@@ -123,13 +122,32 @@ process.c   提供异步进程的实现
 }
 {% endhighlight %}
 
-注意，在匹配时会检查 `/proc/PID/comm` 中的命令，需要保证与配置文件中的 `comm` 相同。
+注意，在匹配时会检查 `/proc/<PID>/exe` 中的二进制文件路径，需要保证与配置文件 `exec` 中的第一个参数相同。
 
-#### 常见场景
+### 进程类型
+
+进程分为了 `simple` 和 `fork` 两种方式，使用方式如下。
+
+#### simple
+
+作为 BootAgent 的子进程存在，此时在父进程退出时，子进程同样会退出。
+
+这也就意味着，如果子进程退出那么就认为进程异常。
+
+#### fork
+
+BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，所以启动流程会比较复杂。
+
+1. 调用子进程后，一般子进程会再次执行 fork ，也就是真正执行业务逻辑的进程，所以会忽略子进程退出；
+2. 在 `startsecs` 之后检查并刷新进程信息，主要是 PID；
+
+注意，如果进程的启动时间超过了 `startsecs` 设置，那么会在该进程退出后再次刷新。
+
+### 常见场景
 
 简单列举一些常见的使用场景。
 
-##### 一直尝试拉起
+#### 一直尝试拉起
 
 直接忽略退出状态，一直尝试重新拉起，参数设置包括 `"autorestart": "yes"`、`"restartsecs": 20`，其中后者主要是为了防止重复拉起导致异常，例如由于 cgroup OOM 。
 

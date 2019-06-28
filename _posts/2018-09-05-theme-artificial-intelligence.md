@@ -10,7 +10,18 @@ description:
 
 <!-- more -->
 
-![artificial intelligence logo]({{ site.url }}/images/artificial-intelligence-logo-01.jpg "artificial intelligence logo"){: .pull-center width="50%" }
+![artificial intelligence logo]({{ site.url }}/images/artificial-intelligence-logo-01.jpg "artificial intelligence logo"){: .pull-center width="70%" }
+
+
+<!--
+科普作家 Isaac Asimov 阿西莫夫的机器人三定律。
+
+> 1. A robot may not injure a human being or, through inaction, allow a human being to come to harm.
+> 2. A robot must obey orders given it by human beings except where such orders would conflict with the First Law.
+> 3. A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
+
+machine-learning-logo.jpg
+-->
 
 ## Python 包
 
@@ -29,6 +40,12 @@ description:
 * [似然估计](/post/math-statistics-likelihood-function-introduce.html)
 * [核密度函数](/post/math-statistics-kernel-density-estimates-introduce.html)
 * [贝叶斯简介](/post/math-statistics-basic-concept-bayes-theorem-introduce.html)
+* [高斯分布简介](/post/math-probability-gaussian-distribution-introduce.html)
+
+<!--
+概率统计公式大全
+https://www.zybuluo.com/catscarf/note/986628
+-->
 
 ### R 语言
 
@@ -47,7 +64,7 @@ R 语言作为统计学一门语言，一直属于一个小众的工具集，直
 
 也就是 [Github 100 Days Of ML Code](https://github.com/Avik-Jain/100-Days-Of-ML-Code) 中的学习，可以参考 [Github 机器学习 100 天](https://github.com/MLEveryday/100-Days-Of-ML-Code) 。
 
-* [AI 100 天 \-\- 01](/post/artificial-intelligence-100-days-01.html)
+* [AI 100 天 \-\- 01](/post/artificial-intelligence-100-days-01.html) 如何准备所需的数据。
 
 <!--
 https://blog.csdn.net/ybdesire/article/details/67701289
@@ -56,6 +73,7 @@ https://tracholar.github.io/wiki/machine-learning/sklearn-source.html
 
 ## 其它
 
+* [Rules of Machine Learning](https://developers.google.com/machine-learning/guides/rules-of-ml/) 介绍关于 ML 的一些原则，可以参考 [本地文档](/reference/machine/Rules of Machine Learning.pdf) 。
 * 数学公式的编写可以参考 [MathJax Demo](https://www.mathjax.org/#demo) 。
 
 <!--

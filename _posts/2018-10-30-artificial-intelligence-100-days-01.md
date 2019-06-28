@@ -8,8 +8,9 @@ keywords:
 description:
 ---
 
-<!-- more -->
+简单来说，就是准备所需的数据。
 
+<!-- more -->
 
 ## DAY 01
 
@@ -23,7 +24,7 @@ description:
 
 ### 导入数据集
 
-有很多的政府公开的数据是以 Comma Separated Values, CSV 格式保存的，可以参考 [data.gov.uk](https://data.gov.uk/)、[catalog.data.gov](https://catalog.data.gov/dataset)、[www.kaggle.com](https://www.kaggle.com/) 等。
+有很多政府公开的数据是以 Comma Separated Values, CSV 格式保存，例如 [data.gov.uk](https://data.gov.uk/)、[catalog.data.gov](https://catalog.data.gov/dataset)、[www.kaggle.com](https://www.kaggle.com/) 等，这也是最常使用的数据格式。
 
 如果是通过 Pandas 模块处理数据，那么可以直接使用 Pandas 进行处理，示例如下。
 

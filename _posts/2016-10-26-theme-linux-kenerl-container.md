@@ -26,7 +26,7 @@ description:
 
 ## 其它
 
-* [Linux 资源限制](/post/linux-resource-limit-introduce.html) 在 Linux 中最原始的一种资源限制方法。
+* [Linux 资源限制](/post/linux-resource-limit-introduce.html) 在 Linux 中最原始的一种资源限制方法，也就是 ulimits 。
 * [Linux Chroot](/post/linux-chroot.html) 这实际上是做目录隔离的方法，也是最初的一种方式。
 
 

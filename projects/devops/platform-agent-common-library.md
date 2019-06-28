@@ -113,6 +113,16 @@ liblog-thread.a         多线程，在init时打开文件，每次写入时打�
 liblog-stdout.a         直接写入到标准输出，注意不区分标准输出还是标准错误输出
 {% endhighlight %}
 
+注意，上述的方式实际上是有优先级，也就是 `FEATURE_LOG_MACRO` `FEATURE_LOG_STDOUT` `FEATURE_LOG_PROCESS` `FEATURE_LOG_MULTI_PROCESS` `FEATURE_LOG_THREAD` 。
+
+一般来说，一个程序中会有主进程，为了保证所有库使用相同的日志输出格式，那么可以设置主进程，以及单个进程。
+
+{% highlight text %}
+ADD_DEFINITIONS(-DFEATURE_LOG_PROCESS)  # 所有，包括库，优先级低
+
+TARGET_COMPILE_OPTIONS(${PROJECT_NAME}Ctl PRIVATE "-DFEATURE_LOG_STDOUT")  # 单个，优先级高
+{% endhighlight %}
+
 #### TODO
 
 * 日志压缩。
@@ -259,6 +269,58 @@ void pidfile_destory(const char *file);
 {% endhighlight %}
 
 也就是说只校验命令，而不校验参数。
+
+## 其它
+
+### 子进程处理
+
+在调用子进程时，需要注意如下。
+
+1. 通过 `setpgrp()` 设置进程组，在超时或者异常发送信号时，向进程组发送信号。
+2. 使用 `prctl(PR_SET_PDEATHSIG, SIGKILL);` 确保父进程退出的时候，子进程同样可以接收到信号。
+3. 如果不支持 Clous On Exec ，那么需要在子进程中将相关的文件描述符关闭，注意，为了防止继承系统需要在系统启动时通过 ulimits 进行设置。
+
+正常，如果父进程直接退出，那么子进程会变为僵尸进程，通过 `prctl()` 可以确保父进程退出时，向子进程发送指定的信号。
+
+{% highlight c %}
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/prctl.h>
+
+int main(void)
+{
+        int i = 0;
+        pid_t pid;
+
+        pid = fork();
+        if (pid < 0) {
+                fprintf(stderr, "fork failed, %d:%s.\n",
+                                errno, strerror(errno));
+                return -1;
+        } else if (pid == 0) { /* child */
+                prctl(PR_SET_PDEATHSIG, SIGKILL);
+				/* system("sleep 10000") */
+                while (1) {
+                    printf("child running...\n");
+                    sleep(1);
+                }
+        }
+
+        for (i = 0; i < 6; i++) {
+                printf("father running...\n");
+                sleep(1);
+        }
+
+        printf("main exit()\n");
+        return 0;
+}
+{% endhighlight %}
+
+注意，这里只会涉及到子进程，对于孙子进程实际上是不生效的，例如上述的 `system("sleep 10000");` 实际上不会退出。
 
 
 <!--

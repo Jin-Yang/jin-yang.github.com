@@ -251,7 +251,95 @@ int main (void)
 }
 {% endhighlight %}
 
+### Periodic
 
+Periodic 可以理解为类似于 crontab ，不像 timer 基于的是相对时间，改调度基于的是日历时间或者说是墙上时间。
+
+这也就意味着，时间会受手动调整的影响，有可能比真实的时间快或者慢。
+
+例如，启动一个 periodic 时钟在 10 秒后触发，但是此时又将时间调整到了一个月之后，那么这一事件将在 1month+10seconds 之后触发，而如果使用的是 timer ，那么无论时间如何调整都会在 10s 后触发。
+
+{% highlight c %}
+#include <time.h>
+#include <stdio.h>
+#include <stdint.h>
+
+#include "ev.h"
+
+#define log_info(fmt, args...) printf("%ju " fmt, time(NULL), ##args)
+
+static void minute_tick_hook(EV_P_ ev_periodic *w, int revents)
+{
+        (void) loop;
+        (void) w;
+        (void) revents;
+        log_info("invoking\n");
+}
+
+int main (void)
+{
+        struct ev_loop *loop = ev_default_loop(0);
+
+        ev_periodic minute_tick;
+        ev_periodic_init(&minute_tick, minute_tick_hook, 0., 60., 0);
+        ev_periodic_start(EV_A_ &minute_tick);
+
+        log_info("start\n");
+
+        /* now wait for events to arrive. */
+        ev_run(EV_A_ 0);
+
+        return 0;
+}
+{% endhighlight %}
+
+<!--
+函数的声明大致如下。
+
+ev_periodic_init(ev_periodic *, callback, ev_tstamp offset, ev_tstamp interval, reschedule_cb);
+ev_periodic_set(ev_periodic *, ev_tstamp offset, ev_tstamp interval, reschedule_cb);
+
+其中比较关键的是三个参数：offset、interval、reschedule_cb，根据这三个不同的参数，基本对应了几个常用的场景。
+
+### 绝对时间
+
+offset=absolute time, interval=0, reschedule_cb=NULL
+
+也就是在当前时间的 `offset=absolute time` 秒后触发，如果计算后是 `2013-10-01 00:00:00` 时触发，那么只有当达到或者超过了该时间之后才会触发。
+
+### 周期执行
+
+offset = offset within interval, interval > 0, reschedule_cb = 0
+
+此时会在每个周期的 `offset + N * interval` 时执行，注意，上述的 offset 是 interval 的偏移，例如如下，表示的是在每个周期的整点开始执行。
+
+ev_periodic_set(&periodic, 0., 3600., 0);
+
+### 手动计算
+
+offset ignored, interval ignored, reschedule_cb = callback
+
+这应该是最灵活的一种方式了，下次执行的时间完全由 callback 参数所决定，注意，在回调函数中不能起停事件。最简单的示例如下：
+
+static ev_tstamp my_rescheduler(ev_periodic *w, ev_tstamp now)
+{
+	return now + 60.;
+}
+
+另外，也可以做一些比较复杂的操作，例如，在本地时间的午夜执行。
+
+static ev_tstamp my_rescheduler(ev_periodic *w, ev_tstamp now)
+{
+	time_t tnow = (time_t)now;
+	struct tm tm;
+	localtime_r(&tnow, &tm);
+
+	tm.tm_sec = tm.tm_min = tm.tm_hour = 0; // midnight current day
+	++tm.tm_mday; // midnight next day
+
+	return mktime(&tm);
+}
+-->
 ### Signal Watcher
 
 在收到 `SIGINT` 时做些清理，直接退出。
@@ -523,6 +611,11 @@ int main (void)
 {% endhighlight %}
 
 注意，全局只能有一个默认的 `struct ev_loop` ，在线程中，需要通过 `ev_loop_new()` 再新建一个。
+
+<!--
+这个文档很不错
+https://metacpan.org/pod/distribution/EV/libev/ev.pod
+-->
 
 {% highlight text %}
 {% endhighlight %}

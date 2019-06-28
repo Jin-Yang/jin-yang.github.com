@@ -226,6 +226,36 @@ int main (void)
 }
 {% endhighlight %}
 
+另外，在对字符串数组进行排序时，需要注意，如下的直接使用 `strcmp` 比较，最终会报错，需要添加一个比较函数。
+
+{% highlight c %}
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+int cmp_string(const void * a, const void * b)
+{
+        return strcmp(*(char **)a, *(char **)b);
+}
+
+int main (void)
+{
+        const char *names[] = {
+                "test",
+                "foobar",
+        };
+        int i, size = sizeof(names)/sizeof(names[0]);
+
+		//qsort(names, size, sizeof(names[0]), (int(*)(const void*, const void*))strcmp);
+        qsort(names, size, sizeof(names[0]), cmp_string);
+		
+        for (i = 0; i < size; i++) 
+                printf("[%02d] %s\n", i, names[i]);
+
+        return 0;
+}
+{% endhighlight %}
+
 <!--
 https://www.felix021.com/blog/read.php?entryid=1951
 -->

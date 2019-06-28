@@ -45,7 +45,7 @@ Python 没有提供数组，一般使用列表 (List) 代替使用，不过当�
 
 ### 安装
 
-为了防止一些包冲突，可以通过 virtualenv 创建一个临时的环境。
+为了防止一些包冲突，可以通过 virtualenv 创建一个临时的环境。在安装时，建议使用 `pip` 命令而非 `yum` ，一般来说后者的包会比较老。
 
 {% highlight text %}
 ----- 生成临时环境
@@ -53,11 +53,21 @@ $ mkdir -p ~/Workspace/tensorflow && cd ~/Workspace
 $ virtualenv --no-site-packages tensorflow
 $ source tensorflow/bin/activate
 
+----- 会同时安装像Tkinter这类的库
+# yum install python-tools
+
 ----- 安装TensorFlow
 $ pip install --upgrade tensorflow
 
 ----- 安装Numpy
 $ pip install --upgrade numpy
+
+----- 安装Matplotlib
+$ pip install --upgrade matplotlib
+# yum install python-matplotlib
+
+----- 安装Scikit-Learn
+$ pip install -U scikit-learn
 {% endhighlight %}
 
 然后通过如下代码进行测试。

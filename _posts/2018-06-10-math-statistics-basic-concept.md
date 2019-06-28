@@ -11,6 +11,18 @@ description:
 
 <!-- more -->
 
+## 简介
+
+{% highlight text %}
+参数估计
+    - 点估计
+    - 最大似然估计
+    - 区间估计
+假设检验
+大数定律
+{% endhighlight %}
+
+## 其它
 
 ### 经验分布
 

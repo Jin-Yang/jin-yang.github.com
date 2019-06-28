@@ -11,6 +11,41 @@ description:
 
 <!-- more -->
 
+
+### 基本概念
+
+简单整理介绍一些常见的概念。
+
+##### 方差 (Variance)
+
+方差(样本方差)是描述随机变量的离散程度，是变量离期望值的距离。
+
+##### 标准差 (Standard Deviation)
+
+也被称为均方差。
+
+##### 均方误差 (Mean Squared Error)
+
+它是"误差" (每个估计值与真实值的差) 的平方的期望值，也就是多个样本的时候，均方误差等于每个样本的误差平方再乘以该样本出现的概率的和。
+
+##### 协方差 (Covariance)
+
+用来描述同向程度，协方差的数值越大，两个变量同向程度也就越大。
+
+##### 概率分布函数 (Probability Distribution Function)
+
+用来描述一个取值对应出现的概率，包括了离散和随机。
+
+##### 概率密度函数 (Probability Density Function)
+
+概率密度函数是概率分布函数的导数。
+
+##### 互斥 (Mutually Exclusive)
+
+几个变量或事件之中的任一个不可能与其它一个或多个同时为真，或同时发生的情况。
+
+
+
 <!--
 ## 箱形图 Box and Whisker
 
@@ -87,6 +122,7 @@ $$C_n^x=\frac{n\times(n-1)\times\cdots\times(n-x+1)}{x\times(x-1)\times\cdots\ti
 
 注意，二项分布是建立在有放回抽样的基础上的，也就是抽出一个样品测量或处理完后再放回去，然后抽下一个。不过现实中一般都是非放回抽样，这时就需要用超几何分布来计算概率。
 
+
 <!--
 有关于GB/T2828中的介绍
 https://zhuanlan.zhihu.com/p/24692791
@@ -131,6 +167,13 @@ https://www.zhihu.com/question/26441147
 网站访问的时间间隔
 
 指数分布的公式可以从泊松分布推断出来。如果下一个婴儿要间隔时间 t ，就等同于 t 之内没有任何婴儿出生。
+
+
+## Beta Distribution
+
+贝塔分布是一个连续的概率分布，它只有两个参数，一般用于某项实验的成功概率建模。
+
+https://blog.csdn.net/watkinsong/article/details/46348853
 -->
 
 ## 参考
