@@ -37,18 +37,17 @@ process.c   提供异步进程的实现
 
 {% highlight text %}
 1. 子进程管理。
-   1.1 任务接口，包括安装、卸载、启动、停止。
+   1.1 任务接口，包括了子Agent的安装、卸载、启动、停止。
    1.2 状态管理。
        自动拉起，可以配置是否在启动时拉起进程。
        状态检查、资源限制。
 
-
 1. 任务管理。
    1.1 修改配置。
 
-
 3. 事件上报机制。
    3.1 子进程异常。
+
 4. 状态信息上报。与BootAgent相关的状态信息。
    4.1 任务信息。接收到的任务数、执行成功数、执行失败数、忽略执行数(任务已经存在)。
 {% endhighlight %}
@@ -69,13 +68,17 @@ process.c   提供异步进程的实现
 {
         "name": "BasicAgent",                          # 必选，子Agent的名称
         "version": "1.2.3",                            # 必选，子Agent的版本号
-        "exec": "/bin/bash /usr/bin/gearman",          # 必选，注意，命令行必须是绝对路径，用来匹配进程
+        "exec": "/bin/bash /usr/bin/gearman",          # 必选，注意，命令行必须是绝对路径，用来匹配进程，最长为255
 
         "type": "simple",                              # 可选，以不同的方式启动 (默认是simple)
                                                        #       simple 以fork+exec方式运行，作为子进程
                                                        #       fork 子进程会fork子进程，也就是常驻进程
 
-        "pidfile": "/var/run/cargo/gearman.pid",
+	"mode": "single",                              # 可选，在启动前是否允许有多个进程存在
+                                                       #       single 每次启动检查进程是否已经启动
+                                                       #       multi 启动时直接拉起，如果需要单实例则由子进程自己控制
+
+        "pidfile": "/var/run/cargo/gearman.pid",       # 对于fork必选，每行一条记录，不过只会检查第一行
         "user": "root",                                # 可选，默认是root
         "group": "root",
 
@@ -85,24 +88,20 @@ process.c   提供异步进程的实现
         },
 
         "cgroup": {                                    # 可选，会通过cgroup进行资源限制
-                "CPU": 10,                             # CPU资源限制，单位是%
+                "CPU": 20,                             # CPU资源限制，单位是%
                 "MEM": 3000                            # 内存限制，单位是KB
         },
 
-	"check": [{                                    # 可选，健康检查，超时时间是70%*checksecs
-		"method":"process",                    # 检查进程资源
-		"limits":{
-			"CPU":30,                      # CPU使用率，单位%
-			"MEM":102400,                  # RSS内存，单位KB
-			"FDS":1000                     # 文件描述符
-		}
-	}, {
-		"method":"tcp",                        # 使用Socket通讯，可以是TCP HTTP UNIX
-		"path":"http://192.168.9.1:90/health", # 参数信息
+	"limits": {                                    # 可选，BA会周期性的检查，超过资源限制后kill进程
+		"CPU":30,                              # CPU使用率，单位%
+		"MEM":102400,                          # RSS内存，单位KB
+		"FDS":1000                             # 文件描述符
+	},
+
+	"check": {                                     # 可选，健康检查，超时时间是70%*checksecs
+		"path":"/usr/run/BootAgent.sock",      # 目前只支持Unix Domain Socket
 		"match":"regex:success"                # 对返回信息进行检查，可以使用正则(regex)或字符串(string)
-	}],
-	"checktimes": 5,                               # 多少次失败后尝试执行action
-	"checkaction": "restart",                      # 检查超限后的动作，目前只支持重启
+	},
 
         "autostart": true,                             # 可选，是否在安装或者启动BootAgent时自动拉起该进程
         "autorestart": "yes",                          # 可选，失败之后的启动方式，默认或者非法是yes
@@ -116,6 +115,7 @@ process.c   提供异步进程的实现
         "startsecs": 20,                               # 可选，启动多久之后认为正常，其中fork默认为60
         "checksecs": 20,                               # 可选，Health Check的时间间隔，默认60
         "stopsecs": 20,                                # 可选，超过多久之后直接向进程发送SIGKILL
+
         "stopasgroup": true,                           # 可选，在kill进程时以组方式
         "stopsignal": "SIGTERM"                        # 可选，在退出时向进程发送的信号，默认为SIGTERM
                                                        #       支持信号TERM HUP INT QUIT KILL USR1 USR2
