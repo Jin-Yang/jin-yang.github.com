@@ -43,5 +43,10 @@ Gogs 的功能类似于 GitHub 或者 GitLab ，不过相比来说是一款极�
 
 * [Gogs 仓库使用](/post/linux-git-gogs-introduce.html) 类似 GitLab 或者 GitHub，但是搭建起来更容易搭建。
 
+## VIM
+
+* [VIM 基本功能](/post/linux-vim-introduce.html) 
+* [VIM 插件使用](/post/linux-vim-third-plugins-introduce.html)
+
 {% highlight text %}
 {% endhighlight %}

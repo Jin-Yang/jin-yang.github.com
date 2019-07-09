@@ -102,6 +102,51 @@ int main(void)
 }
 {% endhighlight %}
 
+### glob
+
+对于通配符的匹配，还可以使用 `glob()` 函数。
+
+{% highlight c %}
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include <glob.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+int main(void)
+{
+        glob_t globbuf;
+        struct stat statbuf;
+        int rc;
+        size_t pathc;
+        char **pathv;
+
+        rc = glob("/var/run/haproxy[0-9]*.sock", GLOB_ERR | GLOB_NOSORT, NULL, &globbuf);
+        if (rc != 0) {
+                if (rc == GLOB_NOMATCH)
+                        return 0;
+                else
+                        return -1;
+        }
+
+        pathv = globbuf.gl_pathv;
+        pathc = globbuf.gl_pathc;
+        printf("Got #%zd matches\n", pathc);
+
+        for (; pathc-- > 0; pathv++) {
+                rc = lstat(*pathv, &statbuf);
+                if (rc < 0 || !S_ISSOCK(statbuf.st_mode))
+                        continue;
+                printf("Match path: %s\n", *pathv);
+        }
+
+        globfree(&globbuf);
+        return 0;
+}
+{% endhighlight %}
+
 <!-- http://www.gnu.org/software/libc/manual/html_node/Word-Expansion.html -->
 
 ### qsort()
@@ -158,6 +203,11 @@ int main(void)
 #include <wordexp.h>
 #include <sys/stat.h>
 
+static int config_cmp_string(const void * a, const void * b)
+{
+        return strcmp(*(char **)a, *(char **)b);
+}
+
 int main(void)
 {
 	int rc, i;
@@ -170,7 +220,7 @@ int main(void)
 		fprintf(stderr, "wordexp(%s) failed, rc %d.\n", pattern, rc);
 		exit(EXIT_FAILURE);
 	}
-	qsort((void *)we.we_wordv, we.we_wordc, sizeof(*we.we_wordv), (int(*)(const void*, const void*))strcmp);
+	qsort((void *)we.we_wordv, we.we_wordc, sizeof(*we.we_wordv), config_cmp_string);
 
 	for (i = 0; i < (int)we.we_wordc; i++) {
 		path = we.we_wordv[i];

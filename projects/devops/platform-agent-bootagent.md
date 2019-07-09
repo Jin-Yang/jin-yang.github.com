@@ -74,9 +74,9 @@ process.c   提供异步进程的实现
                                                        #       simple 以fork+exec方式运行，作为子进程
                                                        #       fork 子进程会fork子进程，也就是常驻进程
 
-	"mode": "single",                              # 可选，在启动前是否允许有多个进程存在
-                                                       #       single 每次启动检查进程是否已经启动
-                                                       #       multi 启动时直接拉起，如果需要单实例则由子进程自己控制
+	"single": true,                                # 可选，在启动前是否允许有多个进程存在 (默认是true)
+                                                       #       true 每次启动检查进程是否已经启动
+                                                       #       false 启动时直接拉起，如果需要单实例则由子进程自己控制
 
         "pidfile": "/var/run/cargo/gearman.pid",       # 对于fork必选，每行一条记录，不过只会检查第一行
         "user": "root",                                # 可选，默认是root
@@ -123,6 +123,12 @@ process.c   提供异步进程的实现
 {% endhighlight %}
 
 注意，在匹配时会检查 `/proc/<PID>/exe` 中的二进制文件路径，需要保证与配置文件 `exec` 中的第一个参数相同。
+
+### 处理流程
+
+#### 启动
+
+每次 BootAgent 启动时，会根据 `autostart` 确认是否启动子进程，如果 `mode` 是 `single` 那么会根据 `/proc/<PID>/exec` 检查进程是否已经启动，如果已经启动，则会更新状态。
 
 ### 进程类型
 
@@ -693,6 +699,16 @@ booter_do() 开始真正下载
 简单的SO加密方法
 https://bbs.pediy.com/thread-191649.htm
 https://paper.seebug.org/89/
+
+
+
+
+
+
+
+
+EAGAIN的处理方式
+https://blog.csdn.net/tianmohust/article/details/8691644
 -->
 
 

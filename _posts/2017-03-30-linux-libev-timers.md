@@ -700,6 +700,33 @@ http://blog.csdn.net/gqtcgq/article/details/49531625
 将激活的超时事件排队periodics_reify
 
 主要流程跟timers_reify一样，只不过在重新计算下次触发时间点at的时候，计算方法跟ev_periodic_start中的一样。
+
+
+时间包括了 monotonic realtime 两种方式，分别称为相对时间和墙上时间，其中前者不会受系统时间调整的影响；而后者，在用户调整时间时会同时受到影响。注意，两者都可能会受到 NTP 时间调整的影响。
+
+在 libev 中，通过 `have_monotonic` `have_realtime` 来判断系统是否支持，会在系统初始化函数 `loop_init()` 中执行，实际调用的是 `clock_gettime()` 函数。
+
+在 Linux 系统中，相对时间一般是系统启动以来的时间，而墙上时间就是所谓的 epoch 时间，两者之间必然会有个差值。
+
+#### 相关函数
+
+其中包含了两个通用的函数：A) `get_clock()` 获取相对时间，如果不支持可能会获取墙上时间；B) `get_time()` 获取墙上时间。
+
+#### 相关变量
+
+主要是用于记录一些与时间相关的变量，并在某些场景下 (时间跳变) 进行判断以及调整。
+
+VARx(ev_tstamp, now_floor) /* last time we refreshed rt_time, monotonic clock */
+VARx(ev_tstamp, mn_now)    /* monotonic clock "now" */
+VARx(ev_tstamp, rtmn_diff) /* difference realtime - monotonic time */
+EV_API_DECL ev_tstamp ev_rt_now; /* realtime clock "now" */
+
+### time_update
+
+这是 libev 中最为关键的函数，主要用来更新时间，也就是全局变量 `mn_now`
+
+其中比较关键的函数是 `time_update()` ，会检测是否发生了时间跳变，并同时做相应的调整。
+
 -->
 
 

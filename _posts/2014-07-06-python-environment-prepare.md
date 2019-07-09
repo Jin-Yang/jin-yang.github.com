@@ -20,5 +20,68 @@ Python 中可以通过 PIP 来自动管理依赖包，如果机器上没有安�
 
 在 [www.python.org/downloads](https://www.python.org/downloads/) 中选择相关的 Windows 版本下载，PIP 的安装与 Linux 中类似，直接从 [pypi.python.org](https://pypi.python.org/pypi/pip) 上下载，然后在命令行中采用上述的方式安装。
 
+## 多版本
+
+默认使用 Python ，如果要使用 Python2 则需要显示指定。
+
+
+官方默认仓库是没有对应的 RPM 包的，一般来说是需要用户从源码开始编译安装的，这里直接从 epel 安装对应的包，当然可能不是最新的。
+
+通过如下命令查看并安装对应的包，如下以 3.6 版本为例。
+
+{% highlight text %}
+# yum list --enablerepo=epel all | grep python3
+# yum install --enablerepo=epel python36 python36-pip
+{% endhighlight %}
+
+此时，对应的二进制文件为 `/usr/bin/python36` ，库安装到了 `/usr/lib64/python3.6/` 目录下。
+
+默认使用的版本，实际上是通过符号链接指定的，例如如下的示例。
+
+{% highlight text %}
+# ls /usr/bin/python* -alh
+lrwxrwxrwx 1 root root    7 Jun 27 21:52 /usr/bin/python -> python2
+lrwxrwxrwx 1 root root    9 Jun 27 21:52 /usr/bin/python2 -> python2.7
+-rwxr-xr-x 1 root root 7.1K Jun 21 04:28 /usr/bin/python2.7
+-rwxr-xr-x 1 root root 1.8K Jun 21 04:27 /usr/bin/python2.7-config
+lrwxrwxrwx 1 root root   16 Jun 27 21:52 /usr/bin/python2-config -> python2.7-config
+lrwxrwxrwx 1 root root    9 Jul  9 23:29 /usr/bin/python3 -> python3.6
+lrwxrwxrwx 1 root root   18 Jul  9 23:29 /usr/bin/python36 -> /usr/bin/python3.6
+-rwxr-xr-x 2 root root  12K Apr 26 05:05 /usr/bin/python3.6
+-rwxr-xr-x 2 root root  12K Apr 26 05:05 /usr/bin/python3.6m
+lrwxrwxrwx 1 root root   14 Jun 27 21:52 /usr/bin/python-config -> python2-config
+{% endhighlight %}
+
+### PIP
+
+如上，通过 `yum instal python36-pip` 安装了对应版本的 PIP 。
+
+{% highlight text %}
+# pip install --upgrade pip
+{% endhighlight %}
+
+
+### 其它
+
+#### 老版本依赖
+
+更改 yum 配置，因为其要用到 python2 才能执行，否则会导致 yum 不能正常使用。
+
+{% highlight text %}
+# cat /usr/bin/yum
+#!/usr/bin/python ----> #!/usr/bin/python2
+
+# cat /usr/libexec/urlgrabber-ext-down
+#!/usr/bin/python ----> #!/usr/bin/python2
+{% endhighlight %}
+
+
+
+
+
+<!--
+https://anjingwd.github.io/AnJingwd.github.io/2017/08/03/python%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/
+-->
+
 {% highlight text %}
 {% endhighlight %}
