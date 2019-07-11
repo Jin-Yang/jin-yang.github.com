@@ -12,6 +12,60 @@ NumPy 是 Python 的一个扩充程序库，支持高级大量的维度数组与
 
 <!-- more -->
 
+## 常用操作
+
+#### 数组操作
+
+{% highlight text %}
+#----- 初始化，分别初始化为1、0、顺序、随机数
+np.array([0, 1, 2, 3, 4])
+np.ones(3)
+np.zeros(3)
+np.arange(5)
+np.arange(0, 5)
+np.random.random(3)
+
+#----- 计算，可以是等维的数组，也可以是标量
+np.ones(3) + np.zeros(3)
+np.ones(3) * 10.
+
+#----- 切片操作，与Python的切片基本类似，序号从0开始
+data = np.arange(5)
+data[0:2]
+data[1:]
+
+#----- 聚合函数，包括了min max sum mean std(标准差)
+data.max()
+{% endhighlight %}
+
+#### 矩阵操作
+
+{% highlight text %}
+#----- 初始化，可以用数组或者函数初始化，大小为3行*2列
+np.array([[1, 2], [3, 4], [5, 6]])
+np.ones((3, 2))
+np.zeros((3, 2))
+np.random.random((3, 2))
+
+#----- 计算，同维的可以直接执行四则运算，可能会执行广播规则
+np.ones((3, 2)) + 2 * np.ones((3, 1))
+------ 也可以是矩阵乘法，需要严格确保纬度满足要求，如下两种方式相同
+a = np.array([1, 2, 3])
+b = np.array([[1, 2], [3, 4], [5, 6]])
+np.dot(a, b)
+a.dot(b)
+
+#----- 切片操作，与数组相似，只是多了几个纬度而已
+data = np.ones((3, 2))
+data[0, 1]
+data[1:3]      # 两个纬度都是1:3
+data[0:2, 0]
+
+#----- 聚合函数，可以指定具体的纬度
+data.max(axis=0)
+{% endhighlight %}
+
+
 ## NDArray
 
 这是一个多维数组对象，该对象由 `实际数据` 和 `元数据` 组成，其中大部分操作仅仅修改元数据部分，而不改变底层的实际数据。
@@ -21,15 +75,7 @@ NumPy 是 Python 的一个扩充程序库，支持高级大量的维度数组与
 {% highlight python %}
 import numpy as np
 
-#----- 一维 通过Python队列初始化
-np.array([0, 1, 2, 3, 4])
-#----- 一维 使用arange()函数
-np.arange(5)
-np.arange(0, 5)
-
-#----- 多维 通过shape属性查看维度
-arr = np.array([[0, 1, 2], [3, 4, 5]])
-arr = np.array([np.arange(0, 3), np.arange(3, 6)])
+#----- 多维可以通过shape属性查看维度
 arr.shape
 
 #----- 修改维度
@@ -52,6 +98,66 @@ arr.ndim      # 行
 arr.size      # 总大小，也就是 行*列
 arr.itemsize  # 单个元素的大小
 arr.data      # 真正的数据信息，包括地址、元素个数等
+{% endhighlight %}
+
+<!--
+#### 其它
+http://www.sohu.com/a/325758681_505915
+转置可以直接使用 T 或者用 reshape() 函数
+-->
+
+
+## 广播规则
+
+注意，执行 Broadcast 的前提在于，两个矩阵执行的位运算，而非矩阵乘法运算 `np.dot(A, B)` ，后者相对来说会更加严格。
+
+最简单的示例如下，两者等价，其中后者用到了广播规则。
+
+{% highlight text %}
+>>> a = np.array([1.0, 2.0, 3.0])
+>>> b = np.array([2.0, 2.0, 2.0])
+>>> a * b
+array([ 2.,  4.,  6.])
+
+>>> a = np.array([1.0, 2.0, 3.0])
+>>> b = 2.0
+>>> a * b
+array([ 2.,  4.,  6.])
+{% endhighlight %}
+
+简单来说，在执行运算时，需要满足：
+
+* 当前维度的值相等 (行、列都相同)；
+* 当前维度的值有一个是 1 (另外一个相同)。
+
+测试示例如下。
+
+{% highlight text %}
+a = np.array([
+	[ 0,  0,  0],
+	[10, 10, 10],
+	[20, 20, 20],
+	[30, 30, 30]])
+b = np.array([1, 2, 3])
+#b = np.array([1, 2, 3, 4])  会报错
+#ValueError: operands could not be broadcast together with shapes (4,3) (4,)
+print(a + b)
+{% endhighlight %}
+
+![numpy broadcast example]({{ site.url }}/images/ai/numpy-broadcast-example.gif "numpy broadcast example"){: .pull-center }
+
+另外的形式与上类似。
+
+{% highlight text %}
+a = np.array([
+	[ 0,  0,  0],
+	[10, 10, 10],
+	[20, 20, 20],
+	[30, 30, 30]])
+b = np.array([1, 2, 3, 4]).reshape(4, 1)
+#b = np.array([1, 2, 3]).reshape(3, 1)  会报错
+#ValueError: operands could not be broadcast together with shapes (4,3) (3,1)
+print(a + b)
 {% endhighlight %}
 
 ## 随机数
@@ -158,7 +264,7 @@ plt.show()
 {% highlight python %}
 import numpy as np
 import matplotlib.pyplot as plt
-   
+
 arr = np.array([22, 87, 5, 43, 56, 73, 55, 54, 11, 20, 51, 5, 79, 31, 27])
 hist, bins = np.histogram(arr, bins = [0, 20, 40, 60, 80, 100])
 
@@ -185,6 +291,10 @@ print(b)   # [[1 2] [3 5]] 每列累加
 c = np.cumsum([[1,2],[2,3]],axis=1)
 print(c)   # [[1 3] [2 5]] 每行累加
 {% endhighlight %}
+
+## 参考
+
+* [Numpy Broadcasting](https://docs.scipy.org/doc/numpy-1.15.0/user/basics.broadcasting.html) 关于 Numpy 中的 Broadcasting 的相关介绍。
 
 {% highlight text %}
 {% endhighlight %}

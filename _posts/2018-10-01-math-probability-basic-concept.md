@@ -11,8 +11,7 @@ description:
 
 <!-- more -->
 
-
-### 基本概念
+## 基本概念
 
 简单整理介绍一些常见的概念。
 
@@ -44,6 +43,15 @@ description:
 
 几个变量或事件之中的任一个不可能与其它一个或多个同时为真，或同时发生的情况。
 
+### 其它
+
+#### 概率质量 VS. 概率密度
+
+在概率论中，概率质量函数 (Probability Mass Function, PMF) 是离散随机变量在各特定取值上的概率；概率密度函数 (Probability Density Function, PDF) 用来描述该随机变量在某个确定的取值点附近可能性的函数。
+
+两者的不同点在于: A) 概率质量函数是对离散随机变量定义的，本身代表该值的概率；B) 概率密度函数是对连续随机变量定义的，本身不是概率，只有对连续随机变量的概率密度函数在某区间内进行积分后才是概率。
+
+对概率密度函数的积分又称为累积分布函数或者分布函数 (Cumulative Distribution Function, CDF)，用来描述一个实随机变量 `x` 的概率分布。
 
 
 <!--
@@ -67,19 +75,6 @@ https://zhuanlan.zhihu.com/p/25241653
 
 用来解释为什么样本方差的分母是 N-1
 https://www.zhihu.com/question/20099757
-
-
-#########################################
-## 概率论
-#########################################
-
-## 概率质量 VS. 概率密度
-
-在概率论中，概率质量函数 (Probability Mass Function, PMF) 是离散随机变量在各特定取值上的概率；概率密度函数 (Probability Density Function, PDF) 用来描述该随机变量在某个确定的取值点附近可能性的函数。
-
-两者的不同点在于: A) 概率质量函数是对离散随机变量定义的，本身代表该值的概率；B) 概率密度函数是对连续随机变量定义的，本身不是概率，只有对连续随机变量的概率密度函数在某区间内进行积分后才是概率。
-
-对概率密度函数的积分又称为累积分布函数或者分布函数 (Cumulative Distribution Function, CDF)，用来描述一个实随机变量 `x` 的概率分布。
 -->
 
 ## 二项分布
@@ -122,6 +117,44 @@ $$C_n^x=\frac{n\times(n-1)\times\cdots\times(n-x+1)}{x\times(x-1)\times\cdots\ti
 
 注意，二项分布是建立在有放回抽样的基础上的，也就是抽出一个样品测量或处理完后再放回去，然后抽下一个。不过现实中一般都是非放回抽样，这时就需要用超几何分布来计算概率。
 
+## 高斯分布
+
+假设随机变量 $x$ 服从一个均值为 $\mu$ ，标准差为 $\sigma$ 的正态分布，则可以记为：
+
+$$X\sim N(\mu ,\sigma ^{2})$$
+
+对应的概率密度函数为。
+
+$$ f(x)={1 \over \sigma {\sqrt {2\pi }}}\,e^{-{(x-\mu )^{2} \over 2\sigma ^{2}}}$$
+
+{% highlight text %}
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+mu, sigma = 0, 1
+size = 10000
+np.random.seed(0)
+
+s = np.random.normal(mu, sigma, size)
+n, bins, patches = plt.hist(s, bins=100, density=True)
+y = stats.norm.pdf(bins, mu, sigma)
+
+plt.plot(bins, y, 'r--')
+plt.xlabel('Expectation')
+plt.ylabel('Probability')
+plt.title('histogram of normal distribution: $\mu = 0$, $\sigma=1$')
+plt.show()
+{% endhighlight %}
+
+注意，`matplotlib.mlab` 中的 `normpdf()` 已经不再支持了，可以使用 `scipy.stats.norm.pdf()` 函数替换。
+
+另外，也可以通过如下方式计算。
+
+{% highlight text %}
+def norm_pdf(x, mu, sigma):
+    return np.exp(-((x - mu)**2)/(2*(sigma**2)))/(sigma*np.sqrt(2*np.pi))
+{% endhighlight %}
 
 <!--
 有关于GB/T2828中的介绍
@@ -174,7 +207,16 @@ https://www.zhihu.com/question/26441147
 贝塔分布是一个连续的概率分布，它只有两个参数，一般用于某项实验的成功概率建模。
 
 https://blog.csdn.net/watkinsong/article/details/46348853
+
+
+
+排列 Arrangement 、组合 Combination
+https://zhuanlan.zhihu.com/p/41855459
+https://www.zhihu.com/question/26094736
 -->
+
+
+
 
 ## 参考
 

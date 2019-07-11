@@ -41,6 +41,7 @@ machine-learning-logo.jpg
 * [核密度函数](/post/math-statistics-kernel-density-estimates-introduce.html)
 * [贝叶斯简介](/post/math-statistics-basic-concept-bayes-theorem-introduce.html)
 * [高斯分布简介](/post/math-probability-gaussian-distribution-introduce.html)
+* [采样算法简介](/post/math-monte-carlo-sample-introduce.html)
 
 <!--
 概率统计公式大全
@@ -80,6 +81,11 @@ https://tracholar.github.io/wiki/machine-learning/sklearn-source.html
 https://blog.csdn.net/Mage_EE/article/details/75309174
 https://www.zybuluo.com/knight/note/96093
 https://www.zybuluo.com/codeep/note/163962  比较全
+
+
+https://github.com/neverusedname/MyBooks/blob/master/%E6%B5%99%E6%B1%9F%E5%A4%A7%E5%AD%A6%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1(%E7%AC%AC%E5%9B%9B%E7%89%88).pdf
+https://github.com/KeKe-Li/book/blob/master/AI/%E5%90%8C%E6%B5%8E%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E6%95%99%E6%9D%90.pdf
+https://github.com/KeKe-Li/book/blob/master/AI/%E5%90%8C%E6%B5%8E%E9%AB%98%E7%AD%89%E6%95%B0%E5%AD%A6%E7%AC%AC%E5%85%AD%E7%89%88%E4%B8%8A%E4%B8%8B%E5%86%8C.pdf
 -->
 
 {% highlight text %}
