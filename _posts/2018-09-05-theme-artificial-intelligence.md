@@ -33,19 +33,27 @@ machine-learning-logo.jpg
 
 ## 概率论与数理统计
 
+### 概率论
+
+* [基本概念](/post/math-probability-basic-concept.html)
+* [离散概率分布](/post/math-probability-basic-concept-discrete-distribution-introduce.html)
+* [连续概率分布](/post/math-probability-basic-concept-continuous-distribution-introduce.html)
+* [连续概率 \-\- 高斯分布](/post/math-probability-continuous-normal-distribution-introduce.html) 包括了基本的高斯分布以及多元高斯分布。
+
 统计推断的三个重要内容：抽样分布、参数估计、假设检验。
 
-* [概率论基本概念](/post/math-probability-basic-concept.html)
 * [数理统计基本概念](/post/math-statistics-basic-concept.html)
 * [似然估计](/post/math-statistics-likelihood-function-introduce.html)
 * [核密度函数](/post/math-statistics-kernel-density-estimates-introduce.html)
 * [贝叶斯简介](/post/math-statistics-basic-concept-bayes-theorem-introduce.html)
-* [高斯分布简介](/post/math-probability-gaussian-distribution-introduce.html)
 * [采样算法简介](/post/math-monte-carlo-sample-introduce.html)
 
 <!--
 概率统计公式大全
 https://www.zybuluo.com/catscarf/note/986628
+
+关于矩阵介绍的不错资料
+神奇的矩阵——第二季
 -->
 
 ### R 语言

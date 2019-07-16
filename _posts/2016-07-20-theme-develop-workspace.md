@@ -12,7 +12,7 @@ description:
 
 ## GIT
 
-![Git Logo]({{ site.url }}/images/misc/git-logo.jpg "Git Logo"){: .pull-center width="230" }
+![Git Logo]({{ site.url }}/images/misc/git-logo.jpg "Git Logo"){: .pull-center width="30%" }
 
 Git 是一免费、开源的分布式版本控制系统，可有效、高速的处理从很小到非常大的项目版本管理，该工具是 Linus Torvalds 为了帮助管理 Linux 内核开发而开发，其本意是为了替换 BitKeeper 。
 
@@ -45,8 +45,16 @@ Gogs 的功能类似于 GitHub 或者 GitLab ，不过相比来说是一款极�
 
 ## VIM
 
-* [VIM 基本功能](/post/linux-vim-introduce.html) 
+![vim logo]({{ site.url }}/images/misc/vim_logo.png "vim logo"){: .pull-center width="30%" }
+
+Vim 是一个功能强大、高度可定制的文本编辑器，与其相匹敌的是 Emacs ，这两个都是不错的编辑器，在此不再比较两者的优劣，仅介绍 Vim 相关的内容。
+
+### 基本功能
+
+
+* [VIM 基本功能](/post/linux-vim-introduce.html)
 * [VIM 插件使用](/post/linux-vim-third-plugins-introduce.html)
+* [VIM Tags 相关](/post/linux-vim-third-plugins-tags-stuff-introduce.html)
 * [VIM LaTeX 使用](/post/linux-vim-latex-snippets-introduce.html)
 
 {% highlight text %}

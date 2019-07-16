@@ -88,7 +88,7 @@ Python 中的包管理工具，常见操作如下。
 {% highlight text %}
 [global]
 timeout = 6000
-index-url = http://pypi.douban.com/simple
+index-url = https://pypi.douban.com/simple
 {% endhighlight %}
 
 常用的源有：

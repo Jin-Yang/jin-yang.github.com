@@ -42,9 +42,9 @@ plt.ylabel() Y轴标记
 
 #### ImportError: No module named _tkinter
 
-默认 Python 安装包没有提供这个库，需要安装 `tkinter` 包，直接 `yum install tkinter` 即可。
+默认 Python 安装包没有提供这个库，需要安装 `tkinter` 包，直接 `yum install tkinter` 即可，据说源码编译时，需要确保添加了 `--enable-unicode=ucs2` 参数。
 
-据说源码编译时，需要确保添加了 `--enable-unicode=ucs2` 参数。
+另外，还需要通过安装 `python-tools` 或者 `python3X-tools` 。
 
 #### Found existing installation: pyparsing 1.5.6
 
@@ -53,6 +53,23 @@ plt.ylabel() Y轴标记
 {% highlight text %}
 # pip install -I pyparsing==2.2.0
 {% endhighlight %}
+
+#### UserWarning: Matplotlib is currently using agg...
+
+完整的报错为 `UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.` 。
+
+主要是此时默认的后端是 `agg` 导致，可以通过如下命令确认。
+
+{% highlight text %}
+>>> import matplotlib
+>>> matplotlib.get_backend()
+'agg'
+{% endhighlight %}
+
+最简单的，将 `plg.show()` 替换为 `fig.savefig()` ，也就是直接保存为图片，而非通过窗口显示。
+
+另外，也可以通过 `matplotlib.use('TkAgg')` 设置后端。
+
 
 
 <!---

@@ -32,16 +32,19 @@ Bundle 'gmarik/vundle'
 """""""""""""""""""""""""""""""          My Bundles here         """""""""""""""""""""""""""""""""
 "" original repos on github
 
-"" ultimate solution for snippets, SirVer/ultisnips
+" ultimate solution for snippets, SirVer/ultisnips
 Bundle 'UltiSnips'
-"" snippets files for various programming languages
-Plugin 'honza/vim-snippets'
+" snippets files for various programming languages
+Bundle 'honza/vim-snippets'
 " auto align tools.
 Bundle 'godlygeek/tabular'
 
 "<<<<<<<<<<<< naviagtion & search >>>>>>>>>>>>>>
 " show tags, better than taglist.
 Bundle 'majutsushi/tagbar'
+Bundle 'ludovicchabant/vim-gutentags'
+Bundle 'skywind3000/gutentags_plus'
+
 " finder with regexp support
 Bundle 'kien/ctrlp.vim'
 " display the directory.
@@ -67,6 +70,9 @@ Plugin 'vim-airline/vim-airline-themes'
 Bundle 'scrooloose/syntastic'
 " neo-completion with cache, need +lua(vim --version).
 Bundle 'Shougo/neocomplete.vim'
+
+
+Bundle 'lervag/vimtex'
 "
 Bundle 'Valloric/YouCompleteMe'
 
@@ -131,6 +137,37 @@ Bundle 'fatih/vim-go'
 " }1
 
 source ~/.vim/defaults.vim
+
+" {1   plugin: vimtex
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" }1
+
+" {1   plugin: gutentags
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"source /usr/share/gtags/gtags.vim
+" config project root markers. 搜索工程目录的标志，当前文件路径向上递归直到碰到这些文件/目录名
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']
+" enable gtags module. 如果可以同时开启 ctags 和 gtags 支持
+let g:gutentags_modules = []
+if executable('ctags')
+	let g:gutentags_modules += ['ctags']
+endif
+if executable('gtags-cscope') && executable('gtags')
+	let g:gutentags_modules += ['gtags_cscope']
+endif
+" generate datebases in my cache directory, prevent gtags files polluting my project
+let g:gutentags_cache_dir = expand('~/.cache/tags')
+" change focus to quickfix window after search (optional).
+let g:gutentags_plus_switch = 1
+" 配置 ctags 的参数
+"let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+"let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+"let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+" 如果使用 universal ctags 需要增加下面一行
+"let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
+" 禁用 gutentags 自动加载 gtags 数据库的行为
+"let g:gutentags_auto_add_gtags_cscope = 0
+" }1
 
 " {1   plugin: tagbar  F3
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -350,7 +387,9 @@ let g:syntastic_ignore_files=[".*\.py$"]    " ignore python files
 
 " {1   plugin: tags...
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set tags+=./tags,./../tags,./../../tags,./../../../tags,./../../../../tags,./../../../../../tags
+"set tags+=./tags,./../tags,./../../tags,./../../../tags,./../../../../tags,./../../../../../tags
+set cscopetag                " 使用 cscope 作为 tags 命令
+set cscopeprg='gtags-cscope' " 使用 gtags-cscope 代替 cscope
 " generate and include system tags.
 "ctags -I __THROW -I __attribute_pure__ -I __nonnull -I __attribute__ \
 "  --file-scope=yes              \
@@ -359,36 +398,36 @@ set tags+=./tags,./../tags,./../../tags,./../../../tags,./../../../../tags,./../
 "  --links=yes                   \
 "  --c-kinds=+p --c++-kinds=+p   \
 "  --fields=+iaS --extra=+q -R -f ~/.vim/systags /usr/include /usr/local/include
-set tags+=~/.vim/systags
-" use Ctrl-F12 to generate tags.
-map <C-F12> :!ctags -R --c-kinds=+px --fields=+iaS --extra=+q <CR>
-function! AutoLoadCTagsAndCScope()
-    let max = 10
-    let dir = './'
-    let i = 0
-    let break = 0
-    while isdirectory(dir) && i < max
-        if filereadable(dir . 'GTAGS')
-            execute 'cs add ' . dir . 'GTAGS ' . glob("`pwd`")
-            let break = 1
-        endif
-        if filereadable(dir . 'cscope.out')
-            execute 'cs add ' . dir . 'cscope.out'
-            let break = 1
-        endif
-        if filereadable(dir . 'tags')
-            execute 'set tags =' . dir . 'tags'
-            let break = 1
-        endif
-        if break == 1
-            execute 'lcd ' . dir
-            break
-        endif
-        let dir = dir . '../'
-        let i = i + 1
-    endwhile
-endf
-nmap <F7> :call AutoLoadCTagsAndCScope()<CR>
+"set tags+=~/.vim/systags
+"" use Ctrl-F12 to generate tags.
+"map <C-F12> :!ctags -R --c-kinds=+px --fields=+iaS --extra=+q <CR>
+"function! AutoLoadCTagsAndCScope()
+"    let max = 10
+"    let dir = './'
+"    let i = 0
+"    let break = 0
+"    while isdirectory(dir) && i < max
+"        if filereadable(dir . 'GTAGS')
+"            execute 'cs add ' . dir . 'GTAGS ' . glob("`pwd`")
+"            let break = 1
+"        endif
+"        if filereadable(dir . 'cscope.out')
+"            execute 'cs add ' . dir . 'cscope.out'
+"            let break = 1
+"        endif
+"        if filereadable(dir . 'tags')
+"            execute 'set tags =' . dir . 'tags'
+"            let break = 1
+"        endif
+"        if break == 1
+"            execute 'lcd ' . dir
+"            break
+"        endif
+"        let dir = dir . '../'
+"        let i = i + 1
+"    endwhile
+"endf
+"nmap <F7> :call AutoLoadCTagsAndCScope()<CR>
 " call AutoLoadCTagsAndCScope()
 " http://vifix.cn/blog/vim-auto-load-ctags-and-cscope.html
 " }1

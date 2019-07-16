@@ -28,8 +28,8 @@ Just More Pythonic ~~~
 
 ### 环境准备
 
-* [Python 环境准备](/post/python-environment-prepare.html)，在 Linux、Windows 中如何搭建 Python 的开发环境。
-* [Python 常用工具](/post/python-most-useful-tools.html)，一些常用的工具，例如 pip、pyenv、virtualenv 等。
+* [Python 环境准备](/post/python-environment-prepare.html) 在 Linux、Windows 中如何搭建 Python 的开发环境。
+* [Python 常用工具](/post/python-most-useful-tools.html) 一些常用的工具，例如 pip、pyenv、virtualenv 等。
 
 ### 基本概念
 

@@ -11,7 +11,6 @@ description:
 
 <!-- more -->
 
-
 ## 异常处理
 
 ![python exception hierarchy]({{ site.url }}/images/python/exception-hierarchy.png "python exception hierarchy"){: .pull-center}

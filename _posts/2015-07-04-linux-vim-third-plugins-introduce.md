@@ -219,9 +219,13 @@ https://github.com/robturtle/newycm_extra_conf.py/blob/master/ycm.cpp.py
 
 ### UltiSnips
 
-一个和牛摆的模版，在写代码时经常需要在文件开头加一个版权声明之类的注释，又或者在头文件中要需要 `#ifndef... #def... #endif` 这样的宏，亦或写一个 `for` `switch` 等很固定的代码片段。
+一个牛摆的引擎，在写代码时经常需要在文件开头加一个版权声明之类的注释，又或者在头文件中要需要 `#ifndef... #def... #endif` 这样的宏，亦或写一个 `for` `switch` 等很固定的代码片段。
 
-该工具和 YouCompleteMe 以及 neocomplete 都很好的整合在一起了，不过需要编写模版，很多模版可以参考 [honza/vim-snippets](https://github.com/honza/vim-snippets)。
+该工具和 YouCompleteMe 以及 neocomplete 都很好的整合在一起了。
+
+不过 UltiSnips 只是个引擎，需要搭配预设的代码块才能运转起来，很多模版可以参考 [honza/vim-snippets](https://github.com/honza/vim-snippets)，不过建议自己再维护一套。
+
+
 
 <!-- http://vimcasts.org/episodes/meet-ultisnips/ -->
 
