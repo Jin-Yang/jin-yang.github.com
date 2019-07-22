@@ -34,6 +34,7 @@ Just More Pythonic ~~~
 ### 基本概念
 
 * [Python 基本概念](/post/python-basic-introduce.html)，常见问题，例如搜索路径。
+* [Python2 VS. Python3](/post/python-version2-vs-version3-introduce.html) 两个版本之间的区别。
 * [Python 基本语法](/post/python-basic-syntax-introduce.html)，一些常见容易混淆的概念，例如异常、Class等。
 * [Python 的垃圾回收](/post/python-garbage-collection.html)，详细介绍 Python 特有的垃圾回收机制。
 * [Python 动态执行](/post/python-eval.html)，允许通过 exec 和 eval 执行以字符串形式表示的代码片段，这里简单介绍。

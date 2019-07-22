@@ -46,6 +46,7 @@ machine-learning-logo.jpg
 * [似然估计](/post/math-statistics-likelihood-function-introduce.html)
 * [核密度函数](/post/math-statistics-kernel-density-estimates-introduce.html)
 * [贝叶斯简介](/post/math-statistics-basic-concept-bayes-theorem-introduce.html)
+* [马尔科夫简介](/post/math-statistics-markov-process-introduce.html)
 * [采样算法简介](/post/math-monte-carlo-sample-introduce.html)
 
 <!--

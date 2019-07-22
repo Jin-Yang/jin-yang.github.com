@@ -8,6 +8,7 @@ keywords: python,matplotlib
 description: 简单来说，Matplotlib 是 Python 中的一个绘图库，包含了大量的工具，几乎可以通过该工具完成你所需要的任何图形，包括散点图、正弦曲线，甚至是三维图形。这一工具经常用在数据可视化中，这里简单介绍其使用方法。
 ---
 
+
 简单来说，Matplotlib 是 Python 中的一个绘图库，包含了大量的工具，几乎可以通过该工具完成你所需要的任何图形，包括散点图、正弦曲线，甚至是三维图形。
 
 这一工具经常用在数据可视化中，这里简单介绍其使用方法。
@@ -18,15 +19,95 @@ description: 简单来说，Matplotlib 是 Python 中的一个绘图库，包含
 
 在正式使用之前，强烈建议先查看下官方的 [示例库](https://matplotlib.org/gallery.html) ，包含了样例以及对应的代码，几乎包含了所能想到的图形。
 
-<!--
-plt.figure() 定义一个图像
-plt.plot() 绘制图形
-plt.axhline() 绘制水平线
-plt.legend() 显示图例
-plt.title() 标题
-plt.xlabel() X轴标记
-plt.ylabel() Y轴标记
--->
+## 常用函数
+
+{% highlight text %}
+plt.figure()       定义一个图像
+    figsize=(3, 1) 图片的宽、高设置，单位为英寸(1英寸=2.54厘米)
+plt.plot()         绘制图形
+plt.axhline()      绘制水平线
+plt.imshow()       根据像素绘制图片
+
+plt.legend()       显示图例
+plt.title()        标题
+plt.xlabel()       X轴标记
+plt.ylabel()       Y轴标记
+
+{% endhighlight %}
+
+### subplot
+
+{% highlight text %}
+subplot(nrows, ncols, index, **kwargs)
+{% endhighlight %}
+
+用来将一个图分割成多个，前三个参数分别用来指定行、列、当前使用序号，
+
+{% highlight text %}
+subplot(2, 2, 1)  # 创建两行两列，并使用第一个(第一行+第一列)
+subplot(221)      # 等价于上面的函数，是简写
+{% endhighlight %}
+
+如果在一个图中绘制出的图片比较混乱，可以将图片分割成多个，通过 `subplot()` 进行分割，并标示使用序号 (从1开始向右) 。
+
+{% highlight python %}
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0.0, 5.0, num=100)
+y1 = np.sin(np.pi * x)
+y2 = np.cos(np.pi * x)
+y3 = np.cos(np.pi * x * 2)
+
+#plt.plot(x, y1, 'b--', label='$sin(\pi * x)$')
+#plt.plot(x, y2, 'r--', label='$cos(\pi * x)$')
+#plt.plot(x, y3, 'g--', label='$cos(\pi * x * 2)$')
+
+plt.subplot(211)
+plt.plot(x, y3, 'g--', label='$cos(\pi * x * 2)$')
+plt.legend(loc='lower right')
+
+plt.subplot(223)
+plt.plot(x, y1, 'b--', label='$sin(\pi * x)$')
+plt.legend(loc='lower right')
+
+plt.subplot(224)
+plt.plot(x, y2, 'r--', label='$cos(\pi * x)$')
+plt.legend(loc='lower right')
+plt.show()
+{% endhighlight %}
+
+上述的绘图实际上是在默认的窗口中，也可以通过 `fig = plt.figure()` 新建一个窗口，然后通过 `ax = fig.add_subplot(221)` 进行添加。
+
+### imshow
+
+{% highlight python %}
+import numpy as np
+import matplotlib.pyplot as plt
+
+p = np.linspace(-5, 5, num=1000)
+xs, ys = np.meshgrid(p, p)
+z = np.sqrt(xs ** 2 + ys ** 2)
+
+# 可以选择cool hot
+plt.imshow(z, cmap=plt.cm.gray)
+plt.show()
+{% endhighlight %}
+
+可以坐标为 `0~1000`，也就是传入的 z 矩阵对应的是 `1000x1000` ，z 的索引是图像的坐标，而其值是通过图的颜色显示出来的。
+
+另外，`imshow()` 函数还提供了图形插值方式，对于没有的数据可以通过插值的方式进行填充。
+
+{% highlight python %}
+import numpy as np
+import matplotlib.pyplot as plt
+
+data = np.add.outer(range(8), range(8)) % 2
+plt.imshow(data, cmap=plt.cm.gray, interpolation='nearest', origin="lower")
+plt.show()
+{% endhighlight %}
+
+其它的插值算法还有 `bilinear` `bicubic` 等。
 
 ## 参数
 

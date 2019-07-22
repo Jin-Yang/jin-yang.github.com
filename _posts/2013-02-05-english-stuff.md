@@ -37,6 +37,12 @@ To Be Disscussed，有待讨论。
 
 to do 用来表示这个地方还有一些事情要做，程序尚有不足，还有一些代码要写，可以作为程序员编写代码时给自己留个备忘。
 
+#### IE EG
+
+`i.e.` 是拉丁语 `id est` 的缩写，意为 `that is` 中文可以翻译为 `即` ；而 `e.g.` 是拉丁语 `exempli gratia` 的缩写，意为 `for the sake of example` ，也就是 `例如` 。
+
+
+
 ## 俚语
 
 #### Karma is a bitch.

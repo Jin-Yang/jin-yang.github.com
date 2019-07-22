@@ -63,6 +63,7 @@ description:
 * [Linux C 网络编程](/post/program-c-network.html) 整理了 Linux C 经常使用的网络编程技巧。
 * [Linux C 错误信息](/post/language-c-error-message-usage-introduce.html) C 中在打印错误信息的时候应该注意那些。
 * [Linux umask 使用](/post/linux-umask-and-open-introduce.html) 通过 umask 可以在不修改代码直接调整文件的默认打开权限。
+* [Linux Fail Points](/post/linux-c-fail-point-introduce.html) BSD 中的一种构造异常的测试机制。
 
 ## libev
 
