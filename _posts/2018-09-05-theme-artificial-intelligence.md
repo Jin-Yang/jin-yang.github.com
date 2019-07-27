@@ -48,6 +48,7 @@ machine-learning-logo.jpg
 * [贝叶斯简介](/post/math-statistics-basic-concept-bayes-theorem-introduce.html)
 * [马尔科夫简介](/post/math-statistics-markov-process-introduce.html)
 * [采样算法简介](/post/math-monte-carlo-sample-introduce.html)
+* [熵概念简介](/post/artificial-intelligence-Entropy-concept-introduce.html)
 
 <!--
 概率统计公式大全
