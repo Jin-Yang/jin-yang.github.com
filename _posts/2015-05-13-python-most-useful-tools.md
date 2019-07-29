@@ -138,6 +138,12 @@ Installing setuptools, pip, wheel...done.
 
 此时的终端提示符会添加 `(foobar)` 前缀，然后可以通过 `pip install jinja2` 类似的命令安装三方包，需要退出时执行 `deactivate` 命令。
 
+### 其它
+
+#### Python3
+
+默认会使用 Python2 的版本，可以通过 `--python=python3.6` 参数指定版本号。
+
 <!--
 ## Fabric
 http://www.fabfile.org/

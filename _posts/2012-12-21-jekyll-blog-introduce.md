@@ -316,6 +316,16 @@ Pygments 会与 MathJax 的 CSS 渲染模式有所冲突，导致最终渲染后
 
 这主要是 HTML 中的 CSS 要高于文件中的。
 
+### 特殊用法
+
+#### 竖杠
+
+`|` 会被无脑识别为 table 的 column 的分隔符，所以在里使用还得用 `\|` ，也可以使用 `\vert` 或者 `\Vert` 替换掉，后者为双竖线。
+
+<!--
+http://yaoyao.codes/jekyll/2016/02/21/tears-for-mathjax
+-->
+
 ### 优化
 
 #### 去除 a 标签虚线
@@ -482,6 +492,7 @@ Markdown 语法的目标是：成为一种适用于网络的书写语言，详�
 
 <!--
 https://github.com/olakara/JekyllMetro/blob/master/feed.xml
+
 -->
 
 {% highlight text %}

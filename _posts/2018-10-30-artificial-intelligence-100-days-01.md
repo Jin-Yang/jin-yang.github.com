@@ -34,6 +34,9 @@ import pandas as pd
 df1 = pd.DataFrame({'c1':[1,2,3], 'c2':[4,5,6]})
 df1.to_csv("test.csv", index=False, sep=',')
 df2 = pd.read_csv('test.csv')
+
+df2.shape    # 显示行数以及属性数(列数)
+df2.head()   # 展示前5行的数据
 {% endhighlight %}
 
 默认会增加一列的索引 (行名称为空)，可以通过 `index=False` 将其关闭。

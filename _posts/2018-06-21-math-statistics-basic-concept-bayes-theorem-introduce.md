@@ -150,8 +150,12 @@ P(A|B) = {P(B|A)P(A)}/P(B)
 
 http://www.ruanyifeng.com/blog/2011/08/bayesian_inference_part_two.html
 
-
+https://jrnold.github.io/bayesian_notes/index.html
 https://jrnold.github.io/bayesian_notes/bayesian-inference.html
+
+https://www.zhihu.com/question/54082000
+https://blog.csdn.net/baimafujinji/article/details/51374202
+https://blog.csdn.net/u011508640/article/details/72815981
 -->
 
 {% highlight text %}

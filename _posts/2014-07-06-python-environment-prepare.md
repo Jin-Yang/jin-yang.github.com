@@ -75,10 +75,10 @@ Python 中可以通过 PIP 来自动管理依赖包，如果机器上没有安�
 
 ### PIP
 
-如上的环境准备过程中，会通过 `yum instal python36-pip` 安装了对应 V3 版本，此时对应的命令行是 `pip3` 而非 `pip` 。
+如上的环境准备过程中，会通过 `yum install python36-pip` 安装了对应 V3 版本，此时对应的命令行是 `pip3` 而非 `pip` 。
 
 {% highlight text %}
-# pip3 install --upgrade pip
+# pip3 install --upgrade pip3
 {% endhighlight %}
 
 关于 PIP 的详细使用方式可以参考 [Python 常用工具](/post/python-most-useful-tools.html) 。

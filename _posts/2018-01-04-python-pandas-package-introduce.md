@@ -94,6 +94,42 @@ df4 = pd.DataFrame({'c1':[1, 4], 'c2':[2, 5], 'c3':[3, 6]}, index=['a', 'b'])
 
 注意，在使用 `sum()` 求和时，其中的参数只能是 `0` 或者 `1` 分别是对列或者行进行求和。
 
+## GroupBy
+
+Pandas 提供了一个灵活高效的 groupby 功能，可以根据一个或者多个键拆分分组，然后可以对分布执行一些统计操作。
+
+{% highlight python %}
+import numpy as np
+import pandas as pd
+
+df = pd.DataFrame({
+	'A': ['a', 'b', 'a', 'c', 'a', 'c', 'b', 'c'],
+	'B': [  2,   8,   1,   4,   3,   2,   5,   9],
+	'C': [102,  98, 107, 104, 115,  87,  92, 123]
+})
+grouped = df.groupby('A')     # 会生成一个DataFrameGroupBy对象
+print(grouped.groups)         # 具体分组信息，key为列A中的成员，value是数据的索引
+# {'a': Int64Index([0, 2, 4]), 'b': Int64Index([1, 6]), 'c': Int64Index([3, 5, 7])}
+
+print(grouped.mean())         # 对所有的成员计算平均值
+#      B           C
+# A                 
+# a  2.0  108.000000
+# b  6.5   95.000000
+# c  5.0  104.666667
+grouped[['B', 'C']].mean()    # 可以选择列，这里与上面等价
+grouped.agg({'B':'mean', 'C':'sum'})  # 也可以不同列选择不同算法
+{% endhighlight %}
+
+
+在使用上述的聚合方式的时候，需要注意 `size()` 和 `count()` 的区别，前者统计时包含 `NaN` 的值，后者不含 `NaN` 。
+
+<!---
+https://www.yiibai.com/pandas/python_pandas_groupby.html
+https://blog.csdn.net/Leonis_v/article/details/51832916
+https://www.cnblogs.com/lemonbit/p/6810972.html
+-->
+
 
 {% highlight text %}
 {% endhighlight %}
