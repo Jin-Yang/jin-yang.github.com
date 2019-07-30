@@ -44,6 +44,13 @@ description:
 * [CMake](/post/linux-cmake-auto-compile-introduce.html) 最常用的自动编译工具。
 * [Linux Package 管理](/post/linux-package-config-introduce.html) Linux 提供的一种工具，通常在动态库编译时的参数配置。
 
+### gdb
+
+* [GDB 基本使用](/post/program-c-gdb-basic-usage-introduce.html) 一些常用的使用方法。
+* [GDB 栈帧简介](/post/program-c-gdb-stack-frame-introduce.html) 函数传参、局部变量使用的方式。
+* [GDB 死锁分析](/post/program-c-gdb-deadlock-analyze-introduce.html)
+* [DWARF 格式简介](/post/program-c-gdb-dwarf-format-introduce.html)
+
 ### 其它
 
 介绍一些乱七八糟的东西。
