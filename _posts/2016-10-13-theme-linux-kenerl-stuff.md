@@ -31,8 +31,12 @@ description:
 
 ## 进程相关
 
-* [Linux 进程执行](/post/linux-kernel-process-introduce.html) 与进程相关的操作，主要是执行命令、守护进程等。
+一些与 Linux 中进程相关的内容，包括了优先级、状态等信息。
+
+* [Linux 进程执行](/post/linux-kernel-process-introduce.html) 与进程相关的操作，主要是执行命令 API、守护进程等。
 * [Linux 进程状态](/post/linux-process-state-introduce.html) 介绍不同的进程状态，以及一些常见的异常处理方法。
+* [Linux 进程退出码](/post/linux-process-exit-code-introduce.html) 进程可以正常或者异常退出，通过退出码可以分成几类。
+* [Linux 进程优先级](/post/linux-process-exec-priority-nice-introduce.html) 优先级以及 nice 值的相关介绍，以及查看方式。
 
 ## 信号相关
 

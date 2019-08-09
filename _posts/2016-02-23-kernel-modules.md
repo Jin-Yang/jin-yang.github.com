@@ -22,7 +22,7 @@ description: 简单介绍下 Linux 中的内核模块编写，包括了内核签
 CONFIG_MODULE_SIG=n
 -->
 
-{% highlight makefile %}
+{% highlight text %}
 ifneq	($(KERNELRELEASE),)
 obj-m := hello.o
 else
@@ -148,7 +148,7 @@ EOF
 
 #### 2. 生成秘钥
 
-一般会把公私钥放在 ``` /usr/src/kernels/`uname -r` ``` 文件夹中，不过还是建议方法 HOME 目录下。
+一般会把公私钥放在 ` /usr/src/kernels/`uname -r` ` 文件夹中，不过还是建议方法 HOME 目录下。
 
 {% highlight text %}
 $ openssl req -x509 -new -nodes -utf8 -sha256 -days 36500 \
@@ -224,7 +224,7 @@ done
 $ ls /sys/module/hid/parameters               # 查看HID(Human Interface Devices)的参数
 {% endhighlight %}
 
-Linux 内核和用户空间的通信可通过 /proc 目录下的文件实现，编译时需要 ```CONFIG_PROC_FS``` 配置，通常来说，可写的配置项一般保存在 /proc/sys 目录下。其它介绍如下：
+Linux 内核和用户空间的通信可通过 /proc 目录下的文件实现，编译时需要 `CONFIG_PROC_FS` 配置，通常来说，可写的配置项一般保存在 /proc/sys 目录下。其它介绍如下：
 
 #### 1. 进程相关的目录
 
@@ -240,17 +240,19 @@ $ cat /proc/1/cmdline              # 查看init命令启动参数
 
 #### 3. 系统控制信息
 
-用来检测修改系统的运行参数，存在于 ```/proc/sys``` 目录下，可以使用 cat、echo 来查看或修改系统的运行参数。不过此处修改只是临时，如果要持久化需要修改 ```/etc/sysctl.conf``` 中的配置。
+用来检测修改系统的运行参数，存在于 `/proc/sys` 目录下，可以使用 cat、echo 来查看或修改系统的运行参数。不过此处修改只是临时，如果要持久化需要修改 `/etc/sysctl.conf` 中的配置。
 
 接下来看看内核中的实现。
 
 ### 内核实现
 
-相关的 API 实现在 ```fs/proc/generic.c``` 文件中，常见的 ```/proc/meminfo```、```/proc/stat``` 等统计项的源码在 fs/proc 目录下，具体的实现可以查看这里的源码。
+相关的 API 实现在 `fs/proc/generic.c` 文件中，常见的 `/proc/meminfo`、`/proc/stat` 等统计项的源码在 fs/proc 目录下，具体的实现可以查看这里的源码。
 
 很多简单的示例可以参考源码中的 loadavg.c 实现。
 
+## 问题排查
 
+正常来说，在通过如上的配置之后可以正常加载，不过仍有可能会出现部分问题。
 
 ## 参考
 

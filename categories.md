@@ -64,11 +64,11 @@ Programs must be written for people to read, and only incidentally for machines 
 
 * [Linux 环境搭建](/post/theme-linux-environment.html) 包括了如何搭建 Linux 环境、相关工具、基本概念等。
 * [Linux 安全专题](/post/theme-linux-security.html)
-* [Linux 内核专题](/post/theme-linux-kenerl-stuff.html)
+* [Linux 内核专题](/post/theme-linux-kenerl-stuff.html) 内核编译、进程、调度、信号等相关的介绍。
 * [Linux 内存专题](/post/theme-linux-kenerl-memory.html)
 * [Linux 网络专题](/post/theme-linux-kenerl-network.html) 网络的基本概念以及相关的协议，例如 DNS 等。
 * [Linux 容器专题](/post/theme-linux-kenerl-container.html) 不只是 cgroup 容器，还有 ulimit 机制、chroot 相关的内容。
-* [Linux 监控专题](/post/theme-linux-kenerl-monitor.html)
+* [Linux 监控专题](/post/theme-linux-kenerl-monitor.html) 包括了基础的系统监控、eBPF、各种的 Trace 等机制。
 * [Linux 时间专题](/post/theme-linux-time-stuff.html) 这真心是个很复杂的问题，包括了基本的概念、系统中的使用方式等等。
 
 #### 其它

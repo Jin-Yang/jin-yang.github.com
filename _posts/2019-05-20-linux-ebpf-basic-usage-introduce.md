@@ -1,5 +1,5 @@
 ---
-title: Linux eBPF 简介
+title: eBPF 简介
 layout: post
 comments: true
 language: chinese
@@ -16,7 +16,9 @@ eBPF 是 Linux 内核近几年最为引人注目的特性之一，通过一个�
 
 ## 简介
 
-最开始的 BPF 只用于网络包的过滤，过滤器是基于寄存器的虚拟机。
+BPF 的目的是尽量早的过滤掉不需要的报文，所以，会通过用户空间的一些工具 (例如 tcpdump)，通过 `bpf()` 系统 API 将指令发送到内核。而内核为了防止恶意代码，会先进行静态扫描，然后再加载运行。
+
+最开始的 BPF 只用于网络包的过滤，而过滤器的执行是基于寄存器的虚拟机。
 
 ### BPF
 
@@ -34,6 +36,32 @@ eBPF 是 Linux 内核近几年最为引人注目的特性之一，通过一个�
 
 > The original patch that added support for eBPF in the 3.15 kernel showed that eBPF was up to four times faster on x86-64 than the old classic BPF (cBPF) implementation for some network filter microbenchmarks, and most were 1.5 times faster.
 
+RHEL 8 采用的是 4.18 内核版本，支持 eBPF、cgroup V2 等比较新的特性，不过对于 CentOS 7 来说，需要先升级内核版本以及开发库。
+
+### 调试工具
+
+使用 `bpftool` 工具可以查看当前已经加载的 eBPF 程序，通过 `yum install bpftool` 命令安装，不过要注意内核版本。
+
+在最新的内核源码里应该包含了该工具的源码，可以手动编译。
+
+<!--
+https://www.redhat.com/en/blog/introduction-ebpf-red-hat-enterprise-linux-7
+
+bpftool prog list
+bpftool prog dump xlated id 3
+-->
+
+也可以使用 `bcc-tools` 中的 `/usr/share/bcc/tools/bpflist` 命令查看。
+
+{% highlight text %}
+# /usr/share/bcc/tools/bpflist
+PID	COMM         	TYPE 	COUNT
+13159  killsnoop    	prog 	2   
+13159  killsnoop    	map  	2   
+{% endhighlight %}
+
+
+<!--
 另外，增加了 `bpf()` 系统调用，用来与内核中的 eBPF 进行交互。
 
 {% highlight c %}
@@ -46,18 +74,15 @@ int bpf(int cmd, union bpf_attr *attr, unsigned int size);
 
 {% highlight c %}
 struct bpf_insn {
-	__u8	code;		/* opcode */
-	__u8	dst_reg:4;	/* dest register */
-	__u8	src_reg:4;	/* source register */
-	__s16	off;		/* signed offset */
-	__s32	imm;		/* signed immediate constant */
+	__u8  code;       /* opcode 操作码 */
+	__u8  dst_reg:4;  /* dest register 目标寄存器 */
+	__u8  src_reg:4;  /* source register 源寄存器 */
+	__s16 off;        /* signed offset 偏移 */
+	__s32 imm;        /* signed immediate constant 立即数 */
 };
 {% endhighlight %}
 
-
-<!--
 共8位，0,1,2这三位表示的是该操作的大类别：0X07
-
 BPF_LD(0x00) /   BPF_LDX(0x01) /   BPF_ST(0x02) /  BPF_STX(0x03) /   BPF_ALU(0x04) /   BPF_JMP(0x05) /   BPF_RET(0x06) /    BPT_MISC(0x07)
 
 对于 LD大类 来说：
@@ -85,10 +110,6 @@ BPF使用的寄存器包括：
 * R6 - R9   - callee saved registers that in-kernel function will preserve
 * R10   - read-only frame pointer to access stack
 
-code 操作码(8 bit)
-
-目标寄存器(4 bit)，源寄存(4 bit)，偏移(16bit)，立即数(32bit)
-
 
 https://linux.cn/article-9507-1.html?pr
 https://blog.csdn.net/pwl999/article/details/82884882
@@ -96,23 +117,63 @@ https://linux.cn/article-9630-1.html
 -->
 
 
+## 示例
 
-## BCC
-
-bcc 是通过 Python 编写的一个 eBPF 工具集，使得 "编写BPF代码-编译成字节码-注入内核-获取结果-展示" 整个过程更加便捷。
-
-详细可以参考 [Github IOVisor/BCC](https://github.com/iovisor/bcc) 中的相关介绍。
+在内核代码的 `samples/bpf` 目录下，包含了一个 libbpf 的库，可以不用直接调用 bpf() 接口。
 
 ## 参考
 
 * 性能分析的大牛 Brendan Gregg 提供了很多参考资料，包括了 [Linux Extended BPF Tracing Tools](http://www.brendangregg.com/ebpf.html) 以及 [Golang bcc/BPF Function Tracing](http://www.brendangregg.com/blog/2017-01-31/golang-bcc-bpf-function-tracing.html) 。
+* [Awesome eBPF](https://github.com/zoidbergwill/awesome-ebpf) 在 GitHub 中整理的一些与 eBPF 相关的资料。
 
 
 <!--
-RHEL 8 采用的是 4.18 内核版本，支持 eBPF、cgroup V2 等比较新的特性。
-
 关于BPF详细的介绍，详细清单
 https://linux.cn/article-9507-1.html
+
+
+https://opensource.com/article/17/9/intro-ebpf
+
+关于cBPF的相关介绍
+https://www.tcpdump.org/papers/
+https://www.kernel.org/doc/Documentation/networking/filter.txt
+
+## eBPF
+
+eBPF 有点类似于 V8 引擎，
+
+https://github.com/iovisor/bcc/blob/master/docs/tutorial.md
+https://github.com/iovisor/bcc/blob/master/docs/tutorial_bcc_python_developer.md
+
+
+
+
+eBPF的相关资料
+https://github.com/zoidbergwill/awesome-ebpf
+https://qmonnet.github.io/whirl-offload/2016/09/01/dive-into-bpf/
+
+
+libelf的使用
+https://www.zybuluo.com/devilogic/note/139554
+
+介绍如何使用eBPF的最简单内容
+https://github.com/pratyushanand/learn-bpf/
+https://opensource.com/article/17/9/intro-ebpf
+
+关于eBPF的概览
+http://vger.kernel.org/netconf2015Starovoitov-bpf_collabsummit_2015feb20.pdf
+
+
+## Startify
+https://blog.csdn.net/mdl13412/article/details/44081489
+
+eBPF 从头开始，一篇很详细的文章
+https://bolinfest.github.io/opensnoop-native/
+https://github.com/bolinfest/rust-ebpf-demo
+
+ulimits的设置
+https://feichashao.com/ulimit_demo/
+https://blogs.oracle.com/linux/notes-on-bpf-1
 -->
 
 
