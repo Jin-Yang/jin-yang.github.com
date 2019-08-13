@@ -152,6 +152,79 @@ r9             0x6      6
 
 另外，可以直接通过 `info frame` 查看当前栈的信息，包括了参数信息。
 
+## 获取中断号
+
+有些时候会在中断处发生死锁，但是很难确认中断号是多少，例如如下的示例。
+
+{% highlight c %}
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+
+void foobar(int sig)
+{
+        fprintf(stdout, "got signal %d.\n", sig);
+}
+
+void handler(int sig)
+{
+        foobar(sig);
+}
+
+int main()
+{
+        if (signal(SIGIO, handler) == SIG_ERR) {
+                fprintf(stderr, "register handler for SIGIO failed, %d:%s.",
+                                errno, strerror(errno));
+                return -1;
+        }
+
+        while(1);
+
+        return 0;
+}
+{% endhighlight %}
+
+通过 `gcc -o foobar foobar.c -O0 -g` 进行编译，如果使用 `-O2` 或者默认，有可能设置的断点地址不匹配。
+
+有的时候，如果存在信号不安全的函数，那么就可能会发生死锁，而此时通过 gdb 获取栈时，会发现在某个栈帧处，有如下的信息。
+
+{% highlight text %}
+(gdb) bt
+#0  0x00000000004004dc in foo ()
+#1  0x00000000004004f8 in signal_handler ()
+#2  <signal handler called>
+#3  0x000000000040050d in main ()
+{% endhighlight %}
+
+但是没有提供具体的参数信息，主要是如果要 gdb 打印信息，那么必须要知道参数个数、各个参数大小等信息。
+
+不过还好，我们知道信号处理函数的入参及其大小，也就是只有一个用来标示那个信号的参数，可以直接切换到 `frame 1` ，然后通过上述方式查看。
+
+<!--
+(gdb) info frame 1
+Stack frame at 0x7fff84277c30:
+rip = 0x4004f8 in handler; saved rip 0x301e2301b0
+called by frame at 0x7fff84277c38, caller of frame at 0x7fff84277c10
+Arglist at 0x7fff84277c20, args:
+Locals at 0x7fff84277c20, Previous frame's sp is 0x7fff84277c30
+Saved registers:
+  rbp at 0x7fff84277c20, rip at 0x7fff84277c28
+
+也就是参数在 `0x7fff84277c20` 地址处，因为入参是 32bit 的，然后可以通过如下打印具体的值。
+
+(gdb) x/1 0x7fff84277c1c
+0x7fff84277c1c:    0x0000001d
+
+x/1 0x7ffcfc8e4194
+
+注意，详细的传参可以通过上述的栈帧查看。
+-->
+
+如果是多线程，同时又使用了信号的同步机制，那么就可能会在不同的线程中出现多个信号处理。
+
 <!--
 函数调用过程
 https://blog.csdn.net/Jogger_Ling/article/details/64443470

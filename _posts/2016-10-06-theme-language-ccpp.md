@@ -93,8 +93,14 @@ https://github.com/tinycthread/tinycthread
 
 ## 原子操作
 
+* [Memory Reordering 简析](/post/linux-c-memory-reordering-basic-introduce.html)
 * [GCC 原子操作](/post/linux-c-gcc-atomic-operation-introduce.html) GCC 实际上已经提供了一些简单的原子操作，这里简单介绍。
 * [Lock Free 编程](/post/linux-c-program-lock-free-queue-introduce.html)
+
+
+#### 相关资料
+
+* [Preshing on Programming](https://preshing.com/) 一个不过的 Blog 很多关于无锁编程相关的内容。
 
 <!--
 ## C 跨平台支持

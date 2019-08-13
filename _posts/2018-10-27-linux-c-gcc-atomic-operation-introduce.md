@@ -103,9 +103,46 @@ int main(void)
 可以通过如下方式进行编译，其中前者没有使用原子操作，会导致最后累加的值远小于预期。
 
 {% highlight text %}
+----- 使用线程操作
 $ gcc -o atomic -lpthread atomic.c
+$ time ./atomic 
+Worker thread 7fd24ce38700 startup.
+Worker thread 7fd24c637700 startup.
+Worker thread 7fd249e32700 startup.
+Worker thread 7fd24d639700 startup.
+Worker thread 7fd249631700 startup.
+Worker thread 7fd248e30700 startup.
+Worker thread 7fd24b635700 startup.
+Worker thread 7fd24ae34700 startup.
+Worker thread 7fd24a633700 startup.
+Worker thread 7fd24be36700 startup.
+Sum expect 50000000, got 12635555.
+
+real    0m0.240s
+user    0m0.794s
+sys     0m0.001s
+
+----- 使用原子操作
 $ gcc -DUSE_ATOMIC -o atomic -lpthread atomic.c
+$ time ./atomic 
+Worker thread 7f17b3de6700 startup.
+Worker thread 7f17b1de2700 startup.
+Worker thread 7f17b35e5700 startup.
+Worker thread 7f17b2de4700 startup.
+Worker thread 7f17b15e1700 startup.
+Worker thread 7f17af5dd700 startup.
+Worker thread 7f17b25e3700 startup.
+Worker thread 7f17b0de0700 startup.
+Worker thread 7f17b05df700 startup.
+Worker thread 7f17afdde700 startup.
+Sum expect 50000000, got 50000000.
+
+real    0m1.237s
+user    0m4.164s
+sys     0m0.010s
 {% endhighlight %}
+
+从上述的结果可以看出，虽然通过原子操作保证了逻辑的正确性，但同时带来的成本也非常高，这也就是为什么架构设计如此重要。
 
 <!--
 ## 参考

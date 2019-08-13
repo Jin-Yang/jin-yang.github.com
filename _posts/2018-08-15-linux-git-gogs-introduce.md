@@ -26,7 +26,7 @@ Gogs 的功能类似于 GitHub 或者 GitLab ，不过相比来说是一款极�
 # systemctl start gogs
 {% endhighlight %}
 
-假设配置了域名，例如 `http://gogs.cargo.com:3000` 那么可以直接访问 [gogs.cargo.com:3000](http://gogs.cargo.com:3000) 。
+假设配置了域名 (可以使用 `/etc/hosts` 文件)，例如 `http://gogs.cargo.com:3000` 那么可以直接访问 [gogs.cargo.com:3000](http://gogs.cargo.com:3000) 。
 
 ### 创建用户
 
