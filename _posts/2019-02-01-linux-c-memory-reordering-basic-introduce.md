@@ -31,6 +31,11 @@ description:
 
 正常来说，最终读取到的
 
+## CPU 乱序
+
+
+
+
 ## 参考
 
 * [Intel® 64 and IA-32 Architectures Software Developer Manuals](https://software.intel.com/en-us/articles/intel-sdm) x86 的编程手册。

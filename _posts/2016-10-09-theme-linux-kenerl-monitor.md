@@ -50,10 +50,21 @@ https://bolinfest.github.io/opensnoop-native/
 
 ## 常用工具
 
-* [Dstat 使用及其原理](/post/details-about-dstat.html) 一个使用 Python 编写的跨平台监控工具。
-* [Systemtap 使用简介](/post/linux-systemtap.html) 介绍内核神器 Systemtap 的使用方式，包括了如何使用最新的安全特性。
+### 性能
+
+可以使用 CPU 性能计数器、tracepoints、kprobes、uprobes 对程序的各个指标进行统计。
+
+* [Perf 使用简介](/post/linux-perf-tools-basic-usage-introduce.html) 随内核发布的一个老牌的性能诊断工具。
+
+### Colletcd
+
 * [Collectd 简介](/post/collectd-introduce.html) 一个 C 语言编写的多线程监控采集程序，对其进行简单的介绍。
 * [Collectd 源码解析](/post/collectd-source-code.html) 详细介绍 Collectd 的源码实现。
+
+### 其它
+
+* [Dstat 使用及其原理](/post/details-about-dstat.html) 一个使用 Python 编写的跨平台监控工具。
+* [Systemtap 使用简介](/post/linux-systemtap.html) 介绍内核神器 Systemtap 的使用方式，包括了如何使用最新的安全特性。
 
 
 {% highlight text %}
