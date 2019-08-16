@@ -51,7 +51,7 @@ $r8 $r9 $r10 $r11 $r12 $r13 $r14 $r15
 
 在具体的 CPU 硬件中，函数的运行需要借助硬件的栈 (Stack) 能力，为了保证各个模块的函数直接可以相互调用，那么就需要遵守 Calling Convention，这也是 ABI (Application Binary Interface) 的一部分。
 
-如下的示例中，都是以如下函数作为测试。
+详细的可以通过 `man syscall` 查看，如下的示例中，都是以如下函数作为测试。
 
 {% highlight c %}
 int foobar(int a, int b, int c, int d, int e, int f, int g, int h, int i)

@@ -29,6 +29,9 @@ description: 在开发多线程应用时，考虑到线程安全，一般会通�
 * 如果是异常信号 (例如 SIGPIPE、SIGEGV 等)，则只有产生异常的线程收到并处理；
 * 如果是用 `pthread_kill()` 产生的内部信号，则只有 `pthread_kill()` 参数中指定的目标线程收到并处理；
 * 如果是外部使用 `kill` 命令产生信号 (如 SIGINT、SIGHUP 等)，则会遍历所有线程，直到找到一个不阻塞该信号的线程来处理 (一般是从主线程找起，而且只有一个线程能收到信号) 。
+* 可以向指定的线程发送信号，该信号会被对应的线程处理，前提是该线程未阻塞对应的信号，如果阻塞则选择下一个未阻塞的线程。
+
+可以使用 kill + 线程 ID 向指定的线程发送信号，这也就意味着，如果线程没有阻塞改信号，那么就可以正常处理。
 
 ### 是否有独立 mask 和 action
 
@@ -39,6 +42,8 @@ description: 在开发多线程应用时，考虑到线程安全，一般会通�
 如果在某个线程中调用了 `sigaction()` 处理某个信号，那么这个进程中的未阻塞这个信号的线程在收到这个信号都会按同一种方式处理这个信号。
 
 ## 示例
+
+如果有多个线程为阻塞信号，那么我们无法确定那个线程会接收信号，但是可以默认将所有线程屏蔽，然后选择某个线程 (例如主进程) 做信号处理。
 
 这里重点测试下外部发送 kill 信号到进程的场景。
 
@@ -54,6 +59,7 @@ description: 在开发多线程应用时，考虑到线程安全，一般会通�
 示例代码如下。
 
 {% highlight c %}
+#include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,61 +69,75 @@ description: 在开发多线程应用时，考虑到线程安全，一般会通�
 
 #define gettid()    syscall(__NR_gettid)
 
-#define log_info(...)  do { printf(" info: " __VA_ARGS__); putchar('\n'); } while(0);
-#define log_error(...) do { printf("error: " __VA_ARGS__); putchar('\n'); } while(0);
+#define log_info(fmt, args...)  do {                                    \
+	printf("[%ld] %ld info : " fmt, gettid(), time(NULL), ## args); \
+} while(0)
+#define log_error(fmt, args...) do {                                    \
+	printf("[%ld] %ld error: " fmt, gettid(), time(NULL), ## args); \
+} while(0)
+
+#define THD_NUMS   10
 
 void sighandler(int signo)
 {
-        log_info("Thread %lu received signo %d.", gettid(), signo);
+        log_info("Thread %lu received signo %d.\n", gettid(), signo);
 }
 
 void *thr1_fn(void *arg)
 {
         (void) arg;
-        int tid = gettid();
-        struct sigaction action;
 
-        action.sa_flags = 0;
-        action.sa_handler = sighandler;
-        sigaction(SIGINT, &action, NULL);
-
-        log_info("Thread %d started.", tid);
-        if (sleep(60) != 0)
-                log_info("Thread %d interrupted.", tid);
-        log_info("Thread %d ends.", tid);
+        log_info("Worker thread started.\n");
+        while (1)
+                sleep(1);
 
         return NULL;
 }
 
 int main(void)
 {
-        int rc;
-        pthread_t t1;
+        int i, rc;
         sigset_t bset;
+        struct sigaction action;
+        pthread_t thds[THD_NUMS];
 
         sigemptyset(&bset);
         sigaddset(&bset, SIGINT);
-
-        log_info("Main thread pid %lu", gettid());
-
-        rc = pthread_create(&t1, NULL, thr1_fn, NULL);
-        if (rc != 0) {
-                log_error("Create thread failed, %s.", strerror(rc));
-                exit(1);
-        }
-
-#if 0
+#if 1
         if (pthread_sigmask(SIG_BLOCK, &bset, NULL) != 0) {
                 log_error("Set pthread mask failed.");
                 exit(1);
         }
-
+#else
         if (sigprocmask(SIG_BLOCK, &bset, NULL) != 0) {
                 log_error("Set process mask failed.");
                 exit(1);
         }
 #endif
-        pthread_join(t1, NULL);
+
+        /* register but still blocked now */
+        action.sa_flags = 0;
+        action.sa_handler = sighandler;
+        sigaction(SIGINT, &action, NULL);
+
+        log_info("Main thread started.\n");
+
+        for (i = 0; i < THD_NUMS; i++) {
+                rc = pthread_create(&thds[i], NULL, thr1_fn, NULL);
+                if (rc != 0) {
+                        log_error("Create thread failed, %s.\n", strerror(rc));
+                        exit(1);
+                }
+        }
+
+        /* only accpet SIGINT in main thread */
+        if (pthread_sigmask(SIG_UNBLOCK, &bset, NULL) != 0) {
+                log_error("Set pthread mask failed.");
+                exit(1);
+        }
+
+        for (i = 0; i < THD_NUMS; i++)
+                pthread_join(thds[i], NULL);
 
         return 0;
 }
@@ -130,6 +150,8 @@ if ((rlen == -1) && (errno == EINTR)){
     //‘rlen’ as 0 and continue to recv
 }
 -->
+
+
 
 ## 最佳实践
 

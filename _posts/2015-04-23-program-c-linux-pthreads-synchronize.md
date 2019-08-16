@@ -150,6 +150,114 @@ pthread_mutex_unlock(&mut);
 
 例如，多个线程在等待信号量，同时被唤醒，那么只有一个线程会进入临界区进行处理，那么此时就必须要再次条件判断。
 
+{% highlight c %}
+#include <stdio.h>
+#include <signal.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <pthread.h>
+
+#include <sys/time.h>
+#include <sys/syscall.h>
+
+#define gettid()    syscall(__NR_gettid)
+
+#define log_info(fmt, args...)  do {                                    \
+	printf("[%ld] %ld info : " fmt, gettid(), time(NULL), ## args); \
+	putchar('\n');                                                  \
+} while(0)
+#define log_error(fmt, args...) do {                                    \
+	printf("[%ld] %ld error: " fmt, gettid(), time(NULL), ## args); \
+	putchar('\n');                                                  \
+} while(0)
+
+static int quit_now = 0;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t   cond = PTHREAD_COND_INITIALIZER;
+
+void *thr1_fn(void *arg)
+{
+        (void) arg;
+        int count = 0, rc;
+        struct timeval now;
+        struct timespec timeout;
+
+        if (gettimeofday(&now, NULL) < 0) {
+                log_error("gettimeofday() failed, %d:%s.", errno, strerror(errno));
+                return NULL;
+        }
+        timeout.tv_nsec = now.tv_usec * 1000;
+
+        while (quit_now == 0) {
+#if 0
+                pthread_mutex_lock(&mutex);
+                while (quit_now == 0) {
+                        timeout.tv_sec = time(NULL) + 1;
+                        rc = pthread_cond_timedwait(&cond, &mutex, &timeout);
+                        if (rc == ETIMEDOUT) {
+                                pthread_mutex_unlock(&mutex);
+                                log_info("timeout now.");
+                                break;
+                        } else if (rc != 0) {
+                                log_error("condition wait failed, %d:%s.", errno, strerror(errno));
+                                exit(1);
+                        }
+                        pthread_mutex_unlock(&mutex);
+                        log_info("quit now.");
+                        return NULL;
+                }
+                pthread_mutex_unlock(&mutex);
+#else
+                pthread_mutex_lock(&mutex);
+                timeout.tv_sec = time(NULL) + 1;
+                rc = pthread_cond_timedwait(&cond, &mutex, &timeout);
+                if (rc == 0) {
+                        pthread_mutex_unlock(&mutex);
+                        log_info("maybe quit now.");
+                        continue;
+                } else {
+                        if (rc != ETIMEDOUT) {
+                                log_error("condition wait failed, %d:%s.", errno, strerror(errno));
+                                exit(1);
+                        }
+                        pthread_mutex_unlock(&mutex);
+                        log_info("timeout now.");
+                }
+#endif
+
+                log_info("%d around, working.", ++count);
+        }
+
+        return NULL;
+}
+
+int main(void)
+{
+        int rc;
+        pthread_t t1;
+
+        log_info("Main thread pid %lu", gettid());
+
+        rc = pthread_create(&t1, NULL, thr1_fn, NULL);
+        if (rc != 0) {
+                log_error("Create thread failed, %s.", strerror(rc));
+                exit(1);
+        }
+        sleep(5);
+
+        quit_now++;
+        pthread_mutex_lock(&mutex);
+        pthread_cond_signal(&cond);
+        pthread_mutex_unlock(&mutex);
+
+        pthread_join(t1, NULL);
+
+        return 0;
+}
+{% endhighlight %}
+
 ### 原理
 
 首先重点解释下 `pthread_cond_wait()` 函数，该函数功能可以直接通过 `man 3p pthread_cond_wait` 查看；简单来说，其实现的功能是，释放 `mutex` 并阻塞到 `cond` ，更重要的是，这两步是 **原子操作** 。
