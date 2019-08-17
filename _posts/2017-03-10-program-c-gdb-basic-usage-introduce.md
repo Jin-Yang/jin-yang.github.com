@@ -391,6 +391,18 @@ grep switches /proc/78000/status
                   ^^^ pthread_mutex_lock
 
 关于当前系统支持的 API 接口，可以通过 `/usr/include/asm/unistd.h` 头文件查看。
+
+
+假设已知字符串的地址为 `0x539a2f` ，然后通过 `objdump -h <BIN-FILE>` 获取到 `.rodata` 的入口地址。
+
+ 15 .fini         00000016  0000000000535788  0000000000535788  00135788  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 16 .rodata       0003a7d8  00000000005357a0  00000000005357a0  001357a0  2**5
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+
+获取到字符串表的首地址 0x5357a0 - 0x1357a0 = 0x400000 ，对应字符串的偏移为 `0x539a2f - 0x400000 = 0x139A2F`
+
+
 -->
 
 
