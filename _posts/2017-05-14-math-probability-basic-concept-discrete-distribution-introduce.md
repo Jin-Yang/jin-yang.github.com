@@ -47,6 +47,41 @@ $$C_n^x=\frac{n\times(n-1)\times\cdots\times(n-x+1)}{x\times(x-1)\times\cdots\ti
 
 注意，二项分布是建立在有放回抽样的基础上的，也就是抽出一个样品测量或处理完后再放回去，然后抽下一个。不过现实中一般都是非放回抽样，这时就需要用超几何分布来计算概率。
 
+## 泊松分布
+
+也就是 Poisson Distribution ，其对应的概率质量函数如下。
+
+$$P(X=k)=\frac{\lambda^k e^{-\lambda}}{k!},\ k=0,1,2,..., \ \lambda \in \mathbb{R}_{>0}$$
+
+若 $X$ 服从参数为 $\lambda$ 的泊松分布，则记为 $X \sim \pi(\lambda)$ 或者 $X \sim P(\lambda)$ 。
+
+![poisson distribution pmf]({{ site.url }}/images/math/poisson_distribution_pmf.png "poisson distribution pmf"){: .pull-center width="80%" }
+
+上图对应的代码如下。
+
+{% highlight python %}
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+k = np.arange(20)
+fig = plt.figure(figsize=(12, 6))
+colors = ['deepskyblue', 'red', 'green', 'blue', 'purple']
+
+for lambda_, c in zip([1.0, 4.0, 6.5, 8.0, 10], colors):
+    y = stats.poisson.pmf(k, lambda_)
+    #plt.bar(k, y, lw=2, edgecolor=c, color=c, alpha=0.2, label=r"$\lambda=%.1f$" % lambda_)
+    plt.plot(k, y, lw=2, marker='o', color=c, alpha=0.8, label=r"$\lambda=%.1f$" % lambda_)
+
+plt.legend(loc=0)
+plt.ylabel("PMF($k$)")
+plt.xlabel("$k$")
+plt.title("Probability mass function of a Poisson random variable; differing $\lambda$ values")
+plt.show()
+{% endhighlight %}
+
+其数学期望和方差相等，均等于其参数 $\lambda$ ，也就是 $E(X)=Var(X)=\lambda$ 。
+
 <!--
 有关于GB/T2828中的介绍
 https://zhuanlan.zhihu.com/p/24692791

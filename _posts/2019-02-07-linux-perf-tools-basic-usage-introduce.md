@@ -30,32 +30,39 @@ Perf 是一款随 Linux 内核代码一同发布和维护的性能诊断工具�
 
 所支持的功能包括了 Hardware Event (硬件事件，需要类似 Performance Monitoring Unit, PMU 的硬件支持)、Software Event(内核软件事件，如进程切换)、Tracepoint Event(内核静态跟踪点) 等。
 
-perf 相关命令通过 `perf <subcmd>` 执行，大概有二十多个子命令，可以直接输入 `pref help [subcmd]` 查看，其中最常用的有 list、stat、top、record、report。
+perf 通过 `perf <subcmd>` 执行，大概有二十多个子命令，可通过 `pref help [subcmd]` 查看，其中最常用的有 list、stat、top、record、report。
+
+## 支持事件
+
+首先确认内核是否支持。
+
+{% highlight text %}
+$ cat "/boot/config-`uname -r`" | grep "PERF_EVENTS"
+CONFIG_PERF_EVENTS_INTEL_UNCORE=y
+CONFIG_HAVE_PERF_EVENTS=y
+CONFIG_PERF_EVENTS=y
+CONFIG_HAVE_PERF_EVENTS_NMI=y
+{% endhighlight %}
+
+
 
 ## 常用命令
 
-通过 list 子命令查看时，默认会打印所有，可以通过添加子集过滤所需要的事件，如 `[hw|sw|cache|tracepoint|pmu|event_glob]` 。
+通过 list 子命令查看时，默认会打印所有，可以通过添加子集过滤所需要的事件，如 hw、sw、cache、tracepoint、pmu、event_glob 等。
 
+不同的系统会列出不同的结果，大致可以将分为三类：
 
+* Hardware Event。由 PMU 硬件产生的事件，比如 Cache 命中，当需要了解程序对硬件特性的使用情况时，便需要对这些事件进行采样；
+* Software Event。是内核软件产生的事件，与硬件无关，比如进程切换，tick 数等；
+* Tracepoint Event。内核中的静态 Tracepoint 所触发的事件，基于 ftrace 用来判断程序运行期间内核的行为细节，比如 slab 分配器的分配次数等。
 
-
+注意，很多情况下虚机上是无法支持的。
 
 
 <!--
-
 http://wiki.csie.ncku.edu.tw/embedded/perf-tutorial
------ 
-
-$ cat "/boot/config-`uname -r`" | grep "PERF_EVENT"
 OProfile GProf
-#### not supported
 
-很多情况下虚机上是无法支持的。
-
-   <not supported>      cycles                                                      
-   <not supported>      instructions                                                
-   <not supported>      branches                                                    
-   <not supported>      branch-misses    
 
    
 $ perf list | grep stalled
@@ -96,19 +103,6 @@ $ perf report -i perf.data
 perf record ls
 perf annotate -d ls
 https://github.com/brendangregg/perf-tools
-
-<br><h2>perf list</h2><p>
-使用 perf list 命令可以列出所有能够触发 perf 采样点的事件，包括软件以及硬件，root 用户会有更多的采样点事件，如 hw (Hardware Events)、sw (Software Events)、cache (Hardware Cache Events)、tracepoint (Tracepoint Events)。<br><br>
-
-不同的系统会列出不同的结果，大致可以将它们划分为三类：<ol><li>
-Hardware Event<br>
-由 PMU 硬件产生的事件，比如 cache 命中，当需要了解程序对硬件特性的使用情况时，便需要对这些事件进行采样；</li><br><li>
-
-Software Event<br>
-是内核软件产生的事件，与硬件无关，比如进程切换，tick 数等;</li><br><li>
-
-Tracepoint event<br>
-内核中的静态 tracepoint 所触发的事件，基于 ftrace，这些 tracepoint 用来判断程序运行期间内核的行为细节，比如 slab 分配器的分配次数等。</li></ol>
 (2) 指定性能事件(以它的属性)
 -e <event> : u // userspace
 -e <event> : k // kernel
@@ -165,14 +159,6 @@ cache-misses<br>
 </p>
 
 
-<br><br><h2>perf top</h2><p>
-对整个系统直接进行采样，可以直接看到消耗最多的函数，也可以通过 -e 指定关注的事件，默认是 cycles 。
-<pre style="font-size:0.8em; face:arial;">
-# perf top -e cache-misses              # 造成cache miss最多的函数
-</pre>
-</p>
-
-
 
 <br><br><h2>perf record</h2><p>
 可以用 -F count 来指定采样频率，防止由于频率过低导致部分数据没有采集到。
@@ -182,6 +168,16 @@ cache-misses<br>
 
 <br><br><h2>perf report</h2><p>
 -->
+
+### perf top
+
+对整个系统直接进行采样，可以直接看到消耗最多的函数，也可以通过 `-e` 指定关注的事件，默认是 cycles 。
+
+{% highlight text %}
+# perf top -e cache-misses              # 造成cache miss最多的函数
+{% endhighlight %}
+
+
 
 ## 源码解析
 

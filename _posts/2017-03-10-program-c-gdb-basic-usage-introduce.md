@@ -142,8 +142,6 @@ set scheduler-locking off|on|step
 
 
 <!--
-
-
 注意，大部分的函数，例如 `backtrace()` `printf()` `malloc()` 并不是信号安全的，会有概率导致死锁。
 
 所以，一般在实践时，对一些异常场景打印栈，简单来说，就是 `So it is a calculated risk we are taking.` 。
@@ -401,16 +399,7 @@ grep switches /proc/78000/status
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
 
 获取到字符串表的首地址 0x5357a0 - 0x1357a0 = 0x400000 ，对应字符串的偏移为 `0x539a2f - 0x400000 = 0x139A2F`
-
-
 -->
-
-
-
-
-
-
-
 
 {% highlight text %}
 {% endhighlight %}
