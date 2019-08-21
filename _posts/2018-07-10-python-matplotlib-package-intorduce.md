@@ -8,7 +8,6 @@ keywords: python,matplotlib
 description: 简单来说，Matplotlib 是 Python 中的一个绘图库，包含了大量的工具，几乎可以通过该工具完成你所需要的任何图形，包括散点图、正弦曲线，甚至是三维图形。这一工具经常用在数据可视化中，这里简单介绍其使用方法。
 ---
 
-
 简单来说，Matplotlib 是 Python 中的一个绘图库，包含了大量的工具，几乎可以通过该工具完成你所需要的任何图形，包括散点图、正弦曲线，甚至是三维图形。
 
 这一工具经常用在数据可视化中，这里简单介绍其使用方法。
@@ -108,6 +107,72 @@ plt.show()
 {% endhighlight %}
 
 其它的插值算法还有 `bilinear` `bicubic` 等。
+
+## 动画
+
+最简单的，可以通过如下方式生成动画，但是暂时不太确定如何进行保存。
+
+{% highlight python %}
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 20, 500)
+
+plt.figure(figsize=(8, 4))
+for i in range(100):
+    plt.clf()
+    y = np.sin(x + np.pi * 0.1 * i)
+    plt.plot(x, y, color='blue', linewidth=1)
+    plt.pause(0.05)
+{% endhighlight %}
+
+另外，也可以使用 Matplotlib 库中的 animation 模块，如下是一个简单的示例。
+
+{% highlight python %}
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+fig, ax = plt.subplots()
+x = np.arange(0, 2*np.pi, 0.01)
+line, = ax.plot(x, np.sin(x))
+
+def init():
+    line.set_ydata([np.nan] * len(x))
+    return line,
+
+def animate(i):
+    line.set_ydata(np.sin(x + i / 100))  # update the data.
+    return line,
+
+ani = animation.FuncAnimation(fig, animate, init_func=init,
+                              interval=2, blit=True, save_count=50)
+
+# To save the animation, use e.g.
+# ani.save("movie.mp4")
+# ani.save('animation.gif', writer='pillow')
+# ani.save('animation.html', writer='html')
+# or
+# from matplotlib.animation import FFMpegWriter
+# writer = FFMpegWriter(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+# ani.save("movie.mp4", writer=writer)
+plt.show()
+{% endhighlight %}
+
+<!--
+animation.FuncAnimation()
+
+fig        用来绘制图像的对象；
+func       每个帧会调用的函数；
+init_func  可选初始化函数；
+interval   帧间隔时间，单位是毫秒；
+frames     指定更新序列，可以是整数、函数、循环对象，如果是整数，则指定的是总的帧数；
+save_count 保存动画的帧数；
+repeat     是否循环动画；
+blit       是否优化绘图。
+
+https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.animation.FuncAnimation.html
+-->
 
 ## 参数
 

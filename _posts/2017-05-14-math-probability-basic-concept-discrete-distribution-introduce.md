@@ -6,8 +6,10 @@ language: chinese
 usemath: true
 category: [linux,misc]
 keywords: linux,auto,completion
-description:
+description: 一些常见的离散概率分布，包括了伯努利分布、二项分布、泊松分布等，包括了如何通过 Python 进行测试。
 ---
+
+一些常见的离散概率分布，包括了伯努利分布、二项分布、泊松分布等，包括了如何通过 Python 进行测试。
 
 <!-- more -->
 
@@ -29,6 +31,19 @@ $$var[X]=\sum_{i=0}^1(x_i -E[X])^2 f_X(x)=(0-p)^2(1-p)+(1-p)^2p=p(1-p)=pq$$
 
 也就是最简单的离散概率分布，只有一个独立的事件，只可能出现两种结果。
 
+### 示例
+
+伯努利的概率质量函数很简单，如下是通过 Python 对其进行采样，并绘制直方图。
+
+{% highlight python %}
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+samples = stats.bernoulli.rvs(p=0.6, size=1000)
+plt.hist(samples, bins=2, density=0, facecolor="blue", edgecolor="black", alpha=0.7)
+plt.show()
+{% endhighlight %}
+
 ## 二项分布
 
 这个是在伯努利分布基础上的概率分布，在 N 次独立的伯努利试验中，期望某个结果 (事件发生了多少次) 出现的概率。
@@ -46,6 +61,30 @@ $$b(x,n,p)=C_n^xp^xq^{n-x}$$
 $$C_n^x=\frac{n\times(n-1)\times\cdots\times(n-x+1)}{x\times(x-1)\times\cdots\times1}=\frac{n!}{(n-x)!x!}$$
 
 注意，二项分布是建立在有放回抽样的基础上的，也就是抽出一个样品测量或处理完后再放回去，然后抽下一个。不过现实中一般都是非放回抽样，这时就需要用超几何分布来计算概率。
+
+### 示例
+
+![binom distribution pmf]({{ site.url }}/images/math/binom_distribution_pmf.png "binom distribution pmf"){: .pull-center width="60%" }
+
+同样可以通过 `rvs()` 函数生成随机采样值，然后通过如下方式绘制。
+
+{% highlight python %}
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+n, p = (10, 0.3)
+k = np.arange(0, 21)
+samples = stats.binom.rvs(n, p, size=10000)
+binomial = stats.binom.pmf(k, n, p)
+
+plt.hist(samples, bins=8, density=1, facecolor="blue", edgecolor="black", alpha=0.7)
+plt.plot(k, binomial, 'o-')
+plt.title('Binomial: n = %i, p=%0.2f' % (n, p))
+plt.xlabel('Number of successes')
+plt.ylabel('Probability of sucesses')
+plt.show()
+{% endhighlight %}
 
 ## 泊松分布
 

@@ -103,6 +103,11 @@ process.c   提供异步进程的实现
 		"match":"regex:success"                # 对返回信息进行检查，可以使用正则(regex)或字符串(string)
 	},
 
+	"heartbeat": {                                 # 可选，心跳检查
+		"interval":"60",                       # 心跳间隔，默认是1分钟
+		"match":"regex:success"                # 对上报报文的"message"字段进行匹配
+	},
+
         "autostart": true,                             # 可选，是否在安装或者启动BootAgent时自动拉起该进程
         "autorestart": "yes",                          # 可选，失败之后的启动方式，默认或者非法是yes
                                                        #       no 不再重启，无论退出的状态是什么
@@ -167,7 +172,45 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 
 所以，子进程需要处理好该场景，例如可以只保留一个进程。同时，也就意味着需要注意 `startsecs` 参数的设置。
 
-## 2. 任务管理
+## 2. 健康检查
+
+用来检查子进程是否正常，总共有三种方式。
+
+### 资源检查
+
+主要是检查子进程的 CPU、内存、句柄等信息。
+
+{% highlight text %}
+"limits": {
+	"CPU":30,
+	"MEM":102400,
+	"FDS":1000
+}
+{% endhighlight %}
+
+### 健康度
+
+通过配置的健康检查端口判断。
+
+{% highlight text %}
+"check": {
+	"path":"/usr/run/BootAgent.sock",
+	"match":"regex:success"
+}
+{% endhighlight %}
+
+### 心跳
+
+由子 Agent 周期性的向 BootAgent 发送固定格式的心跳报文。
+
+{% highlight text %}
+"heartbeat": {
+	"interval":"60",
+	"match":"regex:success"
+}
+{% endhighlight %}
+
+## 3. 任务管理
 
 BootAgent 不会持久化任务信息，因此实现的各种任务需要保证任务的可重入性，也就是可以重复执行多次不会带来逻辑上的问题。
 
@@ -333,7 +376,7 @@ FTP 分组链接
 2. PASV 建立被动链接。
 3. REST offset 发送本链接的文件偏移。
 4. RETR filename.txt 开始下载。
-5. 命令链接等待处理完成。 
+5. 命令链接等待处理完成。
 {% endhighlight %}
 
 ## 开发调试
@@ -566,7 +609,7 @@ BUG:
        2.1.3 网络不可达(227.0.0.1~20)，一般是由于路由不可达，此时报错 Network is unreachable.
    2.2 建立链接成功，数据发送，但是服务端无响应，客户端超时后重联。CLI_READ_TIMEOUT
    2.3 从服务端读取的数据格式异常，关闭重试。
-   
+
    2.2 服务端返回的报文格式异常。
 
 3. cgroup 资源隔离
