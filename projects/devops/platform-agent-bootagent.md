@@ -20,7 +20,7 @@ BootAgent 就是为了管理各个 Agent ，同时保证机制简单、功能稳
 
 如上所述，在实现时尽量做到简化，所以必然会带来很多的限制，简单列举如下：
 
-1. 与服务端通讯的发送、接收缓存默认是 16K 大小。
+1. 与服务端通讯的发送、接收缓存默认是 64K 大小，通过 `CLI_SNDBUF_SIZE` `CLI_RCVBUF_SIZE` 设置。
 2. 客户端会周期将状态上报到服务端，默认 10min (可配 3min~60min )，通过 `PROJECT_CLIENT_INTERVAL` 设置。
 3. 如果在一个周期内数据上报失败，那么会减少到 3min (可配 1min~60min) 重试上报，可通过 `PROJECT_RETRY_DELAY` 设置。
 
@@ -93,22 +93,25 @@ process.c   提供异步进程的实现
         },
 
 	"limits": {                                    # 可选，BA会周期性的检查，超过资源限制后kill进程
+		"interval":60,                         # 检查间隔
 		"CPU":30,                              # CPU使用率，单位%
 		"MEM":102400,                          # RSS内存，单位KB
 		"FDS":1000                             # 文件描述符
 	},
 
 	"check": {                                     # 可选，健康检查，超时时间是70%*checksecs
+		"interval":60,                         # 检查间隔
 		"path":"/usr/run/BootAgent.sock",      # 目前只支持Unix Domain Socket
 		"match":"regex:success"                # 对返回信息进行检查，可以使用正则(regex)或字符串(string)
 	},
 
 	"heartbeat": {                                 # 可选，心跳检查
-		"interval":"60",                       # 心跳间隔，默认是1分钟
+		"interval":60,                         # 心跳间隔，默认是1分钟
 		"match":"regex:success"                # 对上报报文的"message"字段进行匹配
 	},
 
         "autostart": true,                             # 可选，是否在安装或者启动BootAgent时自动拉起该进程
+        "stopit": false,                               # 可选，进程退出是否杀死进程，默认是false
         "autorestart": "yes",                          # 可选，失败之后的启动方式，默认或者非法是yes
                                                        #       no 不再重启，无论退出的状态是什么
                                                        #       yes 一直尝试重启，同样无论退出的状态是什么
@@ -182,6 +185,7 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 
 {% highlight text %}
 "limits": {
+	"interval":60,
 	"CPU":30,
 	"MEM":102400,
 	"FDS":1000
@@ -194,6 +198,7 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 
 {% highlight text %}
 "check": {
+	"interval":60,
 	"path":"/usr/run/BootAgent.sock",
 	"match":"regex:success"
 }
@@ -201,11 +206,13 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 
 ### 心跳
 
+
+
 由子 Agent 周期性的向 BootAgent 发送固定格式的心跳报文。
 
 {% highlight text %}
 "heartbeat": {
-	"interval":"60",
+	"interval":60,
 	"match":"regex:success"
 }
 {% endhighlight %}
@@ -342,9 +349,15 @@ BootAgent 在启动时通过判断是否存在 `MetaFile` 来决定是否为第�
 
 这里只针对 CPU、内存进行限制，简单来说，会新建一个管理所有 DEVOPS Agent 相关的分组，默认使用的是 `devops` ，也可以在启动的时候通过 `-C` 参数指定。
 
-当使用了 cgroup 机制后，其它 Agent 会存放到所对应分组目录下。
+当使用了 cgroup 机制后，其它 Agent 会存放到所对应分组目录下，如果没有配置则会添加到 cgroup 的根目录下，也就是资源不做限制。
 
 注意，此时各个子 Agent 指定的 CPU 使用率实际上是相对于总体而言，也就是说设置的是 `cpu.shares` 参数对应的值。
+
+### 分组
+
+默认 BootAgent 会使用 systemd 配置的 cgroup 组，而其它的 DevOps 工具则使用一个统一的 cgroup 组，这样可以将两者分开。
+
+可以在启动的时候通过 `-G` 参数指定，也就是将 BootAgent 同样添加到 DevOps 组中。
 
 ### 实现
 
@@ -470,10 +483,23 @@ export BOOTAGENT_TARCE=1; ./daemon/bootctl config setlog trace
 ./daemon/bootctl sha256 <YourFile>
 {% endhighlight %}
 
-
 ### Systemd
 
 在 CentOS 中也就是通过 systemd 管理进程，其中相关的 service 文件可以参考 `contrib/BootAgent.service` 中的配置内容。
+
+{% highlight text %}
+----- 更新配置
+# cp BootAgent.service /usr/lib/systemd/system/BootAgent.service
+# systemctl daemon-reload
+
+----- 查看状态以及重启
+# systemctl status BootAgent
+# systemctl restart BootAgent
+
+----- 配置后的cgroup会添加到如下目录
+$ ls /sys/fs/cgroup/cpu/system.slice/BootAgent.service
+$ ls /sys/fs/cgroup/memory/system.slice/BootAgent.service
+{% endhighlight %}
 
 ### 测试
 

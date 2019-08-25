@@ -996,13 +996,6 @@ top 除了默认的列之外，可以选择需要显示的列，操作如下：
 列排序：
 执行top命令后，按 shift + f（小写），进入选择排序列页面，再按要排序的列的代表字母即可；
 
-systemctl set-property --runtime uagent.service CPUQuota=5% MemoryLimit=30M
-
-关于资源配置的选项可以通过 ```man 5 systemd.resource-control``` 方式查看，默认是没有开启审计的，所以通过 ```systemd-cgtop``` 没有显示具体的资源。
-
-很多相关的内核文档链接
-https://www.freedesktop.org/software/systemd/man/systemd.resource-control.html
-
 注册信号处理函数
 
 setsid()

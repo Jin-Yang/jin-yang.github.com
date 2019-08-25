@@ -41,6 +41,8 @@ Restart=always
 RestartSec=3
 {% endhighlight %}
 
+如果设置为 `on-failure` ，那么当退出码为 0 时，将不会再重启，此时应该设置为 `always` 模式。
+
 ### 限制重启次数
 
 主要是为了防止程序异常，导致进程一直重复被拉起，可以限制某段时间内的重启次数。
@@ -314,12 +316,21 @@ Restart=always
 RestartSec=3
 {% endhighlight %}
 
-另外，当一个服务异常时，可以通过 `OnFailure=notify-failed@%n` 配置向另外一个服务发送消息。
+另外，当一个服务异常时，可以通过 `OnFailure=notify-failed@%n` 配置的方式向另外一个服务发送消息。
 
+## cgroup
 
+在服务的配置文件中，可以通过 `CPUQuota` `MemoryLimit` 来设置 cgroup ，当然也可以通过如下方式临时配置。
+
+{% highlight text %}
+# systemctl set-property --runtime uagent.service CPUQuota=5% MemoryLimit=30M
+{% endhighlight %}
+
+关于资源配置的选项可以通过 `man 5 systemd.resource-control` 方式查看，默认是没有开启审计的，所以通过 `systemd-cgtop` 没有显示具体的资源。
 
 <!--
-## 参考
+很多相关的内核文档链接
+https://www.freedesktop.org/software/systemd/man/systemd.resource-control.html
 
 How to use systemd notify
 https://askubuntu.com/questions/1120023/how-to-use-systemd-notify
