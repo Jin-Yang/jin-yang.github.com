@@ -188,7 +188,7 @@ http://www.cnblogs.com/zhenjing/archive/2012/06/20/linux_writeback.html
 
 ## 参考
 
-[Linux IO Stack Diagram](/reference/linux/linux-io-stack-diagram_v0.1.pdf) 文件系统与 IO 的调用层次。
+内核中与存储相关的内核栈可以参考 [Linux Storage Stack Diagram](https://www.thomas-krenn.com/en/wiki/Linux_Storage_Stack_Diagram) ，一个很不错的图。
 
 <!--
 https://www.xaprb.com/blog/2010/01/09/how-linux-iostat-computes-its-results/

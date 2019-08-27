@@ -301,6 +301,44 @@ int main ()
 }
 -->
 
+### 磁盘
+
+可以通过 blkio 进行设置，不过只能针对设备限速，例如可以设置 `/dev/sda` 而无法设置具体的分区。
+
+如下是一个示例。
+
+{% highlight text %}
+----- 查看并选择其中的一个
+# df -h
+----- 直接读取某个磁盘分区
+# dd if=/dev/sda1 of=/dev/null
+{% endhighlight %}
+
+可以通过 `iotop` 查看，因为是单纯的读取，其速度一般可以达到 `100M/s` 以上。
+
+{% highlight text %}
+----- 新建一个cgroup的分组
+# mkdir /sys/fs/cgroup/blkio/foobar
+# cd /sys/fs/cgroup/blkio/foobar
+----- 配置读取某个磁盘的最大速度，也就是1M
+# echo '8:0 1048576' > blkio.throttle.read_bps_device
+{% endhighlight %}
+
+上述配置中的 `8:0` 为设备的主次设备号，可以通过 `ls -l /dev/sda` 查看。
+
+在 blkio 中，除了设置，还可以监控 IO 的使用情况，所以大部分的文件都是只读的，可以配置的只有如下的几个。
+
+{% highlight text %}
+blkio.throttle.read_bps_device
+blkio.throttle.read_iops_device
+blkio.throttle.write_bps_device
+blkio.throttle.write_iops_device
+blkio.weight
+blkio.weight_device
+{% endhighlight %}
+
+其中 `throttle` 是用来配置流量限速的，而 `weight` 则是配置权重信息。blkio 子系统里还有很多统计项，用来监控当前 cgroup 的使用情况。
+
 ## systemd
 
 CentOS 7 中默认的资源隔离是通过 systemd 进行资源控制的，systemd 内部使用 cgroups 对其下的单元进行资源管理，包括 CPU、BlcokIO 以及 MEM，通过 cgroup 可以 。
@@ -679,6 +717,7 @@ https://blog.csdn.net/yin262/article/details/46730261
 很经典的介绍
 https://www.cnblogs.com/acool/p/6852250.html
 
+https://www.kernel.org/doc/Documentation/cgroup-v1/blkio-controller.txt
 -->
 
 {% highlight text %}

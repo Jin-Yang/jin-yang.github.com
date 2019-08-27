@@ -75,6 +75,7 @@ show environment [varname] 查看环境变量。
 3、工作目录。
 cd <dir> 相当于shell的cd命令。
 pwd 显示当前的所在目录。
+
 -->
 
 
@@ -99,6 +100,17 @@ pwd 显示当前的所在目录。
   - h 双字节；
   - w 四字节；
   - g 八字节；
+{% endhighlight %}
+
+### 变量查看
+
+{% highlight text %}
+----- 查看所有的全局和静态变量
+(gdb) info variables
+----- 当前栈的局部变量，包括了本函数中的静态变量
+(gdb) info locals
+----- 查看参数
+(gdb) info args
 {% endhighlight %}
 
 ## 多线程

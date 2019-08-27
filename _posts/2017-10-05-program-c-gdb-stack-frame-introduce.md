@@ -16,6 +16,8 @@ description: 栈是一块内存空间，会从高地址向低地址增长，同�
 
 ## 简介
 
+这里的介绍都是以 x86_64 为基础，而栈帧的操作大部分是与寄存器相关，不同的架构使用寄存器的方式略有区别。
+
 {% highlight text %}
  addr       contents        running     access
 
@@ -43,9 +45,15 @@ description: 栈是一块内存空间，会从高地址向低地址增长，同�
 {% highlight text %}
 $rip                                  指令寄存器，指向当前执行的代码位置
 $rsp                                  栈指针寄存器，指向当前栈顶，可以通过pushq popq进行自动操作
+$rbp                                  栈帧指针，用来标示当前栈帧的起始位置；
+
 $rax $rbx $rcx $rdx $rsi $rdi $rbp    通用寄存器
 $r8 $r9 $r10 $r11 $r12 $r13 $r14 $r15
 {% endhighlight %}
+
+另外，`%rdi` `%rsi` `%rdx` `%rcx` `%r8` `%r9` 六个寄存器用于存储函数调用的前六个参数，超过则通过栈传递；`%rax` 用来返回结果。
+
+另外，需要区分 "Caller Save" 以及 "Callee Save" 寄存器，在某个函数中，会使用到通用寄存器，那么在子函数中这些寄存器的值可能被覆盖，所以需要确定寄存器的保存方式。
 
 ## 函数传参
 
