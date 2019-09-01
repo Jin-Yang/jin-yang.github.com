@@ -1,8 +1,10 @@
 ---
 title: libev 时间处理
+curtag: libev
 layout: post
 comments: true
 language: chinese
+tag: [libev]
 category: [linux,program]
 keywords: linux,program,libev,event loop
 description: 在之前的文章中介绍了 libev 库的基本概念以及常见的使用方法，其中与时间相关的内容只是简单介绍，不过这一部分涉及到的内容会比较多，而且杂，所以单独摘出来介绍下。

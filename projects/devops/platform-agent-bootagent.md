@@ -99,7 +99,7 @@ process.c   提供异步进程的实现
 		"FDS":1000                             # 文件描述符
 	},
 
-	"check": {                                     # 可选，健康检查，超时时间是70%*checksecs
+	"check": {                                     # 可选，健康检查，超时时间是70%*interval
 		"interval":60,                         # 检查间隔
 		"path":"/usr/run/BootAgent.sock",      # 目前只支持Unix Domain Socket
 		"match":"regex:success"                # 对返回信息进行检查，可以使用正则(regex)或字符串(string)
@@ -122,7 +122,7 @@ process.c   提供异步进程的实现
         "exitcodes": "0,9",                            # 可选，认为正常的退出码，不会再重启，只支持正值
         "restartsecs": 20,                             # 可选，失败之后启动前sleep时间
         "startsecs": 20,                               # 可选，启动多久之后认为正常，其中fork默认为60
-        "checksecs": 20,                               # 可选，Health Check的时间间隔，默认60
+        "checksecs": 20,                               # 可选，健康检查机制
         "stopsecs": 20,                                # 可选，超过多久之后直接向进程发送SIGKILL
 
         "stopasgroup": true,                           # 可选，在kill进程时以组方式

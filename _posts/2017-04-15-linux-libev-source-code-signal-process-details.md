@@ -1,8 +1,10 @@
 ---
 title: libev 信号处理
+curtag: libev
 layout: post
 comments: true
 language: chinese
+tag: [libev]
 category: [linux,program]
 keywords: linux,program,libev,event loop,signal,信号安全
 description:

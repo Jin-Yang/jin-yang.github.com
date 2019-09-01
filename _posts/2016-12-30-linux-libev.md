@@ -3,8 +3,8 @@ title: libev 使用简介
 curtag: libev
 layout: post
 comments: true
-tag: [libev]
 language: chinese
+tag: [libev]
 category: [linux,program]
 keywords: linux,program,libev,event loop
 description: libev 与 libevent 类似，是一个 C 语言编写的，高性能的事件循环库，在此详细介绍下。

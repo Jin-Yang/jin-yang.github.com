@@ -1,8 +1,10 @@
 ---
 title: libev 源码详解
+curtag: libev
 layout: post
 comments: true
 language: chinese
+tag: [libev]
 category: [linux,program]
 keywords: linux,program,libev,event loop
 description:
