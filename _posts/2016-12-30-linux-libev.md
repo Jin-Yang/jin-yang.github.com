@@ -1,7 +1,9 @@
 ---
 title: libev 使用简介
+curtag: libev
 layout: post
 comments: true
+tag: [libev]
 language: chinese
 category: [linux,program]
 keywords: linux,program,libev,event loop
@@ -62,7 +64,7 @@ int main (void)
 {
 	// use the default event loop unless you have special needs
 	// struct ev_loop *loop = EV_DEFAULT; /* OR ev_default_loop(0) */
-	EV_P EV_DEFAULT; 
+	EV_P EV_DEFAULT;
 
 	// initialise an io watcher, then start it
 	// this one will watch for stdin to become readable
@@ -251,7 +253,7 @@ int main (void)
 }
 {% endhighlight %}
 
-### Periodic
+### Periodic Watcher
 
 Periodic 可以理解为类似于 crontab ，不像 timer 基于的是相对时间，改调度基于的是日历时间或者说是墙上时间。
 
@@ -612,10 +614,9 @@ int main (void)
 
 注意，全局只能有一个默认的 `struct ev_loop` ，在线程中，需要通过 `ev_loop_new()` 再新建一个。
 
-<!--
-这个文档很不错
-https://metacpan.org/pod/distribution/EV/libev/ev.pod
--->
+## 参考
+
+相关的文档可以参考 [metacpan ev.pod](https://metacpan.org/pod/distribution/EV/libev/ev.pod) ，也可以在该网站获取最新的版本，例如 [libev 4.27](https://metacpan.org/source/MLEHMANN/EV-4.27) 。
 
 {% highlight text %}
 {% endhighlight %}

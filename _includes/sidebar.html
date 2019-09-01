@@ -5,6 +5,17 @@
 just feel free to contact me :)</p>
 </div><!-- end of "node" "about" -->
 
+{% if page.curtag %}
+  <h2>Related Posts</h2>
+  <div class="list-group">
+    {% for post in site.tags[page.curtag] limit: 5 %}
+      {% if post.url != page.url %}
+        <a class="list-group-item" href="{{ post.url }}">{{ post.title }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
 <h2>Recent Posts</h2>
 <div class="list-group">
   {% for post in site.posts limit: 5 %}

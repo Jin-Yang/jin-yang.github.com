@@ -109,6 +109,7 @@ process.c   提供异步进程的实现
 		"interval":60,                         # 心跳间隔，默认是1分钟
 		"match":"regex:success"                # 对上报报文的"message"字段进行匹配
 	},
+        "checks": 3,                                   # 可选，如上的检查超过这里的设置次数后认为异常
 
         "autostart": true,                             # 可选，是否在安装或者启动BootAgent时自动拉起该进程
         "stopit": false,                               # 可选，进程退出是否杀死进程，默认是false
@@ -194,7 +195,9 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 
 ### 健康度
 
-通过配置的健康检查端口判断。
+通过配置的健康检查端口判断，目前只支持 Unix Domain Socket，使用简单的换行进行分割。
+
+会发送 `health\r\n` 请求，返回的结果会读取到 `\r\n` 处为止，最大长度为 127 字节。
 
 {% highlight text %}
 "check": {
