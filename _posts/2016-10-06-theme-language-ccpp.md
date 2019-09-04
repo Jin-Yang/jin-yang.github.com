@@ -93,7 +93,22 @@ https://github.com/tinycthread/tinycthread
 
 ## 原子操作
 
-* [Memory Reordering 简析](/post/linux-c-memory-reordering-basic-introduce.html)
+早期 CPU 通过提高主频来提升 CPU 的性能，不过因为工艺问题，主频很难再提升，目前更加倾向于多核心的发展。
+
+另外，由于 CPU 与主存之间。
+
+<!--
+内存一致性模型（memory consistency model）就是用来描述多线程对共享存储器的访问行为，在不同的内存一致性模型里，多线程对共享存储器的访问行为有非常大的差别。这些差别会严重影响程序的执行逻辑，甚至会造成软件逻辑问题。在后面的介绍中，我们将分析不同的一致性模型里，多线程的内存访问乱序问题。
+-->
+
+### 硬件基础
+
+* [CPU 硬件介绍](/post/computer-hardware-details-introduce.html)
+
+
+### 编程方法
+
+* [Memory Reordering 简析](/post/linux-c-memory-reordering-basic-introduce.html) 包括了编译器乱序、CPU 乱序等，及其实例。
 * [GCC 原子操作](/post/linux-c-gcc-atomic-operation-introduce.html) GCC 实际上已经提供了一些简单的原子操作，这里简单介绍。
 * [Lock Free 编程](/post/linux-c-program-lock-free-queue-introduce.html)
 

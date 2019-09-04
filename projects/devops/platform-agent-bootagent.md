@@ -778,6 +778,8 @@ https://paper.seebug.org/89/
 
 
 
+一个文件所属的分区可以通过 fstat() 函数查看，或者 `df <DIR>` 。
+
 
 EAGAIN的处理方式
 https://blog.csdn.net/tianmohust/article/details/8691644

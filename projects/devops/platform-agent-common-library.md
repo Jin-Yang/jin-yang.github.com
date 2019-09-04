@@ -50,6 +50,9 @@ $ git submodule add git@gogs.cargo.com:cargo/clib-liblog.git libs/liblog
 
 ----- 对于所有的submodule拉取最新的代码
 $ git submodule foreach --recursive git pull
+
+----- 可以简单查看当前各个模块的状态
+$ git submodule
 {% endhighlight %}
 
 ### liblog

@@ -236,6 +236,11 @@ x/1 0x7ffcfc8e4194
 <!--
 函数调用过程
 https://blog.csdn.net/Jogger_Ling/article/details/64443470
+
+
+多线程环境下的内存调试
+http://www.0xffffff.org/2017/01/22/39-multi-thread-memory-bug/
+https://zhuanlan.zhihu.com/p/27339191
 -->
 
 

@@ -411,6 +411,15 @@ grep switches /proc/78000/status
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
 
 获取到字符串表的首地址 0x5357a0 - 0x1357a0 = 0x400000 ，对应字符串的偏移为 `0x539a2f - 0x400000 = 0x139A2F`
+
+
+
+可以通过调整 ulimits 允许进程在异常时生成 core 文件，或者是在 gdb 中通过 `gcore <file name>` 生成对应的 core 文件。
+
+注意，通过 `backtrace()` 打印的栈，其显示的地址是将要执行的下个地址。
+
+在 GDB 中可以通过 call 直接调用某个函数。
+
 -->
 
 {% highlight text %}
