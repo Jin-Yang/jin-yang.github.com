@@ -12,8 +12,16 @@ description: 简单介绍下 JavaScript 经常使用的工具。
 
 <!-- more -->
 
-
 ## Node.js
+
+如果安装最新版本可以通过如下方式，此时 node 以及 npm 都会安装。
+
+{% highlight html %}
+# curl -sL https://rpm.nodesource.com/setup_11.x | bash -
+# yum -y install nodejs
+{% endhighlight %}
+
+当然，上述方式安装的包可能也不是最新的，需要根据版本确定第一条命令。
 
 ### 安装测试
 

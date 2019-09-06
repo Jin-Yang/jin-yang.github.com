@@ -62,6 +62,55 @@ func (g Grade) Pass() bool {
 }
 {% endhighlight %}
 
+#### 类型转换
+
+用来在不同但 **相互兼容** 的类型之间的相互转换的方式。
+
+{% highlight go %}
+package main
+
+import "fmt"
+
+func main() {
+        var v1 int = 7
+        v2 := int64(v1)
+        v3 := float32(v1)
+        //v4 := []int8(v1)
+
+        fmt.Printf("%T->%v\n", v1, v1)
+        fmt.Printf("%T->%v\n", v2, v2)
+        fmt.Printf("%T->%v\n", v3, v3)
+
+        v := new(int32)
+        fmt.Printf("%T->%v\n", v, v)
+        vv := (*int32)(v)
+        fmt.Printf("%T->%v\n", vv, vv)
+}
+{% endhighlight %}
+
+其中 v4 的类型不兼容，所以会直接报错。另外，对于 `(*int32)(v)` 操作，不能修改为 `*int32(v)`，因为后者等价于 `*(int32(v))` ，显然与预期不符。
+
+#### 类型断言
+
+其实与类型转换相同，只是断言用在接口中，也可以查看 [Golang 语法之接口](/post/golang-syntax-interface-introduce.html) 中关于类型的判断。
+
+{% highlight go %}
+package main
+
+import "fmt"
+
+func main() {
+        //var data interface{} = "99"
+        var data interface{} = 99
+
+        if v, ok := data.(int); !ok {
+                fmt.Printf("invlid type\n")
+        } else {
+                fmt.Printf("%T->%d\n", v, v)
+        }
+}
+{% endhighlight %}
+
 ### 数组
 
 数组是内置类型，相同数据类型的集合，下标从 0 开始，初始化后长度固定，且无法修改其长度。当作为方法的入参传入时将复制一份数组而不是引用同一指针，而且长度也是其类型的一部分，可以通过内置函数 `len(array)` 获取其长度。

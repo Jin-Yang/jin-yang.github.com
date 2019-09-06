@@ -21,6 +21,7 @@ description:
 * [Linux 的防火墙](/post/network-netfilter-iptables.html)，Linux 中的防火墙策略，包括 netfilter 和 iptables 。
 * [TCP/IP 协议简介](/post/network-tcpip-introduce.html)，简单介绍一下与 Linux 协议栈相关的内容。
 * [TCP/IP 协议之 TIME_WAIT](/post/network-tcpip-timewait.html)，简单介绍下 TCP 协议栈中，TIME_WAIT 这一特殊的状态值。
+* [TC 使用简介](/post/network-traffic-control-introduce.html)
 
 <!--
 * [Linux 中的 socketfs](/post/network-socketfs.html)，也就是 Linux 中应用层与内核网络协议栈之间的中间层。
