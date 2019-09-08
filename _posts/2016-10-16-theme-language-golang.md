@@ -25,13 +25,13 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 与 GoLang 相关的配置。
 
 * [GoLang 简介](/post/golang-introduce.html)，介绍环境搭建、常用工具、单元测试、环境变量、三方包安装等。
-* [GoLang 常用模块](/post/golang-common-module-introduce.html)，常见的三方模块使用，例如 log、unsafe 等。
 * [GoLang 常用工具](/post/golang-some-third-tools.html)，常用的工具，包括了 GVM、GDM、Goreman 等。
-* [GoLang 包管理](/post/golang-basic-package-introduce.html)，Go 的包管理简单明了，不过也有一定的规范。
+* [GoLang 包管理](/post/golang-basic-package-introduce.html) Go 的包管理简单明了，不过也有一定的规范。
 
 ### 常用模块
 
-* [GoLang time 模块](/post/golang-common-module-time-introduce.html)，常见的三方模块使用，例如 log、unsafe 等。
+* [GoLang 常用模块](/post/golang-common-module-introduce.html) 常见的三方模块使用，例如 log、unsafe 等。
+* [GoLang time 模块](/post/golang-common-module-time-introduce.html) 主要是与定时器相关的内容。
 
 ### 语法相关
 

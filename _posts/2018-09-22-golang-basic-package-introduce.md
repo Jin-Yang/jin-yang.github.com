@@ -14,7 +14,7 @@ Go 语言有自己的命名与代码组织规则。
 
 <!-- more -->
 
-## 包命名布局
+## 简介
 
 GoLang 包的命名遵循简洁、小写、单数和与目录同名的原则，这样便于引用和快速定位查找。一个包中可以根据功能拆分为多个文件，不同的文件实现不同功能点；相同包下的函数可以直接使用。
 
@@ -22,7 +22,7 @@ GoLang 包的命名遵循简洁、小写、单数和与目录同名的原则，�
 
 自己或者公司开发的程序而言，一般采用域名作为顶级包名的方式，这样就不用担心和其他开发者包名重复了，例如 `github.com/coreos`。
 
-## main 包
+### main 包
 
 当把一个 go 文件的包名声明为 main 时，就等于告诉编译器这是一个可执行程序，会尝试把它编译为一个二进制的可执行文件。
 
@@ -36,7 +36,7 @@ $ go run main.go foobar.go
 $ go build main.go foobar.go
 {% endhighlight %}
 
-## import
+### import
 
 在 golang 中可以通过如下的方式导入。
 
@@ -66,6 +66,26 @@ import ("database/sql" _ "github.com/ziutek/mymysql/godrv")
 2. pkg 中定义的 const 变量初始化；
 3. pkg 中定义的 var 全局变量；
 4. pkg 中定义的 init 函数，可能有多个。
+
+## 三方包
+
+在 1.5 版本之前，包的管理方式简单的粗暴，仅通过环境变量进行设置。
+
+{% highlight text %}
+GOROOT=/usr/local/golang
+GOPATH=/home/USER/golang
+GOBIN=/usr/local/golang/bin
+{% endhighlight %}
+
+其中 `GOROOT` 会保存编译器、工具链、基础源码库等基础代码，而 `GOPATH` 是用户自定义的代码所在位置。
+
+如果执行 `go install` 安装包，那么对应的二进制会保存在 `${GOBIN}/bin` 目录下，如果 `GOBIN` 环境变量不存在，那么就会保存在 `${GOPATH}/bin` 目录下。
+
+当通过 `go get -v` 下载包时，会将下载依赖包源码保存到 `${GOPATH}/src` 目录下，然后在 `${GOPATH}/pkg` 目录下生成该包的静态库，那么下次使用就不用再从源码编译。
+
+在包搜索时，会依次查找 `${GOROOT}` 以及 `${GOPATH}` ，所以尽量不要重名。
+
+
 
 
 {% highlight text %}

@@ -185,6 +185,7 @@ let g:tagbar_foldlevel = 2
 "let g:tagbar_right = 1                  " on the right.
 let g:tagbar_left = 1                  " on the left.
 autocmd FileType c,cpp nested :TagbarOpen
+autocmd FileType js,javascript,less set shiftwidth=2 | set tabstop=2 | set shiftwidth=2 | set expandtab
 "autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx call tagbar#autoopen()
 "autocmd VimEnter * nested :call tagbar#autoopen(1)    " auto-open
 " }1

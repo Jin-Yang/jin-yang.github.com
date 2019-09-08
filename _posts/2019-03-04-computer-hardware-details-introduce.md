@@ -22,35 +22,33 @@ description:
 
 当程序访问某个地址时，会经过虚拟地址到物理地址的映射，那么这就涉及到了页表以及 TLB ，只在转换到了物理地址之后才会涉及到 Cache 相关的内容。
 
+也就是说，如果 TLB 的命中概率比较低的话，同样会导致读取内存的速度变慢。
+
 ### 映射关系
 
 也就是 Cache 到物理内存的映射。
 
 #### 直接映射
 
-Direct Mapped Cache 这也是最简单粗暴的例子，每个地址可以直接且只能映射到某个 Cache Line 上。
+Direct Mapped Cache 是最简单粗暴的例子，每个地址可以且只能映射到某个 Cache Line 上。
 
 假设内存大小为 16K ，每四个字节作为一个 Block ，如果要对 16K 内存进行寻址，那么需要 14 位地址；Cache 的大小为 256 字节，每个 Block 大小同样为四个字节。
 
+![Direct Mapped Cache]({{ site.url }}/images/hardware/Direct_Mapped_Cache.png "Direct Mapped Cache"){: .pull-center width="70%"}
 
 通过 Index 定位到 Cache 中的偏移，Offset 对应了 Cache Line 中的偏移，而 Tag 则对应了内存地址的高位，也就是每个 Cache Line 可能会缓存不同的 64 个地址中的一个。
-
-https://upload.wikimedia.org/wikipedia/commons/a/ab/Direct-Mapped_Cache_Snehal_Img.png
 
 #### 全映射
 
 Fully Associative Cache 也就是每个 Cache 可以映射到内存中的任意一个内存中地址。
 
-https://upload.wikimedia.org/wikipedia/commons/9/9c/Fully-Associative_Cache_Snehal_Img.png
+![Fully Associative Cache]({{ site.url }}/images/hardware/Fully_Associative_Cache.png "Fully Associative Cache"){: .pull-center width="70%"}
 
 #### Set 映射
 
 Set Associative Cache 将直接映射又做了逻辑分组。
 
-
-
-https://upload.wikimedia.org/wikipedia/commons/7/71/Set-Associative_Cache_Snehal_Img.png
-
+![Set Associative Cache]({{ site.url }}/images/hardware/Set_Associative_Cache.png "Set Associative Cache"){: .pull-center width="70%"}
 
 ## 其它
 
@@ -106,10 +104,10 @@ https://en.wikipedia.org/wiki/Cache_placement_policies
 
 关于计算机不错的介绍
 http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.115.1881&rep=rep1&type=pdf
+
+https://zhuanlan.zhihu.com/p/36119440
+https://manybutfinite.com/post/intel-cpu-caches/
 -->
-
-
-
 
 {% highlight text %}
 {% endhighlight %}
