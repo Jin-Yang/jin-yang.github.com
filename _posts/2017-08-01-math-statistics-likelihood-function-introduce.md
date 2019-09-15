@@ -87,6 +87,10 @@ http://www.xuyankun.cn/2017/05/13/bayes/
 最大似然、最大后验估计
 https://blog.csdn.net/u011508640/article/details/72815981
 https://zhuanlan.zhihu.com/p/26614750
+
+
+https://zhuanlan.zhihu.com/p/45898097
+https://zhuanlan.zhihu.com/p/26614750
 -->
 
 

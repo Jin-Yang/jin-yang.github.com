@@ -46,6 +46,7 @@ Programs must be written for people to read, and only incidentally for machines 
 
 详细可以参考：
 
+* [Etcd 数据库专题](/post/theme-database-etcd.html)
 * [MySQL 数据库专题](/post/theme-database-mysql.html)
 * [PostgreSQL 数据库专题](/post/theme-database-postgresql.html)
 
@@ -121,24 +122,6 @@ Lua 在葡萄牙语中是 “月亮” 的意思，是一个小巧的脚本语�
 * [Lua 协程](/post/lua-coroutine.html)，作为一种简单的语言，仍支持闭包、协程等较新的特性，简单介绍协程使用。
 * [Lua 源码解析](/post/lua-sourcecode.html)，其核心代码总共才 2W 行左右，但是却实现了很多不错的特性。
 * [Lua CAPI 使用](/post/lua-how-capi-works.html)，简单介绍 Lua 和 C 之间的调用，常见的概念如栈、CAPI等概念。
-
-![RAFT Logo]({{ site.url }}/images/databases/raft/raft-logo.png "RAFT Logo"){: .pull-center width="210" }
-
-PAXOS 算法从 90 年提出到现在已经有二十几年了，不过其流程过于复杂，目前较多的有 Chubby、libpaxos ，以及 Zookeeper 修改后的 Zookeeper Atomic Broadcase, ZAB 。
-
-RAFT 是斯坦福的 Diego Ongaro、John Ousterhout 两人设计的一致性算法，在 2013 年发布了论文 《In Search of an Understandable Consensus Algorithm》，目前已经有近十多种语言的实现，其中使用较多的是 ETCD 。
-
-* [RAFT 协议简介](/post/raft-consensus-algorithms-introduce.html) 一个为真实世界应用建立的协议，注重落地性和可理解性。
-* [ETCD 基本简介](/post/golang-raft-etcd-introduce.html) 主要介绍 ETCD 如何使用，包括安装、部署、使用以及常见的介绍。
-* [ETCD 示例源码](/post/golang-raft-etcd-example-sourcode-details.html) 源码中关于如何 RAFT 协议的示例代码，直接使用的是内存数据库。
-* [ETCD 源码解析](/post/golang-raft-etcd-sourcode-details.html) 除了上述的示例代码，这里简单介绍其代码的实现。
-
-<!--
-* [ETCD 源码解析](/post/golang-raft-etcd-sourcode-network.html)
-* [ETCD 示例源码](/post/golang-raft-etcd-sourcode-storage.html)
-* [ETCD 示例源码](/post/golang-raft-etcd-sourcode-consistent-reading.html)
-* [ETCD 示例源码](/post/golang-raft-etcd-backend-boltdb.html)
--->
 
 ## Tags
 

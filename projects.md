@@ -81,5 +81,64 @@ ELF加密
 https://github.com/droberson/ELFcrypt
 加密协议
 https://github.com/WickrInc/wickr-crypto-c
+
+
+realpath 会检查路径、权限，并将对应的软连接进行转换，需要注意第二个入参的大小，否则可能会导致越界。
+
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
+#include <limits.h>
+
+int main(void)
+{
+        char real[PATH_MAX];
+        const char *name = "filename";
+
+        if (realpath(name, real) == NULL) {
+                fprintf(stderr, "got realpath for '%s' failed, %d:%s.\n",
+                        name, errno, strerror(errno));
+                return -1;
+        }
+        fprintf(stdout, "the file '%s' is not exist\n", real);
+
+        return 0;
+}
+
+static ssize_t xwrite(int fd, const void *buf, size_t nbytes)
+{
+        ssize_t rc;
+        double now;
+        struct timeval tnow;
+
+        static double last;
+        static uint64_t currcap = 0;
+        static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+        assert(nbytes > 0);
+        if (gettimeofday(&tnow, NULL) < 0)
+                return -1;
+        now = (double)tnow.tv_sec + (double)tnow.tv_usec / 10e6;
+
+        pthread_mutex_lock(&lock);
+        if (now - last > CHECK_INTERVAL) {
+                currcap = (uint64_t)(CHECK_INTERVAL * CHECK_LIMITS * 1024);
+                last = now;
+        }
+
+        if (currcap < nbytes) {
+                pthread_mutex_unlock(&lock);
+                errno = EAGAIN;
+                return -1;
+        }
+
+        rc = write(fd, buf, nbytes);
+        if (rc > 0)
+                currcap -= rc;
+        pthread_mutex_unlock(&lock);
+
+        return rc;
+}
 -->
 

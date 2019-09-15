@@ -9,6 +9,8 @@ keywords: stan
 description: 在使用 Monte-Carlo 时，除了所谓的采样之外，在解决贝叶斯问题的时候，很多地方还使用了积分，这时就是通过 Monte-Carlo 的样本和去近似积分。而所谓的采样，实际上就是根据某种分布去生成一些数据点，最简单的例如抛硬币、掷骰子等，服从均匀分布。
 ---
 
+经常会在各类的算法中看到 "蒙特卡罗" (Monte Carlo) 的字样，例如 Markov Chain Monte Carlo, MCMC、以及 AlphaGo 使用的蒙特卡洛搜索树。
+
 在使用 Monte-Carlo 时，除了所谓的采样之外，在解决贝叶斯问题的时候，很多地方还使用了积分，这时就是通过 Monte-Carlo 的样本和去近似积分。
 
 而所谓的采样，实际上就是根据某种分布去生成一些数据点，最简单的例如抛硬币、掷骰子等，服从均匀分布。
@@ -19,7 +21,13 @@ description: 在使用 Monte-Carlo 时，除了所谓的采样之外，在解决
 
 Monte Carlo Method 也就是通过重复随机采样模拟对象的概率与统计的问题，在物理、化学、经济学和信息技术领域均具有广泛应用。
 
+它诞生于上个世纪 40 年代美国的 "曼哈顿计划"，主要是由于计算机的发展，其名字来源于赌城蒙特卡罗，象征概率。
+
+就是通过大量的随机样本，去了解一个系统，进而得到所要计算的值。对于许多问题来说，它往往是最简单的计算方法，有时甚至是唯一可行的方法。
+
 简单来说，就是通过随机采样的方式，以频率估计概率。
+
+其实，"蒙特卡罗" 并非是一个算法，而是一个思想或者方法的统称。
 
 ### PI 计算
 
@@ -51,14 +59,17 @@ pi = (float(inside) / float(total)) * 4
 print(pi)
 {% endhighlight %}
 
-
 <!--
 https://blog.csdn.net/jteng/article/details/54344766
 -->
 
 ## 简单采样
 
-对于均匀分布来说，就可以通过随机数发生器来实现，包括了伪随机数发生器，然后再以此为基础实现一些比较复杂的采样。
+对于简单分布 (高斯、指数、均匀、Gamma等) 的采样，实际上在计算机中都已经实现，可以直接通过 `numpy.random` 模块生成，但是对于一些复杂的分布，尤其在贝叶斯、概率编程里面，则需要对这些复杂分布进行采样。
+
+例如，对于均匀分布来说，就可以通过随机数发生器来实现，包括了伪随机数发生器，然后再以此为基础实现一些比较复杂的采样。
+
+实际上这些库也基本上是这么做的，不同的分布会有不同的算法。
 
 ### 离散分布
 
@@ -85,7 +96,16 @@ for i in range(10000):
     s = sample_discrete([0.1, 0.5, 0.3, 0.1])
     sample[sample_space[s]] += 1
 for k in sample:
-    print(k, " : ", sample[k])
+    print("%s: %d" % (k, sample[k]))
+{% endhighlight %}
+
+最终输出的内容类似如下，基本上满足上述的概率分布。
+
+{% highlight text %}
+A: 991
+C: 3060
+B: 4954
+D: 995
 {% endhighlight %}
 
 ### 正态分布
@@ -143,11 +163,25 @@ ax2.hist(y2, bins=200, density=True)
 plt.show()
 {% endhighlight %}
 
+输出的内容如下，在采样之后，两者基本都可以满足正态分布。
+
+![sample normal distribution]({{ site.url }}/images/ai/sample-normal-distribution.png "sample normal distribution"){: .pull-center width="100%" }
+
+## 采样算法
+
 ## 参考
 
 <!--
 机器学习中的Monte-Carlo，写的还是不错的
-https://applenob.github.io/1_MCMC.html
+https://applenob.github.io/machine_learning/MCMC/
+
+https://zhuanlan.zhihu.com/p/34071776
+2. 采样分类，从简单到复杂总共有多少种？
+
+包括了一个基本的算法示例
+https://blog.csdn.net/jteng/article/details/54344766
+
+http://www.ruanyifeng.com/blog/2015/07/monte-carlo-method.html
 -->
 
 {% highlight text %}

@@ -12,16 +12,13 @@ description:
 
 ![artificial intelligence logo]({{ site.url }}/images/artificial-intelligence-logo-01.jpg "artificial intelligence logo"){: .pull-center width="70%" }
 
-
-<!--
 科普作家 Isaac Asimov 阿西莫夫的机器人三定律。
 
-> 1. A robot may not injure a human being or, through inaction, allow a human being to come to harm.
-> 2. A robot must obey orders given it by human beings except where such orders would conflict with the First Law.
-> 3. A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
-
-machine-learning-logo.jpg
--->
+> A robot may not injure a human being or, through inaction, allow a human being to come to harm.
+>
+> A robot must obey orders given it by human beings except where such orders would conflict with the First Law.
+>
+> A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
 
 ## Python 包
 
@@ -73,6 +70,7 @@ R 语言作为统计学一门语言，一直属于一个小众的工具集，直
 
 * 官方文档 [www.rdocumentation.org](https://www.rdocumentation.org/) ，可以直接搜索相关的主题。
 
+
 ## 机器学习 100 天
 
 也就是 [Github 100 Days Of ML Code](https://github.com/Avik-Jain/100-Days-Of-ML-Code) 中的学习，可以参考 [Github 机器学习 100 天](https://github.com/MLEveryday/100-Days-Of-ML-Code) 。
@@ -83,6 +81,11 @@ R 语言作为统计学一门语言，一直属于一个小众的工具集，直
 https://blog.csdn.net/ybdesire/article/details/67701289
 https://tracholar.github.io/wiki/machine-learning/sklearn-source.html
 -->
+
+## 深度学习
+
+![artificial intelligence logo]({{ site.url }}/images/machine-learning-logo.jpg "artificial intelligence logo"){: .pull-center width="40%" }
+
 
 ## 其它
 
@@ -98,6 +101,18 @@ https://www.zybuluo.com/codeep/note/163962  比较全
 https://github.com/neverusedname/MyBooks/blob/master/%E6%B5%99%E6%B1%9F%E5%A4%A7%E5%AD%A6%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1(%E7%AC%AC%E5%9B%9B%E7%89%88).pdf
 https://github.com/KeKe-Li/book/blob/master/AI/%E5%90%8C%E6%B5%8E%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E6%95%99%E6%9D%90.pdf
 https://github.com/KeKe-Li/book/blob/master/AI/%E5%90%8C%E6%B5%8E%E9%AB%98%E7%AD%89%E6%95%B0%E5%AD%A6%E7%AC%AC%E5%85%AD%E7%89%88%E4%B8%8A%E4%B8%8B%E5%86%8C.pdf
+
+
+网络RST报文出现的场景
+https://zhuanlan.zhihu.com/p/30791159
+
+
+关于贝叶斯的介绍
+https://github.com/markdregan/Bayesian-Modelling-in-Python
+https://github.com/Tongzhenguo/ebooks 李航的机器学习
+http://www.dgt-factory.com/uploads/2018/07/0725/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95.pdf
+https://github.com/lovingers/ML_Books/blob/master/634901%2B%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%96%B9%E6%B3%95%2B%2B%E6%A6%82%E7%8E%87%E7%BC%96%E7%A8%8B%E4%B8%8E%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E6%96%AD%2B%E4%B8%AD%E6%96%87%E7%89%88.pdf
+https://zhuanlan.zhihu.com/p/27306970 很多不错的书籍介绍
 -->
 
 {% highlight text %}

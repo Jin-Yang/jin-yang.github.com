@@ -12,9 +12,41 @@ description: 简单记录一下一些与 Markdown 相关的内容，包括了一
 
 简单来说，就是如何通过如下的一些平台组合，满足运维的需求。目的：提高自动化、标准化，积累经验，减少人工投入，降低故障率。
 
+也就是所谓的 `Build, Config, Launch and Monitor the Infrastructure` 。
+
 有时候运维和监控平台的运行是一个矛盾体，如在变更时要求尽量减小对在线服务的影响，那么就要求占用资源尽量少（如网络、CPU、磁盘等）；当出现故障需要处理时，
 
 基本功能：日志审计、权限管理；高级功能：高可用、服务降级 (如OSS不可用) 。
+
+## 公共服务 Common Service
+
+### SSO
+
+单点登陆系统，用于记录用户登陆信息、鉴权信息、分权分域等内容。
+
+### 注册中心 Register Center
+
+保存了各个服务的注册信息，用于服务的自动注册和发现，其后端基于 ETCD 。
+
+注册中心保存的是元数据信息，数据量小，一般以万计，不会超过十万或者几十万；同时提供的是高可用配置，一般会在多个Region中进行部署，提供了跨 Region 的容灾级别。
+
+第一次启动时会连接到注册中心，并获取所依赖服务的配置信息，同时会保存到本地(默认是保存一份历史配置，可以设置保存多份)，这样即使注册中心不可用，仍然可以使用本地的历史配置。
+
+当然，这也意味着，第一次启动时必须要能连接到注册中心才可以。
+
+后面启动时，会优先连接到注册中心，获取最新的服务，如果有配置更新，则同时会更新本地的配置文件。
+
+### API Gateway
+
+服务的 API 管理，包括了访问权限管理、流量控制、监控数据等。
+
+### 软件仓库 Repository
+
+软件仓库，包括了系统OS、CICD部署、软件包管理等。
+
+### 基础 Agent
+
+这里称之为 BootAgent ，用于 Agent 的安装部署、监控等，只包含了最基本的操作，倾向于小且稳定。
 
 ## 基础平台 Basic Platform
 
@@ -124,14 +156,6 @@ description: 简单记录一下一些与 Markdown 相关的内容，包括了一
 2. 针对不同的类型配置不同的安装模板，例如HAProxy、MySQL、PostgreSQL、Nginx等。
 {% endhighlight %}
 
-### Repository ++
-
-软件仓库，包括了系统OS、CICD部署等。【可降级】
-
-{% highlight text %}
-1. OS包基本仓库。
-{% endhighlight %}
-
 ### Config ++
 
 配置管理，软件配置、主机自发现。【高可用】(Disconf)
@@ -148,9 +172,7 @@ description: 简单记录一下一些与 Markdown 相关的内容，包括了一
 
 <!-- http://peter.bourgon.org/blog/2017/02/21/metrics-tracing-and-logging.html -->
 
-<!--
-Build, Config, Launch and Monitor the Infrastructure.
-BCLM
+#### 简介
 
 Collecting, processing, aggregating, and displaying real-time quantitative data about a system.
 
@@ -179,8 +201,69 @@ Collecting, processing, aggregating, and displaying real-time quantitative data 
 * 完善的事后分析 (post-hoc analysis) 工具，用于做根因分子，用于回答 Why?
 
 Google 关于可靠性的原则之一就是 Reliability 不是由 Google 的系统监控和预警系统决定，而是由用户说了算。另外一个原则是，可靠性要达到业界的黄金标准的 99.99%，只靠完善软件本身的设计和实现是不可能达到的，必须结合优秀的 SRE 运维实践。
--->
 
+#### 指标管理
+
+希望尽量以抽象的方式进行展示，而无需关心其采集方式，例如可以是脚本、StatsD、HTTP、拨测等方式。
+
+监控指标名称分为五层，需要保持唯一，其中 namespace 用于逻辑区分，例如 system、middleware、RDS.Process 等，只用于指标的分类，并不用于上报、告警、查询等用途。
+
+剩余四层用来定义一个指标名称，在同一台主机上，要求指标名称唯一，否则主机上报数据时可能会发生异常。详见如下：
+
+* namespace 标示业务，例如系统类(system)、中间组件 (middle)、业务。
+* category
+* subcate
+* indicator
+* instance
+
+各个层级之间通过 `.` 分隔，一个指标分类时允许存在两层，不允许出现 `.` `[` `]` 分隔。在解析时从后向前，首先通过 `]` 判断是否存在 instance ，然后获取 indicator ，最后判断是否存在 subcate 。
+
+常见的示例如下。
+
+{% highlight text %}
+系统类型 CPU、Memory、Disk、Load、Process
+中间组件 HAProxy、MySQL、PostgreSQL、Nginx
+业务数据 登录次数、UV、PV
+
+cpu.usage[total]                  CPU使用率，其中实例标示了那个CPU，或者是总体
+load.1min[abs] load.1min[avg]     系统负载，可以是平均负载或者是整体负载
+net.tx[eth0]                      eth0网卡的发送字节数
+process.nums[nginx]               Nginx的进程数
+memory.usage                      内存使用率
+mysql.innodb.cache                MySQL InnoDB存储引擎的Cache使用率
+mysql.conn.running                MySQL已经建立连接数
+haproxy.error.econ                发送失败数
+postgre.conn.idle                 PostgreSQL空闲连接数
+{% endhighlight %}
+
+#### 数据上报
+
+注意如下仅为示例，标示了指标上报的类型，可以用不同的方式上报。
+
+{% highlight text %}
+{
+	"tags": "srv:EVS,idc:northeast-01,group:az1",  # 可选，全局的tag信息
+	"hostname" : "your-host-name",                 # 可选，主机名，为空时会使用本地默认的主机名
+	"metrics": [{
+		"metric" : "disk.usage[/]",            # 详见指标名称的定义，上报时会做拆解
+		"tags": "fstype:ext4",                 # 指标相关的tags信息
+		"value": 50.4,
+		"timestamp": `date +%s`,               # 时间戳，单位是秒
+		"type": "GAUGE",                       # 数据类型
+		"step": 60                             # 采集间隔，单位是秒
+	}]
+}
+
+##srv=EVS,idc=northest-01,group=az1
+==disk(mountpoint)
+mountpoint=/,tags=fstype:ext4,usage=50.4
+{% endhighlight %}
+
+
+
+#### 告警配置
+
+告警配置信息中会带上 namespace 作为上下文信息，如果触发了告警则会将此信息同时发送。
 
 ### MonitorAgent +++++
 
@@ -268,16 +351,6 @@ Google 关于可靠性的原则之一就是 Reliability 不是由 Google 的系�
 
 <!--
 >>>>>> Others >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-3. 其它
-AIDE  主动防御安全监测
-自动拉起
-
-BootStrap 用于 Agent 的自动升级，只包含了最基本的操作，倾向于小且稳定。
-	1. 自动下载升级包完成升级，提供回滚操作。
-	2. 升级完成后仍存在一天，检查是否升级成功，检查项包括：
-	   2.1 是否频繁重启。
-	   2.2 CPU使用率超过 5%；内存超过 100M；内存相比第一次启动增长超过 20M。
-	3. 报告升级状态。
 
 ### Agent基本需求
 
@@ -350,7 +423,6 @@ Nginx 路由、负载均衡、动静分离。
 HAProxy 负载均衡。
 APIService 对外API接口。
 ETCD 高可用、服务注册。
-SSO{*****} 用户权限管理。
 MySQL 关系型数据库，CMDB。
 InfluxDB 时序数据库，保存监控采集数据。
 Redis/MemCached 数据缓存。
@@ -741,6 +813,10 @@ https://blog.csdn.net/chenjiayi_yun/article/details/8942506
 https://blog.csdn.net/turingo/article/details/8178510
 https://blog.csdn.net/zhoudaxia/article/details/8039540
 https://tonybai.com/2015/06/17/appdash-distributed-systems-tracing-in-go/
+
+3. 其它
+AIDE  主动防御安全监测
+自动拉起
 -->
 
 

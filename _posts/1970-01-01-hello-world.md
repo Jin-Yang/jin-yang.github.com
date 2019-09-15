@@ -1662,11 +1662,6 @@ https://tech.meituan.com/dbproxy-pr.html
 http://www.cnblogs.com/wunaozai/p/3955156.html
 https://tech.meituan.com/
 
-HMAC
-http://www.oschina.net/question/12_2828
-https://github.com/awslabs/s2n
-https://btrfs.wiki.kernel.org/index.php/Main_Page
-
 http://blog.csdn.net/factor2000/article/details/3929816
 http://www.tldp.org/HOWTO/html_single/C++-dlopen/
 

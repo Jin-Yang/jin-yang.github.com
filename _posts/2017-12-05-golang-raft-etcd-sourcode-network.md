@@ -18,6 +18,8 @@ description:
 
 实际上，在 ETCD 中有两个与网络交互的流处理对象：`streamReader` 和 `streamWriter`，分别用来处理网络的读写流量。
 
+两者的实现都保存在 `etcdserver/api/rafthttp/stream.go` 中的实现。
+
 <!--
 在如下的函数中，最终真正调用的处理函数就是 `ServeHTTP()` 接口。
 

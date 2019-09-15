@@ -8,8 +8,76 @@ keywords:  program,c,deadlock
 description:
 ---
 
+pthread 是 POSIX 标准的多线程库，其源码位于 glibc 中的 Native POSIX Thread Library, NPTL 目录下，大部分的应用都是基于 pthread 来实现多线程的并行与同步管理。
 
 <!-- more -->
+
+## 简介
+
+通过线程可以提高调度效率，包括了更加轻量级的上下文切换，避免不必要的 mm_switch 。
+
+在 Linux 中 pthread 所提供的同步机制核心要依赖与内核的 futex 机制。
+
+在用户空间会执行变量的原子增加操作，一般是 CAS 操作，如果没有冲突，那么就会立即返回，不会发生上下文切换。
+
+只有发生冲突后，才会调用 futex 系统调用，然后切换到内核态。
+
+nptl 的实现会通过 futex 中的值标识来表示锁的状态，包括了：A) 0 锁空闲；B) 1 没有 waiter ，解锁之后无需调用 futex_wake ；C) 2 有 waiter ，那么解锁之后需要调用 futex_wake 。
+
+{% highlight text %}
+pthread_mutex_lock()   nptl/pthread_mutex_lock.c
+ |-__pthread_mutex_lock()
+   |-LLL_MUTEX_LOCK()    最主要的实现函数，也就是lll_lock()的宏定义
+     |-__lll_lock()
+       |-atomic_compare_and_exchange_bool_acq()	尝试从0变为1，成功返回0(获得锁返回)，否则返回>0
+         |-__lll_lock_wait() 返回的是非0进入阻塞，会调用futex并将值设置为2
+{% endhighlight %}
+
+上述真实的代码是在汇编文件中实现，对于 C 代码可以参考 `lowlevellock.c` 中的实现。
+
+{% highlight c %}
+void __lll_lock_wait (int *futex, int private)
+{
+	/* 非第一个线程会阻塞在这里 */
+	if (*futex == 2)  
+		lll_futex_wait (futex, 2, private); /* Wait if *futex == 2.  */
+ 
+	/* 第一个线程会阻塞在这里 */
+	while (atomic_exchange_acq (futex, 2) != 0)
+		lll_futex_wait (futex, 2, private); /* Wait if *futex == 2.  */
+}
+{% endhighlight %}
+
+在 `__lll_lock_wait()` 函数中，第一个没有获取锁的线程会进入 while 循环，并将 futex 赋值成为 2 ，等待 lock 被释放后成为 0 ，这第一个 waiter 被唤醒，`atomic_exchange_acq()` 则会赋予 futex 继续是 2，但是返回 0 跳出获取到 lock 。
+
+{% highlight text %}
+pthread_mutex_unlock()
+ |-__pthread_mutex_unlock()
+   |-__pthread_mutex_unlock_usercnt() 做一些恢复owner nusers的操作
+     |-lll_unlock()   // 将futex值赋为0，并对oldval比较，如果是2，说明有waiter，则futex_wake，1则不需要
+	   |-lll_futex_wake()
+{% endhighlight %}
+
+另外，内核中的 futex 模块的 waiter 队列是 FIFO 的，根据参数 mutex unlock 后只会 wake up 一个 waiter 。
+
+<!--
+https://www.cnblogs.com/xiaojianliu/articles/8638871.html
+http://kexianda.info/2017/08/17/%E5%B9%B6%E5%8F%91%E7%B3%BB%E5%88%97-5-%E4%BB%8EAQS%E5%88%B0futex%E4%B8%89-glibc-NPTL-%E7%9A%84mutex-cond%E5%AE%9E%E7%8E%B0/
+
+https://github.com/rouming/dla
+-->
+
+
+
+
+
+
+
+
+
+## 示例
+
+如下是一个会产生死锁的示例。
 
 {% highlight c %}
 #include <unistd.h>
@@ -68,10 +136,7 @@ int main(void)
 }
 {% endhighlight %}
 
-
-<!--
-
-如果使用了 `-O2` 参数 + `strip` 操作，那么对于一些已经优化的符号 (static inline) 在使用 gdb 的时候就可能不存在。
+注意，如果使用了 `-O2` 参数 + `strip` 操作，那么对于一些已经优化的符号 (static inline) 在使用 gdb 的时候就可能不存在。
 
 那么需要添加 `-rdynamic` 参数，那么即使执行了上面的两个操作，那么仍然可以通过 gdb 使用。
 
@@ -79,12 +144,33 @@ int main(void)
 
 此时，只能通过如下方法查看其反汇编代码。
 
+{% highlight text %}
 (gdb) disassemble /r 0x401365,0x401370
-
 (gdb) info break
 (gdb) delete 1            # 删除序号为1的断点，如果不加参数，则删除所有
 (gdb) break *(0x400990)   # 根据地址设置断点
+{% endhighlight %}
 
+### 无符号
+
+在发行版本中，一般会将调试信息删除，但是，因为 mutex 的数据结构是固定的，所以仍然可以通过 gdb 进行查看。
+
+在 `__lll_lock_wait()` 所在的帧处，对于 x86_64 可以通过 `p *(pthread_mutex_t*)$rdi` 查看，而 x86_32 可以通过 `p *(pthread_mutex_t*)$ebx` 查看。
+
+注意，如果没有 `debuginfo` 包，一般会报 `No symbol table is loaded.` 的错误，也就是对应的 `pthread_mutex_t` 符号没有加载，那么可以通过如下方式查看。
+
+{% highlight text %}
+(gdb) print *((int*)($rdi))                # lock字段
+$4 = 2
+(gdb) print *((unsigned int*)($rdi)+1)     # count字段
+$5 = 0
+(gdb) print *((int*)($rdi)+2)              # owner字段
+$6 = 12275
+{% endhighlight %}
+
+然后可以通过 `/proc/<PID>/maps` 确定其所属的地址空间，基本确定发生死锁的是本二进制，还是在库中。
+
+<!--
 kill -0 <PID> 可以用来判断进程是否存在。
 
 exit() 也可能会失败。

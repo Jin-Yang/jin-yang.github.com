@@ -12,6 +12,20 @@ dva 是基于现有应用架构 (redux + react-router + redux-saga 等) 的一�
 
 <!-- more -->
 
+## 简介
+
+相关的 Block 可以从 [Github Pro-Blocks](https://github.com/ant-design/pro-blocks) 上下载。
+
+<!--
+ls pro-blocks-master/ | grep / | xargs -I {} umi block add /pro-blocks-master/{}
+
+$ umi block add https://github.com/umijs/umi-blocks/tree/master/blank
+$ umi block add blank # a shortcut
+
+https://umijs.org/guide/block.html
+-->
+
+
 ## DVA
 
 每个路由下都有一个 model，这个 model 掌管这个路由的所有状态 (action、state、reducer、sagas)，组件想改变状态 dispatch type 名字就行了。
