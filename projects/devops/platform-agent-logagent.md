@@ -145,5 +145,9 @@ https://yq.aliyun.com/articles/204554
 https://www.thegeekdiary.com/centos-rhel-67-how-to-increase-system-log-message-verbosity-rsyslogd/
 https://www.digitalocean.com/community/tutorials/how-to-view-and-configure-linux-logs-on-ubuntu-and-centos
 
+
+https://www.jianshu.com/p/6a03ba897e04
+https://yq.aliyun.com/articles/204554?spm=5176.10695662.1996646101.searchclickresult.6ed6ff98OMv6De
+
 {% highlight text %}
 {% endhighlight %}

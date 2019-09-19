@@ -112,6 +112,12 @@ $ gcc -fpic -o test test.c          // 开启PIC 强度为1 不会开启PIE
 $ gcc -fPIC -o test test.c          // 开启PIC 最高强度2 不会开启PIE
 {% endhighlight %}
 
+如果中间会生成 `.o` 文件，那么只需要添加 `-fPIC` 参数即可，只有在最终生成二进制文件时才需要添加 `-fPIE -pie` 参数。
+
+<!--
+https://mropert.github.io/2018/02/02/pic_pie_sanitizers/
+-->
+
 ### 堆随机化
 
 这里会有些复杂，因为 Linux 中堆空间可以通过 `mmap()` 以及 `brk()` 这两个系统调用完成的，而在不同的等级上面可能会只有部分接口被随机化。

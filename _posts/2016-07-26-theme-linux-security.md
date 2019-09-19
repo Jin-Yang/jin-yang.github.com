@@ -25,8 +25,11 @@ description:
 
 ## 单点登陆
 
-* [JWT 简介](/post/json-web-token-introduce.html)，简单介绍下 SSO 和 JWT 的原理及其使用方法。
-* [双因子验证](/post/two-factors-authenticator-introduce.html)，与双因子验证相关的内容。
+
+
+* [SSO 简介](/post/json-web-token-introduce.html) 简单介绍下 JWT 的原理及其使用示例。
+* [JWT 简介](/post/json-web-token-introduce.html) 简单介绍下 JWT 的原理及其使用示例。
+* [双因子验证](/post/two-factors-authenticator-introduce.html) 通过密码以及另外的安全验证方法。
 
 ## SSH
 

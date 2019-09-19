@@ -817,6 +817,18 @@ https://tonybai.com/2015/06/17/appdash-distributed-systems-tracing-in-go/
 3. 其它
 AIDE  主动防御安全监测
 自动拉起
+
+
+https://www.cnblogs.com/xuxm2007/p/9141191.html
+http://aosabook.org/en/index.html
+https://juejin.im/post/5a52e87f5188257340261417
+https://www.iteye.com/blog/jianpx-899230
+https://wiki.python.org/moin/Templating
+https://github.com/purcell/airspeed
+https://github.com/aosabook/500lines/tree/master/template-engine/code
+
+https://github.com/alexmic/microtemplates/blob/master/microtemplates/base.py
+http://alexmic.net/building-a-template-engine/
 -->
 
 

@@ -67,6 +67,102 @@ import ("database/sql" _ "github.com/ziutek/mymysql/godrv")
 3. pkg 中定义的 var 全局变量；
 4. pkg 中定义的 init 函数，可能有多个。
 
+## 包管理
+
+原则是，尽量保持目录的清晰，支持一些常见工具 (如 vim-go 等) 的使用。
+
+最初是通过 `GOROOT` 保存 Go 的源码目录，而通过 `GOPATH` 保存项目工程目录，当然可以通过 `:` 分割来设置多个。
+
+在实际使用时，通过会将一些常用的三方库保存在 `GOPATH` 的第一个目录下。
+
+所以，此时的目录一般为。
+
+{% highlight text %}
+WORKSPACE
+ |-src/github.com/hello/world   引用的三方库
+ |    /foobar                   项目实现的代码	
+ |    /foobar/mymath            项目子模块
+ |-bin
+ |-pkg
+{% endhighlight %}
+
+其中，在 `foobar` 目录下保存的是项目目录，而如果要引用 `mymath` 模块的代码，需要调用 `import foobar/mymath` 才可以。
+
+然后通过 `go install foobar` 安装，此时会在 `bin/` 目录下生成对应的二进制文件。
+
+注意，如果通过 `go build foobar` 会在当前目录下生成二进制文件。
+
+### 示例
+
+新建一个临时的项目工程 `mkdir /tmp/foobar && GOPATH=/tmp/foobar` 。
+
+简单来说，上述的三方库引入一个最简单打印输出。
+
+{% highlight go %}
+// src/github.com/hello/world/hello.go
+package world
+
+import "fmt"
+
+func Hi() {
+        fmt.Println("Hello World!")
+}
+{% endhighlight %}
+
+如下是一个项目内的代码。
+
+{% highlight go %}
+// src/foobar/main.go
+package main
+
+import (
+        "fmt"
+        "foobar/mymath"
+        "github.com/hello/world"
+)
+
+func main() {
+        world.Hi()
+        fmt.Printf("sqrt(4) %.2f\n", mymath.Sqrt(4))
+}
+{% endhighlight %}
+
+以及项目中的子模块。
+
+{% highlight go %}
+// src/foobar/mymath/sqrt.go
+package mymath
+
+import "math"
+
+func Sqrt(x float64) float64 {
+        return math.Sqrt(x)
+}
+{% endhighlight %}
+
+### Vendor
+
+如果只维护了一个项目，而且该目录下包含的都是与当前项目相关的内容，那么实际上维护起来还好，但是如果有多个项目，而且想共用一些三方仓库，那么维护起来就比较麻烦。
+
+{% highlight text %}
+WORKSPACE
+ |-src/github.com/some/third                  引用的一些通用三方库
+ |    /foobar                                 项目实现的代码
+ |    /foobar/mymath                          项目子模块
+ |    /foobar/vendor/github.com/hello/world   单个项目引用的三方库
+ |-bin
+ |-pkg
+{% endhighlight %}
+
+### Module
+
+到目前为止，仍然要强依赖于 GOPATH 变量的设置，所以要么已经完全设置好了，要么就每个项目维护一个打包脚本，在该脚本中设置相应的环境变量。
+
+<!--
+https://juejin.im/post/5c8e503a6fb9a070d878184a
+-->
+
+
 ## 三方包
 
 在 1.5 版本之前，包的管理方式简单的粗暴，仅通过环境变量进行设置。
@@ -85,8 +181,9 @@ GOBIN=/usr/local/golang/bin
 
 在包搜索时，会依次查找 `${GOROOT}` 以及 `${GOPATH}` ，所以尽量不要重名。
 
+## 参考
 
-
+* [Organizing Go code](https://talks.golang.org/2014/organizeio.slide#1) 。
 
 {% highlight text %}
 {% endhighlight %}

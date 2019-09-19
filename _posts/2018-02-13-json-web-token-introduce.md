@@ -1,5 +1,5 @@
 ---
-title: SSO JWT 简介
+title: JWT 简介
 layout: post
 comments: true
 language: chinese

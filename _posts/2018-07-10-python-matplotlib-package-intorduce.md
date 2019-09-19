@@ -221,6 +221,8 @@ https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.animation.FuncAnimation.html
 <!---
 http://codingpy.com/article/a-quick-intro-to-matplotlib/
 http://python.jobbole.com/87831/
+
+https://towardsdatascience.com/bar-chart-race-in-python-with-matplotlib-8e687a5c8a41
 -->
 
 

@@ -11,6 +11,27 @@ description:
 
 <!-- more -->
 
+## 协程退出
+
+协程不像进程或者线程可以强者退出，只能主动退出，如下是几种常见的退出方式。
+
+### for-range
+
+通过 `range` 可以感知到管道的关闭，当管道关闭的时候，range 就会结束退出。
+
+{% highlight go %}
+go func(in <-chan int) {
+	for x := range in {
+		fmt.Printf("Process %d\n", x)
+	}
+}(inChan)
+{% endhighlight %}
+
+
+<!--
+http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/
+-->
+
 ## 并发控制
 
 控制并发有两种经典的方式：`WaitGroup` 和 `Context` 。

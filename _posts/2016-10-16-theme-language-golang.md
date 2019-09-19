@@ -28,6 +28,11 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 * [GoLang 常用工具](/post/golang-some-third-tools.html) 常用的工具，包括了 GVM、GDM、Goreman 等。
 * [GoLang 包管理](/post/golang-basic-package-introduce.html) Go 的包管理简单明了，不过也有一定的规范。
 
+### 高阶语法
+
+* [GoLang 并发模型](/post/golang-concept-concurrency-module-introduce.html)
+* [GoLang 内存模型](/post/golang-concept-memory-module-introduce.html) 主要是介绍一些协程同步相关的内容。
+
 ### 语法相关
 
 * [GoLang 语法简介](/post/golang-basic-syntax-introduce.html)，简单介绍常见的语法，例如 import、异常处理、反射等。
@@ -39,15 +44,16 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 * [GoLang 语法之结构体](/post/golang-syntax-structure-introduce.html) 类似于 C 中的结构体，各种对象的集合，但是使用更加复杂。
 * [GoLang 闭包简介](/post/golang-basic-closure-introduce.html) 与其它语言中的闭包概念相同，介绍下 GoLang 中的使用。
 
+### 测试相关
+
+* [GoLang 单元测试](/post/golang-testing-method-introduce.html) 使用的是基本的 testing 模块，可以执行单元测试、性能测试。
+* [GoLang 竞态检查](/post/golang-race-condition-introduce.html) 在并发编程中如何进行竞态条件的测试。
+
 ### 常用模块
 
 * [GoLang 常用模块](/post/golang-common-module-introduce.html) 常见的三方模块使用，例如 log、unsafe 等。
 * [GoLang time 模块](/post/golang-common-module-time-introduce.html) 主要是与定时器相关的内容。
 * [GoLang bytes 模块](/post/golang-common-module-bytes-introduce.html) 包括了 String、Bytes 的基本概念，序列化以及反序列化等操作。
-
-### 测试相关
-
-* [GoLang 单元测试](/post/golang-testing-method-introduce.html) 使用的是基本的 testing 模块，可以执行单元测试、性能测试。
 
 ### 三方模块
 
@@ -59,10 +65,18 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 * [GoLang JSON 编码解码](/post/golang-json-encode-decode-introduce.html) 简单记录使用 JSON 的常用技巧。
 * [GoLang Echo 简介](/post/golang-http-structure-echo-introduce.html) 一个 HTTP 的 Echo 框架，也可以使用 FastHTTP 作为底层。
 
+<!--
+go读取配置文件 viper
+https://xuchao918.github.io/2019/04/29/%E4%BD%BF%E7%94%A8go%E8%AF%BB%E5%8F%96%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/
+https://github.com/spf13/viper
+
+日志格式化 Logrus
+https://github.com/sirupsen/logrus
+-->
+
 ### 参考示例
 
 * [GoLang 网络编程](/post/golang-example-socket-introduce.html) 一些与网络编程相关的介绍。
-
 
 ### 其它
 
