@@ -21,6 +21,7 @@ Community Enterprise Operating System, CentOS 是 Linux 发行版之一，它是
 这里简单记录一些乱七八糟的东西。
 
 * [CentOS 安装配置](/post/centos-config-from-scratch.html) 简单介绍 CentOS 在安装时需要作的一些常用配置。
+* [CentOS Yum 配置](/post/centos-config-yum-rpm-stuff-introduce.html) 关于 YUM 仓库的源配置以及 RPM 相关操作。
 * [CentOS 内核升级](/post/centos-update-kernel-version.html) 如何使用三方仓库将内核升级到新版本。
 * [Systemd 使用简介](/post/linux-systemd.html) 一般发行版本采用的是 systemd，在此简单介绍下。
 

@@ -32,12 +32,14 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 
 * [GoLang Gopher](/post/golang-concept-much-more-gopher-introduce.html)
 * [GoLang 调度机制](/post/golang-concept-scheduler-introduce.html)
+* [GoLang 内存管理](/post/golang-concept-memory-management-module-introduce.html)
 * [GoLang 并发模型](/post/golang-concept-concurrency-module-introduce.html)
 * [GoLang 内存模型](/post/golang-concept-memory-module-introduce.html) 主要是介绍一些协程同步相关的内容。
 
 ### 语法相关
 
 * [GoLang 语法简介](/post/golang-basic-syntax-introduce.html)，简单介绍常见的语法，例如 import、异常处理、反射等。
+* [GoLang 管道详解](/post/golang-basic-syntax-channel-details-introduce.html) 关于管道的使用方法，以及部分详细的介绍。
 * [GoLang Array VS. Slice](/post/golang-array-slice-concept-introduce.html) 关于数组和切片的基本概念介绍。
 * [GoLang nil 解析](/post/golang-basic-concept-nil-introduce.html) nil 类似于其它语言的 None NULL 等，但又略有区别。
 * [GoLang 并发控制](/post/golang-concurrenct-control-introduce.html)，常见的并发控制方法，例如 WaitGroup、Context 等。

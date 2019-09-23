@@ -113,6 +113,22 @@ https://github.com/Tongzhenguo/ebooks 李航的机器学习
 http://www.dgt-factory.com/uploads/2018/07/0725/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95.pdf
 https://github.com/lovingers/ML_Books/blob/master/634901%2B%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%96%B9%E6%B3%95%2B%2B%E6%A6%82%E7%8E%87%E7%BC%96%E7%A8%8B%E4%B8%8E%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E6%96%AD%2B%E4%B8%AD%E6%96%87%E7%89%88.pdf
 https://zhuanlan.zhihu.com/p/27306970 很多不错的书籍介绍
+
+
+https://www.zhihu.com/question/21277368
+https://blog.csdn.net/jteng/article/details/54344766
+https://applenob.github.io/machine_learning/MCMC/
+https://applenob.github.io/archives/page/9/
+https://www.infoq.cn/article/facebook-open-source-mass-forecasting-system-prophet
+https://zhuanlan.zhihu.com/p/34071776
+
+
+http://dreamrunner.org/blog/2014/06/28/qian-tan-memory-reordering/
+https://www.digitalocean.com/community/tutorials/a-guide-to-time-series-forecasting-with-prophet-in-python-3
+https://www.analyticsvidhya.com/blog/2017/09/common-machine-learning-algorithms/
+https://facebook.github.io/prophet/docs/quick_start.html#python-api
+https://mc-stan.org/docs/2_19/stan-users-guide/linear-regression.html
+
 -->
 
 {% highlight text %}
