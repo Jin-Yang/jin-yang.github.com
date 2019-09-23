@@ -37,6 +37,7 @@ description:
 * [Linux C Mock Wrap](/post/linux-c-mock-wrap-unit-test.html) 介绍在 C 中如何进行单元测试。
 * [C 代码覆盖率](/post/language-c-coverage-basic-introduce.html) C 语言中所使用的代码覆盖率工具。
 * [C/C++ 竞态检查](/post/language-c-some-sanitizers-introduce.html) 一些常见的 Sanitizer 介绍，包括其原理。
+* [Fuzzing 测试](/post/program-c-fuzzing-test-introduce.html) 也就是模糊测试，介绍一些基本原理以及使用方法。
 
 ### 编译
 
