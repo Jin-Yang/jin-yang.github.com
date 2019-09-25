@@ -32,7 +32,7 @@ $$F(x; x_0,\gamma) = \frac{1}{\pi} arctan \left( \frac{x-x_0}{\gamma} \right) + 
 
 $$f(x; 0,1) = \frac{1}{\pi (1+x^2)}$$
 
-![beta distribution]({{ site.url }}/images/ai/beta_distribution_example.png "beta distribution"){: .pull-center width="90%" }
+![cauchy distribution]({{ site.url }}/images/ai/cauchy_distribution_example.png "cauchy distribution"){: .pull-center width="90%" }
 
 可以通过如下代码生成上述的图像。
 
@@ -86,6 +86,33 @@ $$\Gamma(z)=\int_0^{\infty} \frac{t^{z-1}}{e^t}dt$$
 $$F(x; \alpha, \beta)=\frac{B_x(\alpha, \beta)}{B(\alpha, \beta)}=I_x(\alpha, \beta)$$
 
 其中 $B_x(\alpha, \beta)$ 是不完全 $B$ 函数，而 $I_x(\alpha, \beta)$ 是不完全贝塔函数。
+
+![beta distribution]({{ site.url }}/images/ai/beta_distribution_example.png "beta distribution"){: .pull-center width="80%" }
+
+可以通过如下代码生成上述的图像。
+
+{% highlight python %}
+#!/bin/python
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+colors = ['deepskyblue', 'red', 'green', 'blue', 'purple']
+
+x = np.linspace(0, 1, num=200)
+fig = plt.figure(figsize=(12, 6))
+for alpha, beta, c in zip([0.5, 5, 1, 2, 2], [0.5, 1, 3, 2, 5], colors):
+    y = stats.beta.pdf(x, alpha, beta)
+    plt.plot(x, y, lw=2, c=c, label=r"$\alpha={0:.1f}, \beta={1:.1f}$".format(alpha, beta))
+    plt.fill_between(x, y, color=c, alpha=.1)
+
+plt.legend(loc=0)
+plt.ylabel("PDF($x$)")
+plt.xlabel("$x$")
+plt.show()
+{% endhighlight %}
+
+
 
 <!--
 Beta分布

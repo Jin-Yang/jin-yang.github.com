@@ -43,6 +43,19 @@ Gogs 的功能类似于 GitHub 或者 GitLab ，不过相比来说是一款极�
 
 * [Gogs 仓库使用](/post/linux-git-gogs-introduce.html) 类似 GitLab 或者 GitHub，但是搭建起来更容易搭建。
 
+## 词法语法解析
+
+Lex (A Lexical Analyzer Generator) 和 Yacc(Yet Another Compiler Compiler) 是 UNIX 中两个非常重要的、功能强大的工具，分别用来做词法扫描以及语法分析。
+
+在 Linux 上就是 flex-bison，其中在使用 bison 时，采用的语法必须是上下文无关文法 (context-free grammar)。
+
+这里简单介绍，包括常规表达式、声明、匹配模式、变量、Yacc 语法和解析器代码。
+
+* [基本概念](/post/program-lexical-basic-introduce.html) 关于词法语法分析的基本概念，例如 BNF、上下文无关等。
+* [Flex 使用简介](/post/program-concept-lexical-flex-introduce.html) 词法解析器的介绍。
+* [Bison 使用简介](/post/program-concept-syntax-bison-introduce.html) 语法解析器的介绍。
+* [MySQL 语法解析](/post/mysql-parser.html) 在 MySQL 中的使用方式。
+
 ## VIM
 
 ![vim logo]({{ site.url }}/images/misc/vim_logo.png "vim logo"){: .pull-center width="25%" }
