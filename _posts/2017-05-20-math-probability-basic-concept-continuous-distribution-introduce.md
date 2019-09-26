@@ -73,6 +73,8 @@ f(x; \alpha,\beta) &= \frac{x^{\alpha - 1} (1 - x) ^ {\beta - 1}} {\int_0^1 u^{\
 \end{align}
 $$
 
+如果随机变量 $X$ 服从参数为 $\alpha,\beta$ 的贝塔分布，那么通常使用 $X \sim Beta(\alpha, \beta)$ 表示。
+
 其中 $\Gamma(z)$ 是伽马函数，改函数是阶乘在实数和复数域上的扩展，如果 $n$ 为正整数，那么：
 
 $$\Gamma(n)=(n-1)!$$
@@ -80,6 +82,17 @@ $$\Gamma(n)=(n-1)!$$
 对于实数部分为正的复数 $z$ ，那么伽马函数的定义为：
 
 $$\Gamma(z)=\int_0^{\infty} \frac{t^{z-1}}{e^t}dt$$
+
+Beta 分布对应的期望和方差分别为。
+
+$$
+\begin{align}
+E(X) &= \frac{\alpha}{\alpha + \beta} \\
+Var(X) &= \frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}
+\end{align}
+$$
+
+另外，需要注意，在贝叶斯推断中，Beta 分布是 Bernoulli、二项分布、负二项分布和几何分布的共轭先验分布。
 
 对应累积分布函数为。
 

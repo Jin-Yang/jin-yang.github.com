@@ -12,14 +12,38 @@ description:
 
 <!-- more -->
 
+## 转移概率
 
-## 马尔科夫
+转移概率是指随机变量从一个时刻到下一个时刻，从状态 $s_i$ 转移到另外一个状态 $s_j$ 的概率。
 
-对于连续时间，称之为马尔科夫随机过程；而离散时间称为马尔科夫链。
+$$P \left(i \rightarrow j \right) := P_{i,j} = P\left( X_{t+1}=s_j\mid X_t=s_i \right)$$
 
-对马尔科夫链来说，当前的状态仅与上一个状态有关。
+其中 $:=$ 表示定义为。
+
+通过 $\pi_k^{(t)}$ 表示随机变量 $X$ 在时刻 $t$ 取值为 $s_k$ 的概率，则随机变量 $X$ 在时刻 $t+1$ 取值为 $s_i$ 的概率为。
+
+$$
+\begin{align}
+\pi _i^{\left ( t+1 \right )} &=P\left ( X_{t+1}=s_i \right ) \\ 
+&= \sum_{k}P\left ( X_{t+1}=s_i\mid X_{t}=s_k \right )\cdot P\left ( X_{t}=s_k \right )\\
+&= \sum_{k}P_{k,i}\cdot \pi _k^{\left ( t \right )}
+\end{align}
+$$
+
+假设状态的数目为 $j$ ，则有：
+
+$$
+\left ( \pi _1^{\left ( t+1 \right )},\cdots ,\pi _j^{\left ( t+1 \right )} \right )=\left ( \pi _1^{\left ( t \right )},\cdots ,\pi _j^{\left ( t \right )} \right )\begin{bmatrix}
+P_{1,1} & P_{1,2} & \cdots  & P_{1,j}\\ 
+P_{2,1} & P_{2,2} & \cdots  & P_{2,j}\\ 
+\vdots  & \vdots  &  & \vdots \\ 
+P_{j,1} & P_{j,2} & \cdots  & P_{j,j}
+\end{bmatrix}
+$$
 
 ### 转移概率矩阵
+
+也就是上面的两个状态转移使用的矩阵。
 
 $$
 P_{ij} =
@@ -34,6 +58,17 @@ $$
 其中状态转移矩阵的每一行的和为 1 。
 
 $$\sum_{j=1}^\infty P_{ij}=1$$
+
+## 马尔可夫链
+
+假设 $X_t$ 是随机变量 $X$ 在离散时刻 $t$ 的取值，如果该变量随时间变化的转移概率
+
+
+## 马尔科夫
+
+对于连续时间，称之为马尔科夫随机过程；而离散时间称为马尔科夫链。
+
+对马尔科夫链来说，当前的状态仅与上一个状态有关。
 
 ### 细致平衡条件
 

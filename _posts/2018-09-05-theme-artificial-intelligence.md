@@ -42,10 +42,14 @@ description:
 * [数理统计基本概念](/post/math-statistics-basic-concept.html)
 * [似然估计](/post/math-statistics-likelihood-function-introduce.html)
 * [核密度函数](/post/math-statistics-kernel-density-estimates-introduce.html)
+* [熵概念简介](/post/artificial-intelligence-entropy-concept-introduce.html)
+
+### 采样算法
+
 * [贝叶斯简介](/post/math-statistics-basic-concept-bayes-theorem-introduce.html)
 * [马尔科夫简介](/post/math-statistics-markov-process-introduce.html)
-* [采样算法简介](/post/math-monte-carlo-sample-introduce.html)
-* [熵概念简介](/post/artificial-intelligence-entropy-concept-introduce.html)
+* [基本采样算法](/post/math-monte-carlo-sample-introduce.html) 一些常见的基本概念，例如蒙特卡罗、简单采样等。
+* [MCMC采样 - Metropolis 算法](/post/math-monte-carlo-mcmc-metropolis-introduce.html) 介绍 MCMC 的基本概念，以及很简单的算法。
 
 <!--
 概率统计公式大全
@@ -129,6 +133,8 @@ https://www.analyticsvidhya.com/blog/2017/09/common-machine-learning-algorithms/
 https://facebook.github.io/prophet/docs/quick_start.html#python-api
 https://mc-stan.org/docs/2_19/stan-users-guide/linear-regression.html
 
+量化投资，不错的介绍
+https://www.quantstart.com/articles/Bayesian-Statistics-A-Beginners-Guide
 -->
 
 {% highlight text %}

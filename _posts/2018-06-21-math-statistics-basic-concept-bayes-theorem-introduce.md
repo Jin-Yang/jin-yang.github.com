@@ -57,6 +57,104 @@ $$P(A|B) = \frac{P(B|A)P(A)}{P(B)}$$
 * `P(A|B)` 已知 B 发生后 A 发生的概率，称为 A 的后验概率。
 * `P(B)` 是先验概率或者边缘概率，也被称为标准化常量 (Normalized Constant)。
 
+![bayes]({{ site.url }}/images/ai/bayes-equation.jpg "bayes"){: .pull-center }
+
+## 贝叶斯推断
+
+为了方便计算后验概率，这里采用共轭先验的方法来简化后验的计算。
+
+### 先验概率
+
+这里仍然以投掷硬币为例，开始认为正面朝上的概率服从 Beta 分布，Beta 分布能产生一个 $(0, 1)$ 之间的随机数，也就是说先验概率为 Beta 分布。
+
+$$f(x;\alpha,\beta)=\frac{1}{B(\alpha, \beta)} x^{\alpha - 1} (1 - x)^{\beta - 1}$$
+
+开始假设 $\alpha=\beta=1$，那么此时 Beta 分布退化为一个均匀分布。接着不断投硬币，记录好每次投掷结果，然后根据结果再来计算此时正面朝上的概率。
+
+### 似然函数
+
+也就是在 $n$ 次试验中，有 $k$ 次朝上的概率，显然满足二项分布，可以表示为。
+
+$$P(x|\theta)=C_n^k \theta^k (1 - \theta)^{n-k}$$
+
+### 后验概率
+
+这里直接通过计算求解。
+
+$$
+\begin{align}
+P(\theta|x) &= \frac{P(x|\theta)P(\theta)}{P(x)} \propto P(x|\theta)P(\theta) \\
+&= \left ( C_n^k \theta^k (1 - \theta)^{n-k} \right ) \left(\frac{1}{B(\alpha, \beta)} \theta^{\alpha - 1} (1 - \theta)^{\beta - 1}\right) \\
+&=\frac{C_n^k}{B(\alpha,\beta)} \theta^{(k+\alpha)-1}\left(1-\theta\right)^{(n-k+\beta)-1} \\
+&\propto \frac{1}{B\left(k+\alpha, n-k+\beta\right)} \theta^{(k+\alpha)-1} \left(1-\theta\right)^{(n-k+\beta)-1}
+\end{align}
+$$
+
+可以看到，后验概率也是 Beta 分布，可以很方便的通过先验 Beta 分布来计算出后验概率。
+
+### 试验
+
+对应的试验如下，也就是，随着试验次数的增加，正面朝上的概率越来越接近 $0.5$ 。
+
+{% highlight python %}
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+# Arguments for prior Beta distribution
+(alpha, beta) = (1, 1)
+
+# Create a list of the number of coin tosses ("Bernoulli trials")
+number_of_trials = [0, 2, 10, 20, 50, 500]
+
+# Conduct 500 coin tosses and output into a list of 0s and 1s
+# where 0 represents a tail and 1 represents a head
+data = stats.bernoulli.rvs(0.5, size=number_of_trials[-1])
+
+# Discretise the x-axis into 100 separate plotting points
+x = np.linspace(0, 1, 100)
+
+# Loops over the number_of_trials list to continually add
+# more coin toss data. For each new set of data, we update
+# our (current) prior belief to be a new posterior. This is
+# carried out using what is known as the Beta-Binomial model.
+# For the time being, we won't worry about this too much. It
+# will be the subject of a later article!
+for i, N in enumerate(number_of_trials):
+	# Accumulate the total number of heads for this
+	# particular Bayesian update
+	heads = data[:N].sum()
+
+	# Create an axes subplot for each update
+	ax = plt.subplot(len(number_of_trials) / 2, 2, i + 1)
+	ax.set_title("%s trials, %s heads" % (N, heads))
+
+	# Add labels to both axes and hide labels on y-axis
+	plt.xlabel("$P(H)$, Probability of Heads")
+	plt.ylabel("Density")
+	if i == 0:
+		plt.ylim([0.0, 2.0])
+	plt.setp(ax.get_yticklabels(), visible=False)
+
+	# Create and plot a Beta distribution to represent the
+	# posterior belief in fairness of the coin.
+	y = stats.beta.pdf(x, alpha + heads, beta + N - heads)
+	plt.plot(x, y, label="observe %d tosses,\n %d heads" % (N, heads))
+	plt.fill_between(x, 0, y, color="#aaaadd", alpha=0.5)
+
+# Expand plot to cover full width/height and show it
+plt.tight_layout()
+plt.show()
+{% endhighlight %}
+
+![bayesian example]({{ site.url }}/images/ai/bayesian-statistics-beta-bernoulli-example.png "bayesian example"){: .pull-center width="80%" }
+
+<!--
+上述代码可以参考
+https://www.quantstart.com/articles/Bayesian-Statistics-A-Beginners-Guide
+-->
+
+
 <!--
 按这些术语，Bayes法则可表述为：
 后验概率 = (似然度 * 先验概率)/标准化常量 也就是说，后验概率与先验概率和似然度的乘积成正比。
@@ -87,6 +185,9 @@ https://www.matongxue.com/madocs/279.html
 https://zhuanlan.zhihu.com/p/41855459
 https://seeing-theory.brown.edu/compound-probability/index.html
 -->
+
+
+
 
 ## 案例
 

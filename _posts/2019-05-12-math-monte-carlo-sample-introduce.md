@@ -167,8 +167,6 @@ plt.show()
 
 ![sample normal distribution]({{ site.url }}/images/ai/sample-normal-distribution.png "sample normal distribution"){: .pull-center width="100%" }
 
-## 采样算法
-
 ## 参考
 
 <!--
