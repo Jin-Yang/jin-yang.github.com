@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Flask 请求处理流程|JinYang's Blog</title>
+  <meta name="keywords" content="flask,请求处理">
+  <meta name="description" content="实际上与其它的 web 框架处理流程基本相同，在此介绍下在 Flask 中，一次请求到响应的处理流程。Flask 支持多线程和多进程，通常每个线程或者进程一次只会处理一个请求。当然也可以通过类似 gevent 使用协程、事件库进行优化，对于目前使用的 WebSocket 技术会有较高的优化，不过还没有仔细研究过。OK，接下来看看 Falsk 是如何处理每次的网络请求。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Flask 请求处理流程</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-08-13 Saturday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  webserver  
+      
+    </div>
+  </div>
+  <hr>
+  <p>实际上与其它的 web 框架处理流程基本相同，在此介绍下在 Flask 中，一次请求到响应的处理流程。Flask 支持多线程和多进程，通常每个线程或者进程一次只会处理一个请求。</p>
+
+<p>当然也可以通过类似 gevent 使用协程、事件库进行优化，对于目前使用的 WebSocket 技术会有较高的优化，不过还没有仔细研究过。</p>
+
+<p>OK，接下来看看 Falsk 是如何处理每次的网络请求。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>Flask 执行时有两种方式，一种是调用 <code>app.run()</code> 执行，通常用于调试阶段，默认会在 Python 文件修改之后可以自动加载，所以非常方便；另外一种是通过类似 uwsgi 程序调用执行。</p>
+
+<h3 id="wsgi">WSGI</h3>
+
+<p>在详细介绍 Flask 处理流程之前，首先说明一下 WSGI 接口定义。</p>
+
+<p>WSGI (Web Server Gateway Interface) 定义了 Web 服务器和 Web 应用程序之间的一种简单而通用的接口，封装了接受请求、解析请求、发送响应等等的这些底层的代码和操作，使开发者可以高效的编写 Web 应用；该接口通常在 Python 中使用，Flask 也是基于此接口的。</p>
+
+<p>如下是从 stackflow 找到的一个不错的图片，一图胜千言阿。</p>
+
+<p><img src="/images/python/flask-wsgi-interface.png" alt="WSGI Flow(PEP 3333)" title="WSGI Flow(PEP 3333)" class="pull-center;" width="90%" /></p>
+
+<p>如下是一个简单的使用 WSGI 的示例：</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="s">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s">&#39;text/html&#39;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s">u&#39;&lt;h1&gt;Hello World, This is WSGI!&lt;/h1&gt;&#39;</span><span class="p">]</span></code></pre></figure>
+
+<p>其中接口非常简单，包含了两个参数：</p>
+
+<ul>
+  <li>
+    <p>environ: 包含全部 HTTP 请求信息的字典，由 WSGI Server 解析 HTTP 请求生成。</p>
+  </li>
+  <li>
+    <p>start_response: 一个 WSGI Server 提供的函数，调用可以发送响应的状态码和 HTTP 报文头，函数在返回前必须调用一次 start_response() 进行设置。</p>
+  </li>
+</ul>
+
+<p>另外，application() 应当返回一个可以迭代的对象，也就是 HTTP 正文；该函数由 WSGI Server 直接调用，并提供响应的参数。</p>
+
+<p><img src="/images/python/flask-wsgi-application.jpg" alt="WSGI Application" title="WSGI Application" class="pull-center" /></p>
+
+<p>Python 内置了一个 WSGIREF 的 WSGI 服务器，不过性能不是很好，一般只用在开发环境；通常开发环境中一般使用 gunicorn、uwsgi 等。</p>
+
+<h3 id="flask-调用">Flask 调用</h3>
+
+<p>在此，我们一步步查看调试时的执行过程（前面说的第一种方式），也就是在此讲解的是 <code>app.run()</code> 这种方式的调用；而后者的调用实际也是殊途同归，最终执行路径会到同一代码段，下面会有说明。</p>
+
+<p>接下来从程序初始化、执行程序、处理请求等，一步步查看，实际简化后的调用过程如下。</p>
+
+<h2 id="调用-flask-之前">调用 flask 之前</h2>
+
+<p>实际上就是在加载程序，然后调用 run() 函数之前。</p>
+
+<p>首先会从 flask 包导入了 Flask 类，该类位于源码的 app.py 文件，基本上就是简单的初始化一些参数；然后，调用该类中的 run() 方法，对于 Flask 类的源码简化后如下。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Flask</span><span class="p">(</span><span class="n">_PackageBoundObject</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">werkzeug.serving</span> <span class="kn">import</span> <span class="n">run_simple</span>
+        <span class="n">run_simple</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span></code></pre></figure>
+
+<p>可以看到，实际执行的是 werkzeug 库中的 run_simple() 函数，该函数在 serving.py 文件中进行定义，该函数非常简单，最终调用的是内嵌的 inner() 函数。</p>
+
+<p>另外，实际上在 Flask 中可以设置为在模块改变之后自动重新加载，这也就是默认值，该功能实际会调用 run_with_reloader() 函数，最终仍然调用 inner() 函数。</p>
+
+<p>接下来看看 inner() 函数，如下。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">fd</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;WERKZEUG_SERVER_FD&#39;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">LookupError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">fd</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">srv</span> <span class="o">=</span> <span class="n">make_server</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">application</span><span class="p">,</span> <span class="n">threaded</span><span class="p">,</span>
+                      <span class="n">processes</span><span class="p">,</span> <span class="n">request_handler</span><span class="p">,</span>
+                      <span class="n">passthrough_errors</span><span class="p">,</span> <span class="n">ssl_context</span><span class="p">,</span>
+                      <span class="n">fd</span><span class="o">=</span><span class="n">fd</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fd</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">log_startup</span><span class="p">(</span><span class="n">srv</span><span class="o">.</span><span class="n">socket</span><span class="p">)</span>
+    <span class="n">srv</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span></code></pre></figure>
+
+<p>该函数中，通过 make_server() 函数调用，返回 ThreadedWSGIServer()、ForkingWSGIServer()、BaseWSGIServer() 中的一个对象实例，从名称就可以看出来，分别会使用线程、进程做并发。</p>
+
+<p>创建完成之后，就会调用 server_forever() 函数，从名称就可以看出，基本就是一直运行程序，等待请求、处理请求、发送响应；接下来看看其具体的实现。</p>
+
+<p>最终会使用 BaseHTTPServer 中的 HTTPServer 模块，这是一个通用的模块，会调用 WSGIRequestHandler 中的 handle_one_request() 函数，而实际上，最终会调用 run_wsgi() 函数。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">run_wsgi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">environ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_environ</span><span class="p">()</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">response_headers</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">exc_info</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">headers_sent</span><span class="p">:</span>
+                    <span class="n">reraise</span><span class="p">(</span><span class="o">*</span><span class="n">exc_info</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">exc_info</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">headers_set</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s">&#39;Headers already set&#39;</span><span class="p">)</span>
+        <span class="n">headers_set</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">status</span><span class="p">,</span> <span class="n">response_headers</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">write</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+        <span class="n">application_iter</span> <span class="o">=</span> <span class="n">app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+        <span class="c"># environ是为了给request传递请求的</span>
+        <span class="c"># start_response主要是增加响应头和状态码，最后需要werkzeug发送请求</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">application_iter</span><span class="p">:</span> <span class="c">#根据wsgi规范，app返回的是一个序列</span>
+                <span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c">#发送结果</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">headers_sent</span><span class="p">:</span>
+                <span class="n">write</span><span class="p">(</span><span class="n">b</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">application_iter</span><span class="p">,</span> <span class="s">&#39;close&#39;</span><span class="p">):</span>
+                <span class="n">application_iter</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">application_iter</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="o">...</span> <span class="o">...</span></code></pre></figure>
+
+<p>到此的话，基本就到了 wsgi 规范规定的接口规范，也就是说 app 需要实现一个接口，接受两个参数，也即函数声明是 application(environ, start_response) 。</p>
+
+<p>可以看到，app.run() 模式会调用 BaseHTTPServer 模块处理请求，然后交给实际 wsgi 接口定义的接口。不过，这种方式只适用于调试阶段，BaseHTTPServer 没有进行很好的优化。</p>
+
+<h2 id="殊途同归">殊途同归</h2>
+
+<p>如上所述，到此为止，实际上就到了 app.run() 和 uwsgi 都调用的接口，也就是 wsgi 的规范中定义的 API 了，最终就到了 Flask 中定义的对象了，也即 Flask 类的定义。</p>
+
+<p>对于 flask 而言，实际是通过定义一个类实现的，也就是 app.py 文件中的 class Flask，而在该类中提供了 __call__() 函数来适配 wsgi 规范。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Flask</span><span class="p">(</span><span class="n">_PackageBoundObject</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>   <span class="c"># wsgi定义的入口</span>
+        <span class="sd">&quot;&quot;&quot;Shortcut for :attr:`wsgi_app`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wsgi_app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_context</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>    <span class="c"># 通过传入的环境变量构建request信息</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>    <span class="c"># 注意：这个ctx就是所说的同时有request,session属性的上下文</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_dispatch_request</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="n">e</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_exception</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_ignore_error</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">auto_pop</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">request_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">RequestContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">)</span></code></pre></figure>
+
+<p>如山所示，实际上在 wsgi_app() 中就是 Flask 的主要处理流程了，而且代码非常清晰，包括了上下文的生成，请求的分发，返回请求的响应。</p>
+
+<p>其中，比较重要的一个就是请求上下文的生成，也就是 request_context() 以及 push() 到栈中，其中的 class RequestContext 就是保持一个请求的上下文的变量，在请求到来之前 _request_ctx_stack 一直是空的，当请求到来的时候会调用 ctx.push() 向栈中添加上下文信息。</p>
+
+<p>在每次请求调用结束后，也就是在 wsgi_app() 中的 finally 中会调用 ctx.auto_pop(error)，该函数中会根据情况判断是否清除放在 _request_ctx_stack 中的 ctx 。</p>
+
+<p>更加详细的内容可以参考 <a href="/blog/flask-context.html">Flask 上下文理解</a> 。</p>
+
+<h2 id="请求分发">请求分发</h2>
+
+<p>书接上文，接下来是处理请求的分发。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">full_dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c"># 1. 首先会判断是否为第一次执行，通过before_first_request()注册函数</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">try_trigger_before_first_request_functions</span><span class="p">()</span> <span class="c"># 注意只在第一个请求调用</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">request_started</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c"># 2. 一些预处理，包括url_value_preprocessor()、before_request()</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_request</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># 3. 一般上述的函数不会返回值，通常会调用如下函数</span>
+            <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatch_request</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_user_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="c"># 4. 通过返回的值生成响应</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_response</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span>
+    <span class="c"># 5. 处理after_request()请求</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="n">request_finished</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span></code></pre></figure>
+
+<p>在 dispatch_request() 函数中就会根据之前定义的 view 调用相应的函数处理。另外，在该函数之外，也就是弹出上下文的时候会调用 teardown_reques() 注册的函数。</p>
+
+<h3 id="dispatch_request">dispatch_request()</h3>
+
+<p>在该函数中会根据 URL 进行实际的请求分发，异常处理在上述的 full_dispatch_request() 中处理。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">request</span>
+    <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">routing_exception</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raise_routing_exception</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+    <span class="n">rule</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">url_rule</span>
+    <span class="c"># if we provide automatic options for this URL and the</span>
+    <span class="c"># request came with the OPTIONS method, reply automatically</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="s">&#39;provide_automatic_options&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span> \
+       <span class="ow">and</span> <span class="n">req</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;OPTIONS&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_default_options_response</span><span class="p">()</span>
+    <span class="c"># otherwise dispatch to the handler for that endpoint</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">endpoint</span><span class="p">](</span><span class="o">**</span><span class="n">req</span><span class="o">.</span><span class="n">view_args</span><span class="p">)</span></code></pre></figure>
+
+<h2 id="钩子函数">钩子函数</h2>
+
+<p>在上述的处理流程中实际上可以之间看出来，在此简单总结下可以使用的钩子函数。</p>
+
+<ul>
+  <li>
+    <p>before_first_request<br />
+在第一次请求时会调用，后续的所有请求都不会在调用该函数，除非重新初始化。</p>
+  </li>
+  <li>
+    <p>before_request<br />
+每次处理请求前会调用该函数，包括了第一次请求。</p>
+  </li>
+  <li>
+    <p>after_request<br />
+如果请求没有异常，每次请求之后会调用的函数。</p>
+  </li>
+  <li>
+    <p>teardown_request<br />
+即使遇到了异常，每次请求之后也会调用的函数。</p>
+  </li>
+  <li>
+    <p>teardown_appcontext<br />
+会在应用退出的时候被调用。</p>
+  </li>
+</ul>
+
+<p>结下来我们看看这些钩子函数是如何使用的。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">g</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="nd">@app.before_first_request</span>
+<span class="k">def</span> <span class="nf">foobar_first_request</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&quot;first request&quot;</span>
+
+<span class="nd">@app.before_request</span>
+<span class="k">def</span> <span class="nf">foobar_before_request</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&quot;before request&quot;</span>
+
+<span class="nd">@app.after_request</span>
+<span class="k">def</span> <span class="nf">foobar_after_request</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&quot;after request&quot;</span><span class="p">,</span> <span class="n">response</span>
+    <span class="k">return</span> <span class="n">response</span>
+
+<span class="nd">@app.teardown_request</span>
+<span class="k">def</span> <span class="nf">foobar_teardown_request</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&quot;teardown request&quot;</span><span class="p">,</span> <span class="n">exception</span>
+
+<span class="nd">@app.teardown_appcontext</span>
+<span class="k">def</span> <span class="nf">teardown_db</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&quot;teardown appcontext&quot;</span><span class="p">,</span> <span class="n">exception</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&#39;Hello World!</span><span class="se">\n</span><span class="s">&#39;</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&#39;127.1&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></figure>
+
+<!--
+### 请求开始
+
+通过 request_started.send(self) 发送请求开始信号，告知 subscriber 请求开始了。
+
+### 预处理
+
+self.preprocess_request()
+
+
+### 将请求返回值构造响应类
+
+self.make_response(rv)
+
+
+### 请求结束
+
+通过 request_finished.send(self, response=response) 发送请求结束信号。
+
+### 响应客户端
+
+通过 response(environ, start_response) 函数将响应发送给客户端。
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/postgresql-python_init.html" title="通过 Python 访问 PG">&larr; Older</a></li> 
+         <li class="next"><a href="/post/golang-raft-etcd-introduce.html" title="ETCD 简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1471017600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/flask-request-process.html" data-title="Flask 请求处理流程" data-url="/post/flask-request-process.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

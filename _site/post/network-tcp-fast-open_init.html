@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>TCP Fast Open (TFO) 介绍|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>TCP Fast Open (TFO) 介绍</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-09-14 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  network  
+      
+    </div>
+  </div>
+  <hr>
+  <p>TFO 相关标准是由 Google 提出，目前已经是正式标准。该优化简单来说，是对 TCP 的增强，在 3 次握手期间也用来交换数据。</p>
+
+<p>这主要是由于当前的很多链接都是短链接，通常建立链接之后，只有几次数据交互，尤其像现在广泛使用的 HTTP 协议。这样就导致很多无效的网络交互，而 TFO 正是基于此种场景的优化。</p>
+
+<p>接下来我们会介绍 TFO 相关的内容。
+<!-- more --></p>
+
+<h1 id="介绍">介绍</h1>
+
+<p>要注意，TFO默认是关闭的，因为它有一些特定的适用场景，下面我会介绍到。</p>
+
+<p>TCP_FASTOPEN 参数。</p>
+
+<p>在内核中有两个控制参数：</p>
+
+<ol>
+  <li>
+    <p>net.ipv4.tcp_fastopen</p>
+
+    <p>对不同的位置位将对应不同的功能，0 表示关闭，1 表示</p>
+  </li>
+</ol>
+
+<p>The tcp_fastopen file can be used to view or set a value that enables the operation of different parts of the TFO functionality. Setting bit 0 (i.e., the value 1) in this value enables client TFO functionality, so that applications can request TFO cookies. Setting bit 1 (i.e., the value 2) enables server TFO functionality, so that server TCPs can generate TFO cookies in response to requests from clients. (Thus, the value 3 would enable both client and server TFO functionality on the host.)</p>
+
+<p>The tcp_fastopen_cookies file can be used to view or set a system-wide limit on the number of pending TFO connections that have not yet completed the three-way handshake. While this limit is exceeded, all incoming TFO connection attempts fall back to the normal three-way handshake.</p>
+
+<p>我来简单的介绍下这个东西.想了解详细的设计和实现还是要去看上面的rfc。</p>
+
+<p>1 http的keepalive受限于idle时间，据google的统计(chrome浏览器),尽管chrome开启了http的 keepalive(chrome是4分钟)，可是依然有35%的请求是重新发起一条连接。而三次握手会造成一个RTT的延迟，因此TFO的目标就是去除 这个延迟，在三次握手期间也能交换数据。</p>
+
+<p>2 RFC793允许在syn数据包中带数据，可是它要求这些数据必须当3次握手之后才能给应用程序，这样子做主要是两个原因，syn带数据可能会引起2个问 题。第一个是有可能会有前一个连接的重复或者老的数据的连接(syn+data的数据)，这个其实就是三次握手的必要性所决定的。第二个就是最重要的，也 就是安全方面的，为了防止攻击。</p>
+
+<p>3 而在TFO中是这样解决上面两个问题的，第一个问题，TFO选择接受重复的syn,它的观点就是有些应用是能够容忍重复的syn+data的(幂等的操 作)，也就是交给应用程序自己去判断需不需要打开TFO。比如http的query操作(它是幂等的).可是比如post这种类型的，就不能使用TFO， 因为它有可能会改变server的内容. 因此TFO默认是关闭的，内核会提供一个接口为当前的tcp连接打开TFO。为了解决第二个问题，TFO会有一个Fast Open Cookie(这个是TFO最核心的一个东西),其实也就是一个tag。</p>
+
+<p>4 启用TFO的tcp连接也很简单，就是首先client会在一个请求中(非tfo的)，请求一个Fast Open Cookie(放到tcp option中),然后在下次的三次握手中使用这个cookie(这个请求就会在3次握手的时候交换数据).</p>
+
+<p>下面的张图就能很好的表示出启用了TFO的tcp连接：</p>
+
+<p>Google研究发现TCP三次握手是页面延迟时间的重要组成部分，所以他们提出了TFO：在TCP握手期间交换数据，这样可以减少一次RTT。根据测试数据，TFO可以减少15%的HTTP传输延迟，全页面的下载时间平均节省10%，最高可达40%。</p>
+
+<p>目前互联网上页面平均大小为300KB，单个object平均大小及中值大小分别为7.3KB及2.4KB。所以在这种情况下，多一次RTT无疑会造成很大延迟。</p>
+
+<p>在HTTP/1.1中，我们有了keep-alive。但实际应用并不理想，根据Google对一个大型CDN网络的统计，平均每次建连只处理了2.4个请求。</p>
+
+<p>为了证实TCP三次握手是目前页面访问的重要性能瓶颈之一，Google工程师分析了Google的web服务器日志及Chrome浏览器统计数据。</p>
+
+<p>2011年6月，对Google web服务器进行连续7天数十亿次针对80端口的请求分析，包括搜索、Gmail、图片等多个服务。其中第一次建连被称为cold requests，复用连接的请求称为warm requests。</p>
+
+<p>图中描述了在cold requests及all requests中TCP握手时间在整个延迟时间中的占比。在cold requests中，TCP握手时间占延迟时间的8%-28%；即使统计所有的请求，TCP握手时间也占到了延迟时间的5%-7%。</p>
+
+<p>简单说明：客户端通过TCP连接到服务器时，可以在SYN报文携带数据，这将提升TCP的效率(4%-41%)[5]。前提是在这个SYN报文中，有代表客户端的在之前的TCP连接中服务器产生的cookie字段。在客户端和服务器第一次的TCP连接创建过程中，是通常的三次握手过程，但是服务器会产生cookie作为后续TCP连接的认证信息，这就避免了恶意攻击。</p>
+
+<p>对于客户端用户程序来说，可直接使用sendto等带有对端地址的系统调用发送数据，如果是第一次连接（或者cookie过期），则退化到正常三次握手过程，如果是非第一次连接，则可以继续创建连接且能够直接将数据交付给应用层处理。</p>
+
+<h1 id="参考">参考</h1>
+
+<p><a href="https://tools.ietf.org/html/draft-ietf-tcpm-fastopen-10" title="RFC-7413, TCP Fast Open">RFC-7413, TCP Fast Open</a>，在 RFC 中的相关定义。</p>
+
+<p><a href="http://conferences.sigcomm.org/co-next/2011/papers/1569470463.pdf" title="Papper, TCP Fast Open">TFO Paper</a>，Yuchung Cheng 写的论文，Google 工程师，从国立台湾大学获得学士学位，加州大学圣迭戈分校获得博士学位。</p>
+
+<p><a href="http://lwn.net/Articles/508865/" title="lwn.net 中关于TFO的介绍">www.lwn.net</a>，TFO 在 Linux 中实现的相关介绍。</p>
+
+<p>http://www.vants.org/?post=210
+http://blog.csdn.net/hanhuili/article/details/8540227</p>
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/network-ip-tunneling_init.html" title="Linux IP 隧道技术">&larr; Older</a></li> 
+         <li class="next"><a href="/post/program-c-load-process.html" title="C 加载过程">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1442160000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/network-tcp-fast-open_init.html" data-title="TCP Fast Open (TFO) 介绍" data-url="/post/network-tcp-fast-open_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

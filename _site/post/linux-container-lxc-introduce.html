@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>LXC 简介|JinYang's Blog</title>
+  <meta name="keywords" content="linux,container,lxc,容器">
+  <meta name="description" content="LXC (Linux Containters) 是一种基于内核容器的用户空间接口，提供了一系列创建、配置、管理的接口。其提供了比 chroot 更强的资源隔离，但是与硬件提供的完全虚拟化又不同，其目标为创建一个不需要独立内核，但近可能接近标准 Linux 安装的环境。在此简单介绍其使用方法，以及常用的命令。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>LXC 简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-03-02 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>LXC (Linux Containters) 是一种基于内核容器的用户空间接口，提供了一系列创建、配置、管理的接口。</p>
+
+<p>其提供了比 chroot 更强的资源隔离，但是与硬件提供的完全虚拟化又不同，其目标为创建一个不需要独立内核，但近可能接近标准 Linux 安装的环境。</p>
+
+<p>在此简单介绍其使用方法，以及常用的命令。</p>
+
+<!-- more -->
+
+<p><img src="/images/linux/container/containers-logo.png" alt="linux container logo" title="linux container logo" class="pull-center" /></p>
+
+<h2 id="简介">简介</h2>
+
+<p>首先大致介绍一下 LXC 是如何做到的。简单来说就是，一台机器上跑了一个 Linux 内核，然后通过 LXC 跑了 N 个不同的 Linux 发行版本的用户程序，包括 init 。</p>
+
+<p>所谓的 Linux 发行版本，如 RedHat、Ubuntu、CentOS、Debian、Fedora 等等，其实际上都是基于 Linux 内核，有可能打了不同的 patch，但真正不同的只是用户空间程序，如 init 用的是 systemV、upstart 还是饱受争议的 systemd，图形界面用的是 Gnome、KDE、LXDE、Xfce 甚至是 FCWM。</p>
+
+<p>这也要多亏了所谓的 Linux 哲学：提供机制，而非策略（说实话没有找到对应的英语原话）。</p>
+
+<h3 id="安装-lxc">安装 lxc</h3>
+
+<p>在 CentOS 中，如果通过 YUM 安装，则依赖 EPEL 库，可以通过如下方法安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum install libcgroup lxc lxc-libs lxc-templates --enablerepo=epel</code></pre></figure>
+
+<p>在 <code>/usr/share/lxc/templates</code> 目录下保存了常用的模板，可以用非 root 创建容器，当然这会更安全，不过会不方便，如不能挂载文件系统、不能创建设备节点等，可以参考 <a href="https://linuxcontainers.org/lxc/getting-started/">Creating unprivileged containers as a user</a>，后面再研究，暂时还是用 root 用户。</p>
+
+<h4 id="源码编译">源码编译</h4>
+
+<p>对于源码编译的 lxc，其目录中的内容类似，只是默认会添加 <code>/usr/local</code> 的 prefix，可以如下使用 <code>/usr</code> 的 prefix，此时下面讨论的内容会添加 /usr 前缀。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ./configure --prefix=/usr &amp;&amp; make
+# make install</code></pre></figure>
+
+<h4 id="检查">检查</h4>
+
+<p>编译安装完成之后，可以通过如下命令检查环境。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ lxc-checkconfig</code></pre></figure>
+
+<h3 id="配置文件">配置文件</h3>
+
+<p>通过 yum 安装的 lxc ，常见的配置文件以及目录如下。</p>
+
+<ul>
+  <li>
+    <p>/etc/lxc/default.conf<br />LXC 的默认配置文件，如果在创建容器时不指定配置文件，将默认使用这个配置文件，主要包括了对网络以及命名空间的设置；其它一些配置文件保存在 /usr/share/lxc/config 目录下。</p>
+  </li>
+  <li>
+    <p>/var/lib/lxc/<br />保存了容器的相关配置，包括已经创建容器的根文件系统 (rootfs)、配置文件 (config)。</p>
+  </li>
+  <li>
+    <p>/usr/share/lxc/templates/<br />保存了当前 LXC 支持的各种发行版的 linux 的模板配置文件，如 lxc-ubuntu、lxc-fedora、lxc-busybox、lxc-sshd 等。</p>
+  </li>
+  <li>
+    <p>/var/log/lxc<br />日志默认保存在该目录下，容器名.log 。</p>
+  </li>
+</ul>
+
+<p>注意，在创建一个类似 ubuntu、fedora 相关的容器时，通常会在 <code>/var/cache/lxc/</code> 目录下保存一份，那么第二次创建时，就不需要再次下载。</p>
+
+<h2 id="使用-lxc">使用 LXC</h2>
+
+<p>在此简单介绍如何创建并使用 LXC，以 CentOS-7 为例，并简单介绍创建 CentOS 的过程。注意，如果安装 ubuntu 镜像，需要安装 debootstrap (用于安装 rootfs) 。</p>
+
+<p>通过 LXC 可以启动一个 Linux 发布版本的镜像，也可以只启动一个进程，下面仍以 root 创建一个 CentOS 7 镜像为例。</p>
+
+<h3 id="1-创建镜像">1. 创建镜像</h3>
+
+<p>可以根据现有的模板创建，可以参考 <code>/usr/share/lxc/templates/lxc-centos</code> ，该文件实际就是一个 bash 脚本，用来创建 rootfs 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 根据模板创建镜像，--后为传入脚本的参数
+# lxc-create -t centos -n centos -- --release 7
+
+----- 查看已经安装的rootfs、config等文件，config文件将在lxc-start中使用
+# ls /var/lib/lxc/centos/
+config  rootfs/  tmp_root_pass
+
+----- 或者通过该命令查看当前已经安装的镜像
+# lxc-ls -f
+centos
+
+----- 查看设置的密码，创建后会打印该提示
+# cat /var/lib/lxc/centos/tmp_root_pass
+
+----- 直接通过chroot修改密码
+# chroot /var/lib/lxc/centos/rootfs passwd</code></pre></figure>
+
+<p>在 <code>/var/cache/lxc/centos</code> 目录下，会保存临时文件，这样创建时只会在第一次下载所需的软件包，后面如果版本比较旧可能还会 update 。</p>
+
+<h3 id="2-启动容器">2. 启动容器</h3>
+
+<p>启动时，如果不指定 <code>-d</code> 后台运行，则会将当前的 bash 作为 console 输出，此时会输出容器的启动信息，然后直接进入登陆界面。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 后台启动容器，并设置日志级别为DEBUG，日志可以查看/var/log/lxc/centos.log
+# lxc-start -n centos -l DEBUG -d
+
+----- 查看容器启动的init对应的PID
+# ps faux | grep -A 1 &quot;lxc-start -n centos -d&quot;</code></pre></figure>
+
+<p>是不是发现启动很快！！！</p>
+
+<p>实际上很大一部分时间是消耗在网络设置上，如果取消网络你会发现启动速度更快。</p>
+
+<h3 id="3-查看状态">3. 查看状态</h3>
+
+<p>容器启动之后实际上是一直有一个进程等待接收命令等操作的，对应的容器实际上是一个子进程。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看容器的运行状态，包括了其PID、运行状态、IP等信息
+# lxc-info -n centos
+Name:           centos
+State:          RUNNING
+PID:            31649                # init线程的PID
+IP:             192.168.122.118      # 容器中的IP
+CPU use:        0.15 seconds
+BlkIO use:      0 bytes
+Memory use:     1.18 MiB
+KMem use:       0 bytes
+Link:           vethXTBOA0           # 容器外的对端网络设备
+ TX bytes:      1.76 KiB
+ RX bytes:      12.95 KiB
+ Total bytes:   14.71 KiB
+
+----- 以行显示当前运行状态
+# lxc-ls -f
+NAME   STATE   AUTOSTART GROUPS IPV4 IPV6
+centos STOPPED 0         -      -    -
+
+----- 查看启动的父进程PID
+# ps aux | grep &#39;lxc-start -n centos&#39; | grep -v grep
+root  31639  0.0  0.0  30560  1640 pts/9  S+ 12:27 0:00 lxc-start -n centos
+
+----- OK，查看下父进程派生的子进程
+# pstree -p 31639
+lxc-start(31639)──systemd(31649)─┬─dbus-daemon(31707)
+                                 ├─dhclient(31901)
+                                 ├─login(31714)───bash(31958)
+                                 ├─rsyslogd(31711)─┬─{rsyslogd}(31718)
+                                 │                 └─{rsyslogd}(31719)
+                                 ├─sshd(31852)
+                                 ├─systemd-journal(31665)
+                                 └─systemd-logind(31712)
+
+----- 直接查看容器的ip，实际就是在容器中执行命令
+# lxc-attach -n centos -- /sbin/ip address list</code></pre></figure>
+
+<h3 id="4-连接到容器">4. 连接到容器</h3>
+
+<p>如果在启动的时候没有使用 <code>-d</code> 选项，则默认使用当前的 bash 作为 console ，可以直接在启动后登陆。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 通过lxc的命令链接上去
+# lxc-attach -n centos
+
+----- 目前链接时还有点问题，直接卡着不动
+# lxc-console -n centos
+
+----- 使用util-linux包提供的命令进入设置的namepace空间，需要PID
+# nsenter --target PID --mount --uts --ipc --net --pid --root --wd</code></pre></figure>
+
+<p>注意，attach 只有 3.8 之后的内核才会支持，对于低版本需要通过其它的方法解决。</p>
+
+<h3 id="5-关闭容器">5. 关闭容器</h3>
+
+<p>可以在容器中内执行 <code>poweroff</code> 或 <code>shutdown -h now</code> 来关闭容器，可以通过如下命令强行关闭，不过此时会花费比较长的时间，实际上就是正常的关闭流程。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># lxc-stop -n centos</code></pre></figure>
+
+<h3 id="6-销毁容器">6. 销毁容器</h3>
+
+<p>如果不需要了，可以通过如下方式删除，包括了 rootfs 等配置，所以 “慎用” 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># lxc-destroy -n centos</code></pre></figure>
+
+<h3 id="7-其它常见命令">7. 其它常见命令</h3>
+
+<p>简单介绍经常会用到的命令。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 创建，默认使用/etc/lxc/default.conf，可以通过-f指定配置文件
+# lxc-create -n NAME -f FILE
+
+----- 用户获取一个容器的状态，容器的状态有STARTING RUNNING STOPPING STOPPED ABORTING
+# lxc-info -n NAME
+
+----- 监控一个容器状态的变换，当一个容器的状态变化时，此命令会在屏幕上打印出容器的状态
+# lxc-monitor -n NAME
+
+----- 列出当前系统所有的容器
+# lxc-ls
+
+----- 列出特定容器中运行的进程
+# lxc-ps -n NAME
+
+----- 用于销毁容器
+# lxc-destroy -n NAME</code></pre></figure>
+
+<p>另外，需要注意的是：通过 <code>lxc-create</code> 创建后的容器，在停止运行后，不会立即被销毁，要采用 <code>lxc-destroy</code> 命令才能销毁；容器命令空间是全局的，系统中不允许存在重名的容器，否则会失败。</p>
+
+<h3 id="安装-ubuntu-镜像">安装 Ubuntu 镜像</h3>
+
+<p>只是简单介绍一下如何创建 Ubuntu 的镜像，与镜像相关的大部分的操作与创建 CentOS-7 相同，只是在创建 rootfs 时有些区别。</p>
+
+<p>在此，主要介绍其创建方法，安装 rootfs 时，可能会由于镜像无法访问导致创建失败，可以将 Ubuntu 访问的网站在 <code>/usr/share/lxc/templates/lxc-ubuntu</code> 开始设置 MIRROR 变量。</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">MIRROR</span><span class="o">=</span><span class="k">${</span><span class="nv">MIRROR</span><span class="k">:-</span><span class="nv">http</span><span class="p">://mirrors.163.com/ubuntu/</span><span class="k">}</span></code></pre></figure>
+
+<p>然后通过如下命令创建 rootfs 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># lxc-create -t ubuntu -n ubuntu -- -r precise</code></pre></figure>
+
+<p>实际上，上述的脚本是通过 debootstrap 创建一个 rootfs，也可以通过如下命令自己创建。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># debootstrap --arch amd64 precise ubuntu-precise http://mirrors.163.com/ubuntu/</code></pre></figure>
+
+<h2 id="资源设置">资源设置</h2>
+
+<p>LXC 是通过 cgroup 进行资源管理的，也就是说这部分的设置，都可以通过 lxc-cgroup 命令进行动态调整。在使用前，需要通过如下方式挂载。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 挂载cgroup
+# mount none -t cgroup /cgroup
+
+----- 让系统每次启动自动挂载cgroup
+# echo &quot;none /cgroup cgroup defaults 0 0&quot; &gt;&gt; /etc/fstab</code></pre></figure>
+
+<p>LXC 在创建容器的时候就在 /group 下创建一个子 group 以实现对容器的资源控制，可以根据需要设定相应子系统的参数来达到目的。</p>
+
+<h3 id="cpu">CPU</h3>
+
+<p>对于 CPU 资源配置，主要通过两个变量 cpu.shares、cpuset.cpus 进行设置。</p>
+
+<p>cpu.shares 是一个按照比例计算的 cpu 使用份额，例如，只存在两个 lxc 的 cpu.shares 都是 1024，那么这两个 lxc 使用 cpu 的理论比例就是 50%:50%。</p>
+
+<p>cpuset.cpus 是分配给这个 lxc 使用的具体 cpu，编号从 0 开始；可以通过如下方式进行分配：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># lxc-cgroup -n name cpu.shares 1024
+# lxc-cgroup -n name cpuset.cpus 0-1</code></pre></figure>
+
+<p>另外一个相关的参数是 cpuset.mems，与 cpus 类似，主要用于 NUMA 类型的机器。</p>
+
+<h3 id="memory">Memory</h3>
+
+<p>内存的设置比较简单，主要是关于物理内存以及 swap 。</p>
+
+<p>memory.limit_in_bytes 用户内存的最大量，包括了文件缓存，默认单位是字节。如果 swap 没有关闭的话，即使超过了该限制，仍可能转储到 swap 空间，可以通过 swapoff 关闭。</p>
+
+<p>memory.memsw.limit_in_bytes 设定最大内存与 swap 用量之和，同样默认单位是字节。设置该项前，同样要设置上述的值，而且不能大于该值。</p>
+
+<h3 id="blkio">blkio</h3>
+
+<p>也就是用来设置块设备的 IO 访问。</p>
+
+<!--
+blkio.weight
+指定 cgroup 默认可用访问块 I/O 的相对比例（加权），范围在 100 到 1000。这个值可由具体设备的 blkio.weight_device 参数覆盖。此数值跟cpu.share类似，以访问时间的比例的形式起作用。默认根group的值为1000.如果再根下面建立两group，分别设置weight为500和1000，那么IO时间比值为1:2.更多的说明可以参考内核文档。
+
+ blkio.weight_device
+指定对 cgroup 中可用的具体设备 I/O 访问的相对比例（加权），范围是 100 到 1000。这个值的格式为major:minor weight，其中 major 和
+minor 是在《Linux 分配的设备》中指定的设备类型和节点数，我们也称之为 Linux 设备列表，您
+可以参考 http://www.kernel.org/doc/Documentation/devices.txt
+
+blkio.throttle.read_bps_device
+
+针对特定的 major:minor 设备的读bps的上限限制（bps指byte per second，即每秒的byte数)
+
+blkio.throttle.write_bps_device
+
+针对特定的 major:minor 设备的写bps的上限限制
+
+ blkio.throttle.read_iops_device
+
+针对特定的 major:minor 设备的读ios的上限限制(ios指io per second,即每秒的io次数)
+
+blkio.throttle.write_iops_device
+
+针对特定的 major:minor 设备的写ios的上限限制
+
+此四个参数可以同blkio.weight blkio.weight_device以前使用，系统将同时满足着些限制。
+
+
+
+2.network部分
+
+network部分的配置均以lxc.network开头.
+
+lxc.network.type指定用于容器的网络类型：
+
+empty：新的网络空间会为容器建立，但是没有任何网络接口
+
+veth：新的网络空间会为容器建立，容器将链接到lxc.network.link定义的网桥上，从而与外部通信。网桥必须在预先建立。
+
+macvlan：新的网络空间会为容器建立，一个macvlan的接口会链接到lxc.network.link上。
+
+phys：新的网络空间会被建立，然后lxc.network.link指定的物理接口会被分配给容器
+
+lxc.network.flags用于指定网络的状态
+
+up：网络处于可用状态
+
+lxc.network.link用于指定用于和容器接口通信的真实接口，比如一个网桥br0
+
+lxc.network.name用于指定容器的网络接口的名字，与宿主接口不在一个命名空间。如果不指定，lxc为自动分配一个
+
+lxc.network.hwaddr用于指定容器的网络接口的mac地址
+
+lxc.network.ipv4用于指定容器的网络接口的ipv4地址，如果不设置或者设为0.0.0.0则表示，容器将通过dhcp的方式获得ip地址
+
+lxc.network.ipv6用于指定容器的网络接口的ipv6地址
+3.rootfs部分
+
+lxc.rootfs用于指定容器的虚拟根目录，设定此项以后，容器内所有进程将会把此目录根目录，不能访问此目录之外的路径，相当于chroot的效果
+-->
+
+<h2 id="配置文件-1">配置文件</h2>
+
+<p>LXC 配置项都是以 <code>key=value</code> 的形式设置，其中以 # 开始的一行为注释；当然，配置也可以在 <code>lxc-execute</code> 或者 <code>lxc-start</code> 的命令行以 <code>-s key=value</code> 设定；如下列举出常见的一些配置。</p>
+
+<h3 id="日志设置">日志设置</h3>
+
+<p>容器的启动日志默认只收集 ERROR 级别的信息，默认保存在 <code>/var/log/lxc</code> 目录下，以容器名开头，以 <code>.log</code> 结尾的文件中，日志级别和日志路径都是可以在配置文件中修改。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">lxc.loglevel=               // 级别，value是0到8的整数，0-trace, 1-debug, 2-info, 3-notice, 4-warn,
+                            //         5-error, 6-critical, 7-alert, 8-fatal.
+lxc.logfile=                // 路径</code></pre></figure>
+
+<h3 id="cgroup-设置">cgroup 设置</h3>
+
+<p>cgroup 部分通常以 <code>lxc.cgroup.[subsystem name].key=value</code> 的形式进行设置。</p>
+
+<h3 id="安全">安全</h3>
+
+<p>如果以 root 启动，可以通过如下参数取消其中的部分功能，以 <code>CAP_SYS_MODULE</code> 为例，实际设置应为该 <code>sys_module</code>，其它详细的参数可以参考 <code>man 7 capabilities</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">lxc.cap.drop = sys_module mac_admin</code></pre></figure>
+
+<!--
+lxc.mount # fstab文件路径
+lxc.mount.entry # fstab文件内容直接写于此，替代lxc.mount指定文件路径方式
+-->
+
+<h2 id="常用命令">常用命令</h2>
+
+<p>简单列举一下经常使用的命令，想到那写到那，备忘。</p>
+
+<h3 id="查看当前容器">查看当前容器</h3>
+
+<p>可以通过 lxc-ls 命令查看，容器的状态，默认查看的是已经创建的容器（可能没有启动）。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看当前已经创建的容器
+# lxc-ls</code></pre></figure>
+
+<h3 id="查看-lxc-相关的配置">查看 LXC 相关的配置</h3>
+
+<p>通过如下命令可以查看 LXC 的系统配置信息，主要有两类参数。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看当前LXC的系统配置
+# lxc-config -l
+lxc.default_config
+lxc.lxcpath
+... ...
+
+----- 查看其中的配置项
+# lxc-config lxc.lxcpath</code></pre></figure>
+
+<h2 id="参考">参考</h2>
+
+<p>官方网站 <a href="https://linuxcontainers.org/">linuxcontainers.org</a> 。</p>
+
+<!--
+用 cgroups 管理 cpu 资源
+http://xiezhenye.com/2013/10/%E7%94%A8-cgroups-%E7%AE%A1%E7%90%86-cpu-%E8%B5%84%E6%BA%90.html
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/kernel-memory-tips.html" title="Kernel 内存杂项">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-container-lxc-network_init.html" title="LXC 网络设置相关">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1425225600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-container-lxc-introduce.html" data-title="LXC 简介" data-url="/post/linux-container-lxc-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20diskstats%20tool_files/default.css" media="screen">
+<title>Aspersa User's Manual - The diskstats tool</title>
+</head>
+<body>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The diskstats tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The diskstats tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+<p>The <em>diskstats</em> tool is related to <em>iostat</em>, but has some advantages.  It separates out reads and writes, for example, and computes some things that <em>iostat</em>
+ does in either incorrect or confusing ways.  It is also menu-driven and
+ interactive with several different ways to aggregate the data, and 
+integrates well with <a href="http://aspersa.googlecode.com/svn/html/collect.html">the collect tool</a>.  These properties make it very convenient for quickly drilling down into I/O performance at the desired level of granularity.</p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>The tool has the following command-line options, which must come <em>first</em> on the command-line, before any filenames:</p>
+
+<dl>
+<dt>-c COLS</dt><dd>An     Awk regex of which columns to include.  Any columns whose names match the regex will be included in the output.</dd>
+<dt>-d DEVICES</dt><dd>An  Awk regex of which devices to include.  Any devices (disks) whose names match the regex will be included in the output.</dd>
+<dt>-g GROUPBY</dt><dd>The  group-by mode, which specifies how to aggregate the disk performance data.  The following options are permitted:
+<dl>
+      <dt>disk</dt><dd>Each line of output shows one disk device.</dd>
+      <dt>sample</dt><dd>Each line of output shows one sample of statistics.</dd>
+      <dt>all</dt><dd>Each line of output shows one sample and one disk device.</dd>
+</dl>
+The default value is 'disk', which (unlike <em>iostat</em>) shows one 
+line for each disk in the collected statistics; this makes it easy to 
+begin by filtering out devices you do not want to examine.</dd>
+<dt>-i INTERVAL</dt><dd>In sample mode, include INTERVAL seconds per 
+sample.  The default is for every sample to result in one line of 
+output.  If you set this to 60, for example, then each line will contain
+ one minute's worth of input data.</dd>
+<dt>-k KEEPFILE</dt><dd>A file to save diskstats samples in.  This is used when you specify no input file, in which case <em>diskstats</em>
+ will capture and store samples of diskstats data; if you want to save 
+them after the program exits, then specify a non-default filename here.</dd>
+<dt>-n SAMPLES</dt><dd>  When in data-gathering mode (collecting samples live instead of reading an input file), stop collecting after N samples.</dd>
+<dt>-s INTERVAL</dt><dd>When in data-gathering mode, both sample and redisplay /proc/diskstats every N seconds (default 1).</dd>
+</dl>
+
+<h2>How it Works</h2>
+
+<p>This program works in two main modes.  One way is to process a file 
+with saved disk statistics, which you specify on the command line.  The 
+other way is to start a background process gathering samples at 
+intervals and saving them into a file, and process this file in the 
+foreground.  In both cases, the tool is interactively controlled by 
+keystrokes, so you can redisplay and slice the data flexibly and easily.
+  If the tool is not attached to a terminal, it doesn't run 
+interactively; it just processes and prints its output, then exits.  
+Otherwise it loops until you exit with the 'q' key.</p>
+
+<p>The input is simple: the contents of /proc/diskstats, followed by timestamp lines in the format <em>TS <u>timestamp.nanoseconds</u> <u>ISO8601-timestamp</u></em>.  You can generate a sample file easily as follows:</p>
+
+<code>
+$ while sleep 1; do
+   cat /proc/diskstats &gt;&gt; stats.txt
+   date +'TS %s.%N %F %T' &gt;&gt; stats.txt
+done
+</code>
+
+<p>This is exactly what the tool itself does to generate its own input. 
+ This makes it easy to capture data even if you don't have the tool 
+installed, transport it to another server, and analyze it there.</p>
+
+<h2>Example Usage</h2>
+
+<p>Let us start with a small sample file that is used for test cases.  
+It is stored in the Subversion repository.  Start the tool as follows. 
+Each subsequent code listing will show the output it generates.</p>
+
+<code>
+[baron@ginger aspersa]$ diskstats t/samples/diskstats-001.txt 
+  #ts device       rd_mb_s rd_cnc   rd_rt wr_mb_s wr_cnc   wr_rt busy in_prg
+  {4} ram0             0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {4} cciss/c0d0       0.0    0.0     0.0     0.5    0.0     0.6   0%      0
+  {4} cciss/c0d0p1     0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {4} cciss/c0d0p2     0.0    0.0     0.0     0.5    0.0     0.6   0%      0
+  {4} cciss/c0d1       9.6    1.4    25.1    23.3    0.0     0.1  13%     13
+  {4} cciss/c1d0       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {4} dm-0             0.0    0.0     0.0     0.4    0.0     0.7   0%      0
+  {4} md0              0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+</code>
+
+<p>The default display shown above has a line of column headers, 
+followed by one line of output for every disk in the system.  These 
+lines are aggregated from the first to the last sample of disk 
+statistics in the file; in this example, you can see that the input file
+ contains 4 samples of /proc/diskstats from the system where this data 
+was collected.  The leftmost column specifies how many seconds' worth of
+ samples were aggregated into each line.</p>
+
+<p>The columns are as follows:</p>
+
+<dl>
+<dt>#ts</dt><dd>The number of seconds of samples in the line.  If there 
+is only one, then the timestamp itself is shown, without the {curly 
+braces}.</dd>
+<dt>device</dt><dd>The device name.  If there is more than one device, 
+then instead the number of devices aggregated into the line is shown, in
+ {curly braces}.</dd>
+<dt>rd_mb_s</dt><dd>The number of megabytes read per second, average, during the sampled interval.</dd>
+<dt>rd_cnc</dt><dd>The average concurrency of the read operations, as 
+computed by Little's Law (a.k.a. queueing theory).  In the example 
+above, you can see that cciss/c0d1 had on average 1.4 reads in progress 
+at all times during the sampled interval.</dd>
+<dt>rd_rt</dt><dd>The average response time of the read operations, in milliseconds.</dd>
+<dt>wr_mb_s</dt><dd>Megabytes written per second, average.</dd>
+<dt>wr_cnc</dt><dd>Write concurrency, similar to read concurrency.</dd>
+<dt>wr_rt</dt><dd>Write response time, similar to read response time.</dd>
+<dt>busy</dt><dd>The fraction of time that the device had at least one request in progress; this is what <em>iostat</em> calls %util (which is a misleading name).</dd>
+<dt>in_prg</dt><dd>The number of requests that were in progress.  Unlike
+ the read and write concurrencies, which are averages that are generated
+ from reliable numbers, this number is an instantaneous sample, and you 
+can see that it might represent a spike of requests, rather than the 
+true long-term average.</dd>
+</dl>
+
+<p>In addition to the above columns, there are a few columns that are 
+hidden by default.  If you press the 'c' key, and then press Enter, you 
+will blank out the regular expression pattern that selects columns to 
+display, and you will then see all columns:</p>
+
+<code>
+Enter a column pattern: 
+  #ts device          rd_s rd_avkb rd_mb_s rd_mrg rd_cnc   rd_rt    wr_s wr_avkb wr_mb_s wr_mrg wr_cnc   wr_rt busy in_prg
+  {4} ram0             0.0     0.0     0.0     0%    0.0     0.0     0.0     0.0     0.0     0%    0.0     0.0   0%      0
+  {4} cciss/c0d0       0.0     0.0     0.0     0%    0.0     0.0    17.7    28.1     0.5    86%    0.0     0.6   0%      0
+  {4} cciss/c0d0p1     0.0     0.0     0.0     0%    0.0     0.0     0.0     0.0     0.0     0%    0.0     0.0   0%      0
+  {4} cciss/c0d0p2     0.0     0.0     0.0     0%    0.0     0.0    17.7    28.1     0.5    86%    0.0     0.6   0%      0
+  {4} cciss/c0d1     458.1    21.5     9.6     0%    1.4    25.1   985.0    24.2    23.3     0%    0.0     0.1  13%     13
+  {4} cciss/c1d0       0.0     0.0     0.0     0%    0.0     0.0     0.0     0.0     0.0     0%    0.0     0.0   0%      0
+  {4} dm-0             0.0     0.0     0.0     0%    0.0     0.0    99.3     4.0     0.4     0%    0.0     0.7   0%      0
+  {4} md0              0.0     0.0     0.0     0%    0.0     0.0     0.0     0.0     0.0     0%    0.0     0.0   0%      0
+</code>
+
+<p>The additional columns are as follows:</p>
+
+<dl>
+<dt>rd_s</dt><dd>The number of reads per second.</dd>
+<dt>rd_avkb</dt><dd>The average size of the reads, in kilobytes.</dd>
+<dt>rd_mrg</dt><dd>The percentage of read requests that were merged together in the disk scheduler before reaching the device.</dd>
+<dt>wr_s, wr_avgkb, and wr_mrg</dt><dd>These are analogous to their rd_* cousins.</dd>
+</dl>
+
+<p>If you press the '?' key, you will bring up the interactive help menu that shows which keys control the program.</p>
+
+<code>
+   You can control this program by key presses:
+   ------------------- Key ------------------- ---- Current Setting ----
+   A, D, S) Set the group-by mode              disk
+   c) Enter an awk regex to match column names cnc|rt|mb|busy|prg
+   d) Enter an awk regex to match disk names   (none)
+   i) Set the sample size in seconds           (none)
+   s) Set the redisplay interval in seconds    1
+   p) Pause the program
+   q) Quit the program
+   ------------------- Press any key to continue -----------------------
+</code>
+
+<p>If any of these isn't obvious, it should become obvious as we 
+continue with the guided tour.  First, let's switch the display from 
+disk-per-line to sample-per-line by pressing the 'S' key so that the 
+group-by mode becomes <strong>S</strong>AMPLE.</p>
+
+<code>
+  #ts device       rd_mb_s rd_cnc   rd_rt wr_mb_s wr_cnc   wr_rt busy in_prg
+  2.0 {8}             10.2    1.4    23.9    24.6    0.0     0.2  12%     18
+  4.0 {8}              8.6    1.3    27.4    13.2    0.0     0.1  11%     17
+  6.0 {8}              8.8    1.4    25.5    24.1    0.0     0.1  11%      9
+  7.0 {8}             12.1    2.0    23.8    48.7    0.1     0.2  22%      5
+</code>
+
+<p>Now you can see the timestamp of each column, followed by the 
+information that all 8 devices were grouped together for each line.  
+Let's put this to use to actually find out what is happening on this 
+server, in terms of I/O.  Switch back to <strong>D</strong>ISK aggregation mode, with the 'D' key:</p>
+
+<code>
+  #ts device       rd_mb_s rd_cnc   rd_rt wr_mb_s wr_cnc   wr_rt busy in_prg
+  {4} ram0             0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {4} cciss/c0d0       0.0    0.0     0.0     0.5    0.0     0.6   0%      0
+  {4} cciss/c0d0p1     0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {4} cciss/c0d0p2     0.0    0.0     0.0     0.5    0.0     0.6   0%      0
+  {4} cciss/c0d1       9.6    1.4    25.1    23.3    0.0     0.1  13%     13
+  {4} cciss/c1d0       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {4} dm-0             0.0    0.0     0.0     0.4    0.0     0.7   0%      0
+  {4} md0              0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+</code>
+
+<p>It's obvious that <strong>cciss/c0d1 </strong> is the only disk this 
+system is really using.  Let's filter on that disk so we can see it more
+ clearly.  Press the 'd' key, and then type 'c0d1' to create a pattern 
+that matches that device name:</p>
+
+<code>
+Enter a disk/device pattern: c0d1
+  #ts device     rd_mb_s rd_cnc   rd_rt wr_mb_s wr_cnc   wr_rt busy in_prg
+  {4} cciss/c0d1     9.6   11.5    25.1    23.3    0.1     0.1 102%     13
+</code>
+
+<p>Now, switch back to grouping by samples, with the 'S' key:</p>
+
+<code>
+  #ts device     rd_mb_s rd_cnc   rd_rt wr_mb_s wr_cnc   wr_rt busy in_prg
+  2.0 cciss/c0d1    10.2   11.2    23.9    22.8    0.1     0.1  92%     18
+  4.0 cciss/c0d1     8.6   10.2    27.4    12.6    0.1     0.1  91%     17
+  6.0 cciss/c0d1     8.8   10.8    25.5    24.0    0.1     0.1  89%      9
+  7.0 cciss/c0d1    12.1   16.2    23.8    44.1    0.2     0.1 172%      5
+</code>
+
+<p>It looks like this device's usage is fairly consistent from second to
+ second — it is not spiking up and down.  But the device is quite busy, 
+mostly with reads; there are more than ten reads at a time, on average, 
+and the response time of those reads is very slow, compared to the 
+writes.  In fact, this is a RAID controller with a battery-backed write 
+cache, and the writes are simply going to the cache and returning, but 
+of course the reads have to be serviced from the spindles, and that is 
+rather slow.  (This device is still performing more slowly than it 
+should.  It turned out on deeper diagnosis that something was wrong with
+ the hardware.)</p>
+
+<p>Now, what if we had a large sample, once per second, that was 
+collected over tens of minutes?  That would scroll off the screen in 
+sample mode.  To control this, we can set the size of the window that 
+encloses a 'sample'.  Press the 'i' key, and set the sample size:</p>
+
+<code>
+Enter a sample size: 2
+  #ts device     rd_mb_s rd_cnc   rd_rt wr_mb_s wr_cnc   wr_rt busy in_prg
+  2.0 cciss/c0d1    18.8   21.4    25.5    35.5    0.2     0.1 183%     17
+  6.0 cciss/c0d1     7.4    9.5    24.8    23.0    0.1     0.1  88%      5
+</code>
+
+<p>Here you can see that we have zoomed out.  If you have a large 
+sample, for example many minutes, you can set the sampling interval to 
+60 or 300 or something like that to fit everything onto one screen.</p>
+
+<p>Press 'q' to quit the program, and let's start it up in its other 
+mode, without a file.  I'll start it on my laptop.  Because I did not 
+give it a saved file to analyze, it will start a process in the 
+background to gather current disk activity and iteratively print it out,
+ a sample at a time.  The main device on my laptop is /dev/sda2, so that
+ is what I will start with to avoid seeing many lines of output per 
+iteration:</p>
+
+<code>
+[baron@ginger aspersa]$ diskstats -d sda2
+  #ts device rd_mb_s rd_cnc   rd_rt wr_mb_s wr_cnc   wr_rt busy in_prg
+  {1} sda2       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {1} sda2       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {1} sda2       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {1} sda2       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {1} sda2       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+</code>
+
+<p>It is hard to show on this manual page, but each line above appears 
+after a 1-second delay.  As you let the program run, the background 
+process continues appending to the file, and the foreground process 
+continues to analyze the last sample appended every second.  You can 
+change the sampling and display interval with the 's' key.</p>
+
+<code>
+[baron@ginger aspersa]$ diskstats -d sda2
+  #ts device rd_mb_s rd_cnc   rd_rt wr_mb_s wr_cnc   wr_rt busy in_prg
+  {1} sda2       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {1} sda2       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {1} sda2       0.0    0.0     0.0     0.0    0.1    21.0   6%      0
+  {1} sda2       0.0    0.0     0.0     0.0    0.1    21.0   6%      0
+  {1} sda2       0.0    0.0     0.0     0.0    0.1    55.0   6%      2
+  {1} sda2       0.0    0.0     0.0     0.1    0.2    29.9   5%      2
+Enter a redisplay interval: 5
+  #ts device rd_mb_s rd_cnc   rd_rt wr_mb_s wr_cnc   wr_rt busy in_prg
+  {7} sda2       0.0    0.0     0.0     0.0    0.1    29.8   3%      0
+  {1} sda2       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+  {1} sda2       0.0    0.0     0.0     0.0    0.0     0.0   0%      0
+</code>
+
+<p>Notice that after changing the redisplay interval, the headers are 
+reprinted, followed by a summary of all the gathered statistics up to 
+that point; after that, new lines appear once every 5 seconds.</p>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Python Pandas 简介|JinYang's Blog</title>
+  <meta name="keywords" content="python,pandas">
+  <meta name="description" content="Pandas 是一个基于 NumPy 的工具，主要是为了解决数据分析任务，包括了一些标准的数据模型，提供了高效地操作大型数据集所需的工具。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Python Pandas 简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2018-01-04 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  program ,  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Pandas 是一个基于 NumPy 的工具，主要是为了解决数据分析任务，包括了一些标准的数据模型，提供了高效地操作大型数据集所需的工具。</p>
+
+<!-- more -->
+
+<p><img src="/images/python/pandas-logo.png" alt="pandas logo" title="pandas logo" class="pull-center" width="50%" /></p>
+
+<h2 id="简介">简介</h2>
+
+<h3 id="安装">安装</h3>
+
+<p>直接通过 <code>pip install pandas</code> 进行安装，一般使用如下方式引用 <code>import pandas as pd</code> 。</p>
+
+<h2 id="series-vs-dataframe">Series VS. DataFrame</h2>
+
+<p>这是 Pandas 中最基本的两种数据类型。</p>
+
+<h3 id="series">Series</h3>
+
+<p>类似于一维数组对象，其中的数据类型为 NumPy 的各种类型，而且每个元素都有各自的标签(或者是索引，可以是数字或者字符串)。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">s1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&#39;3&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>  <span class="c"># 可以包含了多种类型，默认增加0~N的索引</span>
+<span class="k">print</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>                       <span class="c"># 此时的类型为object(也就是字符串)，如果全为数值则是int64</span>
+<span class="n">s1</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;d&#39;</span><span class="p">]</span> <span class="c"># 可以直接修改索引</span>
+<span class="n">s1</span><span class="o">.</span><span class="n">reindex</span><span class="p">([</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;d&#39;</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;pad&#39;</span><span class="p">)</span> <span class="c"># 或者使用reindex()修改索引</span>
+
+<span class="n">s1</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>                         <span class="c"># 查看单个</span>
+<span class="n">s1</span><span class="p">[[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">]]</span>                  <span class="c"># 查看多个，如果全是数值也可以通过s1[s1 &gt; 2]过滤</span>
+<span class="n">s1</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;c&#39;</span><span class="p">]</span>                     <span class="c"># 通过切片查询</span>
+<span class="n">s1</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">)</span>                    <span class="c"># 删除</span>
+<span class="n">s1</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>                   <span class="c"># 修改</span>
+
+<span class="n">s2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s">&#39;a&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="s">&#39;c&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">})</span> <span class="c"># 也可以通过字典创建</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;d&#39;</span><span class="p">])</span> <span class="c"># 通过range创建</span></code></pre></figure>
+
+<p>在通过 <code>reindex()</code> 修改索引时，其中的参数可以选择 <code>ffill</code> 或者 <code>pad</code> 用来前向填充或者 <code>bfill</code> 或者 <code>backfill</code> 用来后向填充，默认填充 <code>0</code> ，也可以通过 <code>fill_value = 1</code> 参数进行修改。</p>
+
+<h3 id="dataframe">DataFrame</h3>
+
+<p>这是一个二维的数据结构，可以简单将其理解成一个 excel 中的表格，每一列都有一个标签 (也可以看做列名) 。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></code></pre></figure>
+
+<p>如果 data 为数组，那么其中的每个元素都将作为一行的数据。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="c"># 一个三行一列的数据表，列名为cols，行号为a b c</span>
+<span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;cols&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">])</span>
+<span class="c"># 两行三列的数据</span>
+<span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;c1&#39;</span><span class="p">,</span> <span class="s">&#39;c2&#39;</span><span class="p">,</span> <span class="s">&#39;c3&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">])</span>
+
+<span class="n">df2</span><span class="o">.</span><span class="n">index</span>                   <span class="c"># 查看行号(索引)以及列名称</span>
+<span class="n">df2</span><span class="o">.</span><span class="n">columns</span>
+
+<span class="n">df2</span><span class="p">[[</span><span class="s">&#39;c1&#39;</span><span class="p">,</span> <span class="s">&#39;c3&#39;</span><span class="p">]]</span>           <span class="c"># 直接访问返回的是列数据</span>
+
+<span class="n">df2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>                <span class="c"># 可以通过如下方法查看行数据</span>
+<span class="n">df2</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s">&#39;a&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">]]</span>
+<span class="n">df2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df2</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]]</span>
+
+<span class="n">df2</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>                   <span class="c"># 默认对每个列求和，也即是df2.sum(0)</span>
+<span class="n">df2</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>                  <span class="c"># 对每个行求和</span>
+
+<span class="n">df2</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>     <span class="c"># 对每个元素乘2</span>
+<span class="n">df2</span><span class="o">**</span><span class="mi">2</span>                      <span class="c"># 类似于ndarray，也可以支持向量操作</span>
+
+<span class="n">df2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&#39;c1&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span><span class="s">&#39;c2&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span><span class="s">&#39;c3&#39;</span><span class="p">:</span><span class="mi">9</span><span class="p">},</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;c&#39;</span><span class="p">]))</span>  <span class="c"># 增加行</span>
+
+<span class="n">df2</span><span class="p">[</span><span class="s">&#39;c4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>        <span class="c"># 新增列，此时会默认填充</span>
+<span class="n">df2</span><span class="p">[</span><span class="s">&#39;c5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">])</span> <span class="c"># 如果不是默认的(0~N)，则需要指定行名</span>
+
+<span class="c"># 其它方法，其中data可以是列表、数组、字典，列名和索引需要为列表对象</span>
+<span class="n">df3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;c1&#39;</span><span class="p">,</span> <span class="s">&#39;c2&#39;</span><span class="p">,</span> <span class="s">&#39;c3&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">])</span>
+<span class="n">df4</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&#39;c1&#39;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="s">&#39;c2&#39;</span><span class="p">:[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="s">&#39;c3&#39;</span><span class="p">:[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">]},</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">])</span></code></pre></figure>
+
+<p>注意，在使用 <code>sum()</code> 求和时，其中的参数只能是 <code>0</code> 或者 <code>1</code> 分别是对列或者行进行求和。</p>
+
+<h2 id="groupby">GroupBy</h2>
+
+<p>Pandas 提供了一个灵活高效的 groupby 功能，可以根据一个或者多个键拆分分组，然后可以对分布执行一些统计操作。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+	<span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">],</span>
+	<span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span>  <span class="mi">2</span><span class="p">,</span>   <span class="mi">8</span><span class="p">,</span>   <span class="mi">1</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>   <span class="mi">2</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">9</span><span class="p">],</span>
+	<span class="s">&#39;C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">102</span><span class="p">,</span>  <span class="mi">98</span><span class="p">,</span> <span class="mi">107</span><span class="p">,</span> <span class="mi">104</span><span class="p">,</span> <span class="mi">115</span><span class="p">,</span>  <span class="mi">87</span><span class="p">,</span>  <span class="mi">92</span><span class="p">,</span> <span class="mi">123</span><span class="p">]</span>
+<span class="p">})</span>
+<span class="n">grouped</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;A&#39;</span><span class="p">)</span>     <span class="c"># 会生成一个DataFrameGroupBy对象</span>
+<span class="k">print</span><span class="p">(</span><span class="n">grouped</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>         <span class="c"># 具体分组信息，key为列A中的成员，value是数据的索引</span>
+<span class="c"># {&#39;a&#39;: Int64Index([0, 2, 4]), &#39;b&#39;: Int64Index([1, 6]), &#39;c&#39;: Int64Index([3, 5, 7])}</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">grouped</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>         <span class="c"># 对所有的成员计算平均值</span>
+<span class="c">#      B           C</span>
+<span class="c"># A                 </span>
+<span class="c"># a  2.0  108.000000</span>
+<span class="c"># b  6.5   95.000000</span>
+<span class="c"># c  5.0  104.666667</span>
+<span class="n">grouped</span><span class="p">[[</span><span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="s">&#39;C&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>    <span class="c"># 可以选择列，这里与上面等价</span>
+<span class="n">grouped</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s">&#39;B&#39;</span><span class="p">:</span><span class="s">&#39;mean&#39;</span><span class="p">,</span> <span class="s">&#39;C&#39;</span><span class="p">:</span><span class="s">&#39;sum&#39;</span><span class="p">})</span>  <span class="c"># 也可以不同列选择不同算法</span></code></pre></figure>
+
+<p>在使用上述的聚合方式的时候，需要注意 <code>size()</code> 和 <code>count()</code> 的区别，前者统计时包含 <code>NaN</code> 的值，后者不含 <code>NaN</code> 。</p>
+
+<!---
+https://www.yiibai.com/pandas/python_pandas_groupby.html
+https://blog.csdn.net/Leonis_v/article/details/51832916
+https://www.cnblogs.com/lemonbit/p/6810972.html
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-c-reload-dynamic-library.html" title="Linux C 动态库加载">&larr; Older</a></li> 
+         <li class="next"><a href="/post/program-c-elf-symbol-section.html" title="ELF 符号表">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1514995200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/python-pandas-package-introduce.html" data-title="Python Pandas 简介" data-url="/post/python-pandas-package-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

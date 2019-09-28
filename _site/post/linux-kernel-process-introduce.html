@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux 进程执行|JinYang's Blog</title>
+  <meta name="keywords" content="linux,进程,daemon">
+  <meta name="description" content="简单介绍一下 Linux 中的常见的一些与进程相关的操作，主要是执行命令、守护进程等。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux 进程执行</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-11-05 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>简单介绍一下 Linux 中的常见的一些与进程相关的操作，主要是执行命令、守护进程等。</p>
+
+<!-- more -->
+
+<h2 id="进程执行">进程执行</h2>
+
+<p>Linux 上将进程创建和新进程加载分开，分别通过 <code>fork()</code> 和 <code>execNN()</code> 执行，其中后者包含了一组可用的函数，包括了 <code>execl</code>、<code>execlp</code>、<code>execle</code>、<code>execv</code>、<code>execvp</code> 。</p>
+
+<p>创建了一个进程后，再将子进程替换成新的进程，其声明如下：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;unistd.h&gt;</span>
+
+<span class="k">extern</span> <span class="kt">char</span> <span class="o">**</span><span class="n">environ</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">execl</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="p">...);</span>
+<span class="kt">int</span> <span class="nf">execlp</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="p">...);</span>
+<span class="kt">int</span> <span class="nf">execle</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="p">...,</span> <span class="kt">char</span> <span class="o">*</span> <span class="k">const</span> <span class="n">envp</span><span class="p">[]);</span>
+<span class="kt">int</span> <span class="nf">execv</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="k">const</span> <span class="n">argv</span><span class="p">[]);</span>
+<span class="kt">int</span> <span class="nf">execvp</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="k">const</span> <span class="n">argv</span><span class="p">[]);</span></code></pre></figure>
+
+<p>其中，<code>path</code> 表示要启动程序的名称包括路径名；<code>arg</code> 表示启动程序所带的参数，一般第一个参数为要执行命令名，不是带路径且 arg 必须以 NULL 结束。</p>
+
+<p>注意，上述 exec 系列函数底层都是通过 <code>execve()</code> 系统调用实现。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c">#include &lt;unistd.h&gt;</span>
+<span class="nb">int</span> <span class="n">execve</span><span class="p">(</span><span class="n">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="n">char</span> <span class="o">*</span><span class="n">const</span> <span class="n">argv</span><span class="p">[],</span><span class="n">char</span> <span class="o">*</span><span class="n">const</span> <span class="n">envp</span><span class="p">[]);</span></code></pre></figure>
+
+<p>其中各个函数的区别如下。</p>
+
+<h4 id="1-带-l-的-exec-函数">1. 带 l 的 exec 函数</h4>
+
+<p>包括了 execl、execlp、execle，表示后边的参数以可变参数的形式给出，且都以一个空指针结束。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;entering main process---</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="n">execl</span><span class="p">(</span><span class="s">&quot;/bin/ls&quot;</span><span class="p">,</span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="s">&quot;-l&quot;</span><span class="p">,</span><span class="nb">NULL</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;exiting main process ----</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>利用 execl 将当前进程 main 替换掉，所有最后那条打印语句不会输出。</p>
+
+<h4 id="2-带-p-的-exec-函数">2. 带 p 的 exec 函数</h4>
+
+<p>也就是 execlp、execvp，表示第一个参数 path 不用输入完整路径，只有给出命令名即可，它会在环境变量 PATH 当中查找命令。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c">#include &lt;stdio.h&gt;</span>
+<span class="c">#include &lt;stdlib.h&gt;</span>
+<span class="c">#include &lt;unistd.h&gt;</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;entering main process---</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="n">execlp</span><span class="p">(</span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="s">&quot;-l&quot;</span><span class="p">,</span><span class="n">NULL</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;exiting main process ----</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="3-不带-l-的-exec-函数">3. 不带 l 的 exec 函数</h4>
+
+<p>包括了 execv、execvp 表示命令所需的参数以 <code>char *arg[]</code> 形式给出，且 arg 最后一个元素必须是 NULL 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;entering main process---</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="s">&quot;-l&quot;</span><span class="p">,</span><span class="nb">NULL</span><span class="p">};</span>
+	<span class="n">execvp</span><span class="p">(</span><span class="s">&quot;ls&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;exiting main process ----</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="4-带-e-的-exec-函数">4. 带 e 的 exec 函数</h4>
+
+<p>包括了 execle ，可以将环境变量传递给需要替换的进程，再上述的声明中，有一个指针数组的变量 <code>extern char **environ;</code>，每个指针指向的字符串为 KV 结构。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="k">const</span> <span class="n">envp</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;AA=11&quot;</span><span class="p">,</span> <span class="s">&quot;BB=22&quot;</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">};</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;entering main process---</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="n">execle</span><span class="p">(</span><span class="s">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="s">&quot;bash&quot;</span><span class="p">,</span> <span class="s">&quot;-c&quot;</span><span class="p">,</span> <span class="s">&quot;echo $AA&quot;</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">envp</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;exiting main process ----</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="守护进程-daemon">守护进程 (daemon)</h2>
+
+<p>没有终端限制，让某个进程不因为用户、终端或者其他的变化而受到影响，那么就必须把这个进程变成一个守护进程。</p>
+
+<p>守护进程的编程本身并不复杂，复杂的是各种版本的 Unix 的实现机制不尽相同，造成不同 Unix 环境下守护进程的编程规则并不一致。</p>
+
+<p>守护进程的特性包括了：</p>
+
+<ol>
+  <li>后台运行；</li>
+  <li>与运行前的环境隔离开来，这些环境包括未关闭的文件描述符、控制终端、会话和进程组、工作目录以及文件创建 mask 等，这些环境通常是守护进程从执行它的父进程，特别是 shell，中继承下来的；</li>
+  <li>守护进程的启动方式有其特殊之处，可以从启动脚本 <code>/etc/rc.d</code> 中启动，<code>crond</code> 启动，还可以由用户终端执行。</li>
+</ol>
+
+<p>编程步骤包括了。</p>
+
+<h4 id="1-后台运行">1. 后台运行</h4>
+
+<p>创建子进程，父进程退出，在进程中调用 <code>fork()</code>，然后使父进程终止，让 Daemon 在子进程中后台执行，此时在形式上脱离了控制终端。</p>
+
+<h4 id="2-脱离控制终端登录会话和进程组">2. 脱离控制终端、登录会话和进程组</h4>
+
+<p>进程属于一个进程组，进程组号 (GID) 就是进程组长的进程号；会话可以包含多个进程组，这些进程组共享一个控制终端；这个控制终端通常是创建进程的登录终端。</p>
+
+<p>控制终端、登录会话和进程组通常是从父进程继承下来的，我们的目的就是要摆脱它们，使之不受它们的影响。在此通过调用 <code>setsid()</code> 创建新的会话+进程组，并使当前进程成为会话组长。</p>
+
+<p>注意，当进程是会话组长时 <code>setsid()</code> 调用失败，但第一步已保证该进程不是会话组长。调用成功后，进程成为新的会话组长和新的进程组长，并与原来的登录会话和进程组脱离。由于会话过程对控制终端的独占性，进程同时与控制终端脱离。</p>
+
+<h4 id="3-禁止进程重新打开控制终端">3. 禁止进程重新打开控制终端</h4>
+
+<p>现在，进程已经成为无终端的会话组长，但它可以重新申请打开一个控制终端，可以通过使进程不再成为会话组长来禁止进程重新打开控制终端。</p>
+
+<p>一般来说，也就是再次 <code>fork()</code> 一次，不过这个是可选的。</p>
+
+<h4 id="4-关闭打开的文件描述符">4. 关闭打开的文件描述符</h4>
+
+<p>进程从创建它的父进程那里继承了打开的文件描述符，如不关闭，将会浪费系统资源，造成进程所在的文件系统无法卸下以及引起无法预料的错误。</p>
+
+<p>一般需要关闭 0~2 标准输出。</p>
+
+<!-- getdtablesize() 返回所在进程的文件描述符表的项数，即该进程打开的文件数目-->
+
+<h4 id="5-改变当前工作目录">5. 改变当前工作目录</h4>
+
+<p>进程活动时，其工作目录所在的文件系统不能卸下，一般需要将工作目录改变到根目录。对于需要转储核心，写运行日志的进程将工作目录改变到特定目录如 <code>chdir("/tmp")</code> 。</p>
+
+<h4 id="6重设文件权限掩模">6.重设文件权限掩模</h4>
+
+<p>进程从创建它的父进程那里继承了文件权限掩模，它可能修改守护进程所创建的文件的存取位，为防止这一点，将文件创建掩模清除 <code>umask(0)</code>。</p>
+
+<p>注意，设置掩码时，使用的是八进制，例如 <code>umask(022)</code>。</p>
+
+<h4 id="7-处理-sigchld-信号">7. 处理 SIGCHLD 信号</h4>
+
+<p>处理 <code>SIGCHLD</code> 信号并不是必须的，但对于某些进程，特别是服务器进程往往在请求到来时生成子进程处理请求。如果父进程不等待子进程结束，子进程将成为僵尸进程 (zombie) 从而占用系统资源。如果父进程等待子进程结束，将增加父进程的负担，影响服务器进程的并发性能。</p>
+
+<p>在 Linux 下可以简单地将 <code>SIGCHLD</code> 信号的操作设为 <code>SIG_IGN，signal(SIGCHLD, SIG_IGN)</code>，这样，内核在子进程结束时不会产生僵尸进程，这一点与 BSD4 不同，BSD4 下必须显式等待子进程结束才能释放僵尸进程。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+<span class="cp">#include &lt;sys/stat.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">;</span>
+        <span class="kt">time_t</span> <span class="n">t</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="n">pid</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Before fork      , pgid=%d, ppid=%d, pid=%d, sid=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                <span class="n">getpgid</span><span class="p">(</span><span class="n">getpid</span><span class="p">()),</span> <span class="n">getppid</span><span class="p">(),</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getsid</span><span class="p">(</span><span class="n">getpid</span><span class="p">()));</span>
+
+        <span class="n">pid</span> <span class="o">=</span> <span class="n">fork</span><span class="p">();</span>   <span class="c1">// STEP 1</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>        <span class="c1">// error</span>
+                <span class="n">perror</span><span class="p">(</span><span class="s">&quot;fork()&quot;</span><span class="p">);</span>
+                <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// parent</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Parent PID(%d) running</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="p">);</span>
+                <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Forked before sid, pgid=%d, ppid=%d, pid=%d, sid=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                <span class="n">getpgid</span><span class="p">(</span><span class="n">getpid</span><span class="p">()),</span> <span class="n">getppid</span><span class="p">(),</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getsid</span><span class="p">(</span><span class="n">getpid</span><span class="p">()));</span>
+
+        <span class="cm">/* child */</span>
+        <span class="n">setsid</span><span class="p">();</span>     <span class="c1">// STEP 2, Detach from session.</span>
+
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Forked after sid , pgid=%d, ppid=%d, pid=%d, sid=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                <span class="n">getpgid</span><span class="p">(</span><span class="n">getpid</span><span class="p">()),</span> <span class="n">getppid</span><span class="p">(),</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getsid</span><span class="p">(</span><span class="n">getpid</span><span class="p">()));</span>
+
+        <span class="n">pid</span> <span class="o">=</span> <span class="n">fork</span><span class="p">();</span> <span class="c1">// STEP 3, fork again to prevent recreate a console.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>        <span class="c1">// error</span>
+                <span class="n">perror</span><span class="p">(</span><span class="s">&quot;fork()&quot;</span><span class="p">);</span>
+                <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// parent</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Parent PID(%d) running</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">pid</span><span class="p">);</span>
+                <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;After second fork, pgid=%d, ppid=%d, pid=%d, sid=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                <span class="n">getpgid</span><span class="p">(</span><span class="n">getpid</span><span class="p">()),</span> <span class="n">getppid</span><span class="p">(),</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getsid</span><span class="p">(</span><span class="n">getpid</span><span class="p">()));</span>
+
+        <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Sleep for a while, pgid=%d, ppid=%d, pid=%d, sid=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                <span class="n">getpgid</span><span class="p">(</span><span class="n">getpid</span><span class="p">()),</span> <span class="n">getppid</span><span class="p">(),</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getsid</span><span class="p">(</span><span class="n">getpid</span><span class="p">()));</span>
+
+        <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">getdtablesize</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="c1">// STEP 4, close all opend file discript.</span>
+                <span class="n">close</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+
+        <span class="n">chdir</span><span class="p">(</span><span class="s">&quot;/tmp&quot;</span><span class="p">);</span>  <span class="c1">// STEP 5</span>
+        <span class="n">umask</span><span class="p">(</span><span class="mo">022</span><span class="p">);</span>     <span class="c1">// STEP 6</span>
+
+        <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">fp</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">&quot;test.log&quot;</span><span class="p">,</span> <span class="s">&quot;a&quot;</span><span class="p">);</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">fp</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="p">)</span> <span class="p">{</span>
+                        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+                        <span class="n">fprintf</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s">&quot;I&#39;m here at %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">asctime</span><span class="p">(</span><span class="n">localtime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">))</span> <span class="p">);</span>
+                        <span class="n">fclose</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="n">sleep</span><span class="p">(</span><span class="mi">60</span><span class="p">);</span>
+        <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>可以通过如下命令查看当前进程的状态。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ps -axo pid,ppid,pgid,sid,state,comm | grep test</code></pre></figure>
+
+<p>实际上，在上述的第二步中，可以再执行一次 <code>fork()</code> 操作。</p>
+
+<p>第一次 <code>fork()</code> 后子进程继承了父进程的进程组 ID，但有一个新进程 ID，这就保证了子进程不是一个进程组的首进程。</p>
+
+<p>然后 <code>setsid()</code> 是为了跟主进程的 SID PGID 脱离设置成子进程的 SID PGID，此时其父进程是 1 ，SID PGID 均等于 PID 。</p>
+
+<p>虽然此时子进程已经被 init 接管了，但是只有 <code>setsid()</code> 之后才算是跟那个主进程完全脱离，不受他的影响 (原进程组、会话组被 kill 后该进程不会退出)。</p>
+
+<h4 id="第二次-fork">第二次 fork()</h4>
+
+<p>第二次 <code>fork()</code> 不是必须的，主要目的是为了防止进程再次打开一个控制终端(暂时不知道如何打开)。</p>
+
+<p>因为打开一个控制终端的前提条件是该进程必须是会话组长，那么再 <code>fork()</code> 一次后，子进程 ID 不再等于 sid (sid 是进程父进程的 sid)，所以也无法打开新的控制终端。</p>
+
+<p>此时这个子进程是首进程了，然后此时为了避免他是首进程，所以又 <code>fork()</code> 了一次，此时其父进程是上次 <code>fork()</code> 的进程，当父进程退出后其父进程变为 1 。</p>
+
+<p>及时已经关闭所有的文件描述符，那么打印消息时仍然会打印到原终端。</p>
+
+<h4 id="防止出现僵尸进程">防止出现僵尸进程</h4>
+
+<p>另外一种说法是为了防止出现僵尸进程。</p>
+
+<p>每次调用父进程必须要保证可以快速退出，否则会导致子进程的父进程 ID 仍然为原进程，如果此时子进程先退出就会成为僵尸进程，即使已经调用了 <code>setsid()</code>。</p>
+
+<p>无论如何都必须要保证父进程的快速推出，否则不管是 fork 了几次，仍然会出现僵尸进程。</p>
+
+<!--
+## 参考
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-makefile-auto-compile-introduce.html" title="Linux 自动编译 Makefile">&larr; Older</a></li> 
+         <li class="next"><a href="/post/mysql-variables_init.html" title="MySQL 变量相关">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1446652800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-kernel-process-introduce.html" data-title="Linux 进程执行" data-url="/post/linux-kernel-process-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

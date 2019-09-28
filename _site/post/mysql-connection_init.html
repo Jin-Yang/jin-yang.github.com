@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL 链接方式|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,连接,connection">
+  <meta name="description" content="与 Oracle 或者 Postgre 不同，MySQL 采用的是线程模型，在这里介绍通过 socket 链接到服务器之后，线程与链接直接是怎么处理的。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL 链接方式</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-05-18 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>与 Oracle 或者 Postgre 不同，MySQL 采用的是线程模型，在这里介绍通过 socket 链接到服务器之后，线程与链接直接是怎么处理的。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>现在 MySQL 支持三种处理链接的方式：no-threads、one-thread-per-connection 和 pool-of-threads，默认使用 one-thread-per-connection。而线程池的方式，只有企业版才支持；单线程则通常用户调试或者嵌入式的模式，因此，在此主要介绍每个连接单线程的方式。</p>
+
+<p>在启动时可以通过 --thread-handling=XXX 参数指定，也可以在配置文件中指定，而当前使用的链接方式可以通过 <code>show variables like 'thread_handling'</code> 查看。注意，该选项是只读的，也就是链接方式只能在启动时进行设置。</p>
+
+<p>MariaDB 在 5.5 引入了一个动态的线程池方案，可以根据当前请求的并发情况自动增加或减少线程数，在此的线程池就是 MariaDB 的解决方案。</p>
+
+<ol>
+  <li>
+    <p>单线程<!--，one_thread_scheduler()--><br />在同一时刻，最多只能有一个链接连接到 MySQL ，其他的连接会被挂起，一般用于实验性质或者嵌入式应用。</p>
+  </li>
+  <li>
+    <p>多线程<!--，one_thread_per_connection_scheduler()--><br />
+ 同一时刻可以支持多个链接同时连接到服务器，针对每个链接分配一个线程来处理这个链接的所有请求，直到连接断开，线程才会结束。<br />
+ 这种方式存在的问题就是需要为每个连接创建一个新的 thread，当并发连接数达到一定程度，性能会有明显下降，因为过多的线程会导致频繁的上下文切换，CPU cache 命中率降低和锁的竞争会更加激烈。</p>
+  </li>
+  <li>
+    <p>线程池<!--，pool_of_threads_scheduler()--><br />解决多线程的方法就是降低线程数，这样就需要多个连接共用线程，这便引入了线程池的概念。线程池中的线程是针对请求的，而不是针对连接的，也就是说几个连接可能使用相同的线程处理各自的请求。</p>
+  </li>
+</ol>
+
+<p>注意，后面主要介绍 MariaDB 的实现方式。</p>
+
+<h3 id="设置">设置</h3>
+
+<p>如上所述，可以通过设置服务器的启动参数来设定连接的方式，通过 mysqld --verbose --help 命令可以查看所支持的选项，启动后可以通过 show status 查看与行状态，通过 show variables 查看启动时的变量。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ mysqld --thread-handling=no-threads/one-thread-per-connection/pool-of-threads
+
+$ cat /etc/my.cnf
+[mysqld]
+thread_handling=pool-of-threads
+
+mysql&gt; SHOW VARIABLES LIKE &#39;thread_handling&#39;;       ← 查看连接配置
++-----------------+---------------------------+
+| Variable_name   | Value                     |
++-----------------+---------------------------+
+| thread_handling | one-thread-per-connection |
++-----------------+---------------------------+
+1 row in set (0.01 sec)</code></pre></figure>
+
+<p>除了上述的链接方式之外，为了防止链接过多，导致在管理时无法登陆，MariaDB 提供了额外的链接方式，可以通过设置如下的参数实现 --extra-port=3308 --extra-max-connections=1 。</p>
+
+<p>注意，如果 extra-max-connections 设置为 2 则实际上可以创建三个链接，而且只支持 one-thread-per-connection 类似的方式。</p>
+
+<h3 id="监控状态">监控状态</h3>
+
+<p>MySQL 启动后，会监听端口，当有新的客户端发起连接请求时，MySQL 将为其分配一个新的 thread，去处理此请求。从建立连接开始，CPU 要给它划分一定的 thread stack，然后进行用户身份认证，建立上下文信息，最后请求完成，关闭连接，释放资源。</p>
+
+<p>高并发情况下，将给系统带来巨大的压力，不能保证性能。MySQL 通过线程缓存来是实现线程重用，减小这部分的消耗；一个连接断开，并不销毁承载其的线程，而是将此线程放入线程缓冲区，并处于挂起状态，当下一个新的连接到来时，首先去线程缓冲区去查找是否有空闲的线程，如果有，则使用之，如果没有则新建线程。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SHOW VARIABLES LIKE &#39;thread_cache_size&#39;; ← 可以重用线程的个数
++-------------------+-------+
+| Variable_name     | Value |
++-------------------+-------+
+| thread_cache_size | 9     |
++-------------------+-------+
+1 row in set (0.03 sec)
+
+mysql&gt; SHOW STATUS LIKE &#39;threads%&#39;;             ← 查看状态
++-------------------+-------+
+| Variable_name     | Value |
++-------------------+-------+
+| Threads_cached    | 0     |       ← 已被线程缓存池缓存的线程个数
+| Threads_connected | 2     |       ← 当前MySQL的连接数
+| Threads_created   | 1065  |       ← 已创建线程个数，可用来判断thread_cache_size大小
+| Threads_running   | 1     |       ← 正在运行的线程数
++-------------------+-------+
+4 rows in set (0.13 sec)</code></pre></figure>
+
+<h2 id="源码导读">源码导读</h2>
+
+<p>首先大致介绍线程管理。</p>
+
+<h3 id="数据结构">数据结构</h3>
+
+<p>MariaDB 支持的链接类型可以通过 enum scheduler_types 查看，目前只支持上述的三种类型。根据启动时的配置项，会将所使用的链接方式会保存在 scheduler_functions thread_scheduler 变量中。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">scheduler_functions</span>
+<span class="p">{</span>
+  <span class="n">uint</span> <span class="n">max_threads</span><span class="p">,</span> <span class="o">*</span><span class="n">connection_count</span><span class="p">;</span>
+  <span class="n">ulong</span> <span class="o">*</span><span class="n">max_connections</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="p">(</span><span class="o">*</span><span class="n">init</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+  <span class="kt">bool</span> <span class="p">(</span><span class="o">*</span><span class="n">init_new_connection_thread</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">add_connection</span><span class="p">)(</span><span class="n">THD</span> <span class="o">*</span><span class="n">thd</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">thd_wait_begin</span><span class="p">)(</span><span class="n">THD</span> <span class="o">*</span><span class="n">thd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">wait_type</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">thd_wait_end</span><span class="p">)(</span><span class="n">THD</span> <span class="o">*</span><span class="n">thd</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">post_kill_notification</span><span class="p">)(</span><span class="n">THD</span> <span class="o">*</span><span class="n">thd</span><span class="p">);</span>
+  <span class="kt">bool</span> <span class="p">(</span><span class="o">*</span><span class="n">end_thread</span><span class="p">)(</span><span class="n">THD</span> <span class="o">*</span><span class="n">thd</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">cache_thread</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">end</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>在初始化时，会通过如下函数设置全局变量 thread_scheduler 的值。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysqld_main()
+ |-init_common_variables()
+   |-get_options()</code></pre></figure>
+
+<p>该选项会在 mysqld_get_one_option()@sql/mysqld.cc 中处理，这个是在解析参数时调用的，相关的部分如下：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">case</span> <span class="nl">OPT_ONE_THREAD</span><span class="p">:</span>
+    <span class="n">thread_handling</span> <span class="o">=</span> <span class="n">SCHEDULER_NO_THREADS</span><span class="p">;</span>
+    <span class="k">break</span><span class="p">;</span></code></pre></figure>
+
+<p>在主函数中，调用 logger.init_base() 之后，调用了一个 init_common_variables() 函数，里面初始化了这个变量的值。在 init_common_variables() 中调用了一个 get_options(); sql/mysqld.cc 函数，在该函数中对全局变量 thread_handling 进行初始化，然后设置相应的模式：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">(</span><span class="n">thread_handling</span> <span class="o">&lt;=</span> <span class="n">SCHEDULER_ONE_THREAD_PER_CONNECTION</span><span class="p">)</span>
+    <span class="n">one_thread_per_connection_scheduler</span><span class="p">(</span><span class="n">thread_scheduler</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">max_connections</span><span class="p">,</span>
+                                             <span class="o">&amp;</span><span class="n">connection_count</span><span class="p">);</span>
+<span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">thread_handling</span> <span class="o">==</span> <span class="n">SCHEDULER_NO_THREADS</span><span class="p">)</span>
+    <span class="n">one_thread_scheduler</span><span class="p">(</span><span class="n">thread_scheduler</span><span class="p">);</span>
+<span class="k">else</span>
+    <span class="nf">pool_of_threads_scheduler</span><span class="p">(</span><span class="n">thread_scheduler</span><span class="p">,</span>  <span class="o">&amp;</span><span class="n">max_connections</span><span class="p">,</span>
+                                         <span class="o">&amp;</span><span class="n">connection_count</span><span class="p">);</span></code></pre></figure>
+
+<p>在这三个函数中，其时就是设置了一个类型为 struct scheduler_functions 的 thread_scheduler 变量，只不过这些参数是一些函数指针罢了，也就是说在具体的调用中，只需要调用 add_connection 或 end_thread 即可，不需要知道到底是调用了哪个函数。</p>
+
+<h2 id="线程池">线程池</h2>
+
+<p>对于为每个连接创建一个线程的方式，当并发连接数与可以提供服务的 CPU 数的比例达到一定程度后，性能会有明显下降。这是因为过多的线程会导致较多的内存消耗、频繁的上下文切换以及 CPU cache 命中率下降；同时在访问临界资源（通常是用互斥量包裹的资源，用于防止不同的CPU同时修改导致错误）时会大量增加锁的竞争，这种情况对写入影响会更大。</p>
+
+<p>为了解决这一问题，最好是服务的线程数要小于客户端的链接数，同时希望能发挥 CPU 的最大性能，因此，通常是每个 CPU 会有一个工作线程。线程池适合短查询以及 CPU 密集型（如OLTP）。</p>
+
+<h3 id="简介-1">简介</h3>
+
+<p>线程池的特点。</p>
+
+<ol>
+  <li>
+    <p>整个连接池内部被分成 N 个小的 group，默认为 CPU 的个数，可以通过参数 thread_pool_size 设置，group 之间通过 round robin 的方式分配连接，group 内通过竞争方式处理连接，一个 worker 线程只属于一个 group 。</p>
+  </li>
+  <li>
+    <p>每个group有一个动态的listener，worker线程在循环取event时，发现队列为空时会充当listener通过epoll的方式监听数据，并将监听到的event放到group中的队列</p>
+  </li>
+  <li>
+    <p>延时创建线程，group中的活动线程数为0或者group被阻塞时，worker线程会被创建，worker线程被创建的时间间隔会随着group内已有的线程数目的增加而变大</p>
+  </li>
+  <li>
+    <p>worker线程，数目动态变化，这也是相对于5.1版本的一个改进，并发较大时会创建更多的worker线程，当从队列中取不到event时work线程将休眠，超过thread_pool_idel_timeout后结束生命</p>
+  </li>
+  <li>
+    <p>timer线程，它会每隔一段时间做两件事情：1）检查每个group是否被阻塞，判定条件是：group中的队列中有event，但是自上次timer检查到现在还没有worker线程从中取出event并处理；2）kill超时连接并做一些清理工作</p>
+  </li>
+</ol>
+
+<h3 id="配置参数">配置参数</h3>
+
+<p>线程池相关的参数都保存在 sql/sys_vars.cc 文件中，可以通过 show variables like ‘thread_pool%’; 命令查看，相关的参数有：</p>
+
+<ul>
+  <li>
+    <p>thread_pool_size，线程池中group的数目</p>
+
+    <p>MariaDB 的线程池分成了不同的 group ，而且是按照到来 connection 的顺序进行分组的，如第一个 connection 分配到 group[0] ，那么第二个 connection 就分配到 group[1] ，是一种 Round Robin 的轮询分配方式，默认值是 CPU core 个数。</p>
+  </li>
+  <li>
+    <p>thread_pool_idle_timeout，线程最大空闲时间</p>
+
+    <p>如果某个线程空闲的时间大于这个参数，则线程退出。</p>
+  </li>
+  <li>
+    <p>thread_pool_stall_limit，监控线程的间隔时间</p>
+
+    <p>thread pool 有个监控线程，每隔一段时间，会检查每个 group 的线程可用数等状态，然后进行相应的处理，如 wake up 或者 create thread 。</p>
+  </li>
+  <li>
+    <p>thread_pool_oversubscribe，允许的每个 group 上的活跃的线程数</p>
+
+    <p>注意这并不是每个 group上 的最大线程数，而只是可以处理请求的线程数。</p>
+  </li>
+  <li>
+    <p>thread_pool_max_threads，最大线程数</p>
+  </li>
+</ul>
+
+<h3 id="源码解析">源码解析</h3>
+
+<p>如上的源码中，对于线程池，会在 pool_of_threads_scheduler() 中会将全局变量 thread_scheduler 初始化为 tp_scheduler_functions 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="n">scheduler_functions</span> <span class="n">tp_scheduler_functions</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="mi">0</span><span class="p">,</span>                                  <span class="c1">// max_threads</span>
+  <span class="nb">NULL</span><span class="p">,</span>
+  <span class="nb">NULL</span><span class="p">,</span>
+  <span class="n">tp_init</span><span class="p">,</span>                            <span class="c1">// init</span>
+  <span class="nb">NULL</span><span class="p">,</span>                               <span class="c1">// init_new_connection_thread</span>
+  <span class="n">tp_add_connection</span><span class="p">,</span>                  <span class="c1">// add_connection</span>
+  <span class="n">tp_wait_begin</span><span class="p">,</span>                      <span class="c1">// thd_wait_begin</span>
+  <span class="n">tp_wait_end</span><span class="p">,</span>                        <span class="c1">// thd_wait_end</span>
+  <span class="n">post_kill_notification</span><span class="p">,</span>             <span class="c1">// post_kill_notification</span>
+  <span class="nb">NULL</span><span class="p">,</span>                               <span class="c1">// end_thread</span>
+  <span class="n">tp_end</span>                              <span class="c1">// end</span>
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="nf">pool_of_threads_scheduler</span><span class="p">(</span><span class="k">struct</span> <span class="n">scheduler_functions</span> <span class="o">*</span><span class="n">func</span><span class="p">,</span>
+    <span class="n">ulong</span> <span class="o">*</span><span class="n">arg_max_connections</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">arg_connection_count</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="o">*</span><span class="n">func</span> <span class="o">=</span> <span class="n">tp_scheduler_functions</span><span class="p">;</span>
+  <span class="n">func</span><span class="o">-&gt;</span><span class="n">max_threads</span><span class="o">=</span> <span class="n">threadpool_max_threads</span><span class="p">;</span>
+  <span class="n">func</span><span class="o">-&gt;</span><span class="n">max_connections</span><span class="o">=</span> <span class="n">arg_max_connections</span><span class="p">;</span>
+  <span class="n">func</span><span class="o">-&gt;</span><span class="n">connection_count</span><span class="o">=</span> <span class="n">arg_connection_count</span><span class="p">;</span>
+  <span class="n">scheduler_init</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>也就是说，根据 tp_scheduler_functions 变量中的定义，对于 thread pool 方式，这种方式对应的初始函数为 tp_init()，创建新连接的函数为 tp_add_connection()，等待开始函数为 tp_wait_begin()，等待结束函数为 tp_wait_end() 。</p>
+
+<p>其中 thread pool 涉及的源码在 sql/threadpool_{common,unix}.cc，其中初始化函数如下。</p>
+
+<h3 id="初始化">初始化</h3>
+
+<p>初始化的函数调用逻辑如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">tp_init()
+ |-scheduler_init()
+ |-thread_group_init()              # 对组进行初始化
+ |-start_timer()                    # 开启监控线程timer_thread()</code></pre></figure>
+
+<p>至此为止，thread pool 里面只有一个监控线程启动，而没有任何工作线程，直到有新的连接到来。</p>
+
+<h3 id="处理链接">处理链接</h3>
+
+<p>当有新连接到来时，会调用 create_new_thread() 函数，而该函数实际会调用 tp_add_connection() 函数，其中比较重要的数据结构如下：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="kt">connection_t</span> <span class="p">{</span>
+  <span class="n">THD</span> <span class="o">*</span><span class="n">thd</span><span class="p">;</span>
+  <span class="kt">thread_group_t</span> <span class="o">*</span><span class="n">thread_group</span><span class="p">;</span>
+  <span class="kt">connection_t</span> <span class="o">*</span><span class="n">next_in_queue</span><span class="p">;</span>
+  <span class="kt">connection_t</span> <span class="o">**</span><span class="n">prev_in_queue</span><span class="p">;</span>
+  <span class="n">ulonglong</span> <span class="n">abs_wait_timeout</span><span class="p">;</span>      <span class="c1">// 等待超时时间</span>
+  <span class="kt">bool</span> <span class="n">logged_in</span><span class="p">;</span>                  <span class="c1">// 是否进行了登录验证</span>
+  <span class="kt">bool</span> <span class="n">bound_to_poll_descriptor</span><span class="p">;</span>   <span class="c1">// 是否添加到了epoll进行监听</span>
+  <span class="kt">bool</span> <span class="n">waiting</span><span class="p">;</span>                    <span class="c1">// 是否在等待状态，如I/O、sleep</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="kt">thread_group_t</span> <span class="p">{</span>
+  <span class="kt">mysql_mutex_t</span>      <span class="n">mutex</span><span class="p">;</span>
+  <span class="kt">connection_queue_t</span> <span class="n">queue</span><span class="p">;</span>           <span class="c1">// connection请求链表</span>
+  <span class="kt">worker_list_t</span>      <span class="n">waiting_threads</span><span class="p">;</span>   <span class="c1">// group中正在等待被唤醒的thread</span>
+  <span class="kt">worker_thread_t</span>    <span class="o">*</span><span class="n">listener</span><span class="p">;</span>       <span class="c1">// 当前group中用于监听的线程</span>
+  <span class="kt">pthread_attr_t</span>     <span class="o">*</span><span class="n">pthread_attr</span><span class="p">;</span>
+  <span class="kt">int</span>                <span class="n">pollfd</span><span class="p">;</span>                     <span class="c1">// epoll 文件描述符，用于绑定group中的所有连接</span>
+  <span class="kt">int</span>  <span class="n">thread_count</span><span class="p">;</span>               <span class="c1">// 线程数</span>
+  <span class="kt">int</span>  <span class="n">active_thread_count</span><span class="p">;</span><span class="c1">//活跃线程数</span>
+  <span class="kt">int</span>  <span class="n">connection_count</span><span class="p">;</span> <span class="c1">//连接数</span>
+  <span class="cm">/* Stats for the deadlock detection timer routine.*/</span>
+  <span class="kt">int</span> <span class="n">io_event_count</span><span class="p">;</span>  <span class="c1">//epoll产生的事件数</span>
+  <span class="kt">int</span> <span class="n">queue_event_count</span><span class="p">;</span> <span class="c1">//工作线程消化的事件数</span>
+  <span class="n">ulonglong</span> <span class="n">last_thread_creation_time</span><span class="p">;</span>
+  <span class="kt">int</span>  <span class="n">shutdown_pipe</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+  <span class="kt">bool</span> <span class="n">shutdown</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">stalled</span><span class="p">;</span> <span class="c1">// 工作线程是否处于停滞状态</span>
+<span class="p">}</span> <span class="n">MY_ALIGNED</span><span class="p">(</span><span class="mi">512</span><span class="p">);</span></code></pre></figure>
+
+<p>调用逻辑。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">tp_add_connection()
+ |-threads.append()                 # 首先添加到threads列表中
+ |-alloc_connection()               # 申请连接
+ |-queue_put()                      # 放到队列中
+   |-wake_or_create_thread()        # 如果没有活跃的线程，那么就无法处理这个新到的请求
+     |                                这时调用该函数
+     |-wake_thread()                # 首先尝试唤醒group</code></pre></figure>
+
+<p>先根据 thread_id 对 group_count 取模，找到所属的 group，然后调用 queue_put() 将此 connection 放到 group 中的 queue 中。</p>
+
+<p>等待线程链表 waiting_threads 中的线程，如果没有等待中的线程，则需要创建一个线程。至此，新到的 connection 被挂到了 group 的 queue 上，这样一个连接算是 add 进队列了，那么如何处理这个连接呢？</p>
+
+<p>由于是第一个连接到来，那么肯定没有 waiting_threads，此时会调用create_worker() 创建一个工作线程，也就是 worker_main() 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">worker_main()
+ |-get_event()                      # 获取要处理的连接，其中等待事件可能是登陆请求或socket中未读的字节
+ | |-queue_get()                    # 从队列中获取相应的连接
+ | |-listener()                     # 如果队列中没有监听的进程，则选择其中一个用来监听
+ |
+ |-handle_event()                   # 处理相应的连接
+ | |-threadpool_add_connection()    # 如果没有登陆过，则调用该函数
+ | |-threadpool_process_request()   # 否则已经登陆，则直接处理请求
+ | |-set_wait_timeout()
+ | |-start_io()
+ |   |-mysql_socket_getfd()
+ |   |-io_poll_associate_fd()       # 将新到连接的socket绑定到group的epoll上进行监听
+ |
+ |-my_thread_end()</code></pre></figure>
+
+<p>其中 one thread per connection 中每个线程也是一个循环体，这两者的区别是，thread pool 的循环等待的是一个可用的 event，并不局限于某个固定的 connection 的 event；而前者的循环等待是等待固定连接上的 event，这就是两者最大的区别。</p>
+
+<p>第一个连接到来，queue 中有了一个 connection，这时 get_event 便会从 queue 中获取到一个 connection，返回给 worker_main 线程。worker_main 接着调用 handle_event 进行事件处理。</p>
+
+<p>每个新的连接到服务器后，其 socket 会绑定到 group 的 epoll 中，所以，如果 queue 中没有连接，需要从 epoll 中获取，每个 group 的所有连接的 socket 都绑定在 group 的 epoll 中，所以任何一个时刻，最多只有一个线程能够监听 epoll，如果epoll 监听到有 event的话，也会返回相应的connection，然后再调用handle_event进行处理。</p>
+
+<p>当 group 中的线程没有任务执行时，所有线程都会在 get_event() 处等待，但是有两种等待方式，一种是在 epoll 上等待事件，每个 group 中只有一个线程会做这个事情，且这个会一直等待，直到有新的事件到来。</p>
+
+<p>另一种是等待参数 thread_pool_idle_time 指定的时间，若超过了这个时间，那么当前的线程的 get_event 就会返回空，然后 worker_main 线程就会退出。如果在线程等待的过程被唤醒的话，那么就会继续在 get_event 中进行循环，等待新的事件。</p>
+
+<!--
+http://www.cnblogs.com/nocode/archive/2013/05/25/3098317.html
+http://blog.jobbole.com/87944/
+-->
+
+<h2 id="其它">其它</h2>
+
+<p>介绍一些与线程相关的内容。</p>
+
+<h3 id="链接池和线程池">链接池和线程池</h3>
+
+<p>链接池是部署在应用端，为了防止客户端会频繁建立链接然后中断链接，当用户不需要该链接时，会在客户端缓存这些链接，这样如果下次用户再需要建立链接时可以直接复用该链接。</p>
+
+<p>链接池可以有效减小服务器和客户端的执行时间，但是不会影响查询性能。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/python-most-useful-tools.html" title="Python 常用工具">&larr; Older</a></li> 
+         <li class="next"><a href="/post/mysql-memory_init.html" title="MySQL 内存配置">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1431878400',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-connection_init.html" data-title="MySQL 链接方式" data-url="/post/mysql-connection_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

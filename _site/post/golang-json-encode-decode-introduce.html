@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>GoLang JSON 编码解码|JinYang's Blog</title>
+  <meta name="keywords" content="golang,json">
+  <meta name="description" content="随着 REST API 的兴起，基本上已经前后端分离，更多的返回格式是 json 字符串，这里简单讨论下在 GoLang 中如何编码和解码 JSON 结构。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>GoLang JSON 编码解码</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2018-08-12 Sunday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  golang ,  program ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>随着 REST API 的兴起，基本上已经前后端分离，更多的返回格式是 json 字符串，这里简单讨论下在 GoLang 中如何编码和解码 JSON 结构。</p>
+
+<p>GoLang 提供了 <code>encoding/json</code> 的标准库用于 JSON 的处理，简单记录 GoLang 中使用 JSON 的常用技巧。</p>
+
+<!-- more -->
+
+<h2 id="编码">编码</h2>
+
+<p>在使用库进行序列化时，只有字段名为大写的才会被编码到 JSON 中，不同结构的数组需要使用 <code>[]interface{}</code> 进行转换。</p>
+
+<p>直接列举常用的表示方法。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;encoding/json&quot;</span>
+	<span class="s">&quot;log&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Account</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Email</span>    <span class="kt">string</span>
+	<span class="nx">password</span> <span class="kt">string</span>
+	<span class="nx">Money</span>    <span class="kt">float64</span> <span class="s">`json:&quot;money,omitempty,string&quot;`</span>
+	<span class="nx">Secret</span>   <span class="kt">string</span>  <span class="s">`json:&quot;-&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Name</span>    <span class="kt">string</span>
+	<span class="nx">Age</span>     <span class="kt">int</span>
+	<span class="nx">Roles</span>   <span class="p">[]</span><span class="kt">string</span>
+	<span class="nx">Skill</span>   <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">float64</span>
+	<span class="nx">Account</span> <span class="nx">Account</span>
+	<span class="nx">Extra</span>   <span class="p">[]</span><span class="kd">interface</span><span class="p">{}</span>
+	<span class="nx">Level</span>   <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">skill</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">float64</span><span class="p">)</span>
+	<span class="nx">skill</span><span class="p">[</span><span class="s">&quot;python&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="mf">99.5</span>
+	<span class="nx">skill</span><span class="p">[</span><span class="s">&quot;ruby&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="mf">80.0</span>
+
+	<span class="nx">extra</span> <span class="o">:=</span> <span class="p">[]</span><span class="kd">interface</span><span class="p">{}{</span><span class="mi">123</span><span class="p">,</span> <span class="s">&quot;hello world&quot;</span><span class="p">}</span>
+
+	<span class="nx">level</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{})</span>
+	<span class="nx">level</span><span class="p">[</span><span class="s">&quot;web&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="s">&quot;Good&quot;</span>
+	<span class="nx">level</span><span class="p">[</span><span class="s">&quot;server&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="mi">90</span>
+	<span class="nx">level</span><span class="p">[</span><span class="s">&quot;tool&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="kc">nil</span>
+
+	<span class="nx">user</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{</span>
+		<span class="nx">Name</span><span class="p">:</span>  <span class="s">&quot;foobar&quot;</span><span class="p">,</span>
+		<span class="nx">Age</span><span class="p">:</span>   <span class="mi">27</span><span class="p">,</span>
+		<span class="nx">Roles</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;Owner&quot;</span><span class="p">,</span> <span class="s">&quot;Master&quot;</span><span class="p">},</span>
+		<span class="nx">Skill</span><span class="p">:</span> <span class="nx">skill</span><span class="p">,</span>
+		<span class="nx">Account</span><span class="p">:</span> <span class="nx">Account</span><span class="p">{</span>
+			<span class="nx">Email</span><span class="p">:</span>    <span class="s">&quot;foobar@example.com&quot;</span><span class="p">,</span>
+			<span class="nx">password</span><span class="p">:</span> <span class="s">&quot;YOUR PASSWORD&quot;</span><span class="p">,</span>
+			<span class="nx">Money</span><span class="p">:</span>    <span class="mf">11.1</span><span class="p">,</span>
+			<span class="nx">Secret</span><span class="p">:</span>   <span class="s">&quot;some info&quot;</span><span class="p">,</span>
+		<span class="p">},</span>
+		<span class="nx">Extra</span><span class="p">:</span> <span class="nx">extra</span><span class="p">,</span>
+		<span class="nx">Level</span><span class="p">:</span> <span class="nx">level</span><span class="p">,</span>
+	<span class="p">}</span>
+
+	<span class="nx">rs</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">Marshal</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">rs</span><span class="p">))</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>输出的内容为。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">{
+	&quot;Name&quot;:&quot;foobar&quot;,
+	&quot;Age&quot;:27,
+	&quot;Roles&quot;:[
+		&quot;Owner&quot;,
+		&quot;Master&quot;
+	],
+	&quot;Skill&quot;:{
+		&quot;python&quot;:99.5,
+		&quot;ruby&quot;:80
+	},
+	&quot;Account&quot;:{
+		&quot;Email&quot;:&quot;foobar@example.com&quot;,
+		&quot;money&quot;:&quot;11.1&quot;
+	},
+	&quot;Extra&quot;:[
+		123,
+		&quot;hello world&quot;
+	],
+	&quot;Level&quot;:{
+		&quot;server&quot;:90,
+		&quot;tool&quot;:null,
+		&quot;web&quot;:&quot;Good&quot;
+	}
+}</code></pre></figure>
+
+<h3 id="常用示例">常用示例</h3>
+
+<ol>
+  <li>忽略空白，添加 <code>omitempty</code> 注释。</li>
+  <li>将数值设置为字符串，添加 <code>string</code> 注释。</li>
+  <li>忽略部分字段，将字段名称设置为 <code>-</code>。</li>
+</ol>
+
+<h2 id="解码">解码</h2>
+
+<p>解码就是将 JSON 字符串反序列化为 GoLang 对象，在匹配字段时 <strong>大小写不敏感的</strong>，而且不会设置私有字段，如果有不匹配的字段则直接忽略。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;encoding/json&quot;</span>
+	<span class="s">&quot;log&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Account</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Email</span>    <span class="kt">string</span>  <span class="s">`json:&quot;email&quot;`</span>
+	<span class="nx">Money</span>    <span class="kt">float64</span> <span class="s">`json:&quot;money&quot;`</span>
+	<span class="nx">PassWord</span> <span class="kt">string</span>  <span class="s">`json:&quot;password&quot;`</span>
+	<span class="nx">Level</span>    <span class="kt">int</span>     <span class="s">`json:&quot;level,string&quot;`</span>
+	<span class="nx">Secret</span>   <span class="kt">string</span>  <span class="s">`json:&quot;-&quot;`</span>
+	<span class="c1">//password string  `json:&quot;password&quot;` // NOT Work</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">jsonString</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">`{</span>
+<span class="s">	&quot;email&quot;: &quot;foobar@example.com&quot;,</span>
+<span class="s">	&quot;password&quot; : &quot;YOUR PASSWORD&quot;,</span>
+<span class="s">	&quot;money&quot; : 100.5,</span>
+<span class="s">	&quot;level&quot; : &quot;10&quot;,</span>
+<span class="s">	&quot;Unexists&quot; : &quot;Some mess fields&quot;</span>
+<span class="s">}`</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">account</span> <span class="o">:=</span> <span class="nx">Account</span><span class="p">{}</span>
+
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jsonString</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">account</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%#v\n&quot;</span><span class="p">,</span> <span class="nx">account</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="常见示例">常见示例</h3>
+
+<ol>
+  <li>如果要求将字符串转换为数值，可以增加 <code>string</code> 标签，此时 JSON 中必须使用 <code>""</code> 否则报错。</li>
+  <li>忽略字段同样使用 <code>-</code> ，不过此时会设置默认的初始值，<code>int</code> 为 <code>0</code>，<code>string</code> 为 <code>""</code>。</li>
+</ol>
+
+<h3 id="动态解析">动态解析</h3>
+
+<p>上述可以通常根据 JSON 的格式预先定义 GoLang 的结构进行解析是最理想的情况，不过实际开发中，经常出现 JSON 非但格式不确定，有的还可能是动态数据类型。</p>
+
+<p>例如，登陆系统时可以使用邮箱或者手机号。</p>
+
+<p>首先，调用 json 的 <code>NewDecoder()</code> 构造一个 <code>Decode</code> 对象，然后使用这个对象的 <code>Decode()</code> 方法赋值给定义好的结构对象。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;encoding/json&quot;</span>
+	<span class="s">&quot;log&quot;</span>
+	<span class="s">&quot;strings&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">UserName</span> <span class="kt">string</span> <span class="s">`json:&quot;username&quot;`</span>
+	<span class="nx">Password</span> <span class="kt">string</span> <span class="s">`json:&quot;password&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">jsonString</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">`{</span>
+<span class="s">	&quot;username&quot;: &quot;foobar@example.com&quot;,</span>
+<span class="s">	&quot;password&quot;: &quot;YOUR PASSWORD&quot;</span>
+<span class="s">}`</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">str</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nx">NewReader</span><span class="p">(</span><span class="nx">jsonString</span><span class="p">)</span> <span class="c1">// io.Reader</span>
+	<span class="nx">usr</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{}</span>
+
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">NewDecoder</span><span class="p">(</span><span class="nx">str</span><span class="p">).</span><span class="nx">Decode</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">usr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Fatalf</span><span class="p">(</span><span class="s">&quot;Decode failed, %#v\n&quot;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;User %#v\n&quot;</span><span class="p">,</span> <span class="nx">usr</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>这里使用 <code>strings.NewReader()</code> 让字符串变成一个 <code>Stream</code> 对象。</p>
+
+<h3 id="空接口">空接口</h3>
+
+<p>如果上述使用 <code>"username": 12345678901,</code> ，在解析时就会报错，此时需要使用空接口，不过此时返回的是 <code>1.2345678901e+10</code> ，为此可以使用类型判断。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;encoding/json&quot;</span>
+	<span class="s">&quot;log&quot;</span>
+	<span class="s">&quot;strings&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">UserName</span> <span class="kd">interface</span><span class="p">{}</span> <span class="s">`json:&quot;username&quot;`</span>
+	<span class="nx">Password</span> <span class="kt">string</span>      <span class="s">`json:&quot;password&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">jsonString</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">`{</span>
+<span class="s">	&quot;username&quot;: 12345678901,</span>
+<span class="s">	&quot;password&quot;: &quot;YOUR PASSWORD&quot;</span>
+<span class="s">}`</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">str</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nx">NewReader</span><span class="p">(</span><span class="nx">jsonString</span><span class="p">)</span> <span class="c1">// io.Reader</span>
+	<span class="nx">usr</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{}</span>
+
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">NewDecoder</span><span class="p">(</span><span class="nx">str</span><span class="p">).</span><span class="nx">Decode</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">usr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Fatalf</span><span class="p">(</span><span class="s">&quot;Decode failed, %#v\n&quot;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="k">switch</span> <span class="nx">t</span> <span class="o">:=</span> <span class="nx">usr</span><span class="p">.</span><span class="nx">UserName</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="kt">string</span><span class="p">:</span>
+		<span class="nx">usr</span><span class="p">.</span><span class="nx">UserName</span> <span class="p">=</span> <span class="nx">t</span>
+	<span class="k">case</span> <span class="kt">float64</span><span class="p">:</span>
+		<span class="nx">usr</span><span class="p">.</span><span class="nx">UserName</span> <span class="p">=</span> <span class="nb">int64</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;User %#v\n&quot;</span><span class="p">,</span> <span class="nx">usr</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>对于上述的 <code>UserName</code> 字段，仍然是空接口，为了方便可以定义相关的字段，例如。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">type User struct {
+	UserName interface{} `json:&quot;username&quot;`
+	Password string `json:&quot;password&quot;`
+
+	Email string
+	Phone int64
+}</code></pre></figure>
+
+<h3 id="延迟解析">延迟解析</h3>
+
+<p>对于 <code>UserName</code> 字段只有在使用时，才会用到他的具体类型，因此可以延迟解析。使用 <code>json.RawMessage</code> 方式，将 json 的字串继续以 <code>byte</code> 数组方式存在。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;encoding/json&quot;</span>
+	<span class="s">&quot;log&quot;</span>
+	<span class="s">&quot;strings&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">UserName</span> <span class="nx">json</span><span class="p">.</span><span class="nx">RawMessage</span> <span class="s">`json:&quot;username&quot;`</span>
+	<span class="nx">Password</span> <span class="kt">string</span>          <span class="s">`json:&quot;password&quot;`</span>
+
+	<span class="nx">Email</span> <span class="kt">string</span>
+	<span class="nx">Phone</span> <span class="kt">int64</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">jsonString</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">`{</span>
+<span class="s">	&quot;username&quot;: 12345678901,</span>
+<span class="s">	&quot;password&quot;: &quot;YOUR PASSWORD&quot;</span>
+<span class="s">}`</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">str</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nx">NewReader</span><span class="p">(</span><span class="nx">jsonString</span><span class="p">)</span> <span class="c1">// io.Reader</span>
+	<span class="nx">usr</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{}</span>
+
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">NewDecoder</span><span class="p">(</span><span class="nx">str</span><span class="p">).</span><span class="nx">Decode</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">usr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Fatalf</span><span class="p">(</span><span class="s">&quot;Decode failed, %#v\n&quot;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="kd">var</span> <span class="nx">email</span> <span class="kt">string</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">Unmarshal</span><span class="p">(</span><span class="nx">usr</span><span class="p">.</span><span class="nx">UserName</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">email</span><span class="p">);</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">usr</span><span class="p">.</span><span class="nx">Email</span> <span class="p">=</span> <span class="nx">email</span>
+	<span class="p">}</span>
+
+	<span class="kd">var</span> <span class="nx">phone</span> <span class="kt">int64</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">Unmarshal</span><span class="p">(</span><span class="nx">usr</span><span class="p">.</span><span class="nx">UserName</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">phone</span><span class="p">);</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">usr</span><span class="p">.</span><span class="nx">Phone</span> <span class="p">=</span> <span class="nx">phone</span>
+	<span class="p">}</span>
+
+	<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;User %#v\n&quot;</span><span class="p">,</span> <span class="nx">usr</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="不定字段解析">不定字段解析</h3>
+
+<p>对于未知 json 结构的解析，不同的数据类型可以映射到接口或者使用延迟解析。</p>
+
+<h4 id="空接口-1">空接口</h4>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;encoding/json&quot;</span>
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;log&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Person</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Name</span> <span class="kt">string</span> <span class="s">`json:&quot;name&quot;`</span>
+	<span class="nx">Age</span>  <span class="kt">int</span>    <span class="s">`json:&quot;age&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Place</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">City</span>    <span class="kt">string</span> <span class="s">`json:&quot;city&quot;`</span>
+	<span class="nx">Country</span> <span class="kt">string</span> <span class="s">`json:&quot;country&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">jsonString</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">`{</span>
+<span class="s">    &quot;things&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">            &quot;name&quot;: &quot;Alice&quot;,</span>
+<span class="s">            &quot;age&quot;: 37</span>
+<span class="s">        },</span>
+<span class="s">        {</span>
+<span class="s">            &quot;city&quot;: &quot;Ipoh&quot;,</span>
+<span class="s">            &quot;country&quot;: &quot;Malaysia&quot;</span>
+<span class="s">        },</span>
+<span class="s">        {</span>
+<span class="s">            &quot;name&quot;: &quot;Bob&quot;,</span>
+<span class="s">            &quot;age&quot;: 36</span>
+<span class="s">        },</span>
+<span class="s">        {</span>
+<span class="s">            &quot;city&quot;: &quot;Northampton&quot;,</span>
+<span class="s">            &quot;country&quot;: &quot;England&quot;</span>
+<span class="s">        }</span>
+<span class="s">    ]</span>
+<span class="s">}`</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">data</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span>
+	<span class="kd">var</span> <span class="nx">persons</span> <span class="p">[]</span><span class="nx">Person</span>
+	<span class="kd">var</span> <span class="nx">places</span> <span class="p">[]</span><span class="nx">Place</span>
+
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jsonString</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">data</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">data</span><span class="p">[</span><span class="s">&quot;things&quot;</span><span class="p">]</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">v</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">p</span> <span class="o">:=</span> <span class="nx">Person</span><span class="p">{</span>
+				<span class="nx">Name</span><span class="p">:</span> <span class="nx">v</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">].(</span><span class="kt">string</span><span class="p">),</span>
+				<span class="nx">Age</span><span class="p">:</span>  <span class="nb">int</span><span class="p">(</span><span class="nx">v</span><span class="p">[</span><span class="s">&quot;age&quot;</span><span class="p">].(</span><span class="kt">float64</span><span class="p">)),</span>
+			<span class="p">}</span>
+			<span class="nx">persons</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">persons</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">p</span> <span class="o">:=</span> <span class="nx">Place</span><span class="p">{</span>
+				<span class="nx">City</span><span class="p">:</span>    <span class="nx">v</span><span class="p">[</span><span class="s">&quot;city&quot;</span><span class="p">].(</span><span class="kt">string</span><span class="p">),</span>
+				<span class="nx">Country</span><span class="p">:</span> <span class="nx">v</span><span class="p">[</span><span class="s">&quot;country&quot;</span><span class="p">].(</span><span class="kt">string</span><span class="p">),</span>
+			<span class="p">}</span>
+			<span class="nx">places</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">places</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Person %#v\n&quot;</span><span class="p">,</span> <span class="nx">persons</span><span class="p">)</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Place %#v\n&quot;</span><span class="p">,</span> <span class="nx">places</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如下是解释更复杂的示例。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;encoding/json&quot;</span>
+	<span class="s">&quot;log&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">var</span> <span class="nx">jsonString</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">`{</span>
+<span class="s">	&quot;things&quot;: [{</span>
+<span class="s">		&quot;name&quot;: &quot;Alice&quot;,</span>
+<span class="s">		&quot;age&quot;: 37,</span>
+<span class="s">		&quot;info&quot;: {</span>
+<span class="s">			&quot;phone&quot;: &quot;123&quot;</span>
+<span class="s">		}</span>
+<span class="s">	}]</span>
+<span class="s">}`</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">data</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span>
+
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jsonString</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">data</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">val</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">data</span><span class="p">[</span><span class="s">&quot;things&quot;</span><span class="p">]</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Info Phone %v\n&quot;</span><span class="p">,</span> <span class="nx">val</span><span class="p">[</span><span class="s">&quot;info&quot;</span><span class="p">].(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{})[</span><span class="s">&quot;phone&quot;</span><span class="p">])</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="混合结构">混合结构</h4>
+
+<p>与前面解析 <code>username</code> 为 <code>email</code> 和 <code>phone</code> 两种情况，就在结构中定义好这两种结构即可。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Mixed</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Name</span>    <span class="kt">string</span> <span class="s">`json:&quot;name&quot;`</span>
+	<span class="nx">Age</span>     <span class="kt">int</span> <span class="s">`json:&quot;age&quot;`</span>
+	<span class="nx">City</span>    <span class="kt">string</span> <span class="s">`json:&quot;city&quot;`</span>
+	<span class="nx">Country</span> <span class="kt">string</span>  <span class="s">`json:&quot;country&quot;`</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>简单来说，就是借助 GoLang 会初始化没有匹配的 JSON 和抛弃没有匹配的 JSON，给特定的字段赋值。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;encoding/json&quot;</span>
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;log&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Person</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Name</span> <span class="kt">string</span> <span class="s">`json:&quot;name&quot;`</span>
+	<span class="nx">Age</span>  <span class="kt">int</span>    <span class="s">`json:&quot;age&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Place</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">City</span>    <span class="kt">string</span> <span class="s">`json:&quot;city&quot;`</span>
+	<span class="nx">Country</span> <span class="kt">string</span> <span class="s">`json:&quot;country&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Mixed</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Name</span>    <span class="kt">string</span> <span class="s">`json:&quot;name&quot;`</span>
+	<span class="nx">Age</span>     <span class="kt">int</span>    <span class="s">`json:&quot;age&quot;`</span>
+	<span class="nx">City</span>    <span class="kt">string</span> <span class="s">`json:&quot;city&quot;`</span>
+	<span class="nx">Country</span> <span class="kt">string</span> <span class="s">`json:&quot;country&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">jsonString</span> <span class="kt">string</span> <span class="p">=</span> <span class="s">`{</span>
+<span class="s">    &quot;things&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">            &quot;name&quot;: &quot;Alice&quot;,</span>
+<span class="s">            &quot;age&quot;: 37</span>
+<span class="s">        },</span>
+<span class="s">        {</span>
+<span class="s">            &quot;city&quot;: &quot;Ipoh&quot;,</span>
+<span class="s">            &quot;country&quot;: &quot;Malaysia&quot;</span>
+<span class="s">        },</span>
+<span class="s">        {</span>
+<span class="s">            &quot;name&quot;: &quot;Bob&quot;,</span>
+<span class="s">            &quot;age&quot;: 36</span>
+<span class="s">        },</span>
+<span class="s">        {</span>
+<span class="s">            &quot;city&quot;: &quot;Northampton&quot;,</span>
+<span class="s">            &quot;country&quot;: &quot;England&quot;</span>
+<span class="s">        }</span>
+<span class="s">    ]</span>
+<span class="s">}`</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">data</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="nx">Mixed</span>
+	<span class="kd">var</span> <span class="nx">persons</span> <span class="p">[]</span><span class="nx">Person</span>
+	<span class="kd">var</span> <span class="nx">places</span> <span class="p">[]</span><span class="nx">Place</span>
+
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jsonString</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">data</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">data</span><span class="p">[</span><span class="s">&quot;things&quot;</span><span class="p">]</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">v</span><span class="p">.</span><span class="nx">Name</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span> <span class="p">{</span>
+			<span class="nx">p</span> <span class="o">:=</span> <span class="nx">Person</span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="nx">v</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">Age</span><span class="p">:</span> <span class="nx">v</span><span class="p">.</span><span class="nx">Age</span><span class="p">}</span>
+			<span class="nx">persons</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">persons</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">p</span> <span class="o">:=</span> <span class="nx">Place</span><span class="p">{</span><span class="nx">City</span><span class="p">:</span> <span class="nx">v</span><span class="p">.</span><span class="nx">City</span><span class="p">,</span> <span class="nx">Country</span><span class="p">:</span> <span class="nx">v</span><span class="p">.</span><span class="nx">Country</span><span class="p">}</span>
+			<span class="nx">places</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">places</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Person %#v\n&quot;</span><span class="p">,</span> <span class="nx">persons</span><span class="p">)</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Place %#v\n&quot;</span><span class="p">,</span> <span class="nx">places</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<!--
+#### RawMessage
+
+如上述使用的 `json.RawMessage` 。
+
+
+type Person struct {
+    Name string `json:"name"`
+    Age  int    `json:"age"`
+}
+
+type Place struct {
+    City    string `json:"city"`
+    Country string `json:"country"`
+}
+
+func addPerson(item json.RawMessage, persons []Person) ([]Person) {
+    person := Person{}
+    if err := json.Unmarshal(item, &person); err != nil {
+        fmt.Println(err)
+    } else {
+        if person != *new(Person) {
+            persons = append(persons, person)
+        }
+    }
+
+    return persons
+}
+
+func addPlace(item json.RawMessage, places []Place) ([]Place) {
+    place := Place{}
+    if err := json.Unmarshal(item, &place); err != nil {
+        fmt.Println(err)
+    } else {
+        if place != *new(Place) {
+            places = append(places, place)
+        }
+    }
+
+    return places
+}
+
+func decode(jsonStr []byte) (persons []Person, places []Place) {
+    var data map[string][]json.RawMessage
+
+    err := json.Unmarshal(jsonStr, &data)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+
+    for _, item := range data["things"] {
+        persons = addPerson(item, persons)
+        places = addPlace(item, places)
+    }
+
+    return
+}
+
+var jsonString string = `{
+    "things": [
+        {
+            "name": "Alice",
+            "age": 37
+        },
+        {
+            "city": "Ipoh",
+            "country": "Malaysia"
+        },
+        {
+            "name": "Bob",
+            "age": 36
+        },
+        {
+            "city": "Northampton",
+            "country": "England"
+        }
+    ]
+}`
+
+func main() {
+    personA, placeA := decode([]byte(jsonString))
+
+    fmt.Printf("%+v\n", personA)
+    fmt.Printf("%+v\n", placeA)
+}
+
+把 things 的 item 数组解析成一个 json.RawMessage，然后再定义其他结构逐步解析。上述这些例子其实在真实的开发环境下，应该尽量避免。像 person 或是 place 这样的数据，可以定义两个数组分别存储他们，这样就方便很多。不管怎么样，通过这个略傻的例子，我们也知道了如何解析 json 数据。
+
+
+使用 JSON 的一些小技巧
+https://blog.csdn.net/impressionw/article/details/74731888
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/kernel-cgroup-memory-introduce.html" title="Kernel Cgroup Memory Introduce">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-git-gogs-introduce.html" title="Gogs 仓库使用">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1534003200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/golang-json-encode-decode-introduce.html" data-title="GoLang JSON 编码解码" data-url="/post/golang-json-encode-decode-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Valgrind 工具使用|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Valgrind 工具使用</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2019-03-16 Saturday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  program ,  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Valgrind 可以用于构建动态分析工具，包括一个工具集，每个工具可以进行一类的调试、分析、测试，以帮助完善程序。</p>
+
+<p>该工具采用的是模块化方式，可以很容易创建新的工具而又不会扰乱现有工具。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<ul>
+  <li>memcheck 内存异常检测，包括未释放、重复释放等异常；</li>
+  <li>sgcheck 用来检测堆和全局数组的溢出，可以与 memcheck 互补；</li>
+  <li>cachegrind 缓存和分支预测分析器，可以用来提高程序的性能；</li>
+  <li>callgrind 函数调用图缓存生成分析器，与上一工具功能略有重叠，可以收集一些其它信息；</li>
+  <li>helgrind 多线程的异常检测，可以发现一些多线程导致的问题；</li>
+  <li>DRD 与 helgrind 类似，采用了不同的实现方式，可以找到不同的问题；</li>
+  <li>massif 堆分析器，对堆内存的使用进行分析；</li>
+  <li>DHAT 另一种不同的堆分析器，有助于理解块的生命周期、块的使用和布局的低效等问题；</li>
+</ul>
+
+<h2 id="memcheck">memcheck</h2>
+
+<p>一个内存使用情况的检查工具，可以处理如下的几类错误：</p>
+
+<ul>
+  <li>使用未初始化的内存，主要是一些变量。</li>
+  <li>内存多次释放、释放后访问、未释放等。</li>
+  <li>对堆栈内存空间的非法访问，包括了写入和读取。</li>
+</ul>
+
+<h3 id="内存操作">内存操作</h3>
+
+<p>包括了内存未释放、多次释放等操作，其中前者默认只打印内存泄漏信息，如果要查看详细的地址需要添加 <code>--leak-check=full</code> 参数。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">char</span> <span class="o">*</span><span class="n">buff</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+        <span class="n">buff</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">buff</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+        <span class="n">free</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+        <span class="n">free</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>上面代码出现了两次的释放操作，会有如下的报错信息。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">==43613== Invalid free() / delete / delete[] / realloc()
+==43613==    at 0x4C2ACBD: free (vg_replace_malloc.c:530)
+==43613==    by 0x400722: main (in /tmp/test/race)
+==43613==  Address 0x541f040 is 0 bytes inside a block of size 5 free&#39;d
+==43613==    at 0x4C2ACBD: free (vg_replace_malloc.c:530)
+==43613==    by 0x40071A: main (in /tmp/test/race)
+==43613==  Block was alloc&#39;d at
+==43613==    at 0x4C29BC3: malloc (vg_replace_malloc.c:299)
+==43613==    by 0x40070A: main (in /tmp/test/race)</code></pre></figure>
+
+<p>如果把上面的两个 <code>free()</code> 操作注释掉，同时添加 <code>--leak-check=full</code> 参数，那么会报如下的错误。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">==35580== 5 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==35580==    at 0x4C29BC3: malloc (vg_replace_malloc.c:299)
+==35580==    by 0x400714: main (in /tmp/test/race)</code></pre></figure>
+
+<h3 id="非法访问">非法访问</h3>
+
+<p>包括了非法读取以及非法写入，例如如下的示例。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">char</span> <span class="o">*</span><span class="n">buff</span><span class="p">;</span>
+
+        <span class="n">buff</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">buff</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+        <span class="n">strcpy</span><span class="p">(</span><span class="n">buff</span><span class="p">,</span> <span class="s">&quot;01234&quot;</span><span class="p">);</span>
+
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;buffer is &#39;%s&#39;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">buff</span><span class="p">);</span>
+        <span class="n">free</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>其中的缓存只申请了 5 个字节，但是包括字符串结束符 <code>\0</code> 总共写入了 6 个字符，之所以报两个，估计是因为 <code>strcpy()</code> 正常只允许写入 4 个字节。</p>
+
+<p>另外，在打印的时候，会多访问一个字符串的结束符。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">==23247== Invalid write of size 2
+==23247==    at 0x400771: main (in /tmp/test/race)
+==23247==  Address 0x541f044 is 4 bytes inside a block of size 5 alloc&#39;d
+==23247==    at 0x4C29BC3: malloc (vg_replace_malloc.c:299)
+==23247==    by 0x40075A: main (in /tmp/test/race)
+==23247== 
+==23247== Invalid read of size 1
+==23247==    at 0x509EEF9: vfprintf (vfprintf.c:1635)
+==23247==    by 0x50A5328: printf (printf.c:34)
+==23247==    by 0x400780: main (in /tmp/test/race)
+==23247==  Address 0x541f045 is 0 bytes after a block of size 5 alloc&#39;d
+==23247==    at 0x4C29BC3: malloc (vg_replace_malloc.c:299)
+==23247==    by 0x40075A: main (in /tmp/test/race)
+==23247== </code></pre></figure>
+
+<h3 id="其它">其它</h3>
+
+<p>另外几个常用的参数示例如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">--show-reachable=yes
+--trace-children=yes
+
+--leak-check=&lt;no|summary|yes|full&gt;[default:summary]
+  在退出时检查是否有泄漏，其中summary只显示有多少泄漏，而yes或full会打印每次泄漏的详细信息。
+--error-exitcode=1
+  当出现错误时，指定返回的错误码，对于一些根据退出码判断是否正常的工具有效。</code></pre></figure>
+
+<h2 id="helgrind">helgrind</h2>
+
+<p>数据竞争 (Data Race) 是指在非线程安全的情况下，多线程对同一个地址空间进行写操作，一般会使用互斥锁或者读写锁进行保护，但是有可能会因为笔误或者设计缺陷仍然存在数据竞争的可能性。</p>
+
+<p>如下的代码中，正常来说应该使用写锁，但是误写成了读锁。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;unistd.h&gt;</span>
+<span class="cp">#include &lt;pthread.h&gt;</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">racy</span><span class="p">;</span>
+<span class="k">static</span> <span class="kt">pthread_rwlock_t</span> <span class="n">rwlock</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">thread_func</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">arg</span><span class="p">;</span>
+        <span class="n">pthread_rwlock_rdlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rwlock</span><span class="p">);</span>
+        <span class="n">racy</span><span class="o">++</span><span class="p">;</span>
+        <span class="n">pthread_rwlock_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rwlock</span><span class="p">);</span>
+        <span class="n">usleep</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">pthread_t</span> <span class="n">thread1</span><span class="p">;</span>
+        <span class="kt">pthread_t</span> <span class="n">thread2</span><span class="p">;</span>
+
+        <span class="n">pthread_rwlock_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rwlock</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">thread1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">thread_func</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">thread2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">thread_func</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+        <span class="n">pthread_join</span><span class="p">(</span><span class="n">thread1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">pthread_join</span><span class="p">(</span><span class="n">thread2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">pthread_rwlock_destroy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rwlock</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>然后执行如下操作，其中输出是简化之后的结果。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gcc -o race race.c -O2 -rdynamic -lpthread
+$ valgrind --tool=helgrind ./race
+... ...
+==11510== Possible data race during write of size 4 at 0x6010D8 by thread #3
+==11510== Locks held: none
+==11510==    at 0x400AD3: thread_func (in /tmp/test/race)
+==11510==    by 0x4C3081E: mythread_wrapper (hg_intercepts.c:389)
+==11510==    by 0x4E42DD4: start_thread (pthread_create.c:307)
+==11510==    by 0x5154EAC: clone (clone.S:111)
+==11510== 
+==11510== This conflicts with a previous write of size 4 by thread #2
+==11510== Locks held: none
+==11510==    at 0x400AD3: thread_func (in /tmp/test/race)
+==11510==    by 0x4C3081E: mythread_wrapper (hg_intercepts.c:389)
+==11510==    by 0x4E42DD4: start_thread (pthread_create.c:307)
+==11510==    by 0x5154EAC: clone (clone.S:111)
+==11510==  Address 0x6010d8 is 0 bytes inside data symbol &quot;racy&quot;</code></pre></figure>
+
+<p>如上标示了在地址 <code>0x6010D8</code> 处有 4 个字节存在数据竞争，分别有两个线程在尝试访问这一地址，而且没有持有锁；最后一行标示了这个变量是 racy 。</p>
+
+<!--
+https://ivanzz1001.github.io/records/post/cplusplus/2018/11/14/cpluscplus-valgrind_usage
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-R-language-basic-introduce.html" title="R 语言简介">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-R-language-graph-function-introduce.html" title="R 语言绘图">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1552665600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-c-valgrind-tools-introduce.html" data-title="Valgrind 工具使用" data-url="/post/linux-c-valgrind-tools-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

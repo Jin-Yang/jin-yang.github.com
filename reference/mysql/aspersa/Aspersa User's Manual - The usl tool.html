@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20usl%20tool_files/default.css" media="screen">
+<script type="text/javascript" src="Aspersa%20User%27s%20Manual%20-%20The%20usl%20tool_files/prototype.js"></script>
+<script type="text/javascript" src="Aspersa%20User%27s%20Manual%20-%20The%20usl%20tool_files/lightbox.js"></script>
+<title>Aspersa User's Manual - The usl tool</title>
+</head>
+<body><div style="display: none; position: absolute; top: 0px; left: 0px; z-index: 90; width: 100%;" id="overlay"></div><div style="display: none; position: absolute; z-index: 100;" id="lightbox"><a title="Click to close" href="#"><img id="lightboxImage"></a><div id="lightboxDetails"><div style="display: none;" id="lightboxCaption"></div><div id="keyboardMsg">press <a href="#" onclick="hideLightbox(); return false;"><kbd>x</kbd></a> to close</div></div></div>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The usl tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The usl tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+<p>The <em>usl</em> tool helps you perform capacity planning by automating some of the process explained in <a href="http://www.perfdynamics.com/">Dr. Neil J. Gunther's</a> book <a href="http://www.amazon.com/dp/3540261389?tag=xaprb-20">Guerrilla Capacity Planning</a> (presented in simplified form in <a href="http://www.mysqlperformanceblog.com/2010/11/16/percona-white-paper-forecasting-mysql-scalability/">this Percona white paper</a>).  Given an input file with two columns, concurrency and throughput, this tool fits the data into Gunther's <em>Universal Scalability Law</em>.</p>
+
+<p>This tool depends on <em>gnuplot</em> for plotting and curve-fitting.</p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>The tool has the following command-line options, which must come <em>first</em> on the command-line, before any filenames:</p>
+
+<dl>
+<dt>-a</dt><dd>Sets the label on the X-axis to 'node count' instead of 'concurrency,' which is the default.</dd>
+<dt>-c CONVERSION</dt><dd>Specifies a conversion function to run the input data through before feeding it into the model.  See <a href="#conversions">Conversion Functions</a> for more details.</dd>
+<dt>-e</dt><dd>Draws error lines on the final plot.</dd>
+<dt>-i INTERVAL</dt><dd>When -c is given, specifies to aggregate the 
+input data into intervals of -i seconds.  This can be useful for 
+smoothing data.  See <a href="#conversions">Conversion Functions</a> for more details.</dd>
+<dt>-k KEEPFILE</dt><dd>Specifies a file to hold the input data.  The 
+specified file will not be removed when the program finishes, so you can
+ re-analyze it if you wish.  This is handy when using -c to transform 
+the data: you can run the transformation once, and then re-analyze the 
+data many times.</dd>
+<dt>-l LIMIT</dt><dd>Set the upper limit of the X axis in the final plot.</dd>
+<dt>-L COLOR</dt><dd>The color for plotting points; when color is used, default is "lt rgb #80B000".</dd>
+<dt>-m THREADS</dt><dd>When -c is given, enforces a maximum concurrency 
+of THREADS in the input data.  Useful for filtering outliers such as 
+instantaneous spikes of very high concurrency.</dd>
+<dt>-n ADJUSTMENT</dt><dd>When -c is given, subtracts ADJUSTMENT from 
+the concurrency.  Useful for compensating for tasks in the system that 
+aren't really part of the workload you are measuring.</dd>
+<dt>-o ONLY</dt><dd>Only produce plots specified in this comma-separated list.</dd>
+<dt>-p PREFIX</dt><dd>A filename prefix for the generated images.</dd>
+<dt>-P PORT</dt><dd>The port number for -c tcpdump.</dd>
+<dt>-r</dt><dd>Render pdf and eps plots in color.</dd>
+<dt>-R</dt><dd>Don't re-fit against the USL.  Use the kappa and gamma computed from quadratic regression, not USL regression.</dd>
+<dt>-t FILETYPE</dt><dd>Type of images to generate.  The default is png, but you can also specify eps and pdf.</dd>
+<dt>-T POINTTYPE</dt><dd>The gnuplot point type and options for the plots; default is 6.</dd>
+<dt>-x ADJUSTMENT</dt><dd>Multiply the C(1) measurement by this factor.  Useful if the tool's interpolated value for C(1) is wrong.
+</dd><dt>-X</dt><dd>Include C(1) as a fit parameter for USL regression.
+</dd></dl>
+
+<p>Any additional arguments on the command-line are treated as file names containing the input data to plot and model.</p>
+
+<h2>How it Works</h2>
+
+<p>The <em>usl</em> tool works by accepting some input data with columns
+ of measurements.  Your input needs to have at least two columns: 
+concurrency (N), and throughput (C).  See <a href="#conversions">Conversion Functions</a> if you need to convert from a different input before running the model.  
+Lines beginning  with a # character are commented out.</p>
+
+<p>The tool tries to find the C value for N=1.  If this exists directly 
+in the input file, it will use that value.  If there are many 
+measurements for N=1, it will use the average value.  If there is no N=1
+ measurement, the tool will try to interpolate from the data it has, and
+ you might need to adjust the result with -x.</p>
+
+<p>After this step, the tool plots a number of graphs against the data. 
+ To make sense of these graphs, you need to be familiar with Dr. 
+Gunther's scalability model.  We will not document the meaning of the 
+graphs in this user's manual.</p>
+
+<p>Next, the tool transforms the input data, performs least-squares 
+regression against it, and plots that.  The coefficients for the 
+resulting fitted curve are 'a' and 'b', respectively.  The tool prints 
+these out, along with the coefficient of determination to show how 
+closely the line fits the points (the R-squared value).</p>
+
+<p>The tool uses the 'a' and 'b' coefficients to approximate the 'sigma'
+ and 'kappa' parameters to the Universal Scalability Law.  It then 
+performs another least-squares regression against the Law, with the 
+approximated parameters as starting points.  (It needs to generate 
+reasonably good starting points, or <em>gnuplot</em> can have trouble 
+with the regression; it can get stuck in a local maximum that is very 
+wrong.)  After the second least-squares regression, the tool captures 
+the 'sigma' and 'kappa' parameters, and plots the source data and the 
+model.</p>
+
+<h2 id="conversions">Conversion Functions</h2>
+
+<p>The -c option specifies a pre-processing function to convert the 
+input data into the necessary concurrency-vs-throughput format.  At 
+present there is only one built-in converter.  In the future we might 
+add more.
+
+</p><p>If you want to save the converted output to inspect it, use -k.</p>
+
+<dl>
+
+<dt>globalstatus</dt>
+<dd>
+<p>This converter accepts input from MySQL's SHOW GLOBAL STATUS command, in the form generated by the following script:</p>
+
+<code>
+while sleep 10; do
+   date '+TS %s.%N' | tee -a status &gt;&gt; processlist
+   mysql -e 'SHOW GLOBAL STATUS' &gt;&gt; status &amp;
+   mysql -e 'SHOW FULL PROCESSLIST\G' &gt;&gt; processlist &amp;
+done
+</code>
+
+<p>That script might create large files.  For most purposes, the following is adequate:</p>
+
+<code>
+mysql -e 'SHOW FULL PROCESSLIST\G' &gt; processlist
+while sleep 10; do
+  date '+TS %s.%N' &gt;&gt; status
+  mysql -e 'SHOW GLOBAL STATUS' \
+    | grep -e Questions -e Uptime -e Threads_running &gt;&gt; status
+done
+</code>
+
+<p>The converter looks at Questions, Uptime, and Threads_running.  For 
+each sample, it computes the queries per second as the throughput, and 
+the average of the Threads_running from this sample and the previous 
+sample.  It has the following characteristics:</p>
+
+<ul>
+<li>It automatically subtracts 1 from Threads_running, because the 
+thread doing SHOW GLOBAL STATUS will increase that variable by 1, but is
+ not really part of the workload being measured.</li>
+<li>It applies -n to the Threads_running count as well.  If you have 
+replication slaves attached to this server, they will artificially raise
+ Threads_running, but are again not really part of the server's workload
+ in most cases.</li>
+<li>It respects -i, so you can aggregate over time windows longer than 
+10 seconds.  If you do so, then Threads_running is computed as the 
+average of all the samples of Threads_running seen over the interval, 
+not just the beginning and end.</li>
+<li>It respects -m and will ignore any samples whose Threads_running is larger than this.</li>
+</ul>
+
+</dd>
+
+<dt>tcpdump</dt>
+<dd>
+<p>This converter accepts input from tcpdump, in the form generated by 'tcpdump -tttt -nnq'.</p>
+
+<p>The converter watches for TCP conversations beginning with a message 
+from some host/port combination to the port that you specify with -P.  
+It remembers the timestamp of this message, and when the server sends a 
+message back, it counts the time elapsed.  As it processes input, it 
+keeps track of the total time the system is busy, and the number of 
+requests outstanding (unanswered) at each point, and computes a weighted
+ average of the concurrency from that.  It ignores TCP messages that 
+carry no data, such as 'ack'.</p>
+
+<p>It currently does not respect other command-line options such as -i, 
+-m, and -n.  These need to be factored out of the globalstatus converter
+ so they can be applied to all converter functions.  It is also a 
+relatively new converter and might have bugs.</p>
+
+<p>The default port number of -P is 3306.</p>
+
+</dd>
+
+</dl>
+
+<h2>Example Usage</h2>
+
+
+<p>Here is a sample dataset that we can model:</p>
+
+<code>
+# threads  read only   read write
+1  955.16   562.62
+2  1878.91  1258.05
+4  3548.68  2503.93
+8  6531.08  4446.48
+16 9897.24  6391.45
+</code>
+
+<p>This data is a partial sample from <a href="http://www.percona.com/docs/wiki/benchmark:cisco:scale:start">this benchmark</a>.  The first line is commented out, and the <em>usl</em> tool will ignore it.</p>
+
+<p>The tool will print out information on its findings after looking at the input and computing or finding C(1), for example:</p>
+
+<code>
+Parameters to the model:
+min(N)  1
+max(N)  16
+max(C)  9897.24
+C(1)    955.16
+N=1 ??? 1
+</code>
+
+<p>The above means that N=1 was present in the data, and the value for 
+N=1 was found to be 955.16.  Check the input data again to verify this.</p>
+
+<p>The first graph to look at is the computed efficiency.  Ensure that 
+no points are shown with greater than unity efficiency, as this is 
+unphysical.  Click on the image for a larger version.</p>
+
+<p style="text-align:center">
+ <a href="http://aspersa.googlecode.com/svn/html/img/efficiency.png" rel="lightbox"><img src="Aspersa%20User%27s%20Manual%20-%20The%20usl%20tool_files/thumb-efficiency.png" height="120" width="160"></a>
+</p>
+
+<code>
+a       0.00131418
+b       0.0164629
+R^2     0.998991
+</code>
+
+<p>Next you should look at the graphs to see how closely the polynomial 
+fits the deviation from linearity, and ensure that it looks like the 
+source data is actually parabolic and the line fits the points well.  
+Inspect the residuals (the difference between the fitted curve and the 
+transformed source data points).  Ensure that the residuals appear 
+randomly distributed, and that there is no apparent pattern that might 
+indicate the source data should really not be accepted as an input.  The
+ residuals-squared is also plotted, and can help you identify outliers 
+if you need to scrub the input data.  And the residuals-squared is 
+plotted against the Universal Scalability Law as well.</p>
+
+<p style="text-align:center">
+ <a href="http://aspersa.googlecode.com/svn/html/img/deviation.png" rel="lightbox"><img src="Aspersa%20User%27s%20Manual%20-%20The%20usl%20tool_files/thumb-deviation.png" height="120" width="160"></a>
+ <a href="http://aspersa.googlecode.com/svn/html/img/quadratic-residuals.png" rel="lightbox"><img src="Aspersa%20User%27s%20Manual%20-%20The%20usl%20tool_files/thumb-quadratic-residuals.png" height="120" width="160"></a> <br>
+ <a href="http://aspersa.googlecode.com/svn/html/img/quadratic-residuals-squared.png" rel="lightbox"><img src="Aspersa%20User%27s%20Manual%20-%20The%20usl%20tool_files/thumb-quadratic-residuals-squared.png" height="120" width="160"></a>
+ <a href="http://aspersa.googlecode.com/svn/html/img/usl-residuals-squared.png" rel="lightbox"><img src="Aspersa%20User%27s%20Manual%20-%20The%20usl%20tool_files/thumb-usl-residuals-squared.png" height="120" width="160"></a>
+</p>
+
+<p>You can view the model-vs-actual graph to see the end result.  The 
+red and green lines are the estimated errors from the least-squares 
+regression.</p>
+
+<p style="text-align:center">
+ <a href="http://aspersa.googlecode.com/svn/html/img/model-vs-actual.png" rel="lightbox"><img src="Aspersa%20User%27s%20Manual%20-%20The%20usl%20tool_files/thumb-model-vs-actual.png" height="120" width="160"></a>
+</p>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Ansible 简介|JinYang's Blog</title>
+  <meta name="keywords" content="ansible,简介,python">
+  <meta name="description" content="Ansible 是一个配置管理工具，当然同类的产品还有 Puppet、Chef、SaltStack 等，不过上述的三者都是基于服务端+客户端的模式，而 Ansible 相对来说要简单的多，无需安装服务端和客户端，只需要有 ssh 即可，而且使用简单。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Ansible 简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-02-13 Saturday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  network ,  python  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Ansible 是一个配置管理工具，当然同类的产品还有 Puppet、Chef、SaltStack 等，不过上述的三者都是基于服务端+客户端的模式，而 Ansible 相对来说要简单的多，无需安装服务端和客户端，只需要有 ssh 即可，而且使用简单。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>Ansible 是基于 Python 的配置管理和应用部署工具，这个非常简单，只需要 sshd 服务就可以，不需要客户端，官方称之为 “Ansible is Simple IT Automation”。</p>
+
+<p>Ansible 采用模块化设计，基于 Python 实现，其底层调用 Paramiko 库实现并发连接 ssh 主机，另外还包括了两个基本库：PyYAML 和 Jinja2，分别用于配置文件以及模板化。</p>
+
+<p><img src="/images/network/ansible-arch.png" alt="ansible" title="ansible" class="pull-center" width="600" /></p>
+
+<p>Ansible 的配置文件保存在 <code>/etc/ansible/</code> 目录下，包括了主配置文件 <code>ansible.cfg</code>，以及管控主机 Host Inventory 的配置文件 hosts ；如果没有可以直接新建。</p>
+
+<h3 id="安装测试">安装、测试</h3>
+
+<p>在 CentOS 中可以通过如下方式安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 直接通过yum安装，不过有可能版本会比较老
+# yum --enablerepo=epel install ansible
+
+----- 通过pip安装
+# pip install ansible
+
+----- 安装完之后可以通过如下命令查看版本号
+# ansible --version
+
+----- 安装启动 sshd 服务
+# systemctl start sshd
+
+----- 首先设置SSH免密钥登录
+$ ssh-keygen -t rsa -P &#39;&#39;                                    # 生成公钥/私钥
+# cat /root/.ssh/id_rsa.pub &gt;&gt; /root/.ssh/authorized_keys    # 写入信任文件，所有服务器都需要执行
+# chmod 600 /root/.ssh/authorized_keys
+
+----- 测试能否登陆
+$ ssh foobar@127.1</code></pre></figure>
+
+<p>测试 ansible 时，需要将 <code>/etc/ansible/hosts</code> 文件配置为 127.1 的 IP 地址。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cat /etc/ansible/hosts
+127.1
+$ ansible all -m ping -u foobar
+127.1 | SUCCESS =&gt; {
+    &quot;changed&quot;: false,
+    &quot;ping&quot;: &quot;pong&quot;
+}
+
+----- 也可以直接修改配值文件的内容
+$ cat /etc/ansible/hosts
+foobar ansible_connection=local ansible_ssh_host=127.1 ansible_ssh_user=foobar
+
+$ ansible all -u foobar -m command -a &quot;date&quot;     # 执行下测试命令
+$ ansible all -u foobar -m shell -a &quot;date&quot;       # 同上
+$ ansible all -m setup -u foobar                 # 查看配置</code></pre></figure>
+
+<p>其中 <code>-m</code> 指定模块，<code>-u</code> 指定用户名。</p>
+
+<h3 id="主机的系统变量-facts">主机的系统变量 (facts)</h3>
+
+<p>ansible 会通过 module setup 来收集主机的系统信息，这些收集到的系统信息叫做 facts，这些 facts 信息可以直接以变量的形式使用。可以在命令行上调用 setup module 命令，查看那些变量可以使用。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ansible all -m setup -u foobar -a &quot;filter=ansible_os_family&quot;</code></pre></figure>
+
+<p>然后可以在 playbook 中直接使用 facts 变量。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">---
+- hosts: all
+  user: root
+  tasks:
+  - name: echo system
+    shell: echo { { ansible_os_family } }
+  - name install ntp on Debian linux
+    apt: name=git state=installed
+    when: ansible_os_family == &quot;Debian&quot;
+  - name install ntp on redhat linux
+    yum: name=git state=present
+    when: ansible_os_family == &quot;RedHat&quot;</code></pre></figure>
+
+<p>对于比较复杂的属性，可以通过如下的两种方式访问。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 使用中括号
+{ { ansible_ens3[&quot;ipv4&quot;][&quot;address&quot;] } }
+
+----- 使用点号
+{ { ansible_ens3.ipv4.address } }</code></pre></figure>
+
+<p>在 Playbook 中，可以通过 gather_facts 控制是否收集远程系统的信息，如果不需要直接如下填写即可。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">- hosts: whatever
+  gather_facts: no</code></pre></figure>
+
+<h4 id="自定义-facts">自定义 facts</h4>
+
+<p>可以在 <code>/etc/ansible/facts.d</code> 目录下添加文件自定义 facts 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cat /etc/ansible/facts.d/foobar.fact
+[general]
+foobar = &quot;Just For Test&quot;
+
+$ ansible all -m setup -u foobar -a &quot;filter=ansible_local&quot;</code></pre></figure>
+
+<h2 id="inventory">Inventory</h2>
+
+<p>Ansible 中的 Inventory 文件定义了服务器的列表，默认情况下是 <code>/etc/ansible/hosts</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="c1"># 主机</span>
+<span class="l-Scalar-Plain">192.168.9.10</span>               <span class="c1"># IP地址</span>
+<span class="l-Scalar-Plain">mail.foobar.com</span>            <span class="c1"># 使用FQDN表示，包括主机名+域名</span>
+<span class="l-Scalar-Plain">jumper ansible_ssh_port=5555 ansible_ssh_host=192.168.9.50</span>        <span class="c1"># 将某些静态IP设置为别名</span>
+<span class="l-Scalar-Plain">localhost ansible_connection=local</span>                                <span class="c1"># 指定选项</span>
+
+<span class="p-Indicator">[</span><span class="nv">webservers</span><span class="p-Indicator">]</span>               <span class="c1"># 分组</span>
+<span class="l-Scalar-Plain">web1.foobar.com</span>
+<span class="l-Scalar-Plain">web2.foobar.com</span>
+<span class="l-Scalar-Plain">web[10:50].foobar.com</span>      <span class="c1"># 表示从web10到web50，共计49台主机</span>
+<span class="l-Scalar-Plain">web[a:f].foobar.com</span>        <span class="c1"># 表示从weba到webf</span>
+<span class="l-Scalar-Plain">web.foobar.com ansible_connection=ssh ansible_ssh_user=light</span>      <span class="c1"># 指定选项</span></code></pre></figure>
+
+<p>其中常用的选项包括了：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ansible_ssh_host                # 指定ssh连接的IP或者FQDN
+ansible_ssh_port                # ssh连接端口
+ansible_ssh_user                # 默认ssh连接用户
+ansible_ssh_pass                # ssh连接的密码，这种方式不安全，可以用--ask-pass，或公钥
+ansible_sudo_pass               # sudo用户的密码
+ansible_connection              # ssh连接的类型，包括local、ssh、paramiko
+ansible_ssh_private_key_file    # ssh连接的公钥文件
+ansible_shell_type              # 主机使用的shell解释器，默认sh，可以设置为csh、fish等
+ansible_python_interpreter      # 用来指定python解释器的路径</code></pre></figure>
+
+<h2 id="playbook">PlayBook</h2>
+
+<p>首先看个很简单的示例。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cat foobar.yml
+---
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: test connection
+      ping:
+      remote_user: foobar             # 可以用不同的用户
+
+$ ansible-playbook foobar.yml</code></pre></figure>
+
+<p>playbook 是由一个或多个 “play” 组成的列表，其包括了如下的组件：</p>
+
+<ul>
+  <li>
+    <p>hosts：指定要执行任务的主机，可以是一个或多个由冒号分割主机组。</p>
+  </li>
+  <li>
+    <p>user：通过remote_user指定远程主机上的执行任务的用户。</p>
+  </li>
+  <li>
+    <p>tasks：play主体部分是各个任务按次序逐个在hosts中指定的所有主机上执行。</p>
+  </li>
+  <li>
+    <p>action：任务执行过程。</p>
+  </li>
+  <li>
+    <p>handlers：用于当前关注的资源发生变化时采取一定指定的操作。</p>
+  </li>
+</ul>
+
+<p>执行结果通过三种颜色表示：绿色代表执行成功，系统保持原样；黄色代表系统代表系统状态发生改变；红色代表执行失败，显示错误输出。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># cat web.yml
+- hosts: test                                # 选择执行命令的主机组，在/etc/ansible/hosts定义
+  vars:                                      # 设置的变量
+    http_port: 80
+    max_clients: 200
+  remote_user: root                          # 远端执行任务的用户，也可以使用sudo
+  tasks:                                     # 任务
+  - name: install httpd                      # 任务描述
+    command: yum -y install httpd            # 调用ansible的command模块安装httpd
+    when: ansible_distribution == &quot;CentOS&quot;   # 设置执行条件
+  - name: provide httpd.conf                 # 任务描述
+    copy: src=&quot;/root/httpd.conf&quot; dest=&quot;/etc/httpd/conf/httpd.conf&quot;
+    tags: conf                               # 打标记用于单独执行标记任务，用ansible-playbook -C执行
+    notify:                                  # 文件内容变更通知
+    - server restart                         # 通知到指定的任务
+  - name: server start                       # 任务描述
+    service: name=httpd state=started enabled=true
+  handlers:                                  # 定义接受关注的资源变化后执行的动作
+  - name: server restart                     # 任务描述
+    service: name=httpd state=restarted      # 当关注的资源发生变化后调用service模块</code></pre></figure>
+
+<p>在执行时，首先会收集远端主机的元数据信息，也即 facts，包括了 IP 地址、CPU 核数、系统架构、主机名等信息，然后这些元数据可以作为变量供后面的 task 使用。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ansible host -m setup -i inventory_file</code></pre></figure>
+
+<p>当然可以通过 <code>gather_facts: no</code> 选项关闭，经常被用在条件语句和模板当中，可以使用条件判断语句关闭指定发行版的主机。</p>
+
+<h3 id="notify--handler">Notify + Handler</h3>
+
+<p>ansible 还支持设置 handlers，也就是是在执行 tasks 之后可供调用的处理过程，使用起来如下，同样是本地执行:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cat /etc/ansible/hosts
+localhost ansible_connection=local ansible_ssh_host=127.1 ansible_ssh_user=foobar
+
+$ echo &quot;Hello World, Ansible&quot; &gt; /tmp/foobar
+
+$ cat playbook.yml
+---
+- hosts: localhost       # hosts中指定
+  tasks:
+      - name: whoami
+        copy: src=/tmp/foobar dest=/tmp/foobar.copy  #  本地拷贝到远端
+        notify:  # 如果复制前发现foobar.copy文件改变了，则执行如下的handler
+            - clear copy
+  handlers:
+      - name: clear copy
+        shell: &#39;mv /tmp/foobar.copy /tmp/foobar.del&#39;  # 假装删除</code></pre></figure>
+
+<p>上述判断 foobar.copy 改变暂时还不太清楚如何做到的，无论是缺少，还是内容被修改，都会执行。</p>
+
+<h3 id="调试">调试</h3>
+
+<p>对于 Playbook 可以通过如下方式调试。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i production site.yml \
+ --tags git --step --start-at-task=&#39;git | setup&#39; -vvvv</code></pre></figure>
+
+<p>其中各个参数如下：</p>
+
+<ul>
+  <li>
+    <p>ANSIBLE_KEEP_REMOTE_FILES=1 阻止删除远端的临时文件，可以用来查看。</p>
+  </li>
+  <li>
+    <p>通过 <code>--tags</code> 和 <code>--start-at-task</code> 设置执行那些任务，或者从那些任务开始。</p>
+  </li>
+  <li>
+    <p><code>--step</code> 表示单步执行，每执行完一个任务都会暂停。</p>
+  </li>
+  <li>
+    <p>使用多个 <code>-v</code> 参数，输出详细的调试信息。</p>
+  </li>
+</ul>
+
+<p>另外，可以使用 debug 模块，方式如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">- name: debug this
+  debug: var=result</code></pre></figure>
+
+<p>还可以在配置文件中通过 log_path 指定日志文件路径。</p>
+
+<h3 id="输入密码">输入密码</h3>
+
+<p>通过 ansible 连接远程主机时，默认是需要输入远程主机的密码的，这样会很不方便，可以有以下三种方式处理：</p>
+
+<h4 id="1通过--k-提示输入密码">1、通过 -k 提示输入密码</h4>
+
+<p>实际上该参数是 <code>--ask-pass</code> 的简写形式，不过这种方式依赖于 sshpass 命令。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum --enablerepo=epel install sshpass
+$ ansible all -m setup -k -u foobar -a &quot;filter=ansible_os_family&quot;</code></pre></figure>
+
+<p>也可以在 playbook 文件中指定提示输入密码。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">hosts: all
+remote_user: root
+vars_prompt:
+ - name: &#39;https_passphrase&#39;          # 存储数据的变量名
+   prompt: &#39;Key Passphrase&#39;          # 手工输入数据
+   private: yes                      # 当该值为yes，则用户的输入不会被打印</code></pre></figure>
+
+<h4 id="2-将用户名密码保存在-inventory-文件中">2、 将用户名密码保存在 inventory 文件中</h4>
+
+<p>一般 inventory 文件保存在 <code>/etc/ansible/hosts</code> 文件里，书写格式如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">foobar ansible_ssh_host=127.1 ansible_ssh_user=root ansible_ssh_pass=yourpassword</code></pre></figure>
+
+<h4 id="3-使用ssh免秘钥登录">3. 使用SSH免秘钥登录</h4>
+
+<p>实际上就是通过 SSH 的公私钥验证方式。</p>
+
+<h3 id="其它技巧">其它技巧</h3>
+
+<p>为了灵活的控制 playbook，ansible 提供了 ansible-playbook 命令行工具，如下是一些常用的示例，更过用法可以参考 ansible-playbook -h 。</p>
+
+<h4 id="指定开始-tasks">指定开始 tasks</h4>
+
+<p>查看当前任务，然后指定从哪里开始执行任务。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ansible-playbook --list-tasks foobar.yml
+$ ansible-playbook --start-at-task=&quot;foo bar&quot; foobar.yml</code></pre></figure>
+
+<h4 id="只在某主机执行任务">只在某主机执行任务</h4>
+
+<p>可以通过如下方式执行，或者跳过某些任务。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ansible-playbook --limit=host1 --tags=foobar foobar.yml
+$ ansible-playbook --limit=host1 --skip-tags=foobar foobar.yml</code></pre></figure>
+
+<h2 id="vault">Vault</h2>
+
+<p>当使用 Ansible 自动化地维护服务器时，不可避免需要接触一些密码或其它敏感数据，我们可以使用三方的密码管理工具，如 HashiCorp 的 Vault、Square 的 Keywhiz、亚马逊的 Key Management Service 和微软 Azure 的 Key Vault。</p>
+
+<p>当然也可以使用 Ansible 自带的 Vault 加密功能，可以将经过加密的密码和敏感数据同 Playbook 存储在一起，详细的内容可以查看</p>
+
+<!--
+http://docs.ansible.com/ansible/playbooks_vault.html
+http://www.ansible.com.cn/docs/playbooks_vault.html
+
+Ansible Vault 的工作方式跟现实生活中的保险柜的工作方法很像：
+
+    1.    我们可以把Ansible任务中用到的任意文件放入Vault保险柜中
+    2.    Ansible Vault会使用密码来加密这些文件，就钥匙把保险柜的门关起来一样
+    3.    我们把密码（钥匙）保存在一个只有我们自己知道或都有权访问的地址，与Playbook独立分开存储
+    4.    在我们需要运行Playbook的时候，我们拿出密码（钥匙），解密敏感数据（打开保险柜门，拿出数据），就能正常的执行Playbook任务了
+
+接下来，我们通过一个实例来了解一下这事个过程。下面的一段Playbook代码是要使用API key的方式来访问一个服务的API：
+
+---
+- hosts: appserver
+  vars_files:
+    - vars/api_key.yml
+  tasks:
+    - name: Connect to service with our API key.
+      command: connect_to_service
+      environment:
+        SERVICE_API_KEY: ""
+---
+myapp_service_api_key: “yJJvPqhqgxyPZMispRycaVMBmBWPqYDf3DFanPxAMAm4UZcw"
+
+这种将key存储在纯文件文件中的做法非常之便捷，但是并不安全。如果我们使用Ansible Tower和Jenkins等工具来运行Playbook，或者Playbook在一个共享的环境中时，这种存储key的方法就更不可取。或许我们有非常严格的主机操作和系统安全规范，但是我们并不能保证每一位开发者或管理员都能严格的遵守，人通常是整个环节中最不稳定的因素。Ansible Vault可以为我们提供非常高的安全加密级别，这将很好帮我们解决后顾之忧。
+
+    使用如下命令，可以利用Vault给文件加密：
+
+    1 $ANSIBLE_VAULT;1.1;AES256
+    2 653635363963663439383865313262396665353063663839616266613737616539303
+    3 530313663316264336133626266336537616463366465653862366231310a30633064
+    4 633234306335333739623661633132376235666563653161353239383664613433663
+    5 1303132303566316232373865356237383539613437653563300a3263386336393866
+    6 376535646562336664303137346432313563373534373264363835303739366362393
+    7 639646137656633656630313933323464333563376662643336616534353234663332
+    8 656138326530366434313161363562333639383864333635333766316161383832383
+    9 831626166623762643230313436386339373437333830306438653833666364653164
+    10 6633613132323738633266363437
+
+    除了encrypt选项之外，关于ansible-vault命令有几个比较常用的选项，列举如下：
+
+        edit: 用于编辑经过ansible-vault加密过的文件
+
+        rekey: 重新修已被加密文件的密码
+
+        create: 创建一个新文件，并直接对其进行加密
+
+        view: 查看经过加密的文件
+
+        decrypt: 解密文件
+
+            以上所有选项都可以在后面是时跟多个文件进行操作，比如：ansible-vault create x.yml y.yml z.yml
+
+除了手动输入密码进行解密以外，Ansible还提供了以密码文件形式来解密的认证方式，这类似于SSH的密钥认证。SSH将密钥放于~/.ssh目录下面，Ansible Vault将密码文件放置于~/. ansible/，同时对于这个文件也必须有严格的权限控制，需设置其权限为600。现在我们可以~/.ansible/目录下创建一个权限为600的纯文件文件vault_pass.txt，并写入我们的Vault密码，使用如下命令就可非交互式的使用被加密过的Playbook运行任务了：
+
+$ ansible-playbook test.yml --vault-password-file ~/.ansible/vault_pass.txt
+
+我们也可以使用可执行脚本来生成单行的Vault密码，比如∼/.ansible/vault_pass.py，前提是该脚本只能生成一行密码数据。
+如果系统上通过pip install cryptography命令安装了Python的cryptography模块，那么这将会加快Vault的运行速度。
+
+    你是否在为Ansbile Vault的加密方式感到不放心？Ansible Vault采用AES-256加密算法对文件进行加密，这种自满是极其安全的。即使是使用目前世界上最运算速度最快的集群来7x24小时的去解密一个通过该算法加密的文件，也需要数十亿年的时间才能完成破解。所以，安全算法是没有问题的，我们要做的就是保管好自己的Vault加密密码。
+    可以官方文档中参考更的选项用法及详细案例：http://docs.ansible.com/ansible/playbooks_vault.html
+
+第二章、变量优先级
+
+通过本章节一系列对变量的学习，可能会有人问了，定义变量的方式有那么多，我究竟该如何确定哪一个定义会最终生效呢？下面我们就来理一下变量优先级的问题。如果同样名称的变量在多个地方被定义,那么究竟以哪一次定义的值为准呢？Ansible官方给出了如下优先级排序:
+
+    1、在命令行中定义的变量（即用-e定义的变量）优先级最高
+
+    2、在inventory中定义的连接变量(比如ansible_ssh_user)
+
+    3、大多数的其它变量(命令行转换,play中的变量,included的变量,role中的变量等)
+
+    4、在Inventory定义的其它变量
+
+    5、由系统通过gather_facts方法发现的Facts
+
+    6、“Role默认变量”, 这个是最默认的值,很容易丧失优先权
+
+通过一段时间的使用之后呢，大部分人都会有自己的一套定义变量的方法或习惯。下面我们总结一些变量定义方面的小技巧，希望可以给初学者提供一些有益的参考：
+
+    Role(下节即将讲到)中的默认变量应设置的尽可能合理，因为他优先级最低，以防这些亦是在其他地方都没被定义，而Role的默认亦是又定义的不合理而产生问题。
+
+    Playbook中应尽量少的定义变量，Playbook中用的变量应尽量定义在专门的变量文件中通过vars_files引用，或定义在Inventory文件中。
+
+    只有真正与主机或主机组强相关的变量才定义在Inventory文件中。
+
+    应尽量少的在动态或静态的Inventory源文件中定义变量，尤其是不要定义那些很少在Playbook中被用的变量。
+
+    应尽量避免在命行中使用-e选项来定义变量。只有在我们不用去关心项目的可维护性和任务幂等性的时候，才建议全用这种变量定义方式。比如只是做本地测试或者运行一个一次性的Playbook任务
+
+关注我们
+-->
+
+<h2 id="python-api">Python API</h2>
+
+<p>详细的可以参考官方文档 <a href="http://docs.ansible.com/ansible/developing_api.html">Python API</a>，在 2.0 之前的版本，代码非常简单，如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import ansible.runner
+
+runner = ansible.runner.Runner(
+   module_name=&#39;ping&#39;,
+   module_args=&#39;&#39;,
+   pattern=&#39;web*&#39;,
+   forks=10
+)
+datastructure = runner.run()</code></pre></figure>
+
+<p>如下是 2.0 的接口使用示例。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c">#!/usr/bin/env python</span>
+<span class="c">#-*- coding: UTF-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">ansible.parsing.dataloader</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">ansible.vars</span> <span class="kn">import</span> <span class="n">VariableManager</span>
+<span class="kn">from</span> <span class="nn">ansible.inventory</span> <span class="kn">import</span> <span class="n">Inventory</span>
+<span class="kn">from</span> <span class="nn">ansible.playbook.play</span> <span class="kn">import</span> <span class="n">Play</span>
+<span class="kn">from</span> <span class="nn">ansible.executor.task_queue_manager</span> <span class="kn">import</span> <span class="n">TaskQueueManager</span>
+<span class="kn">from</span> <span class="nn">ansible.plugins.callback</span> <span class="kn">import</span> <span class="n">CallbackBase</span>
+
+<span class="k">class</span> <span class="nc">ResultCallback</span><span class="p">(</span><span class="n">CallbackBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A sample callback plugin used for performing an action as results come in</span>
+
+<span class="sd">    If you want to collect all results into a single object for processing at</span>
+<span class="sd">    the end of the execution, look into utilizing the ``json`` callback plugin</span>
+<span class="sd">    or writing your own custom callback plugin</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">v2_runner_on_ok</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print a json representation of the result</span>
+
+<span class="sd">        This method could store the result in an instance attribute for retrieval later</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">_host</span>
+        <span class="k">print</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">_result</span><span class="p">},</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c"># 指定选项，可以在启动时指定，或者在/etc/ansible/ansible.cfg中指定</span>
+<span class="n">Options</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;Options&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;connection&#39;</span><span class="p">,</span> <span class="s">&#39;module_path&#39;</span><span class="p">,</span> <span class="s">&#39;forks&#39;</span><span class="p">,</span> <span class="s">&#39;become&#39;</span><span class="p">,</span>
+    <span class="s">&#39;become_method&#39;</span><span class="p">,</span> <span class="s">&#39;become_user&#39;</span><span class="p">,</span> <span class="s">&#39;check&#39;</span><span class="p">])</span>
+<span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="s">&#39;local&#39;</span><span class="p">,</span> <span class="n">module_path</span><span class="o">=</span><span class="s">&#39;/path/to/mymodules&#39;</span><span class="p">,</span> <span class="n">forks</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">become</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">become_method</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">become_user</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="c"># initialize needed objects</span>
+<span class="n">variable_manager</span> <span class="o">=</span> <span class="n">VariableManager</span><span class="p">()</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">()</span>
+<span class="n">passwords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">vault_pass</span><span class="o">=</span><span class="s">&#39;secret&#39;</span><span class="p">)</span>
+
+<span class="c"># Instantiate our ResultCallback for handling results as they come in</span>
+<span class="n">results_callback</span> <span class="o">=</span> <span class="n">ResultCallback</span><span class="p">()</span>
+
+<span class="c"># create inventory and pass to var manager</span>
+<span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">loader</span><span class="p">,</span> <span class="n">variable_manager</span><span class="o">=</span><span class="n">variable_manager</span><span class="p">,</span> <span class="n">host_list</span><span class="o">=</span><span class="s">&#39;/etc/ansible/hosts&#39;</span><span class="p">)</span>
+<span class="n">variable_manager</span><span class="o">.</span><span class="n">set_inventory</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
+
+<span class="c"># create play with tasks</span>
+<span class="n">play_source</span> <span class="o">=</span>  <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;Ansible Play&quot;</span><span class="p">,</span>
+        <span class="n">hosts</span> <span class="o">=</span> <span class="s">&#39;localhost&#39;</span><span class="p">,</span>
+        <span class="n">gather_facts</span> <span class="o">=</span> <span class="s">&#39;no&#39;</span><span class="p">,</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">dict</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="s">&#39;ls&#39;</span><span class="p">),</span> <span class="n">register</span><span class="o">=</span><span class="s">&#39;shell_out&#39;</span><span class="p">),</span>
+            <span class="nb">dict</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s">&#39;debug&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)))</span>
+         <span class="p">]</span>
+    <span class="p">)</span>
+<span class="n">play</span> <span class="o">=</span> <span class="n">Play</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">play_source</span><span class="p">,</span> <span class="n">variable_manager</span><span class="o">=</span><span class="n">variable_manager</span><span class="p">,</span> <span class="n">loader</span><span class="o">=</span><span class="n">loader</span><span class="p">)</span>
+
+<span class="c"># actually run it</span>
+<span class="n">tqm</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">tqm</span> <span class="o">=</span> <span class="n">TaskQueueManager</span><span class="p">(</span>
+              <span class="n">inventory</span><span class="o">=</span><span class="n">inventory</span><span class="p">,</span>
+              <span class="n">variable_manager</span><span class="o">=</span><span class="n">variable_manager</span><span class="p">,</span>
+              <span class="n">loader</span><span class="o">=</span><span class="n">loader</span><span class="p">,</span>
+              <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+              <span class="n">passwords</span><span class="o">=</span><span class="n">passwords</span><span class="p">,</span>
+              <span class="n">stdout_callback</span><span class="o">=</span><span class="n">results_callback</span><span class="p">,</span>  <span class="c"># Use custom callback instead of the &#39;default&#39;</span>
+          <span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">tqm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">play</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">tqm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">tqm</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></code></pre></figure>
+
+<h2 id="源码解析">源码解析</h2>
+
+<p>实际上 ansible 安装后，ansible-XXX 都是指向 ansible 的可执行文件，不过调用的时候会在 ansible 中进行判断，根据不同的命令调用 cli 目录下的文件。</p>
+
+<!---
+import ansible.runner
+import ansible.inventory
+import loggingMod.init_logger
+import json
+import sys
+
+class rootUser():
+
+    def __init__(self, ipAddress, userName, remoteUser):
+        self.ipAddress = [ ipAddress ]
+        self.userName = userName
+        self.remoteUser = remoteUser
+
+        '''init base info'''
+        self.webInventory = ansible.inventory.Inventory(self.ipAddress)
+        self.remotePort = 22
+        self.timeOut = 10
+        self.priKeyFile = '/home/%s/.ssh/id_rsa'
+
+    def printLog(self, output):
+        for (hostname, result) in output["contacted"].items():
+            if 'failed' in result:
+                logging.error('there is a error[%s]' % result['msg'])
+                sys.exit(1)
+            elif 'stderr' in result:
+                if result['stderr']:
+                  logging.error('there is a error [%s]' % result['stderr'])
+                    sys.exit(1)
+
+    def checkUserExist(self):
+        checkrunner = ansible.runner.Runner(
+            module_name='shell',
+            module_args='id -u %s' % self.userName,
+            timeout=self.timeOut,
+            remote_port=self.remotePort,
+            remote_user=self.remoteUser,
+#           private_key_file=self.priKeyFile,
+            become=True,
+            become_user='root',
+            inventory = self.webInventory
+        )
+        self.output = checkrunner.run()
+        self.printLog(self.output)
+
+    def addRoot(self):
+        self.checkUserExist()
+        runner = ansible.runner.Runner(
+            module_name='user',
+            module_args='name=%s groups=root append=no' % self.userName,
+            timeout=self.timeOut,
+            remote_port=self.remotePort,
+            remote_user=self.remoteUser,
+            private_key_file=self.priKeyFile,
+            become=True,
+            become_user='root',
+            inventory = self.webInventory
+        )
+
+        self.result = runner.run()
+        self.printLog(self.result)
+        self.info('success')
+
+    def removeRoot(self):
+        rmRunner = ansible.runner.Runner(
+            module_name='shell',
+            module_args='gpasswd -d %s root' % self.userName,
+            timeout=self.timeOut,
+            remote_port=self.remotePort,
+            remote_user=self.remoteUser,
+            private_key_file=self.priKeyFile,
+            become=True,
+            become_user='root',
+            inventory = self.webInventory
+        )
+        self.rmOutput = rmRunner.run()
+        self.printLog(self.rmOutput)
+        self.info('success remove root privilege')
+
+
+theUser = rootUser('192.168.35.125', 'mr.right', 'raingolee')
+theUser.removeRoot()
+-->
+
+<h2 id="参考">参考</h2>
+
+<p>可以查看中文帮助 <a href="http://www.ansible.com.cn">www.ansible.com.cn</a>，源码参考 <a href="https://github.com/ansible/ansible">github - ansible</a> 。可以查看 <a href="/reference/linux/Ansible-中文手册.pdf">ansible 中文文档</a>，其中有介绍一个不错的运维监控工具的总结。</p>
+
+<p>详细的文档可以参考 <a href="http://docs.ansible.com/ansible/">Ansible Documentation</a> 。</p>
+
+<!--
+http://docs.ansible.com/ansible/playbooks_best_practices.html
+
+ansible常见用法为 ansible host-pattern -m 模块 -a 命令 ，host-pattern类似于简化的正则表达式，而模块可以通过 ansible-doc -l 命令来查询。下面是一些常用模块的使用方法：
+
+http://hakunin.com/six-ansible-practices
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/python-async-queue.html" title="Python 异步任务队列">&larr; Older</a></li> 
+         <li class="next"><a href="/post/python-profile_init.html" title="Python Profilers 性能分析器">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1455292800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/python-ansible.html" data-title="Ansible 简介" data-url="/post/python-ansible.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

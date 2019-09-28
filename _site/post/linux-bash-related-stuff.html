@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Bash 相关|JinYang's Blog</title>
+  <meta name="keywords" content="bash,alias,PATH">
+  <meta name="description" content="一些与 Bash 相关的内容，如命令执行顺序、配置文件等。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Bash 相关</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-09-23 Wednesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>一些与 Bash 相关的内容，如命令执行顺序、配置文件、通配符、元字符及转义字符等。</p>
+
+<!-- more -->
+
+<h2 id="命令执行顺序">命令执行顺序</h2>
+
+<p>Shell 一般会按照 <code>alias</code> <code>keyword</code> <code>function</code> <code>built-in</code> <code>$PATH</code> 的顺序进行搜索。</p>
+
+<p>在执行完命令之后会保存在一个 hash 表中，下次直接通过 hash 查找，如果将一个命令删除可能会出现 <code>No such file or directory</code> 的错误；可以通过 <code>set -h</code> 启用 hash 功能，<code>set +h</code> 禁用。</p>
+
+<p>可通过 <code>hash</code> 查看当前列表，<code>hash -d command</code> 删除该记录，<code>hash -r</code> 删除所有记录，重新搜索。</p>
+
+<p>通过 <code>hash</code> 命令查看时，其第一列为使用的次数，注意不会缓存 <code>function</code>、<code>built-in</code> 以及部分 <code>alias</code>；注意，不会缓存包含绝对路径的 <code>alias</code> 命令。</p>
+
+<blockquote>
+  <p>可以通过 <code>alias cmd</code> 查看定义的 alias ，一般通过 <code>alias cmd='xxx'</code> 定义别名，<code>unalias cmd</code> 删除别名。</p>
+</blockquote>
+
+<p>常见操作可以参考如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 可以查看该命令的所有类型
+$ type -a cmd
+----- 查看执行时的类型
+$ type cmd
+
+----- 查看所有的built-in命令
+$ enable
+----- 禁用built-in的cmd命令
+$ enable -n cmd
+----- 启用built-in的命令
+$ enable cmd</code></pre></figure>
+
+<!--
+command如果有一个function为同名，则执行cmd实际执行的是。
+<pre>
+function gcc { echo “just a test for gcc”; }
+gcc
+command gcc
+</pre>
+-->
+
+<h2 id="配置文件">配置文件</h2>
+
+<p>Bash 的很多配置文件，要说清楚这些配置文件的区别，则首先要了解 login shell 和 no login shell 的区别。</p>
+
+<ul>
+  <li>login shell 指的是完整的登录流程，需要输入用户名和密码，例如 <code>tty1~tty6</code> 等。</li>
+  <li>no login shell，简单来说是 XWindow 登陆后又启动了多个终端，此时不需要输入密码。</li>
+</ul>
+
+<p>Bash 配置文件包括全局配置文件和用户相关的局部配置文件。</p>
+
+<h3 id="全局变量">全局变量</h3>
+
+<p>全局配置文件 <code>/etc/profile</code> ，在任何用户第一次登陆时 (或在切换用户时使用 <code>-</code> 参数) 都会读取该文件。</p>
+
+<p>另外一个是 <code>/etc/bashrc</code> ，其中 Ubuntu 没有这个文件，与之对应的是 <code>/etc/bash.bashrc</code> ，会在 bash 执行时会读取此文件。</p>
+
+<h3 id="局部变量">局部变量</h3>
+
+<p>在执行完全局变量后，执行用户指定的配置文件，依次检查 <code>~/.bash_profile</code> <code>~/.bash_login</code> <code>~/.profile</code> 最先找到的直接执行，然后退出。</p>
+
+<p>其中相关的配置文件有如下：</p>
+
+<h4 id="bash_profile">~/.bash_profile</h4>
+
+<p>Ubuntu 默认没有此文件，可新建，只有 Bash 是以 login 形式执行时，才会读取此文件，通常来说该配置文件还会配置成读取 <code>~/.bashrc</code>。</p>
+
+<h4 id="bash_login">~/.bash_login</h4>
+
+<p>若 bash 是以 login 方式执行时，读取 <code>~/.bash_profile</code> ，若它不存在，则读取 <code>~/.bash_login</code>，若两者都不存在，读取 <code>~/.profile</code> 。</p>
+
+<h4 id="profile">~/.profile</h4>
+
+<p>除了上述的配置文件执行方式外，在图形模式登录时，此文件被读取，即使存在 <code>~/.bash_profile</code> 和 <code>~/.bash_login</code>。</p>
+
+<h4 id="bashrc">~/.bashrc</h4>
+
+<p>当 Bash 是以 non-login 形式执行时，读取此文件，若以 login 形式执行，则不会读取此文件，但是通常在上述的三个文件中会调用该文件。</p>
+
+<h4 id="bash_logout">~/.bash_logout</h4>
+
+<p>注销时，且是 login 形式，此文件才会读取。也就是说，在文本模式注销时，此文件会被读取，图形模式注销时，此文件不会被读取。</p>
+
+<h3 id="读取顺序">读取顺序</h3>
+
+<p>login shell 和 non-login shell 读取的配置文件数据并不一样。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- login shell会读配置文件，后面的三个读取一个文件后就会退出
+/etc/profile ~/.bash_profile或~/.bash_login或~/.profile
+
+----- non-login shell会读配置文件
+~/.bashrc</code></pre></figure>
+
+<!--
+下面是在本机的几个例子：<ol><li>
+	图形模式登录时，顺序读取：/etc/profile和~/.profile。</li><li>
+	图形模式登录后，打开终端时，顺序读取：/etc/bash.bashrc和~/.bashrc。</li><li>
+	文本模式登录时，顺序读取：/etc/profile，/etc/bash.bashrc和~/.bash_profile ~/.bash_login ~/.profile之一。</li><li>从其它用户su到该用户，则分两种情况：<ul><li>
+		如果带-l参数（或-参数，--login参数），如：su -l username，则bash是login的，它将顺序读取以下配置文件：/etc/profile，/etc/bash.bashrc和~/.bash_profile ~/.bash_login ~/.profile之一。</li><li>
+		如果没有带-l参数，则bash是non-login的，它将顺序读取：/etc/bash.bashrc和~/.bashrc。</li></ul></li><li>
+	注销时，或退出su登录的用户，如果是longin方式，那么bash会读取：~/.bash_logout。</li><li>
+	执行自定义的shell文件时，若使用“bash -l a.sh”的方式，则bash会读取行：/etc/profile和~/.bash_profile ~/.bash_login ~/.profile之一，若使用其它方式，如：bash a.sh， ./a.sh，sh a.sh（这个不属于bash shell），则不会读取上面的任何文件。。</li></ol>
+-->
+
+<h2 id="通配符元字符及转义字符">通配符、元字符及转义字符</h2>
+
+<p>介绍一些与之相关的概念。</p>
+
+<h3 id="通配符">通配符</h3>
+
+<p>通配符是由 shell 处理的，在遇到了通配符时，shell 会将其当作路径或文件名去在磁盘上搜寻可能的匹配：若符合要求的匹配存在，则进行代换 (路径扩展)；否则就将该通配符作为一个普通字符传递给 “命令”，然后再由命令进行处理。</p>
+
+<p>总之，通配符实际上就是一种 shell 实现的路径扩展功能，在通配符被处理后，shell 会先完成该命令的重组，然后再继续处理重组后的命令，直至执行该命令。</p>
+
+<p>常见示例如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">*               匹配0或多个字符，a*b: acb, a123db
+?               匹配任意单一字符，a?b: acb, a1b
+[list]          匹配list中的任意单一字符，a[xyz]b: axb, ayb, azb
+[!list]         匹配除list中的任意单一字符，a[!0-9]b: aab, acb, a-b
+[c1-c2]         匹配c1到c2中的任意单一字符，a[0-9]b: a0b, a1b
+{str1, str2}    匹配str1或str2中的任意字符串，a{ab, cd}b: aabb, acdb</code></pre></figure>
+
+<h3 id="元字符">元字符</h3>
+
+<p>Shell 除了有通配符之外，由 shell 负责预先先解析后，将处理结果传给命令行之外，shell 还有一系列自己的其他特殊字符。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">IFS      由 space 或 tab 或 enter 三者之一组成(我们常用 space )。
+CR       由 enter 产生。
+=        设定变量。
+$        作变量或运算替换(请不要与 shell prompt 搞混了)。
+&gt;        重导向 stdout。
+&lt;        重导向 stdin。
+|        命令管线。
+&amp;        重导向 file descriptor ，或将命令置于背境执行。
+( )      将其内的命令置于 nested subshell 执行，或用于运算或命令替换。
+{ }      将其内的命令置于 non-named function 中执行，或用在变量替换的界定范围。
+;        在前一个命令结束时，而忽略其返回值，继续执行下一个命令。
+&amp;&amp;       在前一个命令结束时，若返回值为 true，继续执行下一个命令。
+||       在前一个命令结束时，若返回值为 false，继续执行下一个命令。
+!        执行 history 列表中的命令。</code></pre></figure>
+
+<h3 id="转义字符">转义字符</h3>
+
+<p>有时候，我们想让通配符，或者元字符变成普通字符，不需要使用它。那么这里我们就需要用到转义符了。shell提供转义符有三种。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&#39;&#39;      硬转义，其内部所有的shell 元字符、通配符都会被关掉。注意，硬转义中不允许出现&#39;(单引号)。
+&quot;&quot;      软转义，其内部只允许出现特定的shell 元字符：$用于参数代换 `用于命令代替 \用于转义。
+\       转义，去除其后紧跟的元字符或通配符的特殊意义。</code></pre></figure>
+
+<p>如下，是 bash 脚本的执行过程。</p>
+
+<p><img src="/images/linux/bash-wildcard.png" alt="hello world logo" title="hello world logo" class="pull-center" /></p>
+
+<!--
+针对文件操作
+–b 	当file存在并且是块文件时返回真
+-c 	当file存在并且是字符文件时返回真
+-d 	当pathname存在并且是一个目录时返回真
+-e 	当pathname指定的文件或目录存在时返回真
+-f 	当file存在并且是常规文件时返回真
+-g 	当由pathname指定的文件或目录存在并且设置了SGID位时返回为真
+-h 	当file存在并且是符号链接文件时返回真，该选项在一些老系统上无效
+-k 	当由pathname指定的文件或目录存在并且设置了“粘滞”位时返回真
+-L 	如果 filename 为符号链接，则为真
+-p 	当file存在并且是命令管道时返回为真
+-r 	当由pathname指定的文件或目录存在并且可读时返回为真
+-s 	当file存在文件大小大于0时返回真
+-u 	当由pathname指定的文件或目录存在并且设置了SUID位时返回真
+-w 	当由pathname指定的文件或目录存在并且可执行时返回真。一个目录为了它的内容被访问必然是可执行的
+-x 	如果 filename 可执行，则为真
+-nt 	如果 前者 比 后者 新，则为真
+-ot 	如果 前者 比 后者 旧，则为真
+字符串操作
+-z 	如果 string 长度为零，则为真
+-n 	如果 string 长度非零，则为真
+= 	两字符串相等，则为真
+!= 	两字符串不想等，则为真
+数字比较操作
+-eq 	等于
+-ne 	不等于
+-gt 	大于
+-lt 	小于
+-le 	小于等于
+-ge 	大于等于
+-->
+
+<h2 id="bash-历史">Bash 历史</h2>
+
+<p>输入命令时 Bash 将其保存在内存中，其大小由 <code>HISTSIZE</code> 决定，在 Bash 退出时将 <code>HISTFILESIZE</code> 的最近的命令保存在 <code>HISTFILE</code> 中，在 <code>~/.bash_profile</code> 中可以修改设置。</p>
+
+<p>在启动 Bash 时会从 <code>HISTFILE</code> 读入 <code>HISTSIZE</code> 大小的命令行，通常在写入历史文件时使用的是覆盖方式，如果需要以追加方式添加可以 <code>shopt -s listappend</code>。</p>
+
+<!--
+bash每执行完一条命令，都要显示一个新的提示符，而在显示提示符的同时，会执行保存在环境变量PROMPT_COMMAND里面的命令（通常被用来为终端设置标题），利用这一机制，将如下代码放入.bashrc文件里即可在每次输入命令时即将命令写入文件。PROMPT_COMMAND="history -a; $PROMPT_COMMAND"。
+-->
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 显示命令执行的时间戳，之前的命令不会
+$ export HISTTIMEFORMAT=&#39;%F %T &#39;
+----- 剔除连续重复的条目，erasedups剔除整个历史中重复的条目，ignorespace在不想被记住的命令前加上空格
+$ export HISTCONTROL ignoredups
+----- 忽略特定的命令
+$ export HISTIGNORE=&quot;pwd:ls:ls -ltr:&quot;</code></pre></figure>
+
+<p>可以通过 <code>Ctrl-R</code> 和 <code>Ctrl-S</code> 来对历史进行搜索。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">history            显示所有的历史命令，包括序号。
+history N          显示最近的N条历史命令。
+history -c         清楚所有的历史命令。
+history -d N       清除第N条历史命令。
+!string            用来查找最近的以string开头历史命令。
+!?string           用来查找最近含有string的命令，不是严格以string开头历史命令。
+^string1^string2^  将上一条命令中的string1替换为string2。
+!number            执行历史中的第number条命令。
+!!                 执行上一条命令。
+!-number           执行最近的第N条命令。
+!$ &lt;&lt;==&gt;&gt; !!:$     获得上一条命令的最后一个参数。
+!^ &lt;&lt;==&gt;&gt; !!:^     获得上一条命令的第一个参数。
+!cp:2              查找最近以cp开头的命令，并取得第二个参数。
+
+示例：
+$ echo a b c d e
+a b c d e
+$ echo !!:2
+b</code></pre></figure>
+
+<!-- :2对应第二个参数，$对应最后一个参数，^对应第一个参数，*对应所有参数，3-4第3个到第4个参数。-->
+
+<h2 id="快捷键">快捷键</h2>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">移动光标
+    Ctrl-A               跳转到行首。
+    Ctrl-E               跳转到行尾。
+    Ctrl-B               左移一个字符。
+    Ctrl-F               右移一个字符。
+    ESC/Alt-B            左移一个单词(在 XWindow 中冲突)。
+    ESC/Alt-F            右移一个单词(在 XWindow 中冲突)。
+    Ctrl-x-x             光标在当前和行首之间切换。
+
+删除、复制
+    Ctrl-D               删除光标所在字符，无字符时退出。
+    Ctrl-H               与Backspace相同。
+    Ctrl-K               清除光标之后，含光标。
+    Ctrl-U Alt-BackSpace 清除光标以前内容，当前光标不清除（密码输入错误）。
+    Esc-Backspace/Ctrl-W 清除光标之前的一个单词。
+    Alt-D                删除光标所在位置后的单词。
+    Esc D                删除当前以及之后到空格为止的单词。
+    Ctrl-Y               粘贴刚才Ctrl-W或Ctrl-K的内容。</code></pre></figure>
+
+<!--
+<li>历史<ul>
+	<li>Ctrl-P 当前行上一个命令，set -o mode (vi/emacs)。</li>
+	<li>Ctrl-N 当前行下一个命令。</li>
+	<li>Ctrl-R 在历史中查找，输入几个字符后，Ctrl-Shift-r 向后找。</li>
+	<li>Ctrl-J 结束搜索，并将搜索内容输入到 stdin ，相当于 Enter 。</li>
+  <li>Ctrl-I 同 Tab</li>
+	<li>Ctrl-G 退出搜索，并到其实位置。</li>
+	<li>Alt-Ctrl-Y 输入上一条命令的第一个参数。</li>
+	<li>Alt-./_ 输入上一条命令的最后一个参数。</li>
+</ul></li>
+
+<li>撤销<ul>
+	<li>Ctrl-_ 撤销上一次的编辑。</li>
+	<li>Alt-R 撤销所有的编辑。</li>
+</ul></li>
+
+<li>补全<ul>
+	<li>Alt-? 列出所有可能的命令。</li>
+	<li>Alt-* 插入所有可能的命令。</li>
+</ul></li>
+
+<li>Ubuntu<ul>
+	<li>Ctrl-- 减小字体。</li>
+	<li>Ctrl-+ 加大字体。</li>
+</ul></li>
+
+<li>其他<ul>
+	<li>Ctrl-Z 挂起当前进程，也即切换为后台睡眠，bg 后台运行，jobs 查看，fg 恢复。</li>
+	<li>Ctrl-L 清屏，类似与clear。</li>
+	<li>Ctrl-S 将屏幕设置为假死状态，实际仍可输入。</li>
+	<li>Ctrl-Q 从假死状态退出。</li>
+	<li>Ctrl-T 切换光标之前的两个字符。</li>
+	<li>Esc/Alt-T 切换光标之前的两个单词。</li>
+	<li>Ctrl-V 加上要输入的特殊字元， ex: Ctrl-V Ctrl-C 会出现 ^C 而不是中断。</li>
+	<li>Ctrl-V TAB 输入 TAB，而不是命令列扩展。</li>
+	<li>Alt-C 用于将当前光标处的字符变成大写，同时本光标所在单词的后续字符都变成小写。</li>
+	<li>Alt-L 用于将光标所在单词及所在单词的后续字符都变成小写。</li>
+	<li>Alt-U 用于将光标所在单词的光标所在处及之后的所有字符变成大写。</li>
+  <li>C-x C-e 可以使用 $EDITER 写入 script 并让 Shell 一次执行。</li>
+</ul></li></ol>
+
+Bash Shell 可以設多種 Mode, 可參考如下:
+
+    set -o # 可以列出所有 Mode
+    set -o vi # 可以用 vi 操作法來操作 Bash Shell(用此 Mode 上述的快速鍵即無作用)
+    set -o emacs # Bash 預設就是此 Mode.
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-container-cgroup-introduce.html" title="容器之 CGroup">&larr; Older</a></li> 
+         <li class="next"><a href="/post/lua-introduce.html" title="Lua 简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1442937600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-bash-related-stuff.html" data-title="Bash 相关" data-url="/post/linux-bash-related-stuff.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

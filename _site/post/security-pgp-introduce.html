@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>PGP 简介|JinYang's Blog</title>
+  <meta name="keywords" content="linux,pgp">
+  <meta name="description" content="PGP 是一个基于公钥加密体系的加密软件，功能强大，有很快的速度，而且源码是免费的。这里简单介绍下 PGP 相关内容。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>PGP 简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-10-21 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>GnuPGP 是一个基于公钥加密体系的加密软件，功能强大，有很快的速度，而且源码是免费的。</p>
+
+<p>这里简单介绍下 PGP 相关内容。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>Pretty Good Privacy, PGP 加密由一系列散列、数据压缩、对称密钥加密，以及公钥加密的算法组合而成，遵守 OpenPGP 数据加密标准 <a href="http://tools.ietf.org/rfc/rfc4880.txt">RFC 4880</a> ，每个步骤支持几种算法，可以选择一个使用。</p>
+
+<!-- https://tools.ietf.org/html/rfc3156 -->
+
+<p>注意 PGP 是一个商用软件，对应的开源软件为 GnuPGP ，两者都遵守 OpenPGP 标准。</p>
+
+<p><img src="/images/security/pgp-diagram.png" alt="pgp diagram" title="pgp diagram" class="pull-center" /></p>
+
+<p>通常，使用如上的加密和解密过程大致为。</p>
+
+<ol>
+  <li>用户产生需要加密的信息。</li>
+  <li>OpenPGP 发送方产生一串随机数，作为对称加密密钥，这一随机数只对该信息或该会话有效。</li>
+  <li>使用接受者的公钥加密上述的随机数 (密钥)，放置到需要发送消息的开头。</li>
+  <li>通过上述产生的随机数加密需要加密的信息，通常会先对信息进行压缩。</li>
+  <li>接收方则会先通过私钥解密随机数，然后解密信息。</li>
+</ol>
+
+<p>当然，也可以先产生一个数字签名，并将数字签名添加到信息中，然后同样会通过随机串加密。在 OpenPGP 中也可以对信息进行压缩，通常压缩是在获得数字签名后且在压缩之前。</p>
+
+<blockquote>
+  <p>The Public-Key Cryptography Standards(PKCS) 是由美国 RSA 数据安全公司及其合作伙伴制定的一组公钥密码学标准，包括证书申请、证书更新、证书作废表发布、扩展证书内容以及数字签名、数字信封的格式等方面的一系列相关协议。</p>
+</blockquote>
+
+<!--
+    PGP的实际操作由五种服务组成：鉴别、机密性、电子邮件的兼容性、压缩、分段和重装。
+
+    1.1 鉴别
+
+    步骤如下：
+    （1）发送者创建报文；
+    （2）发送者使用SHA-1生成报文的160bit散列代码（邮件文摘）；
+    （3）发送者使用自己的私有密钥，采用RSA算法对散列代码进行加密，串接在报文的前面；
+    （4）接收者使用发送者的公开密钥，采用RSA解密和恢复散列代码；
+    （5）接收者为报文生成新的散列代码，并与被解密的散列代码相比较。如果两者匹配，则报文作为已鉴别的报文而接收。
+    另外，签名是可以分离的。例如法律合同，需要多方签名，每个人的签名是独立的，因而可以仅应用到文档上。否则，签名将只能递归使用，第二个签名对文档的第一个签名进行签名，依此类推。
+
+    1.2 机密性
+    在PGP中，每个常规密钥只使用一次，即对每个报文生成新的128bit的随机数。为了保护密钥，使用接收者的公开密钥对它进行加密。描述如下：
+    （1）发送者生成报文和用作该报文会话密钥的128bit随机数；
+    （2）发送者采用CAST-128加密算法，使用会话密钥对报文进行加密。也可使用IDEA或3DES；
+    （3）发送者采用RSA算法，使用接收者的公开密钥对会话密钥进行加密，并附加到报文前面；
+    （4）接收者采用RSA算法，使用自己的私有密钥解密和恢复会话密钥；
+    （5）接收者使用会话密钥解密报文。
+    除了使用RSA算法加密外，PGP还提供了DiffieHellman的变体EIGamal算法。
+
+    3 公开密钥管理
+
+    3.1 公开密钥管理机制
+    一个成熟的加密体系必然要有一个成熟的密钥管理机制配磁。公钥体制的提出就是为了解决传统加密体系的密钥分配过程不安全、不方便的缺点。例如网络黑客们常用的手段之一就是“监听”，通过网络传送的密钥很容易被截获。对PGP来说，公钥本来就是要公开，就没有防监听的问题。但公钥的发布仍然可能存在安全性问题，例如公钥被篡改（public key tampering），使得使用公钥与公钥持有人的公钥不一致。这在公钥密码体系中是很严重的安全问题。因此必须帮助用户确信使用的公钥是与他通信的对方的公钥。
+
+    以用户A和用户B通信为例，现假设用户A想给用户B发信。首先用户A就必须获取用户B的公钥，用户A从BBS上下载或通过其它途径得到B的公钥，并用它加密信件发给B。不幸的是，用户A和B都不知道，攻击者C潜入BBS或网络中，侦听或截取到用户B的公钥，然后在自己的PGP系统中以用户B的名字生成密钥对中的公钥，替换了用户B的公钥，并放在BBS上或直接以用户B的身份把更换后的用户B的“公钥”发给用户A。那A用来发信的公钥是已经更改过的，实际上是C伪装B生成的另一个公钥（A得到的B的公钥实际上是C的公钥/密钥对，用户名为B）。这样一来B收到A的来信后就不能用自己的私钥解密了。更可恶的是，用户C还可伪造用户B的签名给A或其他人发信，因为A手中的B的公钥是仿造的，用户A会以为真是用户B的来信。于是C就可以用他手中的私钥来解密A给B的信，还可以用B真正的公钥来转发A给B的信，甚至还可以改动A给B的信。
+
+    3.2 防止篡改公钥的方法
+
+    （1）直接从B手中得到其公钥，这种方法有局限性。
+
+    （2）通过电话认证密钥：在电话上以radix-64的形式口述密钥或密钥指纹。密钥指纹（keys fingerprint）就是PGP生成密钥的160bit的SHA-1摘要（16个8位十六进制）。
+
+    （3）从双方信任的D那里获得B的公钥。如果A和B有一个共同的朋友D，而D知道他手中的B的公钥是正确的。D签名的B的公钥上载到BBS上让用户去拿，A想要获得B的公钥就必须先获取D的公钥来解密BBS或网上经过D签名的B的公钥，这样就等于加了双重保险，一般没有可能去篡改而不被用户发现，即使是BBS管理员。这就是从公共渠道传递公钥的安全手段。有可能A拿到的D或其他签名的朋友的公钥也是假的，但这就要求攻击者C必须对三人甚至很多人都很熟悉，这样的可能性不大，而且必需经过长时间的策划。
+
+    只通过一个签名证力度可能是小了一点，于是PGP把用不同私钥签名的公钥收集在一起，发送到公共场合，希望大部分从至少认识其中一个，从而间接认证了用户（A）的公钥。同样用户（D）签了朋友（A）的公钥后应该寄回给他（A）（朋友），这样可以让他（A）通过该用户（D）被该用户（D）的其他朋友所认证。与现实中人的交往一样。PGP会自动根据用户拿到的公钥分析出哪些是朋友介绍来的签名的公钥，把它们赋以不同的信任级别，供用户参考决定对它们的信任程度。也可指定某人有几层转介公钥的能力，这种能力随着认证的传递而递减的。
+
+    （4）由一个普通信任的机构担当第三方，即“认证机构”。这样的“认证机构”适合由非个人控制的组织或政府机构充当，来注册和管理用户的密钥对。现在已经有等级认证制定的机构存在，如广东省电子商务电子认证中心（WWW.cnca.net）就是一个这样的认证机构。对于那些非常分散的用户，PGP更赞成使用私人方式的密钥转介。
+
+    3.3 信任的使用
+
+    PGP确实为公开密钥附加侂任和开发信任信息提供了一种方便的方法使用信任。
+
+    公开密钥环的每个实体都是一个公开的密钥证书。与每个这亲的实体相联系的是密钥合法性字段，用来指示PGP信任“这是这个用户合法的公开密钥”的程度；信任程度越高，这个用户ID与这个密钥的绑定越紧密。这个字段由PGP计算。与每个实体相联系的还有用户收集的多个签名。反过来，每个签名都带有签名信任字段，用来指示该PGP用户信任签名者对这个公开密钥证明的程度。密钥合法性字段是从这个实体的一组签名信任字节中推导出来的。最后，每个实体定义了与特定的拥有者相联系的公开密钥，包括拥有者信任字段，用来指示这个公开密钥对其他公开密钥证书进行签名的信任程度（这个信任程度是由该用户指定的）。可以把签名信任字段看成是来自于其他实体的拥有者信任字段的副本。
+
+    例如正在处理用户A的公开密钥环，操作描述如下：
+
+    （1）当A在公开密钥环中插入了新的公开密钥时，PGP为与这个公开密钥拥有者相关联的信任标志赋值，插入KUa，则赋值=1终极信任；否则，需说明这个拥有者是未知的、不可任信的、少量信任的和完全可信的等，赋以相应的权重值1/x、1/y等。
+
+    （2）当新的公开密钥输入后，可以在它上面附加一个或多个签名，以后还可以增加更多的签名。在实体中插入签名时，PGP在公开密钥环中搜索，查看这个签名的作者是否属于已知的公开密钥拥有者。如果是，为这个签名的SIGTRUST字段赋以该拥的者的OWNERTRUST值。否则，赋以不认识的用户值。
+
+    （3）密钥合法性字段的值是在这个实体的签名信任字段的基础上计算的。如果至少一个签名具有终极信任的值，那么密钥合法性字段的设置为完全；否则，PGP计算信任值的权重和。对于总是可信任的签名赋以1/x的权重，对于通常可信任的签名赋以权重1/y，其中x和y都是用户可配置的参数。当介绍者的密钥/用户ID绑定的权重总达到1时，绑定被认为是值得信任的，密钥合法性被设置为完全。因此，在没有终极信任的情况下，需要至少x个签名总是可信的，或者至少y个签名是可信的，或者上述两种情况的某种组合。如图4所示。
+
+    总之，PGP采用了RSA和传统加密的杂合算法，用于数字签名的邮件文摘算法、加密前压缩等，可以用来加密文件，还可以代替Uuencode生成RADIX 64格式（就是MIME的BASE 64格式）的编码文件。PGP创造性地把RSA公钥体系的方便和传统加密体系的高速度结合起来，并且在数字签名和密钥认证管理机制上有巧妙的设计。这是目前最难破译的密码体系之一。
+
+    用户通过PGP的软件加密程序，可以在不安全的通信链路上创建安全的消息和通信。PGP协议已经成为公钥加密技术和全球范围内消息安全性的事实标准。因为所有人都能看到它的源代码，从而查找出故障和安全性漏局
+-->
+
+<h3 id="信任模型">信任模型</h3>
+
+<p>PGP 的好处在于它的信任模型 -- Web Trust Model，一种非常贴近生活中人与人的信任模型。在信息世界里面，人与人之间的信任纽带有两种方式被建立。</p>
+
+<h4 id="集中式">集中式</h4>
+
+<p>如 CA 结构，大家都信任 CA ，于是 Peter 是不是 Peter ，是根据 CA 是否认识这个 Peter ，我们现在通常所说的的数字证书认证，就是这种集中认证的模式。</p>
+
+<h4 id="分布式">分布式</h4>
+
+<p>假设没有CA，只信任自己和朋友，每个人都是在一个朋友圈子中，朋友圈子以外的人，则需要一个中间人作为介绍人，这就是现实的生活。</p>
+
+<p>我有一个朋友叫 Andy，且我有另一个朋友叫 Bob，如果 Bob 想认识 Andy，于是他想通过我来认识 Andy，方法很简单，鉴于我认识他们两者，通过我为 Bob 的公钥签名，于是 Andy 可以直接向 Bob 证明他是我的朋友。</p>
+
+<p>PGP 采用的后者是这种方式，每个人都以自己为中心，然后是朋友圈，然后是朋友的朋友。</p>
+
+<h2 id="gnupgp">GnuPGP</h2>
+
+<p>公钥算法的关键点在于如何传播公钥，如果有恶意用户传递了一把虚假公钥，此时，如果别人不知就里，用这把公钥加密信息，持有该虚假钥匙的侵入者就可以解密而读到信息。而如果侵入者再将解密的讯息加以修改，并以真正的公开钥匙加密，然后传送出去，这种进攻无法被发现。</p>
+
+<p>PGP 的解决方法是对公钥进行签名，也即生成指纹 (fingerprint)，只有公钥会有指纹。每个公钥均绑定唯一的用户身份 (包括用户名、注释、邮箱)，当然一个人的公钥可以由别人来签名，<strong>签名 (指纹) 是用来测试该公钥是否是由其声明的用户发出的</strong> 。</p>
+
+<p>至于有多信任这些签名，完全取决于 GPG 用户，当你信任给这把钥匙签名的人时，你认为这把钥匙是可信的，并确信这把钥匙确实属于拥有相应用户身份的人。只有当你信任签名者的公开钥匙时，你才能信任这个签名。要想绝对确信一把钥匙是正确和真实的，你就得在给予绝对信任之前，通过可靠渠道比较钥匙的 “指纹”。</p>
+
+<h3 id="使用">使用</h3>
+
+<p>在 <code>~/.gnupg</code> 目录下，保存了一些必须的文件，其中密钥以加密形式存储在磁盘上，包括了两个文件，一个存储公钥 (<code>pubring.gpg</code>)、一个存储私钥 (<code>secring.gpg</code>)。</p>
+
+<p>GPG 会通过 username、comment、email 生成一个 UID(hash value)，在使用时可以用其中的一种方式。</p>
+
+<h4 id="1-生成密钥对-公钥私钥">1. 生成密钥对 (公钥+私钥)</h4>
+
+<p>生成时需要选择 A) 加密算法、密钥长度 (长度越长解密时间越长，不过也会更安全)、密钥的有效时间；B) 区分该密钥对的用户名、e-mail、注释 (这些信息是可以修改的)；C) 一个保护该私钥的验证密码。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --gen-key
+Please select what kind of key you want:                  # 选择加密以及指纹算法
+   (1) RSA and RSA (default)
+   (2) DSA and Elgamal
+   (3) DSA (sign only)
+   (4) RSA (sign only)
+Your selection? 1
+RSA keys may be between 1024 and 4096 bits long.
+What keysize do you want? (2048)
+Requested keysize is 2048 bits
+Please specify how long the key should be valid.
+         0 = key does not expire
+      &lt;n&gt;  = key expires in n days
+      &lt;n&gt;w = key expires in n weeks
+      &lt;n&gt;m = key expires in n months
+      &lt;n&gt;y = key expires in n years
+Key is valid for? (0)
+Key does not expire at all
+Is this correct? (y/N) y
+
+GnuPG needs to construct a user ID to identify your key.
+
+Real name: foobar
+Email address: foobar@ooops.com
+Comment: just for test
+You selected this USER-ID:
+    &quot;foobar (just for test) &lt;foobar@ooops.com&gt;&quot;
+
+Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
+You need a Passphrase to protect your secret key.         # 输入密码
+
+gpg: key FCC7A473 marked as ultimately trusted            # 用户的hash值，可以用来替代userid
+public and secret key created and signed.
+
+gpg: checking the trustdb
+gpg: 3 marginal(s) needed, 1 complete(s) needed, PGP trust model
+gpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u
+pub   2048R/FCC7A473 2016-07-06
+      Key fingerprint = ACB2 B707 B2D8 A548 55A8  5E24 A5CC BA5C FCC7 A473   # 可以用来电话验证^_^
+uid                  foobar (just for test) &lt;foobar@ooops.com&gt;               # 三元素组成userid
+sub   2048R/3B44DA00 2016-07-06</code></pre></figure>
+
+<p>生成的公钥 (<code>pubring.gpg</code>)、私钥 (<code>secring.gpg</code>) 保存在 <code>~/.gnupg/</code> 目录下。</p>
+
+<!-- 生成密码时需要花费一些时间获取随机数据，通常选择 2048~4096bit 的 RSA 加密方式。最后需要输入一个密码，不知道是作什么用的 -->
+
+<h4 id="2-撤销公钥">2. 撤销公钥</h4>
+
+<p>当密钥对生成之后，应该立即做一个公钥回收证书，当忘记了私钥的口令或者私钥丢失或被盗窃，可以发布这个证书来声明以前的公钥不再有效。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --output revoke.asc --gen-revoke &quot;user-name/e-mail/user-id&quot;           # 生成回收证书，以备不时之需
+$ gpg --import revoke.asc                              # 导入回收证书
+$ gpg --keyserver keys.gnugp.net --send &quot;8D253E8A&quot;     # 发送回收证书到服务器，声明原GPG Key作废</code></pre></figure>
+
+<p>当然如果要这么做，一定要先有私钥，否则任何人都能取消你的公钥。</p>
+
+<h4 id="3-传播公钥">3. 传播公钥</h4>
+
+<p>导出公钥之后，就可以通过一些可靠的方式传播公钥。可以将公钥通过 e-mail 发送给好友，或者上传到指定的服务器(如果不指定使用默认的 <a href="http://keys.gnupg.net">keys.gnupg.net</a> ，其它的还有 <a href="http://keyserver.ubuntu.com/">keyserver.ubuntu.com</a> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --keyserver keys.gnugp.net --send-keys &quot;8D253E8A&quot;                     # 上传到服务器
+$ gpg --fingerprint                                                         # 打印公钥指纹
+$ gpg --keyserver keys.gnugp.net --search-keys &quot;user-name/e-mail/user-all&quot;  # 在服务器上查找</code></pre></figure>
+
+<p>由于公钥服务器没有检查机制，任何人都可以用你的名义上传公钥，所以没有办法保证服务器上的公钥的可靠性。通常，可以在网站上公布一个公钥指纹，让其他人核对下载到的公钥是否为真。</p>
+
+<h4 id="4-查看密钥">4. 查看密钥</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --list-keys                       # 输出现有公钥，包括UID、公私钥的HASH值，等同于gpg -k
+$ gpg --list-sigs                       # 同时显示签名，实际也就是上述的HASH值
+$ gpg --fingerprint                     # 输出公钥的指纹
+$ gpg --list-secret-keys                # 列出私钥，PS. 列出私钥的指纹和签名根本就没用，等同于gpg -K</code></pre></figure>
+
+<p>通过 <code>gpg -k</code> 列出所有公钥，其中第一行表示保存的文件名 (<code>pubring.gpg</code>)；第二行为公钥的特征 (加密方式:如 <code>2048R</code> 表示 <code>2048-bit RSA</code>，<code>user-id</code> 的 <code>hash</code> 值，生成时间)；第三行表示用户 ID ；第四行表示私钥特征。</p>
+
+<h4 id="5-导出公钥">5. 导出公钥</h4>
+
+<p>将指定用户的公钥以 ASCII 的格式导出。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --armor --export &quot;user-name/e-mail/user-id&quot;                           # 导出ASCII公钥到终端
+$ gpg --armor --output public-key.gpg --export &quot;user-name/e-mail/user-id&quot;   # 导出ASCII公钥到文件，或者-o
+$ gpg --armor --export-secret-keys                                          # 导出私钥
+$ gpg --refresh-keys                                                        # 从服务器定期更新公钥</code></pre></figure>
+
+<p>其中 <code>--armor</code> 表示将内容转换成可见的 ASCII 码输出，否则是二进制不方便阅读。</p>
+
+<h4 id="6-导入公钥">6. 导入公钥</h4>
+
+<p>除了生成自己的密钥，还需要别人的公钥，用于生成加密信息或者验证数字签名等。为此，就需要将他人的公钥或者你的其他密钥输入系统，这时可以使用 import 参数。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --import public-key.gpg                                                       # 导入ASCII公钥到文件
+$ gpg --keyserver hkp://subkeys.pgp.net --search-keys &quot;user-name/e-mail/user-all&quot;   # 从服务器查看然后选择
+$ gpg --keyserver subkeys.gpg.net --recv-keys 8D253E8A                              # 直接导入</code></pre></figure>
+
+<p>由于任何人都可以导入公钥，我们无法保证服务器上的公钥是否可靠，下载后还需要用其他机制验证，如数字签字。</p>
+
+<h4 id="7-删除密钥">7. 删除密钥</h4>
+
+<p>我们可以通过如下命令删除密钥。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --delete-keys &quot;user-name/e-mail/user-id&quot;                    # 从公钥钥匙环里删除密钥
+$ gpg --delete-secret-keys &quot;user-name/e-mail/user-id&quot;             # 从私钥钥匙环里删除密钥
+$ gpg --delete-secret-and-public-key &quot;user-name/e-mail/user-id&quot;   # 同时删除公钥私钥</code></pre></figure>
+
+<h4 id="8-修改密钥">8. 修改密钥</h4>
+
+<p>用此命令你可以修改钥匙的失效日期，加进一个指纹，对钥匙签名等等。 尽管显得太清楚而不用提，这里还是要说，要做以上事情你得用你的通行句。 敲入通行句后，你会见到命令行。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --edit-key &quot;user-name/e-mail/user-id&quot;</code></pre></figure>
+
+<h4 id="9-加密解密">9. 加密/解密</h4>
+
+<p>在安装和按照需要设置好所有事以后，我们就可以开始加密和解密了。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --recipient &quot;8D253E8A&quot; --output demo.en.txt --encrypt demo.txt   # 用指定用户公钥加密
+
+$ gpg --output demo.de.txt --decrypt demo.en.txt                       # 解密，可以不指定用户名
+$ gpg demo.en.txt                                                      # 解密，最简单方式</code></pre></figure>
+
+<p><code>--recipient</code> 参数指定接收者的公钥，<code>--output</code> 指定加密后的文件名，<code>--encrypt</code> 指定源文件。</p>
+
+<h4 id="10-签名">10. 签名</h4>
+
+<p>有时只需要对文件签名，表示这个文件确实是我本人发出的。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --sign demo.txt                   # 生成二进制签名demo.txt.gpg，同时包含文本内容
+$ gpg --clearsign demo.txt              # 生成ASCII的签名文件demo.txt.asc，同时包含文本内容
+$ gpg --detach-sign demo.txt            # 只生成二进制签名demo.txt.sig
+$ gpg --armor --detach-sign demo.txt    # 只生成ASCII签名demo.txt.asc
+$ gpg --verify demo.txt.asc demo.txt    # 验证解密的文件与签名是否相符
+
+$ gpg --armor --detach-sign -u UID demo.txt    # 可以指定用户</code></pre></figure>
+
+<h4 id="11-签名加密">11. 签名+加密</h4>
+
+<p>此时签名和加密同时保存在同一个文件中。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --local-user &quot;user-name/e-mail/user-id&quot; --recipient &quot;8D253E8A&quot; --armor --sign --encrypt demo.txt
+$ gpg demo.txt.asc                      # 解密</code></pre></figure>
+
+<h3 id="公钥的管理">公钥的管理</h3>
+
+<p>正如前言所提到的，这个系统有一个最大的薄弱点，那就是公钥的真实性问题。可以通过直接向公钥的提供者当面或者电话验证指纹，从而确定公钥的真实性问题。</p>
+
+<p>当确定了公钥的真实性之后可以对公钥签名，表示你绝对确信这把钥匙是真实的，有了这个保证，用户就可以开始放心用这把钥匙加密了。</p>
+
+<p>要对一把钥匙签名，用 <code>gpg --edit-key UID</code> ，然后用 sign 命令。</p>
+
+<p>GPG 会根据现有的签名和对 “主人的信任度” 来决定钥匙的真实性，包括了四个值。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">1 = 我不知道
+2 = 我不信任（这把钥匙）
+3 = 我勉强信任
+4 = 我完全信任</code></pre></figure>
+
+<p>对于用户不信任的签名，就会将废弃这个签名不用。注意这些信任信息不是存在储存钥匙的文件里，而是存在另一个文件里。</p>
+
+<!--
+
+<br><h2>编辑密钥</h2><p>
+另外，一些缩写的对应方式大致为
+sec ('SECret key')
+ssb => 'Secret SuBkey'
+pub => 'PUBlic key'
+sub => 'public SUBkey'
+
+Constant           Character      Explanation
+─────────────────────────────────────────────────────
+PUBKEY_USAGE_SIG      S       key is good for signing
+PUBKEY_USAGE_CERT     C       key is good for certifying other signatures
+PUBKEY_USAGE_ENC      E       key is good for encryption
+PUBKEY_USAGE_AUTH     A       key is good for authentication
+</p>
+
+
+
+<br><h2>使用 Subkey</h2><p>
+通过 subkey 可以更方便管理密钥，以及在某些情况下可以保护好密钥。例如电脑丢了，
+
+
+
+A few weeks ago I created my new GPG/PGP key with subkeys and a few people asked me why and how. The rationale for creating separate subkeys for signing and encryption is written very nicely in the subkeys page of the debian wiki. The short answer is that having separate subkeys makes key management a lot easier and protects you in certain occasions, for example you can create a new subkey when you need to travel or when your laptop gets stolen, without losing previous signatures. Obviously you need to keep your master key somewhere very very safe and certainly not online or attached to a computer.
+
+You can find many other blog posts on the net on the subject, but most of them are missing a few parts. I’ll try to keep this post as complete as possible. If you are to use gpg subkeys you definitely need an encrypted usb to store the master key at the end. So if you don’t already have an encrypted USB go and make one first.
+
+When this process is over you will have a gpg keypair on your laptop without the master key, you will be able to use that for everyday encryption and signing of documents but there’s a catch. You won’t be able to sign other people’s keys. To do that you will need the master key. But that is something that does not happen very often so it should not be a problem in your everyday gpg workflow. You can read about signing other people’s keys at the end of this post. AFAIK you can’t remove your master key using some of the gpg GUIs, so your only hope is the command line. Live with it…
+
+First some basic information that will be needed later.
+When listing secret keys with gpg -K keys are marked with either ‘sec’ or ‘ssb’. When listing (public) keys with gpg -k keys are marked with ‘pub’ or ‘sub’.
+
+sec => 'SECret key'
+ssb => 'Secret SuBkey'
+pub => 'PUBlic key'
+sub => 'public SUBkey'
+
+When editing a key you will see a usage flag on the right. Each key has a role and that is represented by a character. These are the roles and their corresponding characters:
+
+Constant           Character      Explanation
+─────────────────────────────────────────────────────
+PUBKEY_USAGE_SIG      S       key is good for signing
+PUBKEY_USAGE_CERT     C       key is good for certifying other signatures
+PUBKEY_USAGE_ENC      E       key is good for encryption
+PUBKEY_USAGE_AUTH     A       key is good for authentication
+
+Before doing anything make sure you have a backup of your .gnupg dir.
+$ umask 077; tar -cf $HOME/gnupg-backup.tar -C $HOME .gnupg
+<br><br>
+
+
+<pre style="font-size:0.8em; face:arial;">
+$ gpg --gen-key                          // 此时会要求输入主密码，以后会用的到
+pub   2048R/43E315AF 2015-05-30
+      Key fingerprint = 70B5 4B54 B31A 32E8 2E0B  F4A0 67DC A662 43E3 15AF
+uid                  foobar (test) &lt;foobar@oops.com&gt;
+sub   2048R/2065CC7D 2015-05-30
+
+$ gpg --edit-key 43E315AF                // 使用公钥ID，添加新的UID
+gpg> adduid                              // 输入新的UID，最后确认时需要上述的密码
+... ...                                  // 此时包含了两个UID
+gpg> uid 2
+gpg> primary                             // 将新的设置为主
+gpg> save
+
+$ gpg --edit-key 43E315AF                // 添加新的subkey
+gpg> addkey                              // 新的subkey
+... ...
+pub  2048R/43E315AF  created: 2015-05-30  expires: never       usage: SC
+                     trust: ultimate      validity: ultimate
+sub  2048R/2065CC7D  created: 2015-05-30  expires: never       usage: E
+sub  2048R/AD5CC9E2  created: 2015-05-30  expires: never       usage: S
+gpg> save
+</pre>
+上述产生的密码中，43E315AF 含有SC标志，是主密码；2065CC7D 含有E标志，是用于加密的从密码； AD5CC9E2 含有S标志，用于Sign的从密码。<br><br>
+
+然后可以生成的撤销证书，可以加密后保存在单独的地方，最好网络不可达的，如一个加密的U盘，当然也可以打印出来，因为需要输入的内容很少。<br><br>
+
+接下来，就是比较关键的部分了。将主健(master key)从电脑上删除，仅留下子键(subkeys)，然后将主健保存在加密U盘即可。
+<pre style="font-size:0.8em; face:arial;">
+$ rsync -avp $HOME/.gnupg /media/encrypted-usb               // 将数据同步到加密的磁盘，或者同下
+$ umask 077; tar -cf gnupg-backup-new.tar -C $HOME .gnupg
+
+$ gpg --export-secret-subkeys 43E315AF &gt; subkeys          // 将subkeys导出
+$ gpg --delete-secret-key 43E315AF                           // 删除主健，此时私钥已经删除，公钥还在
+$ gpg --import subkeys
+</pre>
+注意，此时主健保存在了加密后的U盘上，所以不要丢掉U盘。可以通过如下查看删除主钥后的差别。
+<pre style="font-size:0.8em; face:arial;">
+$ gpg -K 43E315AF
+sec#  2048R/43E315AF 2015-05-30
+... ...
+$ gpg --home=gnupg -K 43E315AF
+sec  2048R/43E315AF 2015-05-30
+</pre>
+删除主健后显示 # 字符，此时可以将新的健上传到服务器。<br><br>
+
+此时，仍然可以作签名。
+<pre style="font-size:0.8em; face:arial;">
+$ gpg --armor -b -u 0x6F87F32E2234961E -o sig2.txt gpg-transition.txt
+$ gpg --clearsign demo.txt
+$ gpg --verify file.asc
+</pre>
+</p>
+
+
+
+
+
+http://www.alexgao.com/2009/01/24/gpg/
+http://moser-isi.ethz.ch/gpg.html
+https://wiki.debian.org/Subkeys?action=show&redirect=subkeys
+http://ekaia.org/blog/2009/05/10/creating-new-gpgkey/
+http://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html
+http://archboy.org/2013/04/18/gnupg-pgp-encrypt-decrypt-message-and-email-and-digital-signing-easy-tutorial/
+http://www.codemud.net/~thinker/GinGin_CGI.py/show_id_doc/478
+https://www.gnupg.org/howtos/card-howto/en/ch05s02.html
+
+http://www.cnblogs.com/littlehann/p/3662161.html
+
+http://blog.jobbole.com/22367/
+http://www.atatech.org/articles/33108?rnd=1344733092
+
+http://www.networkworld.com/article/2268575/lan-wan/chapter-2--ssl-vpn-technology.html   Chapter 2: SSL VPN Technology
+
+
+
+
+
+
+
+
+
+## 使用场景
+
+在使用非对称加密时，包含了公钥和私钥，其中公私钥在不同的场景中对应了不同的角色，常见使用场景有：A) 私钥用于签名，然后通过公钥验证；B) 通过公钥进行加密，然后使用私钥解密。
+
+### 加密
+
+上述的第二个场景，可以通过 encrypt 子命令加密文件，如果要通过邮件发送，需要添加 `--armor` 选项，从而将加密后的文件转换为 ASCII。**注意** 这里使用的是公钥，而公钥是可以散播出去的。
+
+gpg --output test.txt.asc --recipient "foobar" --armor --encrypt test.txt
+
+如果没有指定 `--output` 选项，默认会自动生成一个 `test.txt.asc` 加密文件。
+
+然后在收到密文后，通过如下方式解密。
+
+gpg --output test.txt --decrypt test.txt.asc
+
+另外，需要注意，在使用上述的方法进行加密时，需要先创建一个 `SUBKEY` 否则会报 `Unusable public key` 错误。
+
+### 子密钥
+
+子密钥 (subkey) 实际上是 GnuPG 最重要、最关键、最核心 的概念！
+
+子密钥与其它密钥相同，只是与一个主密钥绑定，除了上述的加密和签名，更有用处的是，它可以独立发布销毁，而不会影响到主密钥。
+
+在通过 `--gen-key` 生成密钥时，默认会自动创建一个只用于签名的主密钥，同时自动创建一个子密钥，如果没有子密钥，那么就不允许加密。
+
+通常只有当你需要修改自己或者别人的密钥时，才需要使用主密钥，一般是如下场景：
+
+when you sign someone else's key or revoke an existing signature,
+when you add a new UID or mark an existing UID as primary,
+when you create a new subkey,
+when you revoke an existing UID or subkey,
+when you change the preferences (e.g., with setpref) on a UID,
+when you change the expiration date on your master key or any of its subkey, or
+when you revoke or generate a revocation certificate for the complete key.
+
+
+
+#### Why
+
+???简单来说，子密钥是为了减少主秘钥的使用频率，日常的加密和签名，都只使用子密钥。
+
+主密钥对非常的重要，如果丢失就需要重新建立整套的系统，如果有人可以访问到你的私有主密钥或者私有子密钥，那么在这里网络世界中，那个人就可以作为你出现。
+
+因此，就需要非常严格的保证私有主密钥的安全性，通常是离线保存的，这也就同时导致使用极不方便，这也就是子密钥出现的原因。
+
+一个主密钥，可以绑定若干个子密钥，默认会创建一个具备加密功能的子密钥，同时也可以创建具备签名功能的子密钥。
+
+#### 0. 创建子密钥
+
+进入交互命令界面后，通过 addkey 子命令创建一个子密钥。
+
+gpg --edit-key foobar
+gpg> addkey              # 可以选择加密或者签名
+gpg> save                # 保存退出
+
+#### 1. 备份数据
+
+备份数据，然后保存到一个安全的地方。
+
+umask 077; tar -cf gnupg-backup.tar -C $HOME .gnupg
+
+#### 2. 删除主私钥
+
+高于 GnuPG 2.1 的版本，直接删除 `$HOME/.gnupg/private-keys-v1.d/KEYGRIP.key` 即可，如果是迁移过来的，那么可能还会保存在 `$HOME/.gnupg/secring.gpg` 文件中，如果非空同时要删除该文件。
+
+对于低版本的，操作起来就比较麻烦了：
+ 
+----- 1. 导出子密钥，可以导出全部或者部分
+gpg --output secret-subkeys --export-secret-subkeys foobar
+gpg --output secret-subkeys --export-secret-subkeys 80B07197 80B03197 foobar
+
+----- 2. 删除主的私有密钥，如果只有这一个，那么此时secring.gpg的大小为0
+gpg --delete-secret-keys foobar
+
+----- 3. 重新导入子密钥，并删除临时文件
+gpg --import secret-subkeys && rm secret-subkeys
+
+然后通过 `gpg -K` 查看密钥列表时，会发现显示的是 `sec#` 而非 `sec`，这也就意味着私钥已经被删除了，也可以通过如下命令测试下。
+
+gpg --export-secret-keys foobar | gpg --list-packets
+
+#### 3. 修改子密钥密码
+
+修改子密钥的保护密码，这样即使有人获取到了你的私钥文件，那么老的密钥仍有效。
+
+gpg --edit-key foobar passwd
+
+接下来，就可以进行日常的加密和签名了。
+
+#### 4. 使用主私钥
+
+当需要使用主私钥时，可以通过如下方式使用，可设置环境变量或者使用参数，两者相同。
+
+export GNUPGHOME=/media/something
+gpg --homedir=/media/something -K
+
+那么此时输出的就是 `sec` 而非 `sec#` 。
+
+#### 5. 上传子密钥
+
+接下里就可以直接将子密钥上传到 KeyServer 上。
+
+gpg --keyserver hkp://keyring.debian.org --send-key foobar
+gpg --keyserver hkp://pool.sks-keyservers.net --send-key foobar
+
+#### 6. 销毁子密钥
+
+当发生了一些问题时，需要销毁掉子密钥，可以通过如下步骤：
+
+----- 挂载备份并设置环境变量
+export GNUPGHOME=/media/yourdrive
+gpg --edit-key foobar
+gpg> list                     # 查看key列表
+gpg> key 123                  # 选择key，可以多个，从1开始排序
+gpg> revkey                   # 销毁对应的子密钥
+
+然后将子密钥上传到上述的服务器。
+
+https://wiki.debian.org/Subkeys
+
+
+## 更新 KEY
+
+GPG 默认使用 2048-bit RSA 作为主要，哈希算法使用 SHA1 ，这样会降低破解的难度；因此就需要修改密钥的强度。
+
+更新配置文件 `~/.gnupg/gpg.conf`，修改算法的优先级，优先使用 RSA 。
+
+personal-digest-preferences SHA256
+cert-digest-algo SHA256
+default-preference-list SHA512 SHA384 SHA256 SHA224 AES256 AES192 AES CAST5 ZLIB BZIP2 ZIP Uncompressed
+
+----- 1. 创建新的Key
+gpg --gen-key (RSA-4096)
+
+https://ekaia.org/blog/2009/05/10/creating-new-gpgkey/
+
+## 导出公钥
+
+gpg --armor --export "foobar"
+gpg --armor --export-secret-keys "foobar"
+-->
+
+<h2 id="参考">参考</h2>
+
+<p>关于如何使用 subkey <a href="https://www.void.gr/kargig/blog/2013/12/02/creating-a-new-gpg-key-with-subkeys/">Creating a new GPG key with subkeys</a> 一个不错的介绍，可以参考 <a href="/reference/security/Creating_a_new_GPG_key_with_subkeys.maff">本地文档</a>；另一篇参考的是最佳实践，可以参考 <a href="https://help.riseup.net/en/security/message-security/openpgp/best-practices">OpenPGP Best Practices</a> ，或者 <a href="/reference/security/OpenPGP_Best_Practices.maff">本地文档</a> 。</p>
+
+<p>一个官方的中文文档 <a href="https://www.gnupg.org/howtos/zh/index.html">GnuPG 袖珍 HOWTO</a> ，或者英文版 <a href="https://www.gnupg.org/gph/en/manual.html">The GNU Privacy Handbook</a> 。</p>
+
+<!--
+GnuPG 的官方为
+https://www.gnupg.org/index.html
+
+Speed Hashing，包括了加密揭秘速度
+http://blog.codinghorror.com/speed-hashing/
+
+关于SHA1～SHA3的介绍
+http://www.answers.com/article/1163617/the-evolution-of-the-nist-secure-hash-algorithm-from-sha-1-to-sha-3
+
+http://www.ruanyifeng.com/blog/2013/07/gpg.html
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/theme-database-postgresql.html" title="【专题】PostgreSQL 关系型数据库">&larr; Older</a></li> 
+         <li class="next"><a href="/post/cookbook-of-midnight-diner.html" title="深夜食堂菜谱">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1476979200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/security-pgp-introduce.html" data-title="PGP 简介" data-url="/post/security-pgp-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

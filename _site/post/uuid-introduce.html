@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>UUID 简介|JinYang's Blog</title>
+  <meta name="keywords" content="uuid,introduce,rfc4122,libuuid">
+  <meta name="description" content="UUID 的目的是让分布式系统中的所有元素，都能有唯一的辨识信息，而不需要通过中心节点指定，无需考虑数据库创建时的名称重复问题。目前最广泛应用的 UUID 是 RFC4122 协议规范的，有时 GUID 也特指是微软对标准 UUID 的实现，其实 RFC4122 的作者之一也是微软员工。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>UUID 简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2017-09-15 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>UUID 的目的是让分布式系统中的所有元素，都能有唯一的辨识信息，而不需要通过中心节点指定，无需考虑数据库创建时的名称重复问题。</p>
+
+<p>目前最广泛应用的 UUID 是 RFC4122 协议规范的，有时 GUID 也特指是微软对标准 UUID 的实现，其实 RFC4122 的作者之一也是微软员工。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">Universally Unique IDentifier, UUID</a> 是一个 128 位的数字，一般通过 32 个十六进制表示，一般类似 <code>00d460f0-ec1a-4a0f-a452-1afb4b5d1686</code> ，详细标准可以参考 <a href="https://tools.ietf.org/html/rfc4122">RFC4122</a> 。</p>
+
+<p>在 Linux 中，可以通过 <code>uudigen</code> 生成一个 UUID ，该命令实际上调用的是 <code>libuuid</code> 库，可以生成基于时间 (<code>--time</code>) 或者随机 (<code>--random</code>) 的 UUID 字符串。</p>
+
+<p>另外，也可以通过 <code>/proc/sys/kernel/random/uuid</code> 文件获取，两种方式类似。</p>
+
+<p>现在很多的磁盘也是通过 UUID 区分，可以通过如下的方式查看。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ls -l /dev/disk/by-uuid
+blkid /dev/sda1</code></pre></figure>
+
+<h3 id="系统uuid">系统UUID</h3>
+
+<p>对于系统的 UUID 不同的平台提供了不同的方法，例如 Linux 可以通过 <code>dmidecode -t system</code> 命令查看，也可以查看 <code>/sys/class/dmi/id/product_uuid</code>、<code>/sys/hypervisor/uuid</code> 。</p>
+
+<h2 id="版本演化">版本演化</h2>
+
+<p>如上，1 个 UUID 被连字符分为五段，形式为 <code>8-4-4-4-12</code> 的 32 个字符，其中的字母是 16 进制表示，而且大小写无关。</p>
+
+<p>UUID 本身也经过了多个版本的演化，每个版本的算法都不同，其标准格式如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
+    M: 表示版本号，只会是1 2 3 4 5
+    N: 只会8 9 a b
+
+Version 1, based on timestamp and MAC address (RFC 4122)
+Version 2, based on timestamp, MAC address and POSIX UID/GID (DCE 1.1)
+Version 3, based on MD5 hashing (RFC 4122)
+Version 4, based on random numbers (RFC 4122)
+Version 5, based on SHA-1 hashing (RFC 4122)</code></pre></figure>
+
+<p>如下，简单介绍各个版本的实现方法。</p>
+
+<h3 id="v1-基于时间">V1 基于时间</h3>
+
+<p>通过当前时间戳、机器 MAC 地址生成，因为 MAC 地址是全球唯一的，从而间接的可以保证 UUID 全球唯一，不过它暴露了电脑的 MAC 地址和生成这个 UUID 的时间，从而一直被诟病。</p>
+
+<p>可以通过 <code>python -c "import uuid; print uuid.uuid1()"</code> 生成，其中最后一部分的内容就是 MAC 地址(可通过 <code>ifconfig</code> 查看)。</p>
+
+<h3 id="v2-dce安全">V2 DCE安全</h3>
+
+<!-- Distributed Computing Environment, DCE -->
+<p>和基于时间的 UUID 算法相同，但会把时间戳的前 4 位置换为 POSIX 的 UID 或 GID，不过这个版本在 UUID 规范中没有明确指定，基本不会实现。</p>
+
+<h3 id="v3-基于命名空间">V3 基于命名空间</h3>
+
+<p>由用户指定一个命名空间和一个具体的字符串，然后通过 MD5 散列来生成 UUID 。不过这个版本按照规范描述，主要是是为了向后兼容，所以也很少用到。</p>
+
+<p>可以通过 <code>python -c "import uuid; print uuid.uuid3(uuid.NAMESPACE_DNS, 'foobar')"</code> 生成。</p>
+
+<h3 id="v4-基于随机数">V4 基于随机数</h3>
+
+<p>根据随机数或者伪随机数生成 UUID ，这个版本也是有意或者无意之中使用最多的。</p>
+
+<p>可以通过 <code>python -c "import uuid; print uuid.uuid4()"</code> 生成。</p>
+
+<h3 id="v5-基于名字空间">V5 基于名字空间</h3>
+
+<p>其实和版本 3 类似，不过散列函数换成了 SHA1 。</p>
+
+<p>可以通过 <code>python -c "import uuid; print uuid.uuid5(uuid.NAMESPACE_DNS, 'foobar')"</code> 生成。</p>
+
+<h2 id="c语言实现">C语言实现</h2>
+
+<p>C 中一般使用的是 libuuid 这个库，一个跨平台开源的 uuid 操作库，一般动态库都存在，需要安装下头文件。</p>
+
+<p>在 uuid.h 这个头文件中，定义了 <code>uuid_t</code> 类型，实际上也就是 <code>typedef unsigned char uuid_t[16];</code> ，常见的函数声明如下：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;uuid.h&gt;</span>
+
+<span class="kt">void</span> <span class="nf">uuid_generate</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">out</span><span class="p">);</span>           <span class="c1">// 判断是否有随机源/dev/random决定是随机还是基于时间</span>
+<span class="kt">void</span> <span class="nf">uuid_generate_random</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">out</span><span class="p">);</span>    <span class="c1">// 直接使用随机数据源</span>
+<span class="kt">void</span> <span class="nf">uuid_generate_time</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">out</span><span class="p">);</span>      <span class="c1">// 基于时间</span>
+<span class="kt">int</span> <span class="nf">uuid_generate_time_safe</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">out</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">uuid_compare</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">uu1</span><span class="p">,</span> <span class="kt">uuid_t</span> <span class="n">uu2</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">uuid_copy</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">dst</span><span class="p">,</span> <span class="kt">uuid_t</span> <span class="n">src</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">uuid_clear</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">uu</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">uuid_is_null</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">uu</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">uuid_parse</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">in</span><span class="p">,</span> <span class="kt">uuid_t</span> <span class="n">uu</span><span class="p">);</span>             <span class="cm">/* 将in指向的字符串解析到uu */</span>
+<span class="kt">void</span> <span class="nf">uuid_unparse</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">uu</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">out</span><span class="p">);</span>         <span class="cm">/* 将uu内容解析为字符串，保存到out数组 */</span>
+<span class="kt">void</span> <span class="nf">uuid_unparse_upper</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">uu</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">out</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">uuid_unparse_lower</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">uu</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">out</span><span class="p">);</span>
+<span class="kt">time_t</span> <span class="nf">uuid_time</span><span class="p">(</span><span class="kt">uuid_t</span> <span class="n">uu</span><span class="p">,</span> <span class="k">struct</span> <span class="n">timeval</span> <span class="o">*</span><span class="n">ret_tv</span><span class="p">);</span> <span class="cm">/* 将基于时间创建的uu在的时间部分解析出来 */</span></code></pre></figure>
+
+<p>示例代码如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;uuid/uuid.h&gt;</span>
+
+<span class="cm">/* gcc uuid.c -luuid -o uuid */</span>
+
+<span class="cp">#define UUID_STR_LEN    37</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">rc</span><span class="p">;</span>
+	<span class="kt">uuid_t</span> <span class="n">uuids</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+	<span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="n">UUID_STR_LEN</span><span class="p">];</span>
+	<span class="k">struct</span> <span class="n">timeval</span> <span class="n">tv</span><span class="p">;</span>
+
+	<span class="n">uuid_generate</span><span class="p">(</span><span class="n">uuids</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+	<span class="n">uuid_generate_random</span><span class="p">(</span><span class="n">uuids</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+	<span class="n">uuid_generate_time</span><span class="p">(</span><span class="n">uuids</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+	<span class="n">rc</span> <span class="o">=</span> <span class="n">uuid_generate_time_safe</span><span class="p">(</span><span class="n">uuids</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;uuid_generate_time_safe() rc = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">rc</span><span class="p">);</span>
+
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="k">sizeof</span><span class="p">(</span><span class="n">uuids</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="k">sizeof</span><span class="p">(</span><span class="n">uuids</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">uuid_unparse</span><span class="p">(</span><span class="n">uuids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">buffer</span><span class="p">);</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&quot;uuids[%d] </span><span class="se">\t\t</span><span class="s">%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">buffer</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="n">uuid_time</span><span class="p">(</span><span class="n">uuids</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="o">&amp;</span><span class="n">tv</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Get tv sec:%lx  usec:%lx</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span><span class="p">,</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="参考">参考</h2>
+
+<p>这里的动态库实现实际上是 <a href="https://www.kernel.org/">Util-Linux</a> 的一部分，可以从 HTTP 库中下载，一般路径为 <code>pub/linux/utils/util-linux/</code> 。</p>
+
+<p>另外的实现也可以参考 <a href="http://www.ossp.org/pkg/lib/uuid/">OSSP UUID</a> 。</p>
+
+<!--
+https://sourceforge.net/projects/libuuid/files/
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/javascript-environment-introduce.html" title="JavaScript 环境">&larr; Older</a></li> 
+         <li class="next"><a href="/post/program-concept-lexical-flex-introduce.html" title="Flex 简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1505404800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/uuid-introduce.html" data-title="UUID 简介" data-url="/post/uuid-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

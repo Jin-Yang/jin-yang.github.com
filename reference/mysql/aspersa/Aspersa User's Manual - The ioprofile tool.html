@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20ioprofile%20tool_files/default.css" media="screen">
+<title>Aspersa User's Manual - The ioprofile tool</title>
+</head>
+<body>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The ioprofile tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The ioprofile tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+<p>The <em>ioprofile</em> tool captures a process's I/O activity through <em>lsof</em> and <em>strace</em>
+ and summarizes it.  The result is a tabular display that shows you 
+where the process spent its time on I/O operations.  It performs a 
+cross-tabulation ("pivot table") on the I/O operations to summarize 
+them.</p>
+
+<p>You might need to be careful with this tool.  <em>strace</em> is 
+generally safe, but there is always a chance of a bug that could cause 
+problems with the process you're profiling.  It's also possible in some 
+cases for <em>strace</em> to add a lot of overhead to the process you're
+ tracing.  The faster the I/O normally is, the larger the relative 
+overhead can be, so you might see this more dramatically on a database 
+on a FusionIO card, for example.</p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>The tool has the following command-line options, which must come <em>first</em> on the command-line, before any filenames:</p>
+
+<dl>
+<dt>-a FUNCTION</dt><dd>Specifies the aggregation function to perform on
+ each cell of the tabular output.  By default, it is 'sum', but 'avg' is
+ also available.</dd>
+<dt>-b BINARY</dt><dd>Specifies the name of a process to trace and summarize.  The default value is 'mysqld'.</dd>
+<dt>-c CELL</dt><dd>Specifies what value to place into the cells of the 
+tabular output.  By default, it is 'times', which means that the cells 
+contain the timing information about I/O operations.  You can specify 
+'count' for a simple count, and 'sizes' for the size of the operations, 
+in bytes.</dd>
+<dt>-g GROUPBY</dt><dd>Specifies the item by which the I/O operations 
+are aggregated.  By default, they are aggregated by 'filename'. You can 
+aggregate them by 'pid' to get a per-thread view of the I/O, and by 
+'all' to get an overall view.</dd>
+<dt>-k KEEPFILE</dt><dd>Specifies a file to hold the <em>strace</em> data.  The specified file will not be removed when the program finishes, so you can re-analyze it if you wish.</dd>
+<dt>-p PID</dt><dd>Specifies a process ID to trace and summarize. Causes -b to be ignored.</dd>
+<dt>-s SLEEPTIME</dt><dd>Specifies how long to profile.  Default value is 30.</dd>
+</dl>
+
+<p>Any additional arguments on the command-line are treated as file 
+names containing the results of lsof + strace data previously gathered, 
+which is to be summarized.  In this case, the tool doesn't gather any 
+traces, but merely processes the ones you give it.</p>
+
+<h2>How it Works</h2>
+
+<p>The <em>ioprofile</em> tool begins by capturing a single sample of <em>lsof</em> output, which identifies the profiled process's file descriptors and the corresponding filenames.  It then starts <em>strace</em> and waits the specified amount of time, after which it stops <em>strace</em> and processes the results.</p>
+
+<p>It's important to know how <em>strace</em> is stopped, because 
+processes that are being traced can be in a delicate state.  System 
+calls can be interrupted when the trace is started, for example.  And 
+processes that are being traced have funny signal handling semantics.  
+So <em>ioprofile</em> starts <em>strace</em> in the background, waits the specified time, and then kills <em>strace</em> with first a SIGINT (because that's what a CTRL-C at the terminal would normally do, and that's how <em>strace</em>
+ is normally stopped when it's run interactively), and then a SIGTERM.  
+It then sends a SIGCONT to the process that was being traced, because in
+ some cases it may be in a stopped state after <em>strace</em> exits.  
+It is not clear whether this is fully reliable and safe.  If you know a 
+better way to do this, please share your knowledge.</p>
+
+<p>After the trace is complete, <em>ioprofile</em> processes the results
+ by parsing through the output and converting it into an intermediate 
+format that's easier to manipulate: one line of output per function call
+ that was captured by <em>strace</em>, which has information such as the
+ process ID, size, elapsed time, and filename of the call.  The 
+filenames are initially gathered from <em>lsof</em>, and correlated with
+ file descriptor numbers; thereafter, any new files the process opens 
+will be possible to correlate by looking at the arguments to the <em>open</em> system call and gathering the filename from that.</p>
+
+<p>After making the information into an easy-to-process format, <em>ioprofile</em>
+ passes it through an aggregator, which is sort of the equivalent of an 
+SQL GROUP BY query.  By default, it aggregates the calls by filename, 
+with one column per function, and the sum of the elapsed time in the 
+cells.</p>
+
+<p><em>ioprofile</em> aggregates a list of specific I/O calls. This list
+ is hard-coded into the tool, and is currently any call that matches the
+ regular expression /read|write|sync|open|close|getdents|seek/.  If this
+ list needs to be expanded, please file a bug report.</p>
+
+<h2>Example Usage</h2>
+
+<p>Here is an example of the tool's default output, on a sample file that you can find in the Subversion repository:</p>
+
+<code>
+$ ioprofile t/samples/ioprofile-001.txt
+     total      pread       read     pwrite      write filename
+ 10.094264  10.094264   0.000000   0.000000   0.000000 /data/data/abd_2dia/aia_227_228.ibd
+  8.356632   8.356632   0.000000   0.000000   0.000000 /data/data/abd_2dia/aia_227_223.ibd
+  0.048850   0.046989   0.000000   0.001861   0.000000 /data/data/abd/aia_instances.ibd
+  0.035016   0.031001   0.000000   0.004015   0.000000 /data/data/abd/vo_difuus.ibd
+  0.013360   0.000000   0.001723   0.000000   0.011637 /var/log/mysql/mysql-relay.002113
+  0.008676   0.000000   0.000000   0.000000   0.008676 /data/data/master.info
+  0.002060   0.000000   0.000000   0.002060   0.000000 /data/data/ibdata1
+  0.001490   0.000000   0.000000   0.001490   0.000000 /data/data/ib_logfile1
+  0.000555   0.000000   0.000000   0.000000   0.000555 /var/log/mysql/mysql-relay-log.info
+  0.000141   0.000000   0.000000   0.000141   0.000000 /data/data/ib_logfile0
+  0.000100   0.000000   0.000000   0.000100   0.000000 /data/data/abd/9fvus.ibd
+</code>
+
+<p>This output is sorted in descending order by the leftmost column.  It
+ should be fairly self-explanatory.  Let's see a few different ways we 
+can process the same dataset.  Let's aggregate by count of operations 
+instead of by elapsed time, so we can see how many times each function 
+was executed on each file:</p>
+
+<code>
+$ ioprofile -c count t/samples/ioprofile-001.txt
+     total      pread       read     pwrite      write filename
+      4282       4282          0          0          0 /data/data/abd_2dia/aia_227_223.ibd
+      2713       2713          0          0          0 /data/data/abd_2dia/aia_227_228.ibd
+       390          0         47          0        343 /var/log/mysql/mysql-relay.002113
+       343          0          0          0        343 /data/data/master.info
+        30          8          0         22          0 /data/data/abd/vo_difuus.ibd
+        19          7          0         12          0 /data/data/abd/aia_instances.ibd
+        16          0          0         16          0 /data/data/ib_logfile1
+        16          0          0          0         16 /var/log/mysql/mysql-relay-log.info
+         6          0          0          6          0 /data/data/ibdata1
+         1          0          0          1          0 /data/data/ib_logfile0
+         1          0          0          1          0 /data/data/abd/9fvus.ibd
+</code>
+
+<p>Interesting that the #1 time consumer isn't the #1 in terms of number
+ of operations, isn't it?  We can re-examine the times, showing the 
+average time per call instead of the sum of times:</p>
+
+<code>
+$ ioprofile -a avg t/samples/ioprofile-001.txt
+     total      pread       read     pwrite      write filename
+  0.003721   0.003721   0.000000   0.000000   0.000000 /data/data/abd_2dia/aia_227_228.ibd
+  0.002571   0.006713   0.000000   0.000155   0.000000 /data/data/abd/aia_instances.ibd
+  0.001952   0.001952   0.000000   0.000000   0.000000 /data/data/abd_2dia/aia_227_223.ibd
+  0.001167   0.003875   0.000000   0.000182   0.000000 /data/data/abd/vo_difuus.ibd
+  0.000343   0.000000   0.000000   0.000343   0.000000 /data/data/ibdata1
+  0.000141   0.000000   0.000000   0.000141   0.000000 /data/data/ib_logfile0
+  0.000100   0.000000   0.000000   0.000100   0.000000 /data/data/abd/9fvus.ibd
+  0.000093   0.000000   0.000000   0.000093   0.000000 /data/data/ib_logfile1
+  0.000035   0.000000   0.000000   0.000000   0.000035 /var/log/mysql/mysql-relay-log.info
+  0.000034   0.000000   0.000037   0.000000   0.000034 /var/log/mysql/mysql-relay.002113
+  0.000025   0.000000   0.000000   0.000000   0.000025 /data/data/master.info
+</code>
+
+<p>Another way to aggregate the data is to look at the size of the operations (in bytes), rather than the elapsed time:</p>
+
+<code>
+$ ioprofile -c sizes t/samples/ioprofile-001.txt
+     total      pread       read     pwrite      write filename
+  90800128   90800128          0          0          0 /data/data/abd_2dia/aia_227_223.ibd
+  52150272   52150272          0          0          0 /data/data/abd_2dia/aia_227_228.ibd
+    999424          0          0     999424          0 /data/data/ibdata1
+    638976     131072          0     507904          0 /data/data/abd/vo_difuus.ibd
+    327680     114688          0     212992          0 /data/data/abd/aia_instances.ibd
+    305263          0     149662          0     155601 /var/log/mysql/mysql-relay.002113
+    217088          0          0     217088          0 /data/data/ib_logfile1
+     22638          0          0          0      22638 /data/data/master.info
+     16384          0          0      16384          0 /data/data/abd/9fvus.ibd
+      1088          0          0          0       1088 /var/log/mysql/mysql-relay-log.info
+       512          0          0        512          0 /data/data/ib_logfile0
+</code>
+
+<p>It's also possible to report by process ID (thread ID), instead of by filename:</p>
+
+<code>
+$ ioprofile -g pid t/samples/ioprofile-001.txt
+     total      pread       read     pwrite      write pid
+  9.580759   9.580759   0.000000   0.000000   0.000000 22782
+  8.187935   8.187935   0.000000   0.000000   0.000000 20974
+  0.300581   0.300581   0.000000   0.000000   0.000000 2370
+  0.181209   0.181209   0.000000   0.000000   0.000000 2369
+  0.088197   0.088197   0.000000   0.000000   0.000000 2366
+  0.081061   0.077990   0.001723   0.000793   0.000555 10013
+  0.038928   0.038928   0.000000   0.000000   0.000000 2373
+  0.036679   0.036679   0.000000   0.000000   0.000000 2372
+  0.020577   0.020577   0.000000   0.000000   0.000000 2371
+  0.020313   0.000000   0.000000   0.000000   0.020313 10012
+  0.010502   0.010502   0.000000   0.000000   0.000000 2368
+  0.005529   0.005529   0.000000   0.000000   0.000000 2367
+  0.002172   0.000000   0.000000   0.002172   0.000000 2375
+  0.002020   0.000000   0.000000   0.002020   0.000000 2374
+  0.001923   0.000000   0.000000   0.001923   0.000000 2385
+  0.001636   0.000000   0.000000   0.001636   0.000000 2377
+  0.000982   0.000000   0.000000   0.000982   0.000000 2378
+  0.000141   0.000000   0.000000   0.000141   0.000000 2365
+</code>
+
+<p>Finally, you can aggregate by the entire dataset, so you simply get 
+the function calls and the desired statistic, not broken out by filename
+ or thread ID:</p>
+
+<code>
+$ ioprofile -g all t/samples/ioprofile-001.txt 
+ 18.561144 TOTAL
+ 18.528886 pread
+  0.020868 write
+  0.009667 pwrite
+  0.001723 read
+</code>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

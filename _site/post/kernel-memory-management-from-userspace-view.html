@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>内存-用户空间|JinYang's Blog</title>
+  <meta name="keywords" content="linux,内存,用户空间">
+  <meta name="description" content="简单介绍下 Linux 中用户空间的内存管理，包括了内存的布局、内存申请等操作。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>内存-用户空间</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2014-09-27 Saturday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>简单介绍下 Linux 中用户空间的内存管理，包括了内存的布局、内存申请等操作。</p>
+
+<!-- more -->
+
+<h2 id="内存布局">内存布局</h2>
+
+<p>关于 Linux 的内存分布可以查看内核文档 <a href="https://www.kernel.org/doc/Documentation/x86/x86_64/mm.txt">x86/x86_64/mm.txt</a>，也就是低 128T 为用户空间。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0000000000000000 - 00007fffffffffff (=47 bits) user space, different per mm</code></pre></figure>
+
+<p>在内核中通过 <code>TASK_SIZE_MAX</code> 宏定义，同时还减去了一个页面的大小做为保护。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define TASK_SIZE_MAX   ((1UL &lt;&lt; 47) - PAGE_SIZE)</span></code></pre></figure>
+
+<p>而 <code>0xffff,8000,0000,0000</code> 以上为系统空间地址；注意：该地址的高 16bits 是 <code>0xffff</code>，这是因为目前实际上只用了 64 位地址中的 48 位，也就是高 16 位没有使用，而从地址 <code>0x0000,7fff,ffff,ffff</code> 到 <code>0xffff,8000,0000,0000</code> 中间是一个巨大的空洞，是为以后的扩展预留的。</p>
+
+<p>而真正的系统空间的起始地址，是从 <code>0xffff,8800,0000,0000</code> 开始的，参见：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define __PAGE_OFFSET     _AC(0xffff,8800,0000,0000, UL)</span></code></pre></figure>
+
+<p>而 32 位地址时系统空间的起始地址为 <code>0xC000,0000</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ffff800000000000 - ffff87ffffffffff (=43 bits) guard hole, reserved for hypervisor
+ffff880000000000 - ffffc7ffffffffff (=64 TB) direct mapping of all phys. memory
+ffffc80000000000 - ffffc8ffffffffff (=40 bits) hole
+ffffc90000000000 - ffffe8ffffffffff (=45 bits) vmalloc/ioremap space</code></pre></figure>
+
+<!--
+而 32 位地址空间时，当物理内存大于896M时（Linux2.4内核是896M，3.x内核是884M，是个经验值），由于地址空间的限制，内核只会将0~896M的地址进行映射，而896M以上的空间用做一些固定映射和vmalloc/ioremap。而64位地址时是将所有物理内存都进行映射。
+-->
+
+<h3 id="布局详解">布局详解</h3>
+
+<p>内核中有两个参数影响了内存的布局，如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看当前配置
+$ cat /proc/sys/vm/legacy_va_layout
+$ cat /proc/sys/kernel/randomize_va_space
+
+----- 配置参数
+# sysctl -w vm.legacy_va_layout=0
+# sysctl -w kernel.randomize_va_space=2
+
+----- 可以修改参数后通过如下方式测试
+$ cat /proc/self/maps
+00400000-0040b000 r-xp 00000000 08:07 786680                 /usr/bin/cat
+0060b000-0060c000 r--p 0000b000 08:07 786680                 /usr/bin/cat
+0060c000-0060d000 rw-p 0000c000 08:07 786680                 /usr/bin/cat
+011ed000-0120e000 rw-p 00000000 00:00 0                      [heap]
+7f924042c000-7f9246955000 r--p 00000000 08:07 793717         /usr/lib/locale/locale-archive
+7f9246955000-7f9246b0c000 r-xp 00000000 08:07 793610         /usr/lib64/libc-2.17.so
+7f9246b0c000-7f9246d0b000 ---p 001b7000 08:07 793610         /usr/lib64/libc-2.17.so
+7f9246d0b000-7f9246d0f000 r--p 001b6000 08:07 793610         /usr/lib64/libc-2.17.so
+7f9246d0f000-7f9246d11000 rw-p 001ba000 08:07 793610         /usr/lib64/libc-2.17.so
+7f9246d11000-7f9246d16000 rw-p 00000000 00:00 0
+7f9246d16000-7f9246d36000 r-xp 00000000 08:07 793718         /usr/lib64/ld-2.17.so
+7f9246f19000-7f9246f1c000 rw-p 00000000 00:00 0
+7f9246f34000-7f9246f35000 rw-p 00000000 00:00 0
+7f9246f35000-7f9246f36000 r--p 0001f000 08:07 793718         /usr/lib64/ld-2.17.so
+7f9246f36000-7f9246f37000 rw-p 00020000 08:07 793718         /usr/lib64/ld-2.17.so
+7f9246f37000-7f9246f38000 rw-p 00000000 00:00 0
+7ffd158bf000-7ffd158e0000 rw-p 00000000 00:00 0              [stack]
+7ffd15945000-7ffd15947000 r-xp 00000000 00:00 0              [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0      [vsyscall]</code></pre></figure>
+
+<!--
+TEXT：代码段，映射程序的二进制代码， 该区域为私有区域；在代码段中，也会包含一些只读的常数变量，比如字符串常量等。
+
+一般来说，IA-32体系结构中进程空间的代码段从0x08048000开始，这与最低可用地址(0x00000000)有128M的间距，按照linux内核架构一书介绍是为了捕获NULL指针(具体不详)。该值是在编译阶段就已经设定好的，其他体系结构也有类似的缺口，比如mips(), ppc() x86-64使用的是0x000000000400000。
+
+DATA：数据段，映射程序中已经初始化的全局变量。
+
+BSS段：存放程序中未初始化的全局变量，在ELF文件中，该区域的变量仅仅是个符号，并不占用文件空间，但程序加载后，会占用内存空间，并初始化为0。
+
+HEAP：运行时的堆，在程序运行中使用malloc申请的内存区域。
+
+该区域的起始地址受start_brk影响，和BSS段之间会有一个随机值的空洞；该区域的内存增长方式是由低地址向高地址增长。
+
+MMAP：共享库及匿名文件的映射区域；该区域中会包含共享库的代码段和数据段。其中代码段为共享的，但数据段为私有的，写时拷贝。
+
+该区域起始地址也会有一个随机值，该区域的增长方式是从高地址向低地址增长（Linux经典布局中不同，稍后讨论）
+
+STACK：用户进程栈；
+
+该区域起始地址也存在一个随机值，通过PF_RANDOMIZE来设置。栈的增长方向是由高地址向低地址增长，并且若设置了RLIMIT_STACK即规定了栈的大小。
+
+最后，是命令行参数和环境变量。
+-->
+
+<h4 id="新旧布局">新旧布局</h4>
+
+<p>不同之处在于 MMAP 区域的增长方向，新布局导致了栈空间的固定，而堆区域和 MMAP 区域公用一个空间，这在很大程度上增长了堆区域的大小。</p>
+
+<p>Linux 传统内存布局如下。</p>
+
+<p><img src="/images/linux/kernel/memory-userspace-layout-lagency.jpg" alt="memory userspace layout" title="memory userspace layout" class="pull-center" width="40%" /></p>
+
+<p>现在用户空间的内存空间布局如下。</p>
+
+<p><img src="/images/linux/kernel/memory-userspace-layout.jpg" alt="memory userspace layout" title="memory userspace layout" class="pull-center" width="70%" /></p>
+
+<p>从上图可以看到，mmap 映射区域至顶向下扩展，mmap 映射区域和堆相对扩展，直至耗尽虚拟地址空间中的剩余区域，弥补了经典内存布局方式的不足。</p>
+
+<p>为了使用此新的内存布局，执行命令 <code>sysctl -w vm.legacy_va_layout=0</code>，然后重新编译运行程序并查看其输出及 maps 文件内容。</p>
+
+<!--
+多线程内存空间布局
+主线程与第一个线程的栈之间的距离：0xbfbaf648 – 0xb771d384 = 132M
+第一个线程与第二个线程的栈之间的距离：0xb771d384 – 0xb6f1d384 = 8M
+其它几个线程的栈之间距离均为8M。
+也就是说，主线程的栈空间最大为132M，而普通线程的栈空间仅为8M，超这个范围就会造成栈溢出（后果很严重）。
+-->
+
+<h3 id="内核相关">内核相关</h3>
+
+<p>利用虚拟内存，每个进程相当于占用了全部的内存空间，所有和进程相关的信息都保存在内存描述符 (memory descriptor) 中，也就是 <code>struct mm_struct *mm</code>；在进程的进程描述符 <code>struct task_struct</code> 中的 mm 域记录该进程使用的内存描述符，也就是说 <code>current-&gt;mm</code> 代表当前进程的内存描述符。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">mm_struct</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span><span class="n">mmap</span><span class="p">;</span>            <span class="c1">// 指向内存区域对象，链表形式存放，利于高效地遍历所有元素</span>
+    <span class="k">struct</span> <span class="n">rb_root</span> <span class="n">mm_rb</span><span class="p">;</span>                   <span class="c1">// 与mmap表示相同，以红黑树形式存放，适合搜索指定元素</span>
+
+    <span class="kt">pgd_t</span>                 <span class="o">*</span><span class="n">pgd</span><span class="p">;</span>             <span class="c1">// 指向页目录</span>
+    <span class="kt">atomic_t</span>               <span class="n">mm_count</span><span class="p">;</span>        <span class="c1">// 主引用计数，为0时结构体会被撤销</span>
+    <span class="kt">atomic_t</span>               <span class="n">mm_users</span><span class="p">;</span>        <span class="c1">// 从计数器，代表正在使用该地址的进程数目</span>
+    <span class="kt">int</span>                    <span class="n">map_count</span><span class="p">;</span>       <span class="c1">// vma的数目</span>
+
+    <span class="k">struct</span> <span class="n">list_head</span> <span class="n">mmlist</span><span class="p">;</span>                <span class="c1">// 所有mm_struct都通过mmlist连接在一个双向链表中，</span>
+                                            <span class="c1">// 该链表的首元素是init_mm内存描述符，代表init进程的地址空间</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>剩下字段中包含了该进程的代码段、数据段、堆栈、命令行参数、环境变量的起始地址和终止地址；内存描述符在系统中通过 <code>mmlist</code> 组织成了一个双向链表，这个链表的首元素是 <code>init_mm.mmlist</code> 。</p>
+
+<p>其中 mm_count 和 mm_users 用来表示是否还有进程在使用该内存，这两个是比较重要的字段，决定了该进程空间是否仍被使用。</p>
+
+<!--
+mm_users 记录了使用这片内存空间的所有轻量级进程的数量，包括从同一个父进程 fork() 出来的轻量级子进程在 mm_count 中算一个单元。
+
+比如，某个进程空间由两个拥有同样父进程的轻量级进程共享，那么其 mm_users 的值为 2，而 mm_count 的值为 1，当 mm_count 的值递减为 0 时，该内存描述符 (进程空间) 被回收。
+-->
+
+<p>一个进程的内存空间如上图所示，其中各个内存区域通过 <code>vm_area_struct</code> 表示，类似如下所示。</p>
+
+<p><img src="/images/linux/kernel/memory_process_vma_lists.png" alt="memory_process_vma_lists" title="memory_process_vma_lists" class="pull-center" width="80%" /></p>
+
+<p>用户进程的虚拟地址空间包含了若干区域，这些区域的分布方式是特定于体系结构的，不过所有的方式都包含下列成分：</p>
+
+<ul>
+  <li>可执行文件的二进制代码，也就是程序的代码段；</li>
+  <li>存储全局变量的数据段；</li>
+  <li>用于保存局部变量和实现函数调用的栈；</li>
+  <li>环境变量和命令行参数；</li>
+  <li>程序使用的动态库的代码；</li>
+  <li>用于映射文件内容的区域。</li>
+</ul>
+
+<p>内核中的伙伴系统、SLAB 分配器都是尽快响应内核请求，而对于用户空间的请求略有不同。</p>
+
+<p>用户空间动态申请内存时，往往只是获得一块线性地址的使用权，而并没有将这块线性地址区域与实际的物理内存对应上，只有当用户空间真正操作申请的内存时，才会触发一次缺页异常，这时内核才会分配实际的物理内存给用户空间。</p>
+
+<h4 id="结构体">结构体</h4>
+
+<p>Linux 内核中，关于虚存管理的最基本的管理单元是虚拟内存区域 (Virtual Memory Areas, vma)，通过 <code>struct vm_area_struct</code> 表示，它描述了一段连续的、具有相同访问属性 (可读、可写、可执行等等) 的虚存空间，该虚存空间的大小为物理内存页面的整数倍。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="p">{</span>   <span class="c1">// include/linux/mm_types.h</span>
+    <span class="k">struct</span> <span class="n">mm_struct</span> <span class="o">*</span> <span class="n">vm_mm</span><span class="p">;</span>                   <span class="c1">// 反向指向该进程所属的内存描述符</span>
+
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">vm_start</span><span class="p">,</span> <span class="n">vm_end</span><span class="p">;</span>             <span class="c1">// 虚存空间的首地址，末地址后第一个字节的地址</span>
+    <span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span><span class="n">vm_next</span><span class="p">,</span> <span class="o">*</span><span class="n">vm_prev</span><span class="p">;</span>   <span class="c1">// 每个进程的VM空间链表，按地址排序，用于遍历</span>
+    <span class="k">struct</span> <span class="n">rb_node</span> <span class="n">vm_rb</span><span class="p">;</span>                       <span class="c1">// 红黑树中对应的节点，用于快速定位</span>
+
+    <span class="kt">pgprot_t</span> <span class="n">vm_page_prot</span><span class="p">;</span>                      <span class="c1">// vma的访问控制权限</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">vm_flags</span><span class="p">;</span>                     <span class="c1">// 保护标志位和属性标志位，共享(0)还是独有(1)</span>
+
+    <span class="k">const</span> <span class="k">struct</span> <span class="n">vm_operations_struct</span> <span class="o">*</span><span class="n">vm_ops</span><span class="p">;</span>  <span class="c1">// 该vma上的各种标准操作函数指针集</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">vm_pgoff</span><span class="p">;</span>                     <span class="c1">// 文件映射偏移，以PAGE_SIZE为单位</span>
+    <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span> <span class="n">vm_file</span><span class="p">;</span>                      <span class="c1">// 如果是文件映射，则指向文件描述符</span>
+    <span class="kt">void</span> <span class="o">*</span> <span class="n">vm_private_data</span><span class="p">;</span>                     <span class="c1">// 设备驱动私有数据，与内存管理无关</span>
+
+<span class="p">};</span></code></pre></figure>
+
+<p>该结构体描述了 <code>[vm_start, vm_end)</code> 的内存空间，以字节为单位。通常，进程所使用到的虚存空间不连续，且各部分虚存空间的访问属性也可能不同，所以一个进程的虚存空间需要多个 <code>vm_area_struct</code> 结构来描述。</p>
+
+<p>在 <code>vm_area_struct</code> 较少时，各个结构体按照升序排序，通过 <code>vm_next</code>、<code>vm_prev</code> 以链表的形式组织数据；但当数据较多时，实现了 AVL 树，以提高 <code>vm_area_struct</code> 的搜索速度。</p>
+
+<!--
+另外，假如该 vm_area_struct 描述的是一个文件映射的虚存空间，成员 vm_file 便指向被映射的文件的 file 结构，vm_pgoff 是该虚存空间起始地址在 vm_file 文件里面的文件偏移，单位为物理页面。<br><br>
+
+一个程序可以选择 MAP_SHARED 或 MAP_PRIVATE 将一个文件的某部分数据映射到自己的虚存空间里面，这两种映射方式的区别在于：MAP_SHARED 映射后在内存中对该虚存空间的数据进行修改会影响到其他以同样方式映射该部分数据的进程，并且该修改还会被写回文件里面去，也就是这些进程实际上是在共用这些数据；而 MAP_PRIVATE 映射后对该虚存空间的数据进行修改不会影响到其他进程，也不会被写入文件中。<br><br>
+
+来自不同进程，所有映射同一个文件的 vm_area_struct 结构都会根据其共享模式分别组织成两个链表。链表的链头分别是：vm_file->f_dentry->d_inode->i_mapping->i_mmap_shared,vm_file->f_dentry->d_inode->i_mapping->i_mmap。而vm_area_struct结构中的vm_next_share指向链表中的下一个节点；vm_pprev_share是一个指针的指针，它的值是链表中上一个节点（头节点）结构的vm_next_share（i_mmap_shared或i_mmap）的地址。<br><br>
+
+进程建立 vm_area_struct 结构后，只是说明进程可以访问这个虚存空间，但有可能还没有分配相应的物理页面并建立好页面映射。在这种情况下，若是进程执行中有指令需要访问该虚存空间中的内存，便会产生一次缺页异常。这时候，就需要通过 vm_area_struct 结构里面的 vm_ops->nopage 所指向的函数来将产生缺页异常的地址对应的文件数据读取出来。<br><br>
+
+vm_flags 主要保存了进程对该虚存空间的访问权限，然后还有一些其他的属性；vm_page_prot 是新映射的物理页面的页表项 pgprot 的默认值。
+-->
+
+<h4 id="查看进程内存空间">查看进程内存空间</h4>
+
+<p>可以通过 <code>cat /proc/&lt;pid&gt;/maps</code> 或者 <code>pmap &lt;pid&gt;</code> 查看。</p>
+
+<!--
+每行数据格式： 开始-结束 访问权限 偏移 主设备号：次设备号 i节点 文件
+    设备表示为00：00, 索引节点标示页为0，这个区域就是零页（所有数据全为零）
+    数据段和bss具有可读、可写但不可执行权限；而堆栈可读、可写、甚至可执行
+
+2.4 内存区域操作
+find_vma 查看mm_struct所属于的VMA，搜索第一个vm_end大于addr的内存区域
+struct vm_area_struct *find_vma(struct mm_struct *mm, usigned long addr)
+    检查mmap_cache，查看缓存VMA是否包含所需地址，如果没有找到，进入2
+    通过红黑树搜索；
+find_vma_prev 查看mm_struct所属于的VMA，搜索第一个vm_end小于addr的内存区域
+
+struct vm_area_struct * find_vma_prev(struct mm_struct *mm, unsigned long addr, struct vm_area_struct **pprev)
+
+mmap
+    内核使用do_mmap()创建一个新的线性地址区间，如果创建的地址区间和一个已存在的相邻地址区间有相同的访问权限，则将两个区间合并为一个。
+    mmap()系统调用获取内核函数do_mmap()的功能。
+    do_mummap()从特定的进程地址空间中删除指定地址区间
+    mummap()与 mmap功能相反。
+-->
+
+<h2 id="内存申请">内存申请</h2>
+
+<p>在用户空间中会通过 <code>malloc()</code> 动态申请内存，而实际上，在用户空间中对应了不同的实现方式，包括了 <code>ptmalloc</code> (glibc)、<code>tcmalloc</code> (Google) 以及 <code>jemalloc</code>，接下来简单介绍这三种内存分配方式。</p>
+
+<p><code>ptmalloc</code> 的早期版本是由 Doug Lea 实现的，它有一个重要问题就是无法保证线程安全，Wolfram Gloger 改进了其实现从而支持多线程；TCMalloc (Thread-Caching Malloc) 是 google 开发的开源工具 <code>google-perftools</code> 之一。</p>
+
+<!--
+http://www.360doc.com/content/13/0915/09/8363527_314549128.shtml
+http://blog.jobbole.com/91887/
+http://blog.chinaunix.net/uid-26772535-id-3197173.html
+http://blog.csdn.net/jltxgcy/article/details/44150429
+http://blog.csdn.net/jltxgcy/article/details/44133307
+http://www.cnblogs.com/vinozly/p/5489138.html
+-->
+
+<h3 id="简介">简介</h3>
+
+<p>从操作系统角度来看，进程分配内存有两种方式，分别由系统调用 brk() 和 mmap() 完成：</p>
+
+<ol>
+  <li>brk() 是将数据段 (<code>.data</code>) 的最高地址指针 <code>_edata</code> 往高地址推；</li>
+  <li>mmap() 是在进程的虚拟地址空间中，也就是堆和栈中间 (文件映射区域) 的一块空闲虚拟内存。</li>
+</ol>
+
+<p>如上所述，这两种方式分配的都是虚拟内存，没有分配物理内存，只有在第一次访问已分配的虚拟地址空间的时候，发生缺页中断，操作系统负责分配物理内存，然后建立虚拟内存和物理内存之间的映射关系。</p>
+
+<p>在标准 C 库中，提供了 <code>malloc()</code> <code>free()</code> 分配释放内存，而这两个函数的底层是由 <code>brk()</code> <code>mmap()</code> <code>munmap()</code> 这些系统调用实现的。</p>
+
+<!-- do_page_fault() -->
+
+<h3 id="brk-sbrk">brk() sbrk()</h3>
+
+<p>如下是两个函数的声明。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;unistd.h&gt;</span>
+<span class="kt">int</span> <span class="nf">brk</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">sbrk</span><span class="p">(</span><span class="kt">intptr_t</span> <span class="n">increment</span><span class="p">);</span></code></pre></figure>
+
+<p>这两个函数都用来改变 “program break” 的位置，如下图所示：</p>
+
+<p><img src="/images/linux/kernel/memory-userspace-layout.jpg" alt="memory userspace layout" title="memory userspace layout" class="pull-center" width="70%" /></p>
+
+<p>sbrk/brk 是从堆中分配空间，实际上就是移动一个位置，也就是 <code>Program Break</code>，这个位置定义了进程数据段的终止处，增大就是分配空间，减小就是释放空间。</p>
+
+<p>sbrk 用相对的整数值确定位置，如果这个整数是正数，会从当前位置向后移若干字节，如果为负数就向前若干字节，为 0 时获取当前位置；而 brk 则使用绝对地址。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">p0</span> <span class="o">=</span> <span class="n">sbrk</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="n">p1</span><span class="p">,</span> <span class="o">*</span><span class="n">p2</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;P0 %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">p0</span><span class="p">);</span>
+    <span class="n">brk</span><span class="p">(</span><span class="n">p0</span> <span class="o">+</span> <span class="mi">4</span><span class="p">);</span>     <span class="c1">// 分配4字节</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">sbrk</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;P1 %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">p1</span><span class="p">);</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">sbrk</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;P2=%p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">p2</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="进程加载">进程加载</h2>
+
+<p><code>execve()</code> 系统调用可用于加载一个可执行文件并代替当前的进程，它在 <code>libc</code> 库中有几个 API 封装：<code>execl()</code>、<code>execve()</code>、<code>execlp()</code>、<code>execvp()</code>。这几个函数的功能相同，只是参数不同，在内核中统一调用 <code>sys_execve()</code> 。</p>
+
+<p>以 <code>execve()</code> 函数为例，创建一个进程，参考如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">arg</span><span class="p">,</span><span class="kt">char</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[]</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;ls&quot;</span><span class="p">,</span> <span class="s">&quot;-l&quot;</span><span class="p">,</span> <span class="s">&quot;/tmp&quot;</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">};</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">envp</span><span class="p">[]</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">};</span>
+
+    <span class="n">execve</span><span class="p">(</span><span class="s">&quot;/bin/ls&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">envp</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>系统为进程运行初始化环境，无非就是完成内存分配和映射以及参数和数据段、代码段和 bss 等的载入，以及对调用 exec 的旧进程进行回收。</p>
+
+<p>其中有两个可执行文件相关的数据结构，分别是 <code>linux_binprm</code> 和 <code>linux_binfmt</code>，内核中为可执行程序的装入定义了一个数据结构 <code>linux_binprm</code>，以便将运行一个可执行文件时所需的信息组织在一起。</p>
+
+<p>而 <code>linux_binfmt</code> 用表示每一个加载模块，这个结构在系统中组成了一个链表结构。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">linux_binprm</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">BINPRM_BUF_SIZE</span><span class="p">];</span>                <span class="c1">// 保存可执行文件的头部</span>
+    <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">[</span><span class="n">MAX_ARG_PAGES</span><span class="p">];</span>         <span class="c1">// 每个参数最大使用一个物理页来存储，最大为32个页面</span>
+    <span class="k">struct</span> <span class="n">mm_struct</span> <span class="o">*</span><span class="n">mm</span><span class="p">;</span>                     <span class="c1">// 暂时存储新进程的可执行文件名、环境变量等</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">p</span><span class="p">;</span>                          <span class="c1">// 当前内存的起始地址</span>
+    <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="n">envc</span><span class="p">;</span>                           <span class="c1">// 参数变量和环境变量的数目</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">filename</span><span class="p">;</span>                    <span class="c1">// procps查看到的名称</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">linux_binfmt</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">list_head</span> <span class="n">lh</span><span class="p">;</span>                                 <span class="c1">// 用于形成一个列表</span>
+    <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">module</span><span class="p">;</span>                               <span class="c1">// 定义该函数所属的模块</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">load_binary</span><span class="p">)(</span><span class="k">struct</span> <span class="n">linux_binprm</span> <span class="o">*</span><span class="p">);</span>           <span class="c1">// 加载可执行文件</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">load_shlib</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">);</span>                    <span class="c1">// 加载共享库</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">core_dump</span><span class="p">)(</span><span class="k">struct</span> <span class="n">coredump_params</span> <span class="o">*</span><span class="n">cprm</span><span class="p">);</span>      <span class="c1">// core dump</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">min_coredump</span><span class="p">;</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>程序的加载主要分为两步：A) 准备阶段，将参数读如内核空间、判断可执行文件的格式、并选择相应的加载器；B) 载入阶段，完成对新进程代码段、数据段、BSS 等信息的载入。</p>
+
+<h3 id="进程创建">进程创建</h3>
+
+<p>如上所述，实际调用的是内核中的 <code>sys_execve()</code> 函数，简单介绍如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">sys_execve()         @ fs/exec.c
+  |-getname()                               将文件名从用户空间复制到内核空间
+  | |-getname_flags()
+  |  |-__getname()                          为文件名分配一个缓冲区
+  |  |-strncpy_from_user()
+  |   |-do_strncpy_from_user()
+  |-do_execve()
+    |-do_execve_common()
+      |-unshare_files()
+      |-do_open_exec()
+      | |-do_filp_open()
+      |-bprm_mm_init()                      bprm初始化，主要是bprm-&gt;mm
+      | |-mm_alloc()
+      | |-init_new_context()
+      | |-__bprm_mm_init()
+      |  |-kmem_cache_zalloc()              分配一个vma
+      |  |-... ...                          设置用户空间对应的栈顶STACK_TOP_MAX
+      |  |-insert_vm_struct()               将vma插入mm表示的进程空间结构
+      |-count() ... ...                     计算参数个数、环境变量个数
+      |-prepare_binprm()                    查看权限并加载128(BINPRM_BUF_SIZE)个字节
+      | |-kernel_read()                     读取128字节
+      |-search_binary_handler()             整个函数的处理核心
+        |-security_bprm_check()             SELinux检查函数
+        |-fmt-&gt;load_binary()                加载二进制文件，不同二进制格式对应了不同回调函数
+        |-load_elf_binary()                 elf对应load_elf_binary
+          |-start_thread()                  不同平台如x86会调用不同的函数
+            |-start_thread_common()         主要是设置寄存器的值</code></pre></figure>
+
+<p>其中有个全局变量 <code>formats</code> 作为链头，可以通过 <code>register_binfmt()</code> 注册一个可执行文件的加载模块，该模块一般在 <code>fs/binfmt_xxx.c</code> 文件中，每次加载可执行文件时只需要遍历 formats 变量即可。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="nf">LIST_HEAD</span><span class="p">(</span><span class="n">formats</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">__register_binfmt</span><span class="p">(</span><span class="k">struct</span> <span class="n">linux_binfmt</span> <span class="o">*</span> <span class="n">fmt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">insert</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">BUG_ON</span><span class="p">(</span><span class="o">!</span><span class="n">fmt</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">WARN_ON</span><span class="p">(</span><span class="o">!</span><span class="n">fmt</span><span class="o">-&gt;</span><span class="n">load_binary</span><span class="p">))</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="n">write_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">binfmt_lock</span><span class="p">);</span>
+    <span class="n">insert</span> <span class="o">?</span> <span class="n">list_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fmt</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">formats</span><span class="p">)</span> <span class="o">:</span>
+         <span class="n">list_add_tail</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fmt</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">formats</span><span class="p">);</span>
+    <span class="n">write_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">binfmt_lock</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">register_binfmt</span><span class="p">(</span><span class="k">struct</span> <span class="n">linux_binfmt</span> <span class="o">*</span><span class="n">fmt</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">__register_binfmt</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在 Linux 中最常用的是 ELF 为例，启动时通过 <code>core_initcall(init_elf_binfmt)</code> 初始化。</p>
+
+<!--
+（1） It releases all resources used by the old process.
+（2） It maps the application into virtual address space. The following segments must be taken into  account (the variables specified are elements of the task structure and are             set to the correct values by binary format handler)
+（3） The text segment contains the executable code of the program. start_code and end_code
+      specify the area in address space where the segment resides.
+
+（4） The pre-initialized data (variables supplied with a specific value at compilation time) are
+      located between start_data and end_data and are mapped from the corresponding seg-
+      ment of the executable file.
+（5）The heap used for dynamic memory allocation is placed in virtual address space; start_brk
+     and brk specify its boundaries.
+（6）The position of the stack is defined by start_stack; the stack grows downward automati-
+     cally on nearly all machines. The only exception is currently PA-Risc. The inverse direction
+     of stack growth must be noted by the architecture by setting the configuration symbol
+     STACK_GROWSUP.
+
+（7）The program arguments and the environment are mapped into the virtual address space
+     and are located between arg_start and arg_end and env_start and env_end, respec-
+     tively.
+回到do_execve_common（）中，在search_binary_handler后，做收尾工作：
+-->
+
+<h3 id="内存复制">内存复制</h3>
+
+<p>在调用 <code>fork()</code> 函数时，会通过 <code>copy_mm()</code> 复制父进程的内存描述符，子进程通过 <code>allcote_mm()</code> 从高速缓存中分配 <code>struct mm_struct</code> 得到。通常，每个进程都有唯一的 <code>struct mm_struct</code>，即唯一的进程地址空间。</p>
+
+<p>当子进程与父进程是共享地址空间，可调用 <code>clone()</code> 此时不再调用 <code>allcote_mm()</code>，而是仅仅是将 mm 域指向父进程的 mm ，即 <code>task-&gt;mm = current-&gt;mm</code> 。</p>
+
+<!--
+相反地，撤销内存是exit_mm()函数，该函数会进行常规的撤销工作，更新一些统计量。
+内核线程
+    没有进程地址空间，即内核线程对应的进程描述符中mm=NULL
+    内核线程直接使用前一个进程的内存描述符，仅仅使用地址空间中和内核内存相关的信息
+-->
+
+<h2 id="参考">参考</h2>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/python-descriptor_init.html" title="Python 修饰符 (Descriptor)">&larr; Older</a></li> 
+         <li class="next"><a href="/post/network-loopback_init.html" title="Linux 中的 loopback 设备">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1411747200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/kernel-memory-management-from-userspace-view.html" data-title="内存-用户空间" data-url="/post/kernel-memory-management-from-userspace-view.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

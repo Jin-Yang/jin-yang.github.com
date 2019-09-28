@@ -1,0 +1,2521 @@
+From: <Saved by Blink>
+Subject: BashPitfalls
+Date: Sun, 18 Jun 2016 10:27:22 -0000
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--hDQuimNxZYaPAOLfnkZBnv7Gd00iqwIUl6B23COrfk----"
+
+------MultipartBoundary--hDQuimNxZYaPAOLfnkZBnv7Gd00iqwIUl6B23COrfk----
+Content-Type: text/html
+Content-ID: <frame-10-30B03989-16E9-4D05-9A60-F0B26D6B1D14@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://bash.cumulonim.biz/BashPitfalls.html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/htm=
+l4/strict.dtd"><html><head><meta http-equiv=3D"Content-Type" content=3D"tex=
+t/html; charset=3DUTF-8">
+
+<title>BashPitfalls</title>
+<link rel=3D"stylesheet" type=3D"text/css" media=3D"all" charset=3D"utf-8" =
+href=3D"http://bash.cumulonim.biz/modernized/css/common.css">
+<link rel=3D"stylesheet" type=3D"text/css" media=3D"screen" charset=3D"utf-=
+8" href=3D"http://bash.cumulonim.biz/modernized/css/screen.css">
+<link rel=3D"stylesheet" type=3D"text/css" media=3D"print" charset=3D"utf-8=
+" href=3D"http://bash.cumulonim.biz/modernized/css/print.css">
+<style type=3D"text/css">
+ul.pagetitle{
+  display: inline;
+  margin: 0;
+  padding: 0;
+  font-size: 1.5em;
+}
+li.pagetitle{
+  display: inline;
+  margin: 0;
+}
+td.noborder {
+  border: 0;
+}
+</style>
+</head>
+<body>
+<table>
+<tbody><tr>
+<td class=3D"noborder">
+<img src=3D"http://bash.cumulonim.biz/logo.png">
+</td>
+<td class=3D"noborder">
+<ul class=3D"pagetitle">
+<li class=3D"pagetitle"><a class=3D"backlink">BashPitfalls</a>
+</li></ul>
+<br><br>
+[<a href=3D"http://bash.cumulonim.biz/EnglishFrontPage.html">EnglishFrontPa=
+ge</a>]&nbsp;[<a href=3D"http://bash.cumulonim.biz/TitleIndex.html">TitleIn=
+dex</a>]&nbsp;[<a href=3D"http://bash.cumulonim.biz/WordIndex.html">WordInd=
+ex</a>]&nbsp;
+</td>
+</tr>
+</tbody></table>
+<hr>
+<div id=3D"page">
+<div dir=3D"ltr" id=3D"content" lang=3D"en"><span class=3D"anchor" id=3D"to=
+p"></span>
+<span class=3D"anchor" id=3D"line-1"></span><span class=3D"anchor" id=3D"li=
+ne-2"></span><span class=3D"anchor" id=3D"line-3"></span><p class=3D"line86=
+7">
+</p><h1 id=3D"Bash_Pitfalls">Bash Pitfalls</h1>
+<span class=3D"anchor" id=3D"line-4"></span><span class=3D"anchor" id=3D"li=
+ne-5"></span><p class=3D"line874">This page shows common errors that Bash p=
+rogrammers make. The following examples are all flawed in some way: <span c=
+lass=3D"anchor" id=3D"line-6"></span><span class=3D"anchor" id=3D"line-7"><=
+/span></p><p class=3D"line867"></p><div class=3D"table-of-contents"><p clas=
+s=3D"table-of-contents-heading">Contents</p><ol><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#for_i_in_.24.28ls_.2=
+A.mp3.29">for i in $(ls *.mp3)</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#cp_.24file_.24target=
+">cp $file $target</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#Filenames_with_leadi=
+ng_dashes">Filenames with leading dashes</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#A.5B_.24foo_.3D_.22b=
+ar.22_.5D">[ $foo =3D "bar" ]</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#cd_.24.28dirname_.22=
+.24f.22.29">cd $(dirname "$f")</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#A.5B_.22.24foo.22_.3=
+D_bar_.26.26_.22.24bar.22_.3D_foo_.5D">[ "$foo" =3D bar &amp;&amp; "$bar" =
+=3D foo ]</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#A.5B.5B_.24foo_.3E_7=
+_.5D.5D">[[ $foo &gt; 7 ]]</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#grep_foo_bar_.7C_whi=
+le_read_-r.3B_do_.28.28count.2B-.2B-.29.29.3B_done">grep foo bar | while re=
+ad -r; do ((count++)); done</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#if_.5Bgrep_foo_myfil=
+e.5D">if [grep foo myfile]</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#if_.5Bbar.3D.22.24fo=
+o.22.5D">if [bar=3D"$foo"]</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#if_.5B_.5B_a_.3D_b_.=
+5D_.26.26_.5B_c_.3D_d_.5D_.5D">if [ [ a =3D b ] &amp;&amp; [ c =3D d ] ]</a=
+></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#read_.24foo">read $f=
+oo</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#cat_file_.7C_sed_s.2=
+BAC8-foo.2BAC8-bar.2BAC8_.3E_file">cat file | sed s/foo/bar/ &gt; file</a><=
+/li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#echo_.24foo">echo $f=
+oo</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#A.24foo.3Dbar">$foo=
+=3Dbar</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#foo_.3D_bar">foo =3D=
+ bar</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#echo_.3C.3CEOF">echo=
+ &lt;&lt;EOF</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#su_-c_.27some_comman=
+d.27">su -c 'some command'</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#cd_.2BAC8-foo.3B_bar=
+">cd /foo; bar</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#A.5B_bar_.3D.3D_.22.=
+24foo.22_.5D">[ bar =3D=3D "$foo" ]</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#for_i_in_.7B1..10.7D=
+.3B_do_..2BAC8-something_.26.3B_done">for i in {1..10}; do ./something &amp=
+;; done</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#cmd1_.26.26_cmd2_.7C=
+.7C_cmd3">cmd1 &amp;&amp; cmd2 || cmd3</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#echo_.22Hello_World.=
+21.22">echo "Hello World!"</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#for_arg_in_.24.2A">f=
+or arg in $*</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#function_foo.28.29">=
+function foo()</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#echo_.22.2BAH4.22">e=
+cho "~"</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#local_varname.3D.24.=
+28command.29">local varname=3D$(command)</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#export_foo.3D.2BAH4A=
+Lw-bar">export foo=3D~/bar</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#sed_.27s.2BAC8.24foo=
+.2BAC8-good_bye.2BAC8.27">sed 's/$foo/good bye/'</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#tr_.5BA-Z.5D_.5Ba-z.=
+5D">tr [A-Z] [a-z]</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#ps_ax_.7C_grep_gedit=
+">ps ax | grep gedit</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#printf_.22.24foo.22"=
+>printf "$foo"</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#for_i_in_.7B1...24n.=
+7D">for i in {1..$n}</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#if_.5B.5B_.24foo_.3D=
+_.24bar_.5D.5D_.28depending_on_intent.29">if [[ $foo =3D $bar ]] (depending=
+ on intent)</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#if_.5B.5B_.24foo_.3D=
+.2BAH4_.27some_RE.27_.5D.5D">if [[ $foo =3D~ 'some RE' ]]</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#A.5B_-n_.24foo_.5D_o=
+r_.5B_-z_.24foo_.5D">[ -n $foo ] or [ -z $foo ]</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#A.5B.5B_-e_.22.24bro=
+ken_symlink.22_.5D.5D_returns_1_even_though_.24broken_symlink_exists">[[ -e=
+ "$broken_symlink" ]] returns 1 even though $broken_symlink exists</a></li>=
+<li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#ed_file_.3C.3C.3C.22=
+g.2BAC8-d.2BAFw.7B0.2C3.2BAFw.7D.2BAC8-s.2BAC8ALw-e.2BAC8-g.22_fails">ed fi=
+le &lt;&lt;&lt;"g/d\{0,3\}/s//e/g" fails</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#expr_sub-string_fail=
+s_for_.22match.22">expr sub-string fails for "match"</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#On_UTF-8_and_Byte-Or=
+der_Marks_.28BOM.29">On UTF-8 and Byte-Order Marks (BOM)</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#content.3D.24.28.3Cf=
+ile.29">content=3D$(&lt;file)</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#for_file_in_..2BAC8.=
+2A_.3B_do_if_.5B.5B_.24file_.21.3D_.2A..2A_.5D.5D">for file in ./* ; do if =
+[[ $file !=3D *.* ]]</a></li><li>
+<a href=3D"http://bash.cumulonim.biz/BashPitfalls.html#somecmd_2.3E.261_.3E=
+logfile">somecmd 2&gt;&amp;1 &gt;logfile</a></li></ol></div> <span class=3D=
+"anchor" id=3D"line-8"></span><span class=3D"anchor" id=3D"line-9"></span><=
+p class=3D"line867"><span class=3D"anchor" id=3D"pf1"></span> <span class=
+=3D"anchor" id=3D"line-10"></span>
+</p><h2 id=3D"for_i_in_.24.28ls_.2A.mp3.29">1. for i in $(ls *.mp3)</h2>
+<span class=3D"anchor" id=3D"line-11"></span><span class=3D"anchor" id=3D"l=
+ine-12"></span><p class=3D"line862">One of the most common mistakes <a href=
+=3D"http://bash.cumulonim.biz/BASH.html">BASH</a> programmers make is to wr=
+ite a loop like this: <span class=3D"anchor" id=3D"line-13"></span><span cl=
+ass=3D"anchor" id=3D"line-14"></span></p><ul><li style=3D"list-style-type:n=
+one"><span class=3D"anchor" id=3D"line-15"></span><span class=3D"anchor" id=
+=3D"line-16"></span><span class=3D"anchor" id=3D"line-17"></span><span clas=
+s=3D"anchor" id=3D"line-18"></span><span class=3D"anchor" id=3D"line-19"></=
+span><span class=3D"anchor" id=3D"line-20"></span><span class=3D"anchor" id=
+=3D"line-21"></span><span class=3D"anchor" id=3D"line-22"></span><span clas=
+s=3D"anchor" id=3D"line-23"></span><span class=3D"anchor" id=3D"line-24"></=
+span><pre><span class=3D"anchor" id=3D"line-1"></span> for i in $(ls *.mp3)=
+; do    # Wrong!
+<span class=3D"anchor" id=3D"line-2"></span>    some command $i          # =
+Wrong!
+<span class=3D"anchor" id=3D"line-3"></span> done
+<span class=3D"anchor" id=3D"line-4"></span>
+<span class=3D"anchor" id=3D"line-5"></span> for i in $(ls)              # =
+Wrong!
+<span class=3D"anchor" id=3D"line-6"></span> for i in `ls`               # =
+Wrong!
+<span class=3D"anchor" id=3D"line-7"></span>
+<span class=3D"anchor" id=3D"line-8"></span> for i in $(find . -type f)  # =
+Wrong!
+<span class=3D"anchor" id=3D"line-9"></span> for i in `find . -type f`   # =
+Wrong!</pre><span class=3D"anchor" id=3D"line-25"></span><span class=3D"anc=
+hor" id=3D"line-26"></span></li></ul><p class=3D"line862">Never use a <a hr=
+ef=3D"http://bash.cumulonim.biz/CommandSubstitution.html">CommandSubstituti=
+on</a> -- of EITHER kind! -- around something that writes out filenames. <s=
+pan class=3D"anchor" id=3D"line-27"></span><span class=3D"anchor" id=3D"lin=
+e-28"></span></p><p class=3D"line862">Why?  This <a href=3D"http://bash.cum=
+ulonim.biz/ParsingLs.html">breaks</a> when a file has a space in its name. =
+ Why?  Because the output of the <tt class=3D"backtick">$(ls&nbsp;*.mp3)</t=
+t> command substitution undergoes <a href=3D"http://bash.cumulonim.biz/Word=
+Splitting.html">WordSplitting</a>.  Assuming we have a file named <tt>01&nb=
+sp;-&nbsp;Don't&nbsp;Eat&nbsp;the&nbsp;Yellow&nbsp;Snow.mp3</tt> in the cur=
+rent directory, the <tt>for</tt> loop will iterate over each word in the re=
+sulting file name: <span class=3D"anchor" id=3D"line-29"></span><span class=
+=3D"anchor" id=3D"line-30"></span></p><ul><li style=3D"list-style-type:none=
+"><span class=3D"anchor" id=3D"line-31"></span><span class=3D"anchor" id=3D=
+"line-32"></span><span class=3D"anchor" id=3D"line-33"></span><span class=
+=3D"anchor" id=3D"line-34"></span><span class=3D"anchor" id=3D"line-35"></s=
+pan><span class=3D"anchor" id=3D"line-36"></span><pre><span class=3D"anchor=
+" id=3D"line-1-1"></span> some command 01
+<span class=3D"anchor" id=3D"line-2-1"></span> some command -
+<span class=3D"anchor" id=3D"line-3-1"></span> some command Don't
+<span class=3D"anchor" id=3D"line-4-1"></span> some command Eat
+<span class=3D"anchor" id=3D"line-5-1"></span> ...</pre><span class=3D"anch=
+or" id=3D"line-37"></span><span class=3D"anchor" id=3D"line-38"></span></li=
+></ul><p class=3D"line874">You can't double-quote the substitution either: =
+<span class=3D"anchor" id=3D"line-39"></span><span class=3D"anchor" id=3D"l=
+ine-40"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"an=
+chor" id=3D"line-41"></span><span class=3D"anchor" id=3D"line-42"></span><p=
+re><span class=3D"anchor" id=3D"line-1-2"></span> for i in "$(ls *.mp3)"; d=
+o # Wrong!</pre><span class=3D"anchor" id=3D"line-43"></span><span class=3D=
+"anchor" id=3D"line-44"></span></li></ul><p class=3D"line862">This causes t=
+he entire output of the <tt>ls</tt> command to be treated as a single word.=
+  Instead of iterating once for each file name, the loop will only execute =
+<em>once</em>, with all the filenames rammed together. <span class=3D"ancho=
+r" id=3D"line-45"></span><span class=3D"anchor" id=3D"line-46"></span></p><=
+p class=3D"line862">In addition to this, the use of <tt>ls</tt> is just pla=
+in unnecessary. It's an external command, which simply isn't needed to do t=
+he job. So, what's the right way to do it? <span class=3D"anchor" id=3D"lin=
+e-47"></span><span class=3D"anchor" id=3D"line-48"></span></p><ul><li style=
+=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-49"></span><spa=
+n class=3D"anchor" id=3D"line-50"></span><span class=3D"anchor" id=3D"line-=
+51"></span><span class=3D"anchor" id=3D"line-52"></span><pre><span class=3D=
+"anchor" id=3D"line-1-3"></span> for i in *.mp3; do  # Better! and...
+<span class=3D"anchor" id=3D"line-2-2"></span>   some command "$i" # ...see=
+ Pitfall #2 for more info.
+<span class=3D"anchor" id=3D"line-3-2"></span> done</pre><span class=3D"anc=
+hor" id=3D"line-53"></span><span class=3D"anchor" id=3D"line-54"></span></l=
+i></ul><p class=3D"line862">Let Bash expand the list of filenames for you. =
+The expansion will <em>not</em> be subject to word splitting. Each filename=
+ that's matched by the <tt>*.mp3</tt> <a href=3D"http://bash.cumulonim.biz/=
+glob.html">glob</a> will be treated as a separate word, and the loop will i=
+terate once per filename. <span class=3D"anchor" id=3D"line-55"></span><spa=
+n class=3D"anchor" id=3D"line-56"></span></p><p class=3D"line874">Question:=
+ What to do if there are no files *.mp3-files in the current directory? The=
+n the for loop is executed once, with i=3D"*.mp3", which is not the expecte=
+d behaviour! <span class=3D"anchor" id=3D"line-57"></span><span class=3D"an=
+chor" id=3D"line-58"></span></p><ul><li style=3D"list-style-type:none">Chec=
+k the loop variable inside the loop: <span class=3D"anchor" id=3D"line-59">=
+</span><span class=3D"anchor" id=3D"line-60"></span><span class=3D"anchor" =
+id=3D"line-61"></span><span class=3D"anchor" id=3D"line-62"></span><span cl=
+ass=3D"anchor" id=3D"line-63"></span><span class=3D"anchor" id=3D"line-64">=
+</span><pre><span class=3D"anchor" id=3D"line-1-4"></span> for i in *.mp3; =
+do
+<span class=3D"anchor" id=3D"line-2-3"></span>   [[ -f "$i" ]] || continue
+<span class=3D"anchor" id=3D"line-3-3"></span>   some command "$i"
+<span class=3D"anchor" id=3D"line-4-2"></span> done</pre><span class=3D"anc=
+hor" id=3D"line-65"></span><span class=3D"anchor" id=3D"line-66"></span></l=
+i></ul><p class=3D"line867"><a href=3D"http://bash.cumulonim.biz/DontReadLi=
+nesWithFor.html">Reading lines of a file</a> with a <tt class=3D"backtick">=
+for</tt> loop is also wrong.  Doubly (or possibly triply) so if those lines=
+ are filenames. <span class=3D"anchor" id=3D"line-67"></span><span class=3D=
+"anchor" id=3D"line-68"></span></p><p class=3D"line862">Note the quotes aro=
+und <tt class=3D"backtick">$i</tt> in the loop body.  This leads to our sec=
+ond pitfall: <span class=3D"anchor" id=3D"line-69"></span><span class=3D"an=
+chor" id=3D"line-70"></span></p><p class=3D"line867"><span class=3D"anchor"=
+ id=3D"pf2"></span> <span class=3D"anchor" id=3D"line-71"></span>
+</p><h2 id=3D"cp_.24file_.24target">2. cp $file $target</h2>
+<span class=3D"anchor" id=3D"line-72"></span><span class=3D"anchor" id=3D"l=
+ine-73"></span><p class=3D"line862">What's wrong with the command shown abo=
+ve? Well, nothing, <strong>if</strong> you happen to know in advance that <=
+tt>$file</tt> and <tt>$target</tt> have no white space or wildcards in them=
+. <span class=3D"anchor" id=3D"line-74"></span><span class=3D"anchor" id=3D=
+"line-75"></span></p><p class=3D"line862">But if you don't know that in adv=
+ance, or if you're paranoid, or if you're just trying to develop good habit=
+s, then you should <a href=3D"http://bash.cumulonim.biz/Quotes.html">quote<=
+/a> your variable references to <em>avoid</em> having them undergo <a href=
+=3D"http://bash.cumulonim.biz/WordSplitting.html">WordSplitting</a>. <span =
+class=3D"anchor" id=3D"line-76"></span><span class=3D"anchor" id=3D"line-77=
+"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"anchor" =
+id=3D"line-78"></span><span class=3D"anchor" id=3D"line-79"></span><pre><sp=
+an class=3D"anchor" id=3D"line-1-5"></span> cp "$file" "$target"</pre><span=
+ class=3D"anchor" id=3D"line-80"></span><span class=3D"anchor" id=3D"line-8=
+1"></span></li></ul><p class=3D"line862">Without the double quotes, you'll =
+get a command like <tt>cp&nbsp;01&nbsp;-&nbsp;Don't&nbsp;Eat&nbsp;the&nbsp;=
+Yellow&nbsp;Snow.mp3&nbsp;/mnt/usb</tt> and then you'll get errors like <tt=
+>cp:&nbsp;cannot&nbsp;stat&nbsp;`01':&nbsp;No&nbsp;such&nbsp;file&nbsp;or&n=
+bsp;directory</tt>. If $file has wildcards in it (* or ? or [...]), they wi=
+ll be <a href=3D"http://bash.cumulonim.biz/glob.html">expanded</a> if there=
+ are files that match them. With the double quotes, all's well, unless "$fi=
+le" happens to start with a <tt>-</tt>, in which case <tt>cp</tt> thinks yo=
+u're trying to feed it command line options.... <span class=3D"anchor" id=
+=3D"line-82"></span><span class=3D"anchor" id=3D"line-83"></span></p><p cla=
+ss=3D"line867"><span class=3D"anchor" id=3D"pf3"></span> <span class=3D"anc=
+hor" id=3D"line-84"></span>
+</p><h2 id=3D"Filenames_with_leading_dashes">3. Filenames with leading dash=
+es</h2>
+<span class=3D"anchor" id=3D"line-85"></span><span class=3D"anchor" id=3D"l=
+ine-86"></span><p class=3D"line862">Filenames with leading dashes can cause=
+ many problems.  Globs like <tt class=3D"backtick">*.mp3</tt> are sorted in=
+to an expanded list (using your <a href=3D"http://bash.cumulonim.biz/locale=
+.html">locale</a>), and <tt class=3D"backtick">-</tt> sorts before letters =
+in most locales.  The list is then passed to some command, which incorrectl=
+y interprets the <tt class=3D"backtick">-filename</tt> as an option.  There=
+ are two major solutions to this. <span class=3D"anchor" id=3D"line-87"></s=
+pan><span class=3D"anchor" id=3D"line-88"></span></p><p class=3D"line862">O=
+ne solution is to insert <tt class=3D"backtick">--</tt> between the command=
+ (like <tt class=3D"backtick">cp</tt>) and its arguments. That tells it to =
+stop scanning for options, and all is well: <span class=3D"anchor" id=3D"li=
+ne-89"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"anc=
+hor" id=3D"line-90"></span><span class=3D"anchor" id=3D"line-91"></span><pr=
+e><span class=3D"anchor" id=3D"line-1-6"></span> cp -- "$file" "$target"</p=
+re><span class=3D"anchor" id=3D"line-92"></span><span class=3D"anchor" id=
+=3D"line-93"></span></li></ul><p class=3D"line862">The problem with this ap=
+proach is that you have to insert this disabling for <em>every</em> command=
+ - which is easy to forget - and that not all commands support <tt class=3D=
+"backtick">--</tt>.  For example, <tt class=3D"backtick">echo</tt> doesn't =
+support <tt class=3D"backtick">--</tt>. <span class=3D"anchor" id=3D"line-9=
+4"></span><span class=3D"anchor" id=3D"line-95"></span></p><p class=3D"line=
+874">Another solution is to ensure that your filenames always begin with a =
+directory (including . for the current directory, if appropriate). For exam=
+ple, if we're in some sort of loop: <span class=3D"anchor" id=3D"line-96"><=
+/span><span class=3D"anchor" id=3D"line-97"></span></p><ul><li style=3D"lis=
+t-style-type:none"><span class=3D"anchor" id=3D"line-98"></span><span class=
+=3D"anchor" id=3D"line-99"></span><span class=3D"anchor" id=3D"line-100"></=
+span><span class=3D"anchor" id=3D"line-101"></span><pre><span class=3D"anch=
+or" id=3D"line-1-7"></span> for i in ./*.mp3; do
+<span class=3D"anchor" id=3D"line-2-4"></span>   cp "$i" /target
+<span class=3D"anchor" id=3D"line-3-4"></span>   ...</pre><span class=3D"an=
+chor" id=3D"line-102"></span><span class=3D"anchor" id=3D"line-103"></span>=
+</li></ul><p class=3D"line862">In this case, even if we have a file whose n=
+ame begins with <tt class=3D"backtick">-</tt>, the glob will ensure that th=
+e variable always contains something like <tt class=3D"backtick">./-foo.mp3=
+</tt>, which is perfectly safe as far as <tt class=3D"backtick">cp</tt> is =
+concerned. <span class=3D"anchor" id=3D"line-104"></span><span class=3D"anc=
+hor" id=3D"line-105"></span></p><p class=3D"line867"><span class=3D"anchor"=
+ id=3D"pf4"></span> <span class=3D"anchor" id=3D"line-106"></span>
+</p><h2 id=3D"A.5B_.24foo_.3D_.22bar.22_.5D">4. [ $foo =3D "bar" ]</h2>
+<span class=3D"anchor" id=3D"line-107"></span><span class=3D"anchor" id=3D"=
+line-108"></span><p class=3D"line862">This is very similar to the issue in =
+pitfall #2, but I repeat it because it's <em>so</em> important. In the exam=
+ple above, the <a href=3D"http://bash.cumulonim.biz/Quotes.html">quotes</a>=
+ are in the wrong place. You do <em>not</em> need to quote a string literal=
+ in bash (unless it contains metacharacters). But you <em>should</em> quote=
+ your variables if you aren't sure whether they could contain white space o=
+r wildcards. <span class=3D"anchor" id=3D"line-109"></span><span class=3D"a=
+nchor" id=3D"line-110"></span></p><p class=3D"line874">This breaks for two =
+reasons: <span class=3D"anchor" id=3D"line-111"></span><span class=3D"ancho=
+r" id=3D"line-112"></span></p><ul><li><p class=3D"line862">If a variable re=
+ferenced in <tt>[</tt> does not exist, or is blank, then the <tt>[</tt> com=
+mand would see the line: <span class=3D"anchor" id=3D"line-113"></span><spa=
+n class=3D"anchor" id=3D"line-114"></span></p><ul><li style=3D"list-style-t=
+ype:none"><span class=3D"anchor" id=3D"line-115"></span><span class=3D"anch=
+or" id=3D"line-116"></span><pre><span class=3D"anchor" id=3D"line-1-8"></sp=
+an>  [ $foo =3D "bar" ]</pre><span class=3D"anchor" id=3D"line-117"></span>=
+<span class=3D"anchor" id=3D"line-118"></span></li></ul></li><li class=3D"g=
+ap" style=3D"list-style-type:none">.. as: <span class=3D"anchor" id=3D"line=
+-119"></span><span class=3D"anchor" id=3D"line-120"></span><ul><li style=3D=
+"list-style-type:none"><span class=3D"anchor" id=3D"line-121"></span><span =
+class=3D"anchor" id=3D"line-122"></span><pre><span class=3D"anchor" id=3D"l=
+ine-1-9"></span>  [ =3D "bar" ]</pre><span class=3D"anchor" id=3D"line-123"=
+></span><span class=3D"anchor" id=3D"line-124"></span></li></ul></li><li cl=
+ass=3D"gap" style=3D"list-style-type:none"><p class=3D"line862">.. and thro=
+w the error <tt>unary&nbsp;operator&nbsp;expected</tt>. (The <tt>=3D</tt> o=
+perator is <em>binary</em>, not unary, so the <tt>[</tt> command is rather =
+shocked to see it there.) <span class=3D"anchor" id=3D"line-125"></span><sp=
+an class=3D"anchor" id=3D"line-126"></span></p></li><li class=3D"gap"><p cl=
+ass=3D"line862">If the variable contains internal whitespace, then it's <a =
+href=3D"http://bash.cumulonim.biz/WordSplitting.html">split into separate w=
+ords</a>, before the <tt>[</tt> command sees it. Thus: <span class=3D"ancho=
+r" id=3D"line-127"></span><span class=3D"anchor" id=3D"line-128"></span></p=
+><ul><li style=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-1=
+29"></span><span class=3D"anchor" id=3D"line-130"></span><pre><span class=
+=3D"anchor" id=3D"line-1-10"></span>  [ multiple words here =3D "bar" ]</pr=
+e><span class=3D"anchor" id=3D"line-131"></span><span class=3D"anchor" id=
+=3D"line-132"></span></li></ul><p class=3D"line862">While that may look OK =
+to you, it's a syntax error as far as <tt>[</tt> is concerned. <span class=
+=3D"anchor" id=3D"line-133"></span><span class=3D"anchor" id=3D"line-134"><=
+/span></p></li></ul><p class=3D"line874">A more correct way to write this w=
+ould be: <span class=3D"anchor" id=3D"line-135"></span><span class=3D"ancho=
+r" id=3D"line-136"></span></p><ul><li style=3D"list-style-type:none"><span =
+class=3D"anchor" id=3D"line-137"></span><span class=3D"anchor" id=3D"line-1=
+38"></span><pre><span class=3D"anchor" id=3D"line-1-11"></span> [ "$foo" =
+=3D bar ] # Pretty close!</pre><span class=3D"anchor" id=3D"line-139"></spa=
+n><span class=3D"anchor" id=3D"line-140"></span></li></ul><p class=3D"line8=
+62">This works fine in POSIX-conformant systems even if <tt>$foo</tt> begin=
+s with a <tt>-</tt>, since POSIX <tt>[</tt> determines its action depending=
+ on the number of arguments passed to it.  On ancient shells, however, it m=
+ight still cause an error. <span class=3D"anchor" id=3D"line-141"></span><s=
+pan class=3D"anchor" id=3D"line-142"></span></p><p class=3D"line862">In bas=
+h, the <a href=3D"http://bash.cumulonim.biz/BashFAQ(2f)031.html">[[ keyword=
+</a>, which embraces and extends the old <tt>test</tt> command (also known =
+as <tt>[</tt>), can also be used to solve the problem: <span class=3D"ancho=
+r" id=3D"line-143"></span><span class=3D"anchor" id=3D"line-144"></span></p=
+><ul><li style=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-1=
+45"></span><span class=3D"anchor" id=3D"line-146"></span><pre><span class=
+=3D"anchor" id=3D"line-1-12"></span> [[ $foo =3D bar ]] # Right!</pre><span=
+ class=3D"anchor" id=3D"line-147"></span><span class=3D"anchor" id=3D"line-=
+148"></span></li></ul><p class=3D"line862">You don't need to quote variable=
+ references on the left-hand side of <tt class=3D"backtick">=3D</tt> in <tt=
+ class=3D"backtick">[[&nbsp;]]</tt> because they don't undergo word splitti=
+ng, and even blank variables will be handled correctly. On the other hand, =
+quoting them won't hurt anything either. <span class=3D"anchor" id=3D"line-=
+149"></span><span class=3D"anchor" id=3D"line-150"></span></p><p class=3D"l=
+ine874">You may have seen code like this: <span class=3D"anchor" id=3D"line=
+-151"></span><span class=3D"anchor" id=3D"line-152"></span></p><ul><li styl=
+e=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-153"></span><s=
+pan class=3D"anchor" id=3D"line-154"></span><pre><span class=3D"anchor" id=
+=3D"line-1-13"></span>  [ x"$foo" =3D xbar ] # Also right!</pre><span class=
+=3D"anchor" id=3D"line-155"></span><span class=3D"anchor" id=3D"line-156"><=
+/span></li></ul><p class=3D"line862">The <tt>x"$foo"</tt> hack is required =
+for code that must run on ancient shells which lack <a href=3D"http://bash.=
+cumulonim.biz/BashFAQ(2f)031.html">[[</a>, and have a more primitive <tt>[<=
+/tt>, which gets confused if <tt>$foo</tt> begins with a <tt>-</tt>. But yo=
+u'll get <em>really</em> tired of having to explain that to everyone else. =
+<span class=3D"anchor" id=3D"line-157"></span><span class=3D"anchor" id=3D"=
+line-158"></span></p><p class=3D"line874">If one side is a constant, you co=
+uld just do it this way: <span class=3D"anchor" id=3D"line-159"></span><spa=
+n class=3D"anchor" id=3D"line-160"></span></p><ul><li style=3D"list-style-t=
+ype:none"><span class=3D"anchor" id=3D"line-161"></span><span class=3D"anch=
+or" id=3D"line-162"></span><pre><span class=3D"anchor" id=3D"line-1-14"></s=
+pan>  [ bar =3D "$foo" ] # Also right!</pre><span class=3D"anchor" id=3D"li=
+ne-163"></span><span class=3D"anchor" id=3D"line-164"></span></li></ul><p c=
+lass=3D"line862">Even on said older systems, <tt>[</tt> doesn't care whethe=
+r the token on the right hand side of the <tt>=3D</tt> begins with a <tt>-<=
+/tt>. It just uses it literally. It's just the left-hand side that needs ex=
+tra caution. <span class=3D"anchor" id=3D"line-165"></span><span class=3D"a=
+nchor" id=3D"line-166"></span></p><p class=3D"line867"><span class=3D"ancho=
+r" id=3D"pf5"></span> <span class=3D"anchor" id=3D"line-167"></span>
+</p><h2 id=3D"cd_.24.28dirname_.22.24f.22.29">5. cd $(dirname "$f")</h2>
+<span class=3D"anchor" id=3D"line-168"></span><span class=3D"anchor" id=3D"=
+line-169"></span><p class=3D"line862">This is mostly the same issue we've b=
+een discussing. As with a variable expansion, the result of a <a href=3D"ht=
+tp://bash.cumulonim.biz/CommandSubstitution.html">CommandSubstitution</a> u=
+ndergoes <a href=3D"http://bash.cumulonim.biz/WordSplitting.html">WordSplit=
+ting</a> and <a href=3D"http://bash.cumulonim.biz/glob.html">pathname expan=
+sion</a>. So you should quote it: <span class=3D"anchor" id=3D"line-170"></=
+span><span class=3D"anchor" id=3D"line-171"></span></p><ul><li style=3D"lis=
+t-style-type:none"><span class=3D"anchor" id=3D"line-172"></span><span clas=
+s=3D"anchor" id=3D"line-173"></span><pre><span class=3D"anchor" id=3D"line-=
+1-15"></span> cd "$(dirname "$f")"</pre><span class=3D"anchor" id=3D"line-1=
+74"></span><span class=3D"anchor" id=3D"line-175"></span></li></ul><p class=
+=3D"line862">What's not obvious here is how the <a href=3D"http://bash.cumu=
+lonim.biz/Quotes.html">quotes</a> nest. A C programmer reading this would e=
+xpect the first and second double-quotes to be grouped together; and then t=
+he third and fourth. But that's not the case in Bash. Bash treats the doubl=
+e-quotes <em>inside</em> the command substitution as one pair, and the doub=
+le-quotes <em>outside</em> the substitution as another pair. <span class=3D=
+"anchor" id=3D"line-176"></span><span class=3D"anchor" id=3D"line-177"></sp=
+an></p><p class=3D"line874">Another way of writing this: the parser treats =
+the command substitution as a "nesting level", and the quotes inside it are=
+ separate from the quotes outside it. <span class=3D"anchor" id=3D"line-178=
+"></span><span class=3D"anchor" id=3D"line-179"></span></p><p class=3D"line=
+867"><span class=3D"anchor" id=3D"pf6"></span> <span class=3D"anchor" id=3D=
+"line-180"></span>
+</p><h2 id=3D"A.5B_.22.24foo.22_.3D_bar_.26.26_.22.24bar.22_.3D_foo_.5D">6.=
+ [ "$foo" =3D bar &amp;&amp; "$bar" =3D foo ]</h2>
+<span class=3D"anchor" id=3D"line-181"></span><span class=3D"anchor" id=3D"=
+line-182"></span><p class=3D"line862">You can't use <tt>&amp;&amp;</tt> ins=
+ide the <a href=3D"http://bash.cumulonim.biz/BashFAQ(2f)031.html">old test =
+(or [) command</a>. The Bash parser sees <tt>&amp;&amp;</tt> outside of <tt=
+>[[&nbsp;]]</tt> or <tt>((&nbsp;))</tt> and breaks your command into <em>tw=
+o</em> commands, before and after the <tt>&amp;&amp;</tt>. Use one of these=
+ instead: <span class=3D"anchor" id=3D"line-183"></span><span class=3D"anch=
+or" id=3D"line-184"></span></p><ul><li style=3D"list-style-type:none"><span=
+ class=3D"anchor" id=3D"line-185"></span><span class=3D"anchor" id=3D"line-=
+186"></span><span class=3D"anchor" id=3D"line-187"></span><pre><span class=
+=3D"anchor" id=3D"line-1-16"></span> [ bar =3D "$foo" ] &amp;&amp; [ foo =
+=3D "$bar" ] # Right!
+<span class=3D"anchor" id=3D"line-2-5"></span> [[ $foo =3D bar &amp;&amp; $=
+bar =3D foo ]]       # Also right!</pre><span class=3D"anchor" id=3D"line-1=
+88"></span><span class=3D"anchor" id=3D"line-189"></span></li></ul><p class=
+=3D"line862">(Note that we reversed the constant and the variable inside <t=
+t>[</tt> for the reasons discussed in pitfall #4.)  The same thing applies =
+to <tt>||</tt>. Use <tt>[[</tt>, or use two <tt>[</tt> commands. <span clas=
+s=3D"anchor" id=3D"line-190"></span><span class=3D"anchor" id=3D"line-191">=
+</span></p><p class=3D"line874">Avoid this: <span class=3D"anchor" id=3D"li=
+ne-192"></span><span class=3D"anchor" id=3D"line-193"></span></p><ul><li st=
+yle=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-194"></span>=
+<span class=3D"anchor" id=3D"line-195"></span><pre><span class=3D"anchor" i=
+d=3D"line-1-17"></span> [ bar =3D "$foo" -a foo =3D "$bar" ]     # Not port=
+able.</pre><span class=3D"anchor" id=3D"line-196"></span><span class=3D"anc=
+hor" id=3D"line-197"></span></li></ul><p class=3D"line862">The problem with=
+ <tt class=3D"backtick">[&nbsp;A&nbsp;=3D&nbsp;B&nbsp;-a&nbsp;C&nbsp;=3D&nb=
+sp;D&nbsp;]</tt> (or <tt class=3D"backtick">-o</tt>) is that <a class=3D"ht=
+tp" href=3D"http://www.opengroup.org/onlinepubs/9699919799/utilities/test.h=
+tml">POSIX does not specify</a> the results of a <tt class=3D"backtick">tes=
+t</tt> or <tt class=3D"backtick">[</tt> command with more than 4 arguments.=
+  It probably works in most shells, but you can't count on it.  You should =
+use two <tt class=3D"backtick">test</tt> or <tt class=3D"backtick">[</tt> c=
+ommands with <tt class=3D"backtick">&amp;&amp;</tt> between them instead, i=
+f you have to write for POSIX shells.  If you have to write for Bourne, alw=
+ays use <tt class=3D"backtick">test</tt> instead of <tt class=3D"backtick">=
+[</tt>. <span class=3D"anchor" id=3D"line-198"></span><span class=3D"anchor=
+" id=3D"line-199"></span></p><p class=3D"line867"><span class=3D"anchor" id=
+=3D"pf7"></span> <span class=3D"anchor" id=3D"line-200"></span>
+</p><h2 id=3D"A.5B.5B_.24foo_.3E_7_.5D.5D">7. [[ $foo &gt; 7 ]]</h2>
+<span class=3D"anchor" id=3D"line-201"></span><span class=3D"anchor" id=3D"=
+line-202"></span><p class=3D"line862">The <a href=3D"http://bash.cumulonim.=
+biz/BashFAQ(2f)031.html">[[ command</a> should <em>not</em> be used for an =
+<a href=3D"http://bash.cumulonim.biz/ArithmeticExpression.html">ArithmeticE=
+xpression</a>. It should be used for strings only. If you want to do a nume=
+ric comparison, you should use <tt>((&nbsp;))</tt> instead: <span class=3D"=
+anchor" id=3D"line-203"></span><span class=3D"anchor" id=3D"line-204"></spa=
+n></p><ul><li style=3D"list-style-type:none"><span class=3D"anchor" id=3D"l=
+ine-205"></span><span class=3D"anchor" id=3D"line-206"></span><pre><span cl=
+ass=3D"anchor" id=3D"line-1-18"></span> ((foo &gt; 7))  # Right!</pre><span=
+ class=3D"anchor" id=3D"line-207"></span><span class=3D"anchor" id=3D"line-=
+208"></span></li></ul><p class=3D"line862">If you use the <tt>&gt;</tt> ope=
+rator inside <tt>[[&nbsp;]]</tt>, it's treated as a string comparison, <em>=
+not</em> an integer comparison. This may work sometimes, but it will fail w=
+hen you least expect it. If you use <tt>&gt;</tt> inside <tt>[&nbsp;]</tt>,=
+ it's even worse: it's an output redirection. You'll get a file named <tt>7=
+</tt> in your directory, and the test will succeed as long as <tt>$foo</tt>=
+ is not empty. <span class=3D"anchor" id=3D"line-209"></span><span class=3D=
+"anchor" id=3D"line-210"></span></p><p class=3D"line862">If you're developi=
+ng for a <a href=3D"http://bash.cumulonim.biz/BourneShell.html">BourneShell=
+</a> instead of bash, this is the historically correct version: <span class=
+=3D"anchor" id=3D"line-211"></span><span class=3D"anchor" id=3D"line-212"><=
+/span></p><ul><li style=3D"list-style-type:none"><span class=3D"anchor" id=
+=3D"line-213"></span><span class=3D"anchor" id=3D"line-214"></span><pre><sp=
+an class=3D"anchor" id=3D"line-1-19"></span> test $foo -gt 7  # Also right!=
+</pre><span class=3D"anchor" id=3D"line-215"></span><span class=3D"anchor" =
+id=3D"line-216"></span></li></ul><p class=3D"line862">Note that the <tt>tes=
+t&nbsp;...&nbsp;-gt</tt> command will fail in interesting ways if <tt>$foo<=
+/tt> is <a href=3D"http://bash.cumulonim.biz/BashFAQ(2f)054.html">not an in=
+teger</a>. Therefore, there's not much point in quoting it properly -- if i=
+t's got white space, or is empty, or is anything <em>other than</em> an int=
+eger, we're probably going to crash anyway. You'll need to validate your in=
+put in advance. <span class=3D"anchor" id=3D"line-217"></span><span class=
+=3D"anchor" id=3D"line-218"></span></p><p class=3D"line874">The double brac=
+kets support this syntax too: <span class=3D"anchor" id=3D"line-219"></span=
+><span class=3D"anchor" id=3D"line-220"></span></p><ul><li style=3D"list-st=
+yle-type:none"><span class=3D"anchor" id=3D"line-221"></span><span class=3D=
+"anchor" id=3D"line-222"></span><pre><span class=3D"anchor" id=3D"line-1-20=
+"></span> [[ $foo -gt 7 ]] # Also right!</pre><span class=3D"anchor" id=3D"=
+line-223"></span><span class=3D"anchor" id=3D"line-224"></span></li></ul><p=
+ class=3D"line862">But why use that when you could use <tt class=3D"backtic=
+k">((...))</tt> instead? <span class=3D"anchor" id=3D"line-225"></span><spa=
+n class=3D"anchor" id=3D"line-226"></span></p><p class=3D"line867"><span cl=
+ass=3D"anchor" id=3D"pf8"></span> <span class=3D"anchor" id=3D"line-227"></=
+span>
+</p><h2 id=3D"grep_foo_bar_.7C_while_read_-r.3B_do_.28.28count.2B-.2B-.29.2=
+9.3B_done">8. grep foo bar | while read -r; do ((count++)); done</h2>
+<span class=3D"anchor" id=3D"line-228"></span><span class=3D"anchor" id=3D"=
+line-229"></span><p class=3D"line862">The code above looks OK at first glan=
+ce, doesn't it? Sure, it's just a poor implementation of <tt>grep&nbsp;-c</=
+tt>, but it's intended as a simplistic example. So why doesn't it work? The=
+ variable <tt>count</tt> will be unchanged after the loop terminates (excep=
+t in Korn shell). This surprises almost every Bash developer at some point.=
+ <span class=3D"anchor" id=3D"line-230"></span><span class=3D"anchor" id=3D=
+"line-231"></span></p><p class=3D"line862">The reason this code does not wo=
+rk as expected is because each command in a pipeline is executed in a separ=
+ate <a href=3D"http://bash.cumulonim.biz/SubShell.html">SubShell</a>. The c=
+hanges to the <tt>count</tt> variable within the loop's subshell aren't ref=
+lected within the parent shell (the script). <span class=3D"anchor" id=3D"l=
+ine-232"></span><span class=3D"anchor" id=3D"line-233"></span></p><p class=
+=3D"line862">For workarounds for this, please see <a href=3D"http://bash.cu=
+mulonim.biz/BashFAQ(2f)024.html">Bash FAQ #24</a>.  It's a bit too long to =
+fit here. <span class=3D"anchor" id=3D"line-234"></span><span class=3D"anch=
+or" id=3D"line-235"></span></p><p class=3D"line867"><span class=3D"anchor" =
+id=3D"pf9"></span> <span class=3D"anchor" id=3D"line-236"></span>
+</p><h2 id=3D"if_.5Bgrep_foo_myfile.5D">9. if [grep foo myfile]</h2>
+<span class=3D"anchor" id=3D"line-237"></span><span class=3D"anchor" id=3D"=
+line-238"></span><p class=3D"line862">Many people are confused by the commo=
+n practice of using the <tt>[</tt> command <span class=3D"anchor" id=3D"lin=
+e-239"></span>after an <tt>if</tt>. They see this and convince themselves t=
+hat the <tt>[</tt> is <span class=3D"anchor" id=3D"line-240"></span>part of=
+ the <tt>if</tt> statement's syntax, just like parentheses are used in <spa=
+n class=3D"anchor" id=3D"line-241"></span>C's <tt>if</tt> statement. <span =
+class=3D"anchor" id=3D"line-242"></span><span class=3D"anchor" id=3D"line-2=
+43"></span></p><p class=3D"line862">However, that is <em>not</em> the case!=
+ <tt>[</tt> is a command, not a syntax marker <span class=3D"anchor" id=3D"=
+line-244"></span>for the <tt>if</tt> statement. It's equivalent to the <tt>=
+test</tt> command, except <span class=3D"anchor" id=3D"line-245"></span>tha=
+t the final argument must be a <tt>]</tt>.  For example: <span class=3D"anc=
+hor" id=3D"line-246"></span><span class=3D"anchor" id=3D"line-247"></span><=
+/p><ul><li style=3D"list-style-type:none"><span class=3D"anchor" id=3D"line=
+-248"></span><span class=3D"anchor" id=3D"line-249"></span><span class=3D"a=
+nchor" id=3D"line-250"></span><pre><span class=3D"anchor" id=3D"line-1-21">=
+</span> if [ false ]; then echo "HELP"; fi
+<span class=3D"anchor" id=3D"line-2-6"></span> if test "false"; then echo "=
+HELP"; fi</pre><span class=3D"anchor" id=3D"line-251"></span><span class=3D=
+"anchor" id=3D"line-252"></span></li></ul><p class=3D"line874">Are equivale=
+nt, checking that the string "false" is non-empty.  In both cases HELP will=
+ be printed, to the surprise of programmers from other languages. <span cla=
+ss=3D"anchor" id=3D"line-253"></span><span class=3D"anchor" id=3D"line-254"=
+></span></p><p class=3D"line862">The syntax of an <tt>if</tt> statement is:=
+ <span class=3D"anchor" id=3D"line-255"></span><span class=3D"anchor" id=3D=
+"line-256"></span></p><ul><li style=3D"list-style-type:none"><span class=3D=
+"anchor" id=3D"line-257"></span><span class=3D"anchor" id=3D"line-258"></sp=
+an><span class=3D"anchor" id=3D"line-259"></span><span class=3D"anchor" id=
+=3D"line-260"></span><span class=3D"anchor" id=3D"line-261"></span><span cl=
+ass=3D"anchor" id=3D"line-262"></span><span class=3D"anchor" id=3D"line-263=
+"></span><span class=3D"anchor" id=3D"line-264"></span><span class=3D"ancho=
+r" id=3D"line-265"></span><span class=3D"anchor" id=3D"line-266"></span><pr=
+e><span class=3D"anchor" id=3D"line-1-22"></span> if COMMANDS
+<span class=3D"anchor" id=3D"line-2-7"></span> then
+<span class=3D"anchor" id=3D"line-3-5"></span>   COMMANDS
+<span class=3D"anchor" id=3D"line-4-3"></span> elif COMMANDS   # optional
+<span class=3D"anchor" id=3D"line-5-2"></span> then
+<span class=3D"anchor" id=3D"line-6-1"></span>   COMMANDS
+<span class=3D"anchor" id=3D"line-7-1"></span> else            # optional
+<span class=3D"anchor" id=3D"line-8-1"></span>   COMMANDS
+<span class=3D"anchor" id=3D"line-9-1"></span> fi              # required</=
+pre><span class=3D"anchor" id=3D"line-267"></span><span class=3D"anchor" id=
+=3D"line-268"></span></li></ul><p class=3D"line862">There may be zero or mo=
+re optional <tt>elif</tt> sections, and one optional <span class=3D"anchor"=
+ id=3D"line-269"></span><tt>else</tt> section. Note: there <strong>is no [<=
+/strong> in the syntax! <span class=3D"anchor" id=3D"line-270"></span><span=
+ class=3D"anchor" id=3D"line-271"></span></p><p class=3D"line862">Once agai=
+n, <tt>[</tt> is a command. It takes arguments, and it produces an <span cl=
+ass=3D"anchor" id=3D"line-272"></span>exit code. It may produce error messa=
+ges. It does not, however, produce <span class=3D"anchor" id=3D"line-273"><=
+/span>any standard output. <span class=3D"anchor" id=3D"line-274"></span><s=
+pan class=3D"anchor" id=3D"line-275"></span></p><p class=3D"line862">The <t=
+t>if</tt> statement evaluates the first set of <tt>COMMANDS</tt> that are <=
+span class=3D"anchor" id=3D"line-276"></span>given to it (up until <tt>then=
+</tt>, as the first word of a new command). The <span class=3D"anchor" id=
+=3D"line-277"></span>exit code of the last command from that set determines=
+ whether the <tt>if</tt> <span class=3D"anchor" id=3D"line-278"></span>stat=
+ement will execute the <tt>COMMANDS</tt> that are in the <tt>then</tt> sect=
+ion, <span class=3D"anchor" id=3D"line-279"></span>or move on. <span class=
+=3D"anchor" id=3D"line-280"></span><span class=3D"anchor" id=3D"line-281"><=
+/span></p><p class=3D"line862">If you want to make a decision based on the =
+output of a <tt>grep</tt> command, <span class=3D"anchor" id=3D"line-282"><=
+/span>you do <em>not</em> need to enclose it in parentheses, brackets, back=
+ticks, or <span class=3D"anchor" id=3D"line-283"></span><em>any other</em> =
+syntax mark-up! Just use <tt class=3D"backtick">grep</tt> as the <tt>COMMAN=
+DS</tt> after the <span class=3D"anchor" id=3D"line-284"></span><tt>if</tt>=
+, like this: <span class=3D"anchor" id=3D"line-285"></span><span class=3D"a=
+nchor" id=3D"line-286"></span></p><ul><li style=3D"list-style-type:none"><s=
+pan class=3D"anchor" id=3D"line-287"></span><span class=3D"anchor" id=3D"li=
+ne-288"></span><span class=3D"anchor" id=3D"line-289"></span><span class=3D=
+"anchor" id=3D"line-290"></span><pre><span class=3D"anchor" id=3D"line-1-23=
+"></span> if grep foo myfile &gt;/dev/null; then
+<span class=3D"anchor" id=3D"line-2-8"></span> ...
+<span class=3D"anchor" id=3D"line-3-6"></span> fi</pre><span class=3D"ancho=
+r" id=3D"line-291"></span><span class=3D"anchor" id=3D"line-292"></span></l=
+i></ul><p class=3D"line874">Note that we discard the standard output of the=
+ grep (which would normally <span class=3D"anchor" id=3D"line-293"></span>i=
+nclude the matching line, if any), because we don't want to <em>see</em> it=
+ -- <span class=3D"anchor" id=3D"line-294"></span>we just want to know whet=
+her it's <em>there</em>. If the <tt>grep</tt> matches a <span class=3D"anch=
+or" id=3D"line-295"></span>line from <tt>myfile</tt>, then the exit code wi=
+ll be 0 (true), and the <tt>then</tt> <span class=3D"anchor" id=3D"line-296=
+"></span>part will be executed. Otherwise, if there is no matching line, th=
+e <span class=3D"anchor" id=3D"line-297"></span><tt>grep</tt> should return=
+ a non-zero exit code. <span class=3D"anchor" id=3D"line-298"></span><span =
+class=3D"anchor" id=3D"line-299"></span></p><p class=3D"line862">In recent =
+versions of <tt class=3D"backtick">grep</tt> you can use <tt>-q</tt> (quiet=
+) option to suppress stdout. <span class=3D"anchor" id=3D"line-300"></span>=
+<span class=3D"anchor" id=3D"line-301"></span></p><p class=3D"line867"><spa=
+n class=3D"anchor" id=3D"pf10"></span> <span class=3D"anchor" id=3D"line-30=
+2"></span>
+</p><h2 id=3D"if_.5Bbar.3D.22.24foo.22.5D">10. if [bar=3D"$foo"]</h2>
+<span class=3D"anchor" id=3D"line-303"></span><span class=3D"anchor" id=3D"=
+line-304"></span><ul><li style=3D"list-style-type:none"><span class=3D"anch=
+or" id=3D"line-305"></span><span class=3D"anchor" id=3D"line-306"></span><s=
+pan class=3D"anchor" id=3D"line-307"></span><pre><span class=3D"anchor" id=
+=3D"line-1-24"></span> if [bar=3D"$foo"]      # Wrong!
+<span class=3D"anchor" id=3D"line-2-9"></span> if [ bar=3D"$foo" ]    # Sti=
+ll wrong!</pre><span class=3D"anchor" id=3D"line-308"></span><span class=3D=
+"anchor" id=3D"line-309"></span></li></ul><p class=3D"line862">As we explai=
+ned in the previous example, <tt>[</tt> is a command. Just like with any ot=
+her command, Bash expects the command to be followed by a space, then the f=
+irst argument, then another space, etc. You can't just run things all toget=
+her without putting the spaces in! Here is the correct way: <span class=3D"=
+anchor" id=3D"line-310"></span><span class=3D"anchor" id=3D"line-311"></spa=
+n></p><ul><li style=3D"list-style-type:none"><span class=3D"anchor" id=3D"l=
+ine-312"></span><span class=3D"anchor" id=3D"line-313"></span><pre><span cl=
+ass=3D"anchor" id=3D"line-1-25"></span> if [ bar =3D "$foo" ]</pre><span cl=
+ass=3D"anchor" id=3D"line-314"></span><span class=3D"anchor" id=3D"line-315=
+"></span></li></ul><p class=3D"line862">Each of <tt>bar</tt>, <tt>=3D</tt>,=
+ the value of <tt>$foo</tt> (after substitution, but without <a href=3D"htt=
+p://bash.cumulonim.biz/WordSplitting.html">WordSplitting</a>) and <tt>]</tt=
+> is a separate <a href=3D"http://bash.cumulonim.biz/Arguments.html">argume=
+nt</a> to the <tt>[</tt> command. There must be whitespace between each pai=
+r of arguments, so the shell knows where each argument begins and ends. <sp=
+an class=3D"anchor" id=3D"line-316"></span><span class=3D"anchor" id=3D"lin=
+e-317"></span></p><p class=3D"line867"><span class=3D"anchor" id=3D"pf11"><=
+/span> <span class=3D"anchor" id=3D"line-318"></span>
+</p><h2 id=3D"if_.5B_.5B_a_.3D_b_.5D_.26.26_.5B_c_.3D_d_.5D_.5D">11. if [ [=
+ a =3D b ] &amp;&amp; [ c =3D d ] ]</h2>
+<span class=3D"anchor" id=3D"line-319"></span><span class=3D"anchor" id=3D"=
+line-320"></span><p class=3D"line862">Here we go again. <tt>[</tt> is a <em=
+>command</em>. It is not a syntactic marker that sits between <tt>if</tt> a=
+nd some sort of C-like "condition". Nor is it used for grouping. You cannot=
+ take C-like <tt>if</tt> commands and translate them into Bash commands jus=
+t by replacing parentheses with square brackets! <span class=3D"anchor" id=
+=3D"line-321"></span><span class=3D"anchor" id=3D"line-322"></span></p><p c=
+lass=3D"line874">If you want to express a compound conditional, do this: <s=
+pan class=3D"anchor" id=3D"line-323"></span><span class=3D"anchor" id=3D"li=
+ne-324"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"an=
+chor" id=3D"line-325"></span><span class=3D"anchor" id=3D"line-326"></span>=
+<pre><span class=3D"anchor" id=3D"line-1-26"></span> if [ a =3D b ] &amp;&a=
+mp; [ c =3D d ]</pre><span class=3D"anchor" id=3D"line-327"></span><span cl=
+ass=3D"anchor" id=3D"line-328"></span></li></ul><p class=3D"line862">Note t=
+hat here we have two <em>commands</em> after the <tt>if</tt>, joined by an =
+<tt>&amp;&amp;</tt> (logical AND, shortcut evaluation) operator. It's preci=
+sely the same as: <span class=3D"anchor" id=3D"line-329"></span><span class=
+=3D"anchor" id=3D"line-330"></span></p><ul><li style=3D"list-style-type:non=
+e"><span class=3D"anchor" id=3D"line-331"></span><span class=3D"anchor" id=
+=3D"line-332"></span><pre><span class=3D"anchor" id=3D"line-1-27"></span> i=
+f test a =3D b &amp;&amp; test c =3D d</pre><span class=3D"anchor" id=3D"li=
+ne-333"></span><span class=3D"anchor" id=3D"line-334"></span></li></ul><p c=
+lass=3D"line862">If the first <tt>test</tt> command returns false, the body=
+ of the <tt>if</tt> statement is not entered. If it returns true, then the =
+second <tt>test</tt> command is run; and if that also one returns true, the=
+n the body of the <tt>if</tt> statement <em>will</em> be entered.  (C progr=
+ammers are already familiar with <tt class=3D"backtick">&amp;&amp;</tt>.  B=
+ash uses the same <em>short-circuit evaluation</em>.  Likewise <tt class=3D=
+"backtick">||</tt> does short-circuit evaluation for the <em>OR</em> operat=
+ion.) <span class=3D"anchor" id=3D"line-335"></span><span class=3D"anchor" =
+id=3D"line-336"></span></p><p class=3D"line862">The <a href=3D"http://bash.=
+cumulonim.biz/BashFAQ(2f)031.html">[[ keyword</a> <em>does</em> permit the =
+use of <tt class=3D"backtick">&amp;&amp;</tt>, so it could also be written =
+this way: <span class=3D"anchor" id=3D"line-337"></span><span class=3D"anch=
+or" id=3D"line-338"></span></p><ul><li style=3D"list-style-type:none"><span=
+ class=3D"anchor" id=3D"line-339"></span><span class=3D"anchor" id=3D"line-=
+340"></span><pre><span class=3D"anchor" id=3D"line-1-28"></span> if [[ a =
+=3D b &amp;&amp; c =3D d ]]</pre><span class=3D"anchor" id=3D"line-341"></s=
+pan><span class=3D"anchor" id=3D"line-342"></span></li></ul><p class=3D"lin=
+e867"><span class=3D"anchor" id=3D"pf12"></span> <span class=3D"anchor" id=
+=3D"line-343"></span>
+</p><h2 id=3D"read_.24foo">12. read $foo</h2>
+<span class=3D"anchor" id=3D"line-344"></span><span class=3D"anchor" id=3D"=
+line-345"></span><p class=3D"line862">You don't use a <tt class=3D"backtick=
+">$</tt> before the variable name in a <tt class=3D"backtick">read</tt> com=
+mand.  If you want to put data into the variable named <tt class=3D"backtic=
+k">foo</tt>, you do it like this: <span class=3D"anchor" id=3D"line-346"></=
+span><span class=3D"anchor" id=3D"line-347"></span></p><ul><li style=3D"lis=
+t-style-type:none"><span class=3D"anchor" id=3D"line-348"></span><span clas=
+s=3D"anchor" id=3D"line-349"></span><pre><span class=3D"anchor" id=3D"line-=
+1-29"></span> read foo</pre><span class=3D"anchor" id=3D"line-350"></span><=
+span class=3D"anchor" id=3D"line-351"></span></li></ul><p class=3D"line874"=
+>Or more safely: <span class=3D"anchor" id=3D"line-352"></span><span class=
+=3D"anchor" id=3D"line-353"></span></p><ul><li style=3D"list-style-type:non=
+e"><span class=3D"anchor" id=3D"line-354"></span><span class=3D"anchor" id=
+=3D"line-355"></span><pre><span class=3D"anchor" id=3D"line-1-30"></span> I=
+FS=3D read -r foo</pre><span class=3D"anchor" id=3D"line-356"></span><span =
+class=3D"anchor" id=3D"line-357"></span></li></ul><p class=3D"line867"><tt =
+class=3D"backtick">read&nbsp;$foo</tt> would read a line of input and put i=
+t in the variable(s) whose name(s) are in <tt class=3D"backtick">$foo</tt>.=
+  This might be useful if you actually intended <tt class=3D"backtick">foo<=
+/tt> to be a <a href=3D"http://bash.cumulonim.biz/BashFAQ(2f)006.html">refe=
+rence</a> to some other variable; but in the majority of cases, this is sim=
+ply a bug. <span class=3D"anchor" id=3D"line-358"></span><span class=3D"anc=
+hor" id=3D"line-359"></span></p><p class=3D"line867"><span class=3D"anchor"=
+ id=3D"pf13"></span> <span class=3D"anchor" id=3D"line-360"></span>
+</p><h2 id=3D"cat_file_.7C_sed_s.2BAC8-foo.2BAC8-bar.2BAC8_.3E_file">13. ca=
+t file | sed s/foo/bar/ &gt; file</h2>
+<span class=3D"anchor" id=3D"line-361"></span><span class=3D"anchor" id=3D"=
+line-362"></span><p class=3D"line862">You <strong>cannot</strong> read from=
+ a file and write to it in the same pipeline. Depending on what your pipeli=
+ne does, the file may be clobbered (to 0 bytes, or possibly to a number of =
+bytes equal to the size of your operating system's pipeline buffer), or it =
+may grow until it fills the available disk space, or reaches your operating=
+ system's file size limitation, or your quota, etc. <span class=3D"anchor" =
+id=3D"line-363"></span><span class=3D"anchor" id=3D"line-364"></span></p><p=
+ class=3D"line862">If you want to make a change to a file safely, other tha=
+n appending to the end of it, there <em>must</em> be a temporary file creat=
+ed at some point(*). For example, the following is completely portable: <sp=
+an class=3D"anchor" id=3D"line-365"></span><span class=3D"anchor" id=3D"lin=
+e-366"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"anc=
+hor" id=3D"line-367"></span><span class=3D"anchor" id=3D"line-368"></span><=
+pre><span class=3D"anchor" id=3D"line-1-31"></span> sed 's/foo/bar/g' file =
+&gt; tmpfile &amp;&amp; mv tmpfile file</pre><span class=3D"anchor" id=3D"l=
+ine-369"></span><span class=3D"anchor" id=3D"line-370"></span></li></ul><p =
+class=3D"line862">The following will <em>only</em> work on GNU sed 4.x: <sp=
+an class=3D"anchor" id=3D"line-371"></span><span class=3D"anchor" id=3D"lin=
+e-372"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"anc=
+hor" id=3D"line-373"></span><span class=3D"anchor" id=3D"line-374"></span><=
+pre><span class=3D"anchor" id=3D"line-1-32"></span> sed -i 's/foo/bar/g' fi=
+le(s)</pre><span class=3D"anchor" id=3D"line-375"></span><span class=3D"anc=
+hor" id=3D"line-376"></span></li></ul><p class=3D"line874">Note that this a=
+lso creates a temporary file, and does the same sort of renaming trickery -=
+- it just handles it transparently. <span class=3D"anchor" id=3D"line-377">=
+</span><span class=3D"anchor" id=3D"line-378"></span></p><p class=3D"line87=
+4">And the following equivalent command requires perl 5.x (which is probabl=
+y more widely available than GNU sed 4.x): <span class=3D"anchor" id=3D"lin=
+e-379"></span><span class=3D"anchor" id=3D"line-380"></span></p><ul><li sty=
+le=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-381"></span><=
+span class=3D"anchor" id=3D"line-382"></span><pre><span class=3D"anchor" id=
+=3D"line-1-33"></span> perl -pi -e 's/foo/bar/g' file(s)</pre><span class=
+=3D"anchor" id=3D"line-383"></span><span class=3D"anchor" id=3D"line-384"><=
+/span></li></ul><p class=3D"line862">For more details on replacing contents=
+ of files, please see <a href=3D"http://bash.cumulonim.biz/BashFAQ(2f)021.h=
+tml">Bash FAQ #21</a>. <span class=3D"anchor" id=3D"line-385"></span><span =
+class=3D"anchor" id=3D"line-386"></span></p><p class=3D"line862">(*) <tt cl=
+ass=3D"backtick">sponge</tt> from <a class=3D"http" href=3D"http://packages=
+.debian.org/sid/moreutils">moreutils</a> uses this example in its manual: <=
+span class=3D"anchor" id=3D"line-387"></span><span class=3D"anchor" id=3D"l=
+ine-388"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"a=
+nchor" id=3D"line-389"></span><span class=3D"anchor" id=3D"line-390"></span=
+><pre><span class=3D"anchor" id=3D"line-1-34"></span> sed '...' file | grep=
+ '...' | sponge file</pre><span class=3D"anchor" id=3D"line-391"></span><sp=
+an class=3D"anchor" id=3D"line-392"></span></li></ul><p class=3D"line862">R=
+ather than using a temporary file plus an atomic <tt class=3D"backtick">mv<=
+/tt>, this version "soaks up" (the actual description in the manual!) all t=
+he data, before opening and writing to the <tt class=3D"backtick">file</tt>=
+.  This version will cause data loss if the system crashes during the write=
+ operation, because there's no copy of the original file on disk at that po=
+int.  Using a temporary file + <tt class=3D"backtick">mv</tt> ensures that =
+there is <em>always</em> at least one copy of the data on disk at all times=
+. <span class=3D"anchor" id=3D"line-393"></span><span class=3D"anchor" id=
+=3D"line-394"></span></p><p class=3D"line867"><span class=3D"anchor" id=3D"=
+pf14"></span> <span class=3D"anchor" id=3D"line-395"></span>
+</p><h2 id=3D"echo_.24foo">14. echo $foo</h2>
+<span class=3D"anchor" id=3D"line-396"></span><span class=3D"anchor" id=3D"=
+line-397"></span><p class=3D"line862">This relatively innocent-looking comm=
+and causes <em>massive</em> confusion. Because the <tt>$foo</tt> isn't <a h=
+ref=3D"http://bash.cumulonim.biz/Quotes.html">quoted</a>, it will not only =
+be subject to <a href=3D"http://bash.cumulonim.biz/WordSplitting.html">Word=
+Splitting</a>, but also file <a href=3D"http://bash.cumulonim.biz/glob.html=
+">globbing</a>. This misleads Bash programmers into thinking their variable=
+s <em>contain</em> the wrong values, when in fact the variables are OK -- i=
+t's just the word splitting or filename expansion that's messing up their v=
+iew of what's happening. <span class=3D"anchor" id=3D"line-398"></span></p>=
+<ul><li style=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-39=
+9"></span><span class=3D"anchor" id=3D"line-400"></span><span class=3D"anch=
+or" id=3D"line-401"></span><pre><span class=3D"anchor" id=3D"line-1-35"></s=
+pan> msg=3D"Please enter a file name of the form *.zip"
+<span class=3D"anchor" id=3D"line-2-10"></span> echo $msg</pre><span class=
+=3D"anchor" id=3D"line-402"></span><span class=3D"anchor" id=3D"line-403"><=
+/span></li></ul><p class=3D"line874">This message is split into words and a=
+ny globs are expanded, such as the *.zip. What will your users think when t=
+hey see this message: <span class=3D"anchor" id=3D"line-404"></span></p><ul=
+><li style=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-405">=
+</span><span class=3D"anchor" id=3D"line-406"></span><pre><span class=3D"an=
+chor" id=3D"line-1-36"></span> Please enter a file name of the form freenfs=
+s.zip lw35nfss.zip</pre><span class=3D"anchor" id=3D"line-407"></span><span=
+ class=3D"anchor" id=3D"line-408"></span></li></ul><p class=3D"line874">To =
+demonstrate: <span class=3D"anchor" id=3D"line-409"></span></p><ul><li styl=
+e=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-410"></span><s=
+pan class=3D"anchor" id=3D"line-411"></span><span class=3D"anchor" id=3D"li=
+ne-412"></span><span class=3D"anchor" id=3D"line-413"></span><pre><span cla=
+ss=3D"anchor" id=3D"line-1-37"></span> var=3D"*.zip"   # var contains an as=
+terisk, a period, and the word "zip"
+<span class=3D"anchor" id=3D"line-2-11"></span> echo "$var"   # writes *.zi=
+p
+<span class=3D"anchor" id=3D"line-3-7"></span> echo $var     # writes the l=
+ist of files which end with .zip</pre><span class=3D"anchor" id=3D"line-414=
+"></span><span class=3D"anchor" id=3D"line-415"></span></li></ul><p class=
+=3D"line862">In fact, the <tt class=3D"backtick">echo</tt> command cannot b=
+e used with absolute safety here. If the variable contains <tt class=3D"bac=
+ktick">-n</tt> for example, <tt class=3D"backtick">echo</tt> will consider =
+that an option, rather than data to be printed. The only absolutely <em>sur=
+e</em> way to print the value of a variable is using <tt class=3D"backtick"=
+>printf</tt>: <span class=3D"anchor" id=3D"line-416"></span></p><ul><li sty=
+le=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-417"></span><=
+span class=3D"anchor" id=3D"line-418"></span><pre><span class=3D"anchor" id=
+=3D"line-1-38"></span> printf "%s\n" "$foo"</pre><span class=3D"anchor" id=
+=3D"line-419"></span><span class=3D"anchor" id=3D"line-420"></span></li></u=
+l><p class=3D"line867"><span class=3D"anchor" id=3D"pf15"></span> <span cla=
+ss=3D"anchor" id=3D"line-421"></span>
+</p><h2 id=3D"A.24foo.3Dbar">15. $foo=3Dbar</h2>
+<span class=3D"anchor" id=3D"line-422"></span><span class=3D"anchor" id=3D"=
+line-423"></span><p class=3D"line862">No, you don't assign a variable by pu=
+tting a <tt>$</tt> in front of the variable name. This isn't perl. <span cl=
+ass=3D"anchor" id=3D"line-424"></span><span class=3D"anchor" id=3D"line-425=
+"></span></p><p class=3D"line867"><span class=3D"anchor" id=3D"pf16"></span=
+> <span class=3D"anchor" id=3D"line-426"></span>
+</p><h2 id=3D"foo_.3D_bar">16. foo =3D bar</h2>
+<span class=3D"anchor" id=3D"line-427"></span><span class=3D"anchor" id=3D"=
+line-428"></span><p class=3D"line862">No, you can't put spaces around the <=
+tt>=3D</tt> when assigning to a variable. This isn't C. When you write <tt>=
+foo&nbsp;=3D&nbsp;bar</tt> the shell splits it into three words. The first =
+word, <tt>foo</tt>, is taken as the command name. The second and third beco=
+me the arguments to that command. <span class=3D"anchor" id=3D"line-429"></=
+span><span class=3D"anchor" id=3D"line-430"></span></p><p class=3D"line874"=
+>Likewise, the following are also wrong: <span class=3D"anchor" id=3D"line-=
+431"></span><span class=3D"anchor" id=3D"line-432"></span></p><ul><li style=
+=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-433"></span><sp=
+an class=3D"anchor" id=3D"line-434"></span><span class=3D"anchor" id=3D"lin=
+e-435"></span><span class=3D"anchor" id=3D"line-436"></span><span class=3D"=
+anchor" id=3D"line-437"></span><span class=3D"anchor" id=3D"line-438"></spa=
+n><span class=3D"anchor" id=3D"line-439"></span><pre><span class=3D"anchor"=
+ id=3D"line-1-39"></span> foo=3D bar    # WRONG!
+<span class=3D"anchor" id=3D"line-2-12"></span> foo =3Dbar    # WRONG!
+<span class=3D"anchor" id=3D"line-3-8"></span> $foo =3D bar; # COMPLETELY W=
+RONG!
+<span class=3D"anchor" id=3D"line-4-4"></span>
+<span class=3D"anchor" id=3D"line-5-3"></span> foo=3Dbar     # Right.
+<span class=3D"anchor" id=3D"line-6-2"></span> foo=3D"bar"   # More Right.<=
+/pre><span class=3D"anchor" id=3D"line-440"></span><span class=3D"anchor" i=
+d=3D"line-441"></span></li></ul><p class=3D"line867"><span class=3D"anchor"=
+ id=3D"pf17"></span> <span class=3D"anchor" id=3D"line-442"></span>
+</p><h2 id=3D"echo_.3C.3CEOF">17. echo &lt;&lt;EOF</h2>
+<span class=3D"anchor" id=3D"line-443"></span><span class=3D"anchor" id=3D"=
+line-444"></span><p class=3D"line862">A here document is a useful tool for =
+embedding large blocks of textual data in a script. It causes a redirection=
+ of the lines of text in the script to the standard input of a command. Unf=
+ortunately, <tt>echo</tt> is not a command which reads from stdin. <span cl=
+ass=3D"anchor" id=3D"line-445"></span><span class=3D"anchor" id=3D"line-446=
+"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"anchor" =
+id=3D"line-447"></span><span class=3D"anchor" id=3D"line-448"></span><span =
+class=3D"anchor" id=3D"line-449"></span><span class=3D"anchor" id=3D"line-4=
+50"></span><span class=3D"anchor" id=3D"line-451"></span><span class=3D"anc=
+hor" id=3D"line-452"></span><span class=3D"anchor" id=3D"line-453"></span><=
+span class=3D"anchor" id=3D"line-454"></span><span class=3D"anchor" id=3D"l=
+ine-455"></span><span class=3D"anchor" id=3D"line-456"></span><span class=
+=3D"anchor" id=3D"line-457"></span><span class=3D"anchor" id=3D"line-458"><=
+/span><span class=3D"anchor" id=3D"line-459"></span><span class=3D"anchor" =
+id=3D"line-460"></span><span class=3D"anchor" id=3D"line-461"></span><span =
+class=3D"anchor" id=3D"line-462"></span><pre><span class=3D"anchor" id=3D"l=
+ine-1-40"></span>  # This is wrong:
+<span class=3D"anchor" id=3D"line-2-13"></span>  echo &lt;&lt;EOF
+<span class=3D"anchor" id=3D"line-3-9"></span>  Hello world
+<span class=3D"anchor" id=3D"line-4-5"></span>  How's it going?
+<span class=3D"anchor" id=3D"line-5-4"></span>  EOF
+<span class=3D"anchor" id=3D"line-6-3"></span>
+<span class=3D"anchor" id=3D"line-7-2"></span>  # This is what you were try=
+ing to do:
+<span class=3D"anchor" id=3D"line-8-2"></span>  cat &lt;&lt;EOF
+<span class=3D"anchor" id=3D"line-9-2"></span>  Hello world
+<span class=3D"anchor" id=3D"line-10"></span>  How's it going?
+<span class=3D"anchor" id=3D"line-11"></span>  EOF
+<span class=3D"anchor" id=3D"line-12"></span>
+<span class=3D"anchor" id=3D"line-13"></span>  # Or, use quotes which can s=
+pan multiple lines (efficient, echo is built-in):
+<span class=3D"anchor" id=3D"line-14"></span>  echo "Hello world
+<span class=3D"anchor" id=3D"line-15"></span>  How's it going?"</pre><span =
+class=3D"anchor" id=3D"line-463"></span><span class=3D"anchor" id=3D"line-4=
+64"></span></li></ul><p class=3D"line862">Using quotes like that is fine --=
+ it works great, in all shells -- but it doesn't let you just drop a block =
+of lines into the script.  There's syntactic markup on the first and last l=
+ine.  If you want to have your lines untouched by shell syntax, and don't w=
+ant to spawn a <tt class=3D"backtick">cat</tt> command, here's another alte=
+rnative: <span class=3D"anchor" id=3D"line-465"></span><span class=3D"ancho=
+r" id=3D"line-466"></span></p><ul><li style=3D"list-style-type:none"><span =
+class=3D"anchor" id=3D"line-467"></span><span class=3D"anchor" id=3D"line-4=
+68"></span><span class=3D"anchor" id=3D"line-469"></span><span class=3D"anc=
+hor" id=3D"line-470"></span><span class=3D"anchor" id=3D"line-471"></span><=
+span class=3D"anchor" id=3D"line-472"></span><pre><span class=3D"anchor" id=
+=3D"line-1-41"></span>  # Or use printf (also efficient, printf is built-in=
+):
+<span class=3D"anchor" id=3D"line-2-14"></span>  printf %s "\
+<span class=3D"anchor" id=3D"line-3-10"></span>  Hello world
+<span class=3D"anchor" id=3D"line-4-6"></span>  How's it going?
+<span class=3D"anchor" id=3D"line-5-5"></span>  "</pre><span class=3D"ancho=
+r" id=3D"line-473"></span><span class=3D"anchor" id=3D"line-474"></span></l=
+i></ul><p class=3D"line862">In the <tt class=3D"backtick">printf</tt> examp=
+le, the <tt class=3D"backtick">\</tt> on the first line prevents an extra n=
+ewline at the beginning of the text block.  There's a literal newline at th=
+e end (because the final quote is on a new line).  The lack of <tt class=3D=
+"backtick">\n</tt> in the printf format argument prevents <tt class=3D"back=
+tick">printf</tt> adding an extra newline at the end.  The <tt class=3D"bac=
+ktick">\</tt> trick won't work in single quotes.  If you need/want single q=
+uotes around the block of text, you have two choices, both of which necessi=
+tate shell syntax "contaminating" your data: <span class=3D"anchor" id=3D"l=
+ine-475"></span><span class=3D"anchor" id=3D"line-476"></span></p><ul><li s=
+tyle=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-477"></span=
+><span class=3D"anchor" id=3D"line-478"></span><span class=3D"anchor" id=3D=
+"line-479"></span><span class=3D"anchor" id=3D"line-480"></span><span class=
+=3D"anchor" id=3D"line-481"></span><span class=3D"anchor" id=3D"line-482"><=
+/span><span class=3D"anchor" id=3D"line-483"></span><pre><span class=3D"anc=
+hor" id=3D"line-1-42"></span>  printf %s \
+<span class=3D"anchor" id=3D"line-2-15"></span>  'Hello world
+<span class=3D"anchor" id=3D"line-3-11"></span>  '
+<span class=3D"anchor" id=3D"line-4-7"></span>
+<span class=3D"anchor" id=3D"line-5-6"></span>  printf %s 'Hello world
+<span class=3D"anchor" id=3D"line-6-4"></span>  '</pre><span class=3D"ancho=
+r" id=3D"line-484"></span><span class=3D"anchor" id=3D"line-485"></span></l=
+i></ul><p class=3D"line867"><span class=3D"anchor" id=3D"pf18"></span> <spa=
+n class=3D"anchor" id=3D"line-486"></span>
+</p><h2 id=3D"su_-c_.27some_command.27">18. su -c 'some command'</h2>
+<span class=3D"anchor" id=3D"line-487"></span><span class=3D"anchor" id=3D"=
+line-488"></span><p class=3D"line862">This syntax is <em>almost</em> correc=
+t. The problem is, on many platforms, <tt>su</tt> takes a <tt>-c</tt> argum=
+ent, but it's not the one you want. For example, on OpenBSD: <span class=3D=
+"anchor" id=3D"line-489"></span><span class=3D"anchor" id=3D"line-490"></sp=
+an></p><ul><li style=3D"list-style-type:none"><span class=3D"anchor" id=3D"=
+line-491"></span><span class=3D"anchor" id=3D"line-492"></span><span class=
+=3D"anchor" id=3D"line-493"></span><pre><span class=3D"anchor" id=3D"line-1=
+-43"></span> $ su -c 'echo hello'
+<span class=3D"anchor" id=3D"line-2-16"></span> su: only the superuser may =
+specify a login class</pre><span class=3D"anchor" id=3D"line-494"></span><s=
+pan class=3D"anchor" id=3D"line-495"></span></li></ul><p class=3D"line862">=
+You want to pass <tt>-c&nbsp;'some&nbsp;command'</tt> to a shell, which mea=
+ns you need a username before the <tt>-c</tt>. <span class=3D"anchor" id=3D=
+"line-496"></span><span class=3D"anchor" id=3D"line-497"></span></p><ul><li=
+ style=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-498"></sp=
+an><span class=3D"anchor" id=3D"line-499"></span><pre><span class=3D"anchor=
+" id=3D"line-1-44"></span> su root -c 'some command' # Now it's right.</pre=
+><span class=3D"anchor" id=3D"line-500"></span><span class=3D"anchor" id=3D=
+"line-501"></span></li></ul><p class=3D"line867"><tt>su</tt> assumes a user=
+name of root when you omit one, but this falls on its face when you want to=
+ pass a command to the shell afterward. You must supply the username in thi=
+s case. <span class=3D"anchor" id=3D"line-502"></span><span class=3D"anchor=
+" id=3D"line-503"></span></p><p class=3D"line867"><span class=3D"anchor" id=
+=3D"pf19"></span> <span class=3D"anchor" id=3D"line-504"></span>
+</p><h2 id=3D"cd_.2BAC8-foo.3B_bar">19. cd /foo; bar</h2>
+<span class=3D"anchor" id=3D"line-505"></span><span class=3D"anchor" id=3D"=
+line-506"></span><p class=3D"line862">If you don't check for errors from th=
+e <tt>cd</tt> command, you might end up executing <tt>bar</tt> in the wrong=
+ place. This could be a major disaster, if for example <tt>bar</tt> happens=
+ to be <tt>rm&nbsp;*</tt>. <span class=3D"anchor" id=3D"line-507"></span><s=
+pan class=3D"anchor" id=3D"line-508"></span></p><p class=3D"line862">You mu=
+st <strong>always</strong> check for errors from a <tt>cd</tt> command. The=
+ simplest way to do that is: <span class=3D"anchor" id=3D"line-509"></span>=
+<span class=3D"anchor" id=3D"line-510"></span></p><ul><li style=3D"list-sty=
+le-type:none"><span class=3D"anchor" id=3D"line-511"></span><span class=3D"=
+anchor" id=3D"line-512"></span><pre><span class=3D"anchor" id=3D"line-1-45"=
+></span> cd /foo &amp;&amp; bar</pre><span class=3D"anchor" id=3D"line-513"=
+></span><span class=3D"anchor" id=3D"line-514"></span></li></ul><p class=3D=
+"line862">If there's more than just one command after the <tt>cd</tt>, you =
+might prefer this: <span class=3D"anchor" id=3D"line-515"></span><span clas=
+s=3D"anchor" id=3D"line-516"></span></p><ul><li style=3D"list-style-type:no=
+ne"><span class=3D"anchor" id=3D"line-517"></span><span class=3D"anchor" id=
+=3D"line-518"></span><span class=3D"anchor" id=3D"line-519"></span><span cl=
+ass=3D"anchor" id=3D"line-520"></span><span class=3D"anchor" id=3D"line-521=
+"></span><pre><span class=3D"anchor" id=3D"line-1-46"></span> cd /foo || ex=
+it 1
+<span class=3D"anchor" id=3D"line-2-17"></span> bar
+<span class=3D"anchor" id=3D"line-3-12"></span> baz
+<span class=3D"anchor" id=3D"line-4-8"></span> bat ... # Lots of commands.<=
+/pre><span class=3D"anchor" id=3D"line-522"></span><span class=3D"anchor" i=
+d=3D"line-523"></span></li></ul><p class=3D"line867"><tt>cd</tt> will repor=
+t the failure to change directories, with a stderr message such as "bash: c=
+d: /foo: No such file or directory". <span class=3D"anchor" id=3D"line-524"=
+></span>If you want to add your own message in stdout, however, you could u=
+se command grouping: <span class=3D"anchor" id=3D"line-525"></span><span cl=
+ass=3D"anchor" id=3D"line-526"></span></p><ul><li style=3D"list-style-type:=
+none"><span class=3D"anchor" id=3D"line-527"></span><span class=3D"anchor" =
+id=3D"line-528"></span><span class=3D"anchor" id=3D"line-529"></span><span =
+class=3D"anchor" id=3D"line-530"></span><pre><span class=3D"anchor" id=3D"l=
+ine-1-47"></span> cd /net || { echo "Can't read /net. Make sure you've logg=
+ed in to the Samba network, and try again."; exit 1; }
+<span class=3D"anchor" id=3D"line-2-18"></span> do_stuff
+<span class=3D"anchor" id=3D"line-3-13"></span> more_stuff</pre><span class=
+=3D"anchor" id=3D"line-531"></span><span class=3D"anchor" id=3D"line-532"><=
+/span></li></ul><p class=3D"line862">Note there's a required space between =
+<tt class=3D"backtick">{</tt> and <tt class=3D"backtick">echo</tt>, and a r=
+equired <tt class=3D"backtick">;</tt> before the closing <tt class=3D"backt=
+ick">}</tt>. <span class=3D"anchor" id=3D"line-533"></span><span class=3D"a=
+nchor" id=3D"line-534"></span></p><p class=3D"line862">Some people also lik=
+e to enable <a href=3D"http://bash.cumulonim.biz/BashFAQ(2f)105.html">set -=
+e</a> to make their scripts abort on <em>any</em> command that returns non-=
+zero, but this can be <a href=3D"http://bash.cumulonim.biz/BashFAQ(2f)105.h=
+tml">rather tricky to use correctly</a> (since many common commands may ret=
+urn a non-zero for a warning condition, which you may not want to treat as =
+fatal). <span class=3D"anchor" id=3D"line-535"></span><span class=3D"anchor=
+" id=3D"line-536"></span></p><p class=3D"line874">By the way, if you're cha=
+nging directories a lot in a Bash script, <span class=3D"anchor" id=3D"line=
+-537"></span>be sure to read the Bash help on <tt>pushd</tt>, <tt>popd</tt>=
+, and <tt>dirs</tt>. <span class=3D"anchor" id=3D"line-538"></span>Perhaps =
+all that code you wrote to manage <tt>cd</tt>'s and <tt>pwd</tt>'s is compl=
+etely unnecessary. <span class=3D"anchor" id=3D"line-539"></span><span clas=
+s=3D"anchor" id=3D"line-540"></span></p><p class=3D"line874">Speaking of wh=
+ich, compare this: <span class=3D"anchor" id=3D"line-541"></span><span clas=
+s=3D"anchor" id=3D"line-542"></span></p><ul><li style=3D"list-style-type:no=
+ne"><span class=3D"anchor" id=3D"line-543"></span><span class=3D"anchor" id=
+=3D"line-544"></span><span class=3D"anchor" id=3D"line-545"></span><span cl=
+ass=3D"anchor" id=3D"line-546"></span><span class=3D"anchor" id=3D"line-547=
+"></span><span class=3D"anchor" id=3D"line-548"></span><pre><span class=3D"=
+anchor" id=3D"line-1-48"></span> find ... -type d -print0 | while IFS=3D re=
+ad -r -d '' subdir; do
+<span class=3D"anchor" id=3D"line-2-19"></span>   here=3D$PWD
+<span class=3D"anchor" id=3D"line-3-14"></span>   cd "$subdir" &amp;&amp; w=
+hatever &amp;&amp; ...
+<span class=3D"anchor" id=3D"line-4-9"></span>   cd "$here"
+<span class=3D"anchor" id=3D"line-5-7"></span> done</pre><span class=3D"anc=
+hor" id=3D"line-549"></span><span class=3D"anchor" id=3D"line-550"></span><=
+/li></ul><p class=3D"line874">With this: <span class=3D"anchor" id=3D"line-=
+551"></span><span class=3D"anchor" id=3D"line-552"></span></p><ul><li style=
+=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-553"></span><sp=
+an class=3D"anchor" id=3D"line-554"></span><span class=3D"anchor" id=3D"lin=
+e-555"></span><span class=3D"anchor" id=3D"line-556"></span><pre><span clas=
+s=3D"anchor" id=3D"line-1-49"></span> find ... -type d -print0 | while IFS=
+=3D read -r -d '' subdir; do
+<span class=3D"anchor" id=3D"line-2-20"></span>   (cd "$subdir" || exit; wh=
+atever; ...)
+<span class=3D"anchor" id=3D"line-3-15"></span> done</pre><span class=3D"an=
+chor" id=3D"line-557"></span><span class=3D"anchor" id=3D"line-558"></span>=
+</li></ul><p class=3D"line862">Forcing a <a href=3D"http://bash.cumulonim.b=
+iz/SubShell.html">SubShell</a> here causes the <tt>cd</tt> to occur only in=
+ the subshell; for the next iteration of the loop, we're back to our normal=
+ location, regardless of whether the <tt>cd</tt> succeeded or failed.  We d=
+on't have to change back manually, and we aren't stuck in a neverending str=
+ing of <tt class=3D"backtick">...&nbsp;&amp;&amp;&nbsp;...</tt> logic preve=
+nting the use of other conditionals.  The subshell version is simpler and c=
+leaner (albeit a tiny bit slower). <span class=3D"anchor" id=3D"line-559"><=
+/span><span class=3D"anchor" id=3D"line-560"></span></p><p class=3D"line867=
+"><span class=3D"anchor" id=3D"pf20"></span> <span class=3D"anchor" id=3D"l=
+ine-561"></span>
+</p><h2 id=3D"A.5B_bar_.3D.3D_.22.24foo.22_.5D">20. [ bar =3D=3D "$foo" ]</=
+h2>
+<span class=3D"anchor" id=3D"line-562"></span><span class=3D"anchor" id=3D"=
+line-563"></span><p class=3D"line862">The <tt>=3D=3D</tt> operator is not v=
+alid for the <tt>[</tt> command. Use <tt>=3D</tt> or the <a href=3D"http://=
+bash.cumulonim.biz/BashFAQ(2f)031.html">[[ keyword</a> instead. <span class=
+=3D"anchor" id=3D"line-564"></span><span class=3D"anchor" id=3D"line-565"><=
+/span></p><ul><li style=3D"list-style-type:none"><span class=3D"anchor" id=
+=3D"line-566"></span><span class=3D"anchor" id=3D"line-567"></span><span cl=
+ass=3D"anchor" id=3D"line-568"></span><pre><span class=3D"anchor" id=3D"lin=
+e-1-50"></span> [ bar =3D "$foo" ] &amp;&amp; echo yes
+<span class=3D"anchor" id=3D"line-2-21"></span> [[ bar =3D=3D $foo ]] &amp;=
+&amp; echo yes</pre><span class=3D"anchor" id=3D"line-569"></span><span cla=
+ss=3D"anchor" id=3D"line-570"></span></li></ul><p class=3D"line867"><span c=
+lass=3D"anchor" id=3D"pf21"></span> <span class=3D"anchor" id=3D"line-571">=
+</span>
+</p><h2 id=3D"for_i_in_.7B1..10.7D.3B_do_..2BAC8-something_.26.3B_done">21.=
+ for i in {1..10}; do ./something &amp;; done</h2>
+<span class=3D"anchor" id=3D"line-572"></span><span class=3D"anchor" id=3D"=
+line-573"></span><p class=3D"line862">You <em>cannot</em> put a <tt>;</tt> =
+immediately after an <tt>&amp;</tt>. Just remove the extraneous <tt>;</tt> =
+entirely. <span class=3D"anchor" id=3D"line-574"></span><span class=3D"anch=
+or" id=3D"line-575"></span></p><ul><li style=3D"list-style-type:none"><span=
+ class=3D"anchor" id=3D"line-576"></span><span class=3D"anchor" id=3D"line-=
+577"></span><pre><span class=3D"anchor" id=3D"line-1-51"></span> for i in {=
+1..10}; do ./something &amp; done</pre><span class=3D"anchor" id=3D"line-57=
+8"></span><span class=3D"anchor" id=3D"line-579"></span></li></ul><p class=
+=3D"line874">Or: <span class=3D"anchor" id=3D"line-580"></span><span class=
+=3D"anchor" id=3D"line-581"></span></p><ul><li style=3D"list-style-type:non=
+e"><span class=3D"anchor" id=3D"line-582"></span><span class=3D"anchor" id=
+=3D"line-583"></span><span class=3D"anchor" id=3D"line-584"></span><span cl=
+ass=3D"anchor" id=3D"line-585"></span><pre><span class=3D"anchor" id=3D"lin=
+e-1-52"></span> for i in {1..10}; do
+<span class=3D"anchor" id=3D"line-2-22"></span>   ./something &amp;
+<span class=3D"anchor" id=3D"line-3-16"></span> done</pre><span class=3D"an=
+chor" id=3D"line-586"></span><span class=3D"anchor" id=3D"line-587"></span>=
+</li></ul><p class=3D"line867"><tt>&amp;</tt> already functions as a comman=
+d terminator, just like <tt>;</tt> does. And you cannot mix the two. <span =
+class=3D"anchor" id=3D"line-588"></span><span class=3D"anchor" id=3D"line-5=
+89"></span></p><p class=3D"line862">In general, a <tt class=3D"backtick">;<=
+/tt> can be replaced by a newline, but not all newlines can be replaced by =
+<tt class=3D"backtick">;</tt>. <span class=3D"anchor" id=3D"line-590"></spa=
+n><span class=3D"anchor" id=3D"line-591"></span></p><p class=3D"line867"><s=
+pan class=3D"anchor" id=3D"pf22"></span> <span class=3D"anchor" id=3D"line-=
+592"></span>
+</p><h2 id=3D"cmd1_.26.26_cmd2_.7C.7C_cmd3">22. cmd1 &amp;&amp; cmd2 || cmd=
+3</h2>
+<span class=3D"anchor" id=3D"line-593"></span><span class=3D"anchor" id=3D"=
+line-594"></span><p class=3D"line862">Some people like to use <tt>&amp;&amp=
+;</tt> and <tt>||</tt> as a shortcut syntax for <tt>if&nbsp;...&nbsp;then&n=
+bsp;...&nbsp;else&nbsp;...&nbsp;fi</tt>. In many cases, this is perfectly s=
+afe: <span class=3D"anchor" id=3D"line-595"></span><span class=3D"anchor" i=
+d=3D"line-596"></span></p><ul><li style=3D"list-style-type:none"><span clas=
+s=3D"anchor" id=3D"line-597"></span><span class=3D"anchor" id=3D"line-598">=
+</span><pre><span class=3D"anchor" id=3D"line-1-53"></span> [[ -s $errorlog=
+ ]] &amp;&amp; echo "Uh oh, there were some errors." || echo "Successful."<=
+/pre><span class=3D"anchor" id=3D"line-599"></span><span class=3D"anchor" i=
+d=3D"line-600"></span></li></ul><p class=3D"line862">However, this construc=
+t is <em>not</em> completely equivalent to <tt>if&nbsp;...&nbsp;fi</tt> in =
+the general case, because the command that comes after the <tt>&amp;&amp;</=
+tt> also generates an exit status. And if that exit status isn't "true" (0)=
+, then the command that comes after the <tt>||</tt> will also be invoked. F=
+or example: <span class=3D"anchor" id=3D"line-601"></span><span class=3D"an=
+chor" id=3D"line-602"></span></p><ul><li style=3D"list-style-type:none"><sp=
+an class=3D"anchor" id=3D"line-603"></span><span class=3D"anchor" id=3D"lin=
+e-604"></span><span class=3D"anchor" id=3D"line-605"></span><span class=3D"=
+anchor" id=3D"line-606"></span><pre><span class=3D"anchor" id=3D"line-1-54"=
+></span> i=3D0
+<span class=3D"anchor" id=3D"line-2-23"></span> true &amp;&amp; ((i++)) || =
+((i--))
+<span class=3D"anchor" id=3D"line-3-17"></span> echo $i # Prints 0</pre><sp=
+an class=3D"anchor" id=3D"line-607"></span><span class=3D"anchor" id=3D"lin=
+e-608"></span></li></ul><p class=3D"line862">What happened here? It looks l=
+ike <tt>i</tt> should be 1, but it ends up 0. Why? Because both the <tt>i++=
+</tt> <em>and</em> the <tt>i--</tt> were executed. The <tt>((i++))</tt> com=
+mand has an exit status, and that exit status is derived from a C-like eval=
+uation of the expression inside the parentheses. That expression's value ha=
+ppens to be 0 (the initial value of <tt>i</tt>), and in C, an expression wi=
+th an integer value of 0 is considered <em>false</em>. So <tt>((i++))</tt> =
+(when <tt>i</tt> is 0) has an exit status of 1 (false), and therefore the <=
+tt>((i--))</tt> command is executed as well. <span class=3D"anchor" id=3D"l=
+ine-609"></span><span class=3D"anchor" id=3D"line-610"></span></p><p class=
+=3D"line862">This does not occur if we use the pre-increment operator, sinc=
+e the exit status from <tt class=3D"backtick">++i</tt> is true: <span class=
+=3D"anchor" id=3D"line-611"></span></p><ul><li style=3D"list-style-type:non=
+e"><span class=3D"anchor" id=3D"line-612"></span><span class=3D"anchor" id=
+=3D"line-613"></span><span class=3D"anchor" id=3D"line-614"></span><span cl=
+ass=3D"anchor" id=3D"line-615"></span><pre><span class=3D"anchor" id=3D"lin=
+e-1-55"></span> i=3D0
+<span class=3D"anchor" id=3D"line-2-24"></span> true &amp;&amp; (( ++i )) |=
+| (( --i ))
+<span class=3D"anchor" id=3D"line-3-18"></span> echo $i # Prints 1</pre><sp=
+an class=3D"anchor" id=3D"line-616"></span><span class=3D"anchor" id=3D"lin=
+e-617"></span></li></ul><p class=3D"line862">But that's missing the point o=
+f the example. It just <em>happens</em> to work by <em>coincidence</em>, an=
+d you cannot rely on <tt class=3D"backtick">x&nbsp;&amp;&amp;&nbsp;y&nbsp;|=
+|&nbsp;z</tt> if <tt class=3D"backtick">y</tt> has <strong>any</strong> cha=
+nce of failure! (This example fails if we initialize <tt class=3D"backtick"=
+>i</tt> to -1 instead of 0.) <span class=3D"anchor" id=3D"line-618"></span>=
+<span class=3D"anchor" id=3D"line-619"></span></p><p class=3D"line862">If y=
+ou need safety, or if you simply aren't sure how this works, or if <em>anyt=
+hing</em> in the preceding paragraphs wasn't completely clear, please just =
+use the simple <tt>if&nbsp;...&nbsp;fi</tt> syntax in your programs. <span =
+class=3D"anchor" id=3D"line-620"></span><span class=3D"anchor" id=3D"line-6=
+21"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"anchor=
+" id=3D"line-622"></span><span class=3D"anchor" id=3D"line-623"></span><spa=
+n class=3D"anchor" id=3D"line-624"></span><span class=3D"anchor" id=3D"line=
+-625"></span><span class=3D"anchor" id=3D"line-626"></span><span class=3D"a=
+nchor" id=3D"line-627"></span><span class=3D"anchor" id=3D"line-628"></span=
+><span class=3D"anchor" id=3D"line-629"></span><pre><span class=3D"anchor" =
+id=3D"line-1-56"></span> i=3D0
+<span class=3D"anchor" id=3D"line-2-25"></span> if true; then
+<span class=3D"anchor" id=3D"line-3-19"></span>   ((i++))
+<span class=3D"anchor" id=3D"line-4-10"></span> else
+<span class=3D"anchor" id=3D"line-5-8"></span>   ((i--))
+<span class=3D"anchor" id=3D"line-6-5"></span> fi
+<span class=3D"anchor" id=3D"line-7-3"></span> echo $i # Prints 1</pre><spa=
+n class=3D"anchor" id=3D"line-630"></span><span class=3D"anchor" id=3D"line=
+-631"></span></li></ul><p class=3D"line874">This section also applies to Bo=
+urne shell, here is the code that illustrates it: <span class=3D"anchor" id=
+=3D"line-632"></span></p><ul><li style=3D"list-style-type:none"><span class=
+=3D"anchor" id=3D"line-633"></span><span class=3D"anchor" id=3D"line-634"><=
+/span><pre><span class=3D"anchor" id=3D"line-1-57"></span> true &amp;&amp; =
+{ echo true; false; } || { echo false; true; }</pre><span class=3D"anchor" =
+id=3D"line-635"></span><span class=3D"anchor" id=3D"line-636"></span></li><=
+/ul><p class=3D"line874">Output is two lines "true" and "false", instead th=
+e single line "true". <span class=3D"anchor" id=3D"line-637"></span><span c=
+lass=3D"anchor" id=3D"line-638"></span></p><p class=3D"line867"><span class=
+=3D"anchor" id=3D"pf23"></span> <span class=3D"anchor" id=3D"line-639"></sp=
+an>
+</p><h2 id=3D"echo_.22Hello_World.21.22">23. echo "Hello World!"</h2>
+<span class=3D"anchor" id=3D"line-640"></span><span class=3D"anchor" id=3D"=
+line-641"></span><p class=3D"line874">The problem here is that, in an inter=
+active Bash shell, you'll see an error like: <span class=3D"anchor" id=3D"l=
+ine-642"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"a=
+nchor" id=3D"line-643"></span><span class=3D"anchor" id=3D"line-644"></span=
+><pre><span class=3D"anchor" id=3D"line-1-58"></span> bash: !": event not f=
+ound</pre><span class=3D"anchor" id=3D"line-645"></span><span class=3D"anch=
+or" id=3D"line-646"></span></li></ul><p class=3D"line862">This is because, =
+in the default settings for an interactive shell, Bash performs csh-style h=
+istory expansion using the exclamation point. This is <strong>not</strong> =
+a problem in shell scripts; only in interactive shells. <span class=3D"anch=
+or" id=3D"line-647"></span><span class=3D"anchor" id=3D"line-648"></span></=
+p><p class=3D"line874">Unfortunately, the obvious attempt to "fix" this won=
+'t work: <span class=3D"anchor" id=3D"line-649"></span></p><ul><li style=3D=
+"list-style-type:none"><span class=3D"anchor" id=3D"line-650"></span><span =
+class=3D"anchor" id=3D"line-651"></span><span class=3D"anchor" id=3D"line-6=
+52"></span><pre><span class=3D"anchor" id=3D"line-1-59"></span> $ echo "hi\=
+!"
+<span class=3D"anchor" id=3D"line-2-26"></span> hi\!</pre><span class=3D"an=
+chor" id=3D"line-653"></span><span class=3D"anchor" id=3D"line-654"></span>=
+</li></ul><p class=3D"line862">The easiest solution is unsetting the <tt>hi=
+stexpand</tt> option: this can be done with <tt>set&nbsp;+H</tt> or <tt>set=
+&nbsp;+o&nbsp;histexpand</tt> <span class=3D"anchor" id=3D"line-655"></span=
+><span class=3D"anchor" id=3D"line-656"></span></p><ul><li style=3D"list-st=
+yle-type:none"><p class=3D"line862">Question: Why is playing with <tt>histe=
+xpand</tt> more apropriate than single quotes? <span class=3D"anchor" id=3D=
+"line-657"></span></p><ul><li style=3D"list-style-type:none"><p class=3D"li=
+ne891"><em>I personally ran into this issue when I was manipulating song fi=
+les, using commands like</em> <span class=3D"anchor" id=3D"line-658"></span=
+><span class=3D"anchor" id=3D"line-659"></span><span class=3D"anchor" id=3D=
+"line-660"></span><span class=3D"anchor" id=3D"line-661"></span></p><pre><s=
+pan class=3D"anchor" id=3D"line-1-60"></span>mp3info -t "Don't Let It Show"=
+ ...
+<span class=3D"anchor" id=3D"line-2-27"></span>mp3info -t "Ah! Leah!" ...</=
+pre><span class=3D"anchor" id=3D"line-662"></span><p class=3D"line891"><em>=
+Using single quotes is extremely inconvenient because of all the songs with=
+ apostrophes in their titles. Using double quotes ran into the history expa=
+nsion issue. (And imagine a file that has both in its name. The quoting wou=
+ld be atrocious.) Since I never actually </em>use<em> history expansion, my=
+ personal preference was to turn it off in <tt>~/.bashrc</tt>.</em> -- <a h=
+ref=3D"http://bash.cumulonim.biz/GreyCat.html">GreyCat</a> <span class=3D"a=
+nchor" id=3D"line-663"></span><span class=3D"anchor" id=3D"line-664"></span=
+></p></li></ul></li></ul><p class=3D"line874">These solutions will work: <s=
+pan class=3D"anchor" id=3D"line-665"></span></p><ul><li style=3D"list-style=
+-type:none"><span class=3D"anchor" id=3D"line-666"></span><span class=3D"an=
+chor" id=3D"line-667"></span><pre><span class=3D"anchor" id=3D"line-1-61"><=
+/span> echo 'Hello World!'</pre><span class=3D"anchor" id=3D"line-668"></sp=
+an></li></ul><p class=3D"line874">or <span class=3D"anchor" id=3D"line-669"=
+></span></p><ul><li style=3D"list-style-type:none"><span class=3D"anchor" i=
+d=3D"line-670"></span><span class=3D"anchor" id=3D"line-671"></span><span c=
+lass=3D"anchor" id=3D"line-672"></span><pre><span class=3D"anchor" id=3D"li=
+ne-1-62"></span> set +H
+<span class=3D"anchor" id=3D"line-2-28"></span> echo "Hello World!"</pre><s=
+pan class=3D"anchor" id=3D"line-673"></span></li></ul><p class=3D"line874">=
+or <span class=3D"anchor" id=3D"line-674"></span></p><ul><li style=3D"list-=
+style-type:none"><span class=3D"anchor" id=3D"line-675"></span><span class=
+=3D"anchor" id=3D"line-676"></span><pre><span class=3D"anchor" id=3D"line-1=
+-63"></span> histchars=3D</pre><span class=3D"anchor" id=3D"line-677"></spa=
+n></li></ul><p class=3D"line862">Many people simply choose to put <tt>set&n=
+bsp;+H</tt> or <tt>set&nbsp;+o&nbsp;histexpand</tt> in their <tt>~/.bashrc<=
+/tt> to deactivate history expansion permanently. This is a personal prefer=
+ence, though, and you should choose whatever works best for you. <span clas=
+s=3D"anchor" id=3D"line-678"></span><span class=3D"anchor" id=3D"line-679">=
+</span></p><p class=3D"line867"><span class=3D"anchor" id=3D"pf24"></span> =
+<span class=3D"anchor" id=3D"line-680"></span>
+</p><h2 id=3D"for_arg_in_.24.2A">24. for arg in $*</h2>
+<span class=3D"anchor" id=3D"line-681"></span><span class=3D"anchor" id=3D"=
+line-682"></span><p class=3D"line862">Bash (like all Bourne shells) has a s=
+pecial syntax for referring to the list of positional parameters one at a t=
+ime, and <tt>$*</tt> isn't it. Neither is <tt>$@</tt>. Both of those expand=
+ to the list of words in your script's parameters, not to each parameter as=
+ a separate word. <span class=3D"anchor" id=3D"line-683"></span><span class=
+=3D"anchor" id=3D"line-684"></span></p><p class=3D"line874">The correct syn=
+tax is: <span class=3D"anchor" id=3D"line-685"></span><span class=3D"anchor=
+" id=3D"line-686"></span></p><ul><li style=3D"list-style-type:none"><span c=
+lass=3D"anchor" id=3D"line-687"></span><span class=3D"anchor" id=3D"line-68=
+8"></span><span class=3D"anchor" id=3D"line-689"></span><span class=3D"anch=
+or" id=3D"line-690"></span><span class=3D"anchor" id=3D"line-691"></span><p=
+re><span class=3D"anchor" id=3D"line-1-64"></span> for arg in "$@"
+<span class=3D"anchor" id=3D"line-2-29"></span>
+<span class=3D"anchor" id=3D"line-3-20"></span> # Or simply:
+<span class=3D"anchor" id=3D"line-4-11"></span> for arg</pre><span class=3D=
+"anchor" id=3D"line-692"></span><span class=3D"anchor" id=3D"line-693"></sp=
+an></li></ul><p class=3D"line862">Since looping over the positional paramet=
+ers is such a common thing to do in scripts, <tt>for&nbsp;arg</tt> defaults=
+ to <tt>for&nbsp;arg&nbsp;in&nbsp;"$@"</tt>. The double-quoted <tt>"$@"</tt=
+> is special magic that causes each parameter to be used as a single word (=
+or a single loop iteration). It's what you should be using at least 99% of =
+the time. <span class=3D"anchor" id=3D"line-694"></span><span class=3D"anch=
+or" id=3D"line-695"></span></p><p class=3D"line874">Here's an example: <spa=
+n class=3D"anchor" id=3D"line-696"></span></p><ul><li style=3D"list-style-t=
+ype:none"><span class=3D"anchor" id=3D"line-697"></span><span class=3D"anch=
+or" id=3D"line-698"></span><span class=3D"anchor" id=3D"line-699"></span><s=
+pan class=3D"anchor" id=3D"line-700"></span><span class=3D"anchor" id=3D"li=
+ne-701"></span><span class=3D"anchor" id=3D"line-702"></span><span class=3D=
+"anchor" id=3D"line-703"></span><span class=3D"anchor" id=3D"line-704"></sp=
+an><span class=3D"anchor" id=3D"line-705"></span><span class=3D"anchor" id=
+=3D"line-706"></span><span class=3D"anchor" id=3D"line-707"></span><pre><sp=
+an class=3D"anchor" id=3D"line-1-65"></span> # Incorrect version
+<span class=3D"anchor" id=3D"line-2-30"></span> for x in $*; do
+<span class=3D"anchor" id=3D"line-3-21"></span>   echo "parameter: '$x'"
+<span class=3D"anchor" id=3D"line-4-12"></span> done
+<span class=3D"anchor" id=3D"line-5-9"></span>
+<span class=3D"anchor" id=3D"line-6-6"></span> $ ./myscript 'arg 1' arg2 ar=
+g3
+<span class=3D"anchor" id=3D"line-7-4"></span> parameter: 'arg'
+<span class=3D"anchor" id=3D"line-8-3"></span> parameter: '1'
+<span class=3D"anchor" id=3D"line-9-3"></span> parameter: 'arg2'
+<span class=3D"anchor" id=3D"line-10-1"></span> parameter: 'arg3'</pre><spa=
+n class=3D"anchor" id=3D"line-708"></span><span class=3D"anchor" id=3D"line=
+-709"></span></li></ul><p class=3D"line874">It should have been written: <s=
+pan class=3D"anchor" id=3D"line-710"></span></p><ul><li style=3D"list-style=
+-type:none"><span class=3D"anchor" id=3D"line-711"></span><span class=3D"an=
+chor" id=3D"line-712"></span><span class=3D"anchor" id=3D"line-713"></span>=
+<span class=3D"anchor" id=3D"line-714"></span><span class=3D"anchor" id=3D"=
+line-715"></span><span class=3D"anchor" id=3D"line-716"></span><span class=
+=3D"anchor" id=3D"line-717"></span><span class=3D"anchor" id=3D"line-718"><=
+/span><span class=3D"anchor" id=3D"line-719"></span><span class=3D"anchor" =
+id=3D"line-720"></span><pre><span class=3D"anchor" id=3D"line-1-66"></span>=
+ # Correct version
+<span class=3D"anchor" id=3D"line-2-31"></span> for x in "$@"; do
+<span class=3D"anchor" id=3D"line-3-22"></span>   echo "parameter: '$x'"
+<span class=3D"anchor" id=3D"line-4-13"></span> done
+<span class=3D"anchor" id=3D"line-5-10"></span>
+<span class=3D"anchor" id=3D"line-6-7"></span> $ ./myscript 'arg 1' arg2 ar=
+g3
+<span class=3D"anchor" id=3D"line-7-5"></span> parameter: 'arg 1'
+<span class=3D"anchor" id=3D"line-8-4"></span> parameter: 'arg2'
+<span class=3D"anchor" id=3D"line-9-4"></span> parameter: 'arg3'</pre><span=
+ class=3D"anchor" id=3D"line-721"></span><span class=3D"anchor" id=3D"line-=
+722"></span></li></ul><p class=3D"line867"><span class=3D"anchor" id=3D"pf2=
+5"></span> <span class=3D"anchor" id=3D"line-723"></span>
+</p><h2 id=3D"function_foo.28.29">25. function foo()</h2>
+<span class=3D"anchor" id=3D"line-724"></span><span class=3D"anchor" id=3D"=
+line-725"></span><p class=3D"line862">This works in some shells, but not in=
+ others. You should <em>never</em> combine the keyword <tt class=3D"backtic=
+k">function</tt> with the parentheses <tt class=3D"backtick">()</tt> when d=
+efining a function. <span class=3D"anchor" id=3D"line-726"></span><span cla=
+ss=3D"anchor" id=3D"line-727"></span></p><p class=3D"line862">Bash (at leas=
+t some versions) will allow you to mix the two. Most of the shells won't ac=
+cept that (zsh 4.x and perhaps above will - for example). Some shells will =
+accept <tt class=3D"backtick">function&nbsp;foo</tt>, but for maximum porta=
+bility, you should always use: <span class=3D"anchor" id=3D"line-728"></spa=
+n><span class=3D"anchor" id=3D"line-729"></span></p><ul><li style=3D"list-s=
+tyle-type:none"><span class=3D"anchor" id=3D"line-730"></span><span class=
+=3D"anchor" id=3D"line-731"></span><span class=3D"anchor" id=3D"line-732"><=
+/span><span class=3D"anchor" id=3D"line-733"></span><pre><span class=3D"anc=
+hor" id=3D"line-1-67"></span> foo() {
+<span class=3D"anchor" id=3D"line-2-32"></span>  ...
+<span class=3D"anchor" id=3D"line-3-23"></span> }</pre><span class=3D"ancho=
+r" id=3D"line-734"></span><span class=3D"anchor" id=3D"line-735"></span></l=
+i></ul><p class=3D"line867"><span class=3D"anchor" id=3D"pf26"></span> <spa=
+n class=3D"anchor" id=3D"line-736"></span>
+</p><h2 id=3D"echo_.22.2BAH4.22">26. echo "~"</h2>
+<span class=3D"anchor" id=3D"line-737"></span><span class=3D"anchor" id=3D"=
+line-738"></span><p class=3D"line874">Tilde expansion only applies when '~'=
+ is unquoted. In this example echo writes '~' to stdout, rather than the pa=
+th of the user's home directory. <span class=3D"anchor" id=3D"line-739"></s=
+pan><span class=3D"anchor" id=3D"line-740"></span></p><p class=3D"line874">=
+Quoting path parameters that are expressed relative to a user's home direct=
+ory should be done using $HOME rather than '~'. For instance consider the s=
+ituation where $HOME is "/home/my photos". <span class=3D"anchor" id=3D"lin=
+e-741"></span><span class=3D"anchor" id=3D"line-742"></span></p><ul><li sty=
+le=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-743"></span><=
+span class=3D"anchor" id=3D"line-744"></span><span class=3D"anchor" id=3D"l=
+ine-745"></span><span class=3D"anchor" id=3D"line-746"></span><span class=
+=3D"anchor" id=3D"line-747"></span><pre><span class=3D"anchor" id=3D"line-1=
+-68"></span> "~/dir with spaces" # expands to "~/dir with spaces"
+<span class=3D"anchor" id=3D"line-2-33"></span> ~"/dir with spaces" # expan=
+ds to "~/dir with spaces"
+<span class=3D"anchor" id=3D"line-3-24"></span> ~/"dir with spaces" # expan=
+ds to "/home/my photos/dir with spaces"
+<span class=3D"anchor" id=3D"line-4-14"></span> "$HOME/dir with spaces" # e=
+xpands to "/home/my photos/dir with spaces"</pre><span class=3D"anchor" id=
+=3D"line-748"></span><span class=3D"anchor" id=3D"line-749"></span></li></u=
+l><p class=3D"line867"><span class=3D"anchor" id=3D"pf27"></span> <span cla=
+ss=3D"anchor" id=3D"line-750"></span>
+</p><h2 id=3D"local_varname.3D.24.28command.29">27. local varname=3D$(comma=
+nd)</h2>
+<span class=3D"anchor" id=3D"line-751"></span><span class=3D"anchor" id=3D"=
+line-752"></span><p class=3D"line862">When declaring a local variable in a =
+function, the <tt class=3D"backtick">local</tt> acts as a command in its ow=
+n right. This can sometimes interact oddly with the rest of the line -- for=
+ example, if you wanted to capture the exit status (<tt class=3D"backtick">=
+$?</tt>) of the <a href=3D"http://bash.cumulonim.biz/CommandSubstitution.ht=
+ml">CommandSubstitution</a>, you can't do it. <tt class=3D"backtick">local<=
+/tt>'s exit status masks it. <span class=3D"anchor" id=3D"line-753"></span>=
+<span class=3D"anchor" id=3D"line-754"></span></p><p class=3D"line874">It's=
+ best to use separate commands for this: <span class=3D"anchor" id=3D"line-=
+755"></span><span class=3D"anchor" id=3D"line-756"></span></p><ul><li style=
+=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-757"></span><sp=
+an class=3D"anchor" id=3D"line-758"></span><span class=3D"anchor" id=3D"lin=
+e-759"></span><span class=3D"anchor" id=3D"line-760"></span><pre><span clas=
+s=3D"anchor" id=3D"line-1-69"></span> local varname
+<span class=3D"anchor" id=3D"line-2-34"></span> varname=3D$(command)
+<span class=3D"anchor" id=3D"line-3-25"></span> rc=3D$?</pre><span class=3D=
+"anchor" id=3D"line-761"></span><span class=3D"anchor" id=3D"line-762"></sp=
+an></li></ul><p class=3D"line874">The next pitfall describes another issue =
+with this syntax: <span class=3D"anchor" id=3D"line-763"></span><span class=
+=3D"anchor" id=3D"line-764"></span></p><p class=3D"line867"><span class=3D"=
+anchor" id=3D"pf28"></span> <span class=3D"anchor" id=3D"line-765"></span>
+</p><h2 id=3D"export_foo.3D.2BAH4ALw-bar">28. export foo=3D~/bar</h2>
+<span class=3D"anchor" id=3D"line-766"></span><span class=3D"anchor" id=3D"=
+line-767"></span><p class=3D"line867"><a class=3D"nonexistent" href=3D"http=
+://bash.cumulonim.biz/TildeExpansion.html">Tilde expansion</a> (with or wit=
+hout a username) is only guaranteed to occur when the tilde appears at the =
+beginning of a <a href=3D"http://bash.cumulonim.biz/Arguments.html">word</a=
+>, either by itself or followed by a slash.  It is also guaranteed to occur=
+ when the tilde appears immediately after the <tt class=3D"backtick">=3D</t=
+t> in an assignment. <span class=3D"anchor" id=3D"line-768"></span><span cl=
+ass=3D"anchor" id=3D"line-769"></span></p><p class=3D"line862">However, the=
+ <tt class=3D"backtick">export</tt> and <tt class=3D"backtick">local</tt> c=
+ommands <em>do not constitute an assignment</em>.  So, in some shells (like=
+ Bash), <tt class=3D"backtick">export&nbsp;foo=3D~/bar</tt> will undergo ti=
+lde expansion; in others (like dash), it will not. <span class=3D"anchor" i=
+d=3D"line-770"></span><span class=3D"anchor" id=3D"line-771"></span></p><ul=
+><li style=3D"list-style-type:none"><span class=3D"anchor" id=3D"line-772">=
+</span><span class=3D"anchor" id=3D"line-773"></span><span class=3D"anchor"=
+ id=3D"line-774"></span><pre><span class=3D"anchor" id=3D"line-1-70"></span=
+> foo=3D~/bar; export foo    # Right!
+<span class=3D"anchor" id=3D"line-2-35"></span> export foo=3D"$HOME/bar"   =
+# Right!</pre><span class=3D"anchor" id=3D"line-775"></span><span class=3D"=
+anchor" id=3D"line-776"></span></li></ul><p class=3D"line867"><span class=
+=3D"anchor" id=3D"pf29"></span> <span class=3D"anchor" id=3D"line-777"></sp=
+an>
+</p><h2 id=3D"sed_.27s.2BAC8.24foo.2BAC8-good_bye.2BAC8.27">29. sed 's/$foo=
+/good bye/'</h2>
+<span class=3D"anchor" id=3D"line-778"></span><span class=3D"anchor" id=3D"=
+line-779"></span><p class=3D"line862">In <a href=3D"http://bash.cumulonim.b=
+iz/Quotes.html">single quotes</a>, bash parameter expansions like <tt class=
+=3D"backtick">$foo</tt> do not get expanded.  That is the purpose of single=
+ quotes, to protect characters like <tt class=3D"backtick">$</tt> from the =
+shell. <span class=3D"anchor" id=3D"line-780"></span><span class=3D"anchor"=
+ id=3D"line-781"></span></p><p class=3D"line874">Change the quotes to doubl=
+e quotes: <span class=3D"anchor" id=3D"line-782"></span><span class=3D"anch=
+or" id=3D"line-783"></span></p><ul><li style=3D"list-style-type:none"><span=
+ class=3D"anchor" id=3D"line-784"></span><span class=3D"anchor" id=3D"line-=
+785"></span><pre><span class=3D"anchor" id=3D"line-1-71"></span> foo=3D"hel=
+lo"; sed "s/$foo/good bye/"</pre><span class=3D"anchor" id=3D"line-786"></s=
+pan><span class=3D"anchor" id=3D"line-787"></span></li></ul><p class=3D"lin=
+e862">But keep in mind, if you use double quotes you might need to use more=
+ escapes.  See the <a href=3D"http://bash.cumulonim.biz/Quotes.html">Quotes=
+</a> page. <span class=3D"anchor" id=3D"line-788"></span><span class=3D"anc=
+hor" id=3D"line-789"></span></p><p class=3D"line867"><span class=3D"anchor"=
+ id=3D"pf30"></span> <span class=3D"anchor" id=3D"line-790"></span>
+</p><h2 id=3D"tr_.5BA-Z.5D_.5Ba-z.5D">30. tr [A-Z] [a-z]</h2>
+<span class=3D"anchor" id=3D"line-791"></span><span class=3D"anchor" id=3D"=
+line-792"></span><p class=3D"line862">There are (at least) three things wro=
+ng here.  The first problem is that <tt class=3D"backtick">[A-Z]</tt> and <=
+tt class=3D"backtick">[a-z]</tt> are seen as <a href=3D"http://bash.cumulon=
+im.biz/glob.html">glob</a>s by the shell.  If you don't have any single-let=
+tered filenames in your current directory, it'll seem like the command is c=
+orrect; but if you do, things will go wrong.  Probably at 0300 hours on a w=
+eekend. <span class=3D"anchor" id=3D"line-793"></span><span class=3D"anchor=
+" id=3D"line-794"></span></p><p class=3D"line862">The second problem is tha=
+t this is not really the correct notation for <tt class=3D"backtick">tr</tt=
+>.  What this actually does is translate '[' into '['; anything in the rang=
+e A-Z into a-z; and ']' into ']'.  So you don't even need those brackets, a=
+nd the first problem goes away. <span class=3D"anchor" id=3D"line-795"></sp=
+an><span class=3D"anchor" id=3D"line-796"></span></p><p class=3D"line862">T=
+he third problem is that depending on the <a href=3D"http://bash.cumulonim.=
+biz/locale.html">locale</a>, A-Z or a-z may not give you the 26 ASCII chara=
+cters you were expecting.  In fact, in some locales z is in the middle of t=
+he alphabet!  The solution to this depends on what you want to happen: <spa=
+n class=3D"anchor" id=3D"line-797"></span><span class=3D"anchor" id=3D"line=
+-798"></span></p><ul><li style=3D"list-style-type:none"><span class=3D"anch=
+or" id=3D"line-799"></span><span class=3D"anchor" id=3D"line-800"></span><s=
+pan class=3D"anchor" id=3D"line-801"></span><span class=3D"anchor" id=3D"li=
+ne-802"></span><span class=3D"anchor" id=3D"line-803"></span><span class=3D=
+"anchor" id=3D"line-804"></span><pre><span class=3D"anchor" id=3D"line-1-72=
+"></span> # Use this if you want to change the case of the 26 latin letters
+<span class=3D"anchor" id=3D"line-2-36"></span> LC_COLLATE=3DC tr A-Z a-z
+<span class=3D"anchor" id=3D"line-3-26"></span>
+<span class=3D"anchor" id=3D"line-4-15"></span> # Use this if you want the =
+case conversion to depend upon the locale, which might be more like what a =
+user is expecting
+<span class=3D"anchor" id=3D"line-5-11"></span> tr '[:upper:]' '[:lower:]'<=
+/pre><span class=3D"anchor" id=3D"line-805"></span><span class=3D"anchor" i=
+d=3D"line-806"></span></li></ul><p class=3D"line862">The quotes are require=
+d on the second command, to avoid <a href=3D"http://bash.cumulonim.biz/glob=
+.html">globbing</a>. <span class=3D"anchor" id=3D"line-807"></span><span cl=
+ass=3D"anchor" id=3D"line-808"></span></p><p class=3D"line867"><span class=
+=3D"anchor" id=3D"pf31"></span> <span class=3D"anchor" id=3D"line-809"></sp=
+an>
+</p><h2 id=3D"ps_ax_.7C_grep_gedit">31. ps ax | grep gedit</h2>
+<span class=3D"anchor" id=3D"line-810"></span><span class=3D"anchor" id=3D"=
+line-811"></span><p class=3D"line862">The fundamental problem here is that =
+the name of a running process is inherently unreliable.  There could be mor=
+e than one legitimate gedit process.  There could be something else disguis=
+ing itself as gedit (changing the reported name of an executed command is t=
+rivial).  For <em>real</em> answers to this, see <a href=3D"http://bash.cum=
+ulonim.biz/ProcessManagement.html">ProcessManagement</a>. <span class=3D"an=
+chor" id=3D"line-812"></span><span class=3D"anchor" id=3D"line-813"></span>=
+</p><p class=3D"line874">The following is the quick and dirty stuff. <span =
+class=3D"anchor" id=3D"line-814"></span><span class=3D"anchor" id=3D"line-8=
+15"></span></p><p class=3D"line874">Searching for the PID of (for example) =
+gedit, many people start with <span class=3D"anchor" id=3D"line-816"></span=
+><span class=3D"anchor" id=3D"line-817"></span><span class=3D"anchor" id=3D=
+"line-818"></span><span class=3D"anchor" id=3D"line-819"></span><span class=
+=3D"anchor" id=3D"line-820"></span></p><pre><span class=3D"anchor" id=3D"li=
+ne-1-73"></span>$ ps ax | grep gedit
+<span class=3D"anchor" id=3D"line-2-37"></span>10530 ?        S      6:23 g=
+edit
+<span class=3D"anchor" id=3D"line-3-27"></span>32118 pts/0    R+     0:00 g=
+rep gedit</pre><span class=3D"anchor" id=3D"line-821"></span><p class=3D"li=
+ne862">which, depending on a <a href=3D"http://bash.cumulonim.biz/RaceCondi=
+tion.html">RaceCondition</a>, often yields grep itself as a result.  To fil=
+ter grep out: <span class=3D"anchor" id=3D"line-822"></span><span class=3D"=
+anchor" id=3D"line-823"></span><span class=3D"anchor" id=3D"line-824"></spa=
+n></p><pre><span class=3D"anchor" id=3D"line-1-74"></span>ps ax | grep -v g=
+rep | grep gedit   # will work, but ugly</pre><span class=3D"anchor" id=3D"=
+line-825"></span><p class=3D"line874">An alternative to this is to use: <sp=
+an class=3D"anchor" id=3D"line-826"></span><span class=3D"anchor" id=3D"lin=
+e-827"></span><span class=3D"anchor" id=3D"line-828"></span></p><pre><span =
+class=3D"anchor" id=3D"line-1-75"></span>ps ax | grep [g]edit</pre><span cl=
+ass=3D"anchor" id=3D"line-829"></span><p class=3D"line874">This will ignore=
+ the grep itself in the process table as that is [g]edit and grep is lookin=
+g for gedit once evaluated. <span class=3D"anchor" id=3D"line-830"></span><=
+span class=3D"anchor" id=3D"line-831"></span></p><p class=3D"line874">On GN=
+U/Linux, the parameter -C can be used instead to filter by commandname: <sp=
+an class=3D"anchor" id=3D"line-832"></span><span class=3D"anchor" id=3D"lin=
+e-833"></span><span class=3D"anchor" id=3D"line-834"></span><span class=3D"=
+anchor" id=3D"line-835"></span><span class=3D"anchor" id=3D"line-836"></spa=
+n></p><pre><span class=3D"anchor" id=3D"line-1-76"></span>$ ps -C gedit
+<span class=3D"anchor" id=3D"line-2-38"></span>  PID TTY          TIME CMD
+<span class=3D"anchor" id=3D"line-3-28"></span>10530 ?        00:06:23 gedi=
+t</pre><span class=3D"anchor" id=3D"line-837"></span><span class=3D"anchor"=
+ id=3D"line-838"></span><p class=3D"line874">But why bother when you could =
+just use pgrep instead? <span class=3D"anchor" id=3D"line-839"></span><span=
+ class=3D"anchor" id=3D"line-840"></span><span class=3D"anchor" id=3D"line-=
+841"></span><span class=3D"anchor" id=3D"line-842"></span></p><pre><span cl=
+ass=3D"anchor" id=3D"line-1-77"></span>$ pgrep gedit
+<span class=3D"anchor" id=3D"line-2-39"></span>10530</pre><span class=3D"an=
+chor" id=3D"line-843"></span><span class=3D"anchor" id=3D"line-844"></span>=
+<p class=3D"line874">Now in a second step the PID is often extracted by awk=
+ or cut: <span class=3D"anchor" id=3D"line-845"></span><span class=3D"ancho=
+r" id=3D"line-846"></span><span class=3D"anchor" id=3D"line-847"></span></p=
+><pre><span class=3D"anchor" id=3D"line-1-78"></span>$ ps -C gedit | awk '{=
+print $1}' | tail -n1</pre><span class=3D"anchor" id=3D"line-848"></span><s=
+pan class=3D"anchor" id=3D"line-849"></span><p class=3D"line874">but even t=
+hat can be handled by some of the trillions of parameters for ps: <span cla=
+ss=3D"anchor" id=3D"line-850"></span><span class=3D"anchor" id=3D"line-851"=
+></span><span class=3D"anchor" id=3D"line-852"></span><span class=3D"anchor=
+" id=3D"line-853"></span></p><pre><span class=3D"anchor" id=3D"line-1-79"><=
+/span>$ ps -C gedit -opid=3D
+<span class=3D"anchor" id=3D"line-2-40"></span>10530</pre><span class=3D"an=
+chor" id=3D"line-854"></span><span class=3D"anchor" id=3D"line-855"></span>=
+<p class=3D"line874">If you're stuck in 1992 and aren't using pgrep, you co=
+uld use the ancient, obsolete, deprecated pidof (GNU/Linux only) instead: <=
+span class=3D"anchor" id=3D"line-856"></span><span class=3D"anchor" id=3D"l=
+ine-857"></span><span class=3D"anchor" id=3D"line-858"></span><span class=
+=3D"anchor" id=3D"line-859"></span></p><pre><span class=3D"anchor" id=3D"li=
+ne-1-80"></span>$ pidof gedit
+<span class=3D"anchor" id=3D"line-2-41"></span>10530</pre><span class=3D"an=
+chor" id=3D"line-860"></span><p class=3D"line862">and if you need the PID t=
+o kill the process, <em>pkill</em> might be interesting for you. Note howev=
+er that, for example, <tt>pgrep/pkill&nbsp;ssh</tt> would also find process=
+es named sshd, and you wouldn't want to kill those. <span class=3D"anchor" =
+id=3D"line-861"></span><span class=3D"anchor" id=3D"line-862"></span></p><p=
+ class=3D"line862">Unfortunately some programs aren't started with their na=
+me, for example firefox is often started as firefox-bin, which you would ne=
+ed to find out with - well - <strong>ps ax | grep firefox</strong>. <img al=
+t=3D":)" height=3D"16" src=3D"http://bash.cumulonim.biz/moin_static194/mode=
+rnized/img/smile.png" title=3D":)" width=3D"16"> <span class=3D"anchor" id=
+=3D"line-863"></span><span class=3D"anchor" id=3D"line-864"></span></p><p c=
+lass=3D"line862">Please read <a href=3D"http://bash.cumulonim.biz/ProcessMa=
+nagement.html">ProcessManagement</a>.  Seriously. <span class=3D"anchor" id=
+=3D"line-865"></span><span class=3D"anchor" id=3D"line-866"></span></p><p c=
+lass=3D"line867"><span class=3D"anchor" id=3D"pf32"></span> <span class=3D"=
+anchor" id=3D"line-867"></span>
+</p><h2 id=3D"printf_.22.24foo.22">32. printf "$foo"</h2>
+<span class=3D"anchor" id=3D"line-868"></span><span class=3D"anchor" id=3D"=
+line-869"></span><p class=3D"line862">This isn't wrong because of <a href=
+=3D"http://bash.cumulonim.biz/Quotes.html">quotes</a>, but because of a <em=
+>format string exploit</em>.  If <tt class=3D"backtick">$foo</tt> is not st=
+rictly under your control, then any <tt class=3D"backtick">\</tt> or <tt cl=
+ass=3D"backtick">%</tt> characters in the variable may cause undesired beha=
+vior. <span class=3D"anchor" id=3D"line-870"></span><span class=3D"anchor" =
+id=3D"line-871"></span></p><p class=3D"line874">Always supply your own form=
+at string: <span class=3D"anchor" id=3D"line-872"></span><span class=3D"anc=
+hor" id=3D"line-873"></span></p><p class=3D"line867"><span class=3D"anchor"=
+ id=3D"line-874"></span><span class=3D"anchor" id=3D"line-875"></span><span=
+ class=3D"anchor" id=3D"line-876"></span></p><pre><span class=3D"anchor" id=
+=3D"line-1-81"></span>printf %s "$foo"
+<span class=3D"anchor" id=3D"line-2-42"></span>printf '%s\n' "$foo"</pre><s=
+pan class=3D"anchor" id=3D"line-877"></span><span class=3D"anchor" id=3D"li=
+ne-878"></span><span class=3D"anchor" id=3D"line-879"></span><p class=3D"li=
+ne867"><span class=3D"anchor" id=3D"pf33"></span> <span class=3D"anchor" id=
+=3D"line-880"></span>
+</p><h2 id=3D"for_i_in_.7B1...24n.7D">33. for i in {1..$n}</h2>
+<span class=3D"anchor" id=3D"line-881"></span><p class=3D"line862">The <a h=
+ref=3D"http://bash.cumulonim.biz/BashParser.html">BashParser</a> performs <=
+a href=3D"http://bash.cumulonim.biz/BraceExpansion.html">BraceExpansion</a>=
+ <em>before</em> any other expansions or substitutions.  So the brace expan=
+sion code sees the literal <tt class=3D"backtick">$n</tt>, which is not num=
+eric, and therefore it doesn't expand the curly braces into a list of numbe=
+rs.  This makes it nearly impossible to use brace expansion to create lists=
+ whose size is only known at run-time. <span class=3D"anchor" id=3D"line-88=
+2"></span><span class=3D"anchor" id=3D"line-883"></span></p><p class=3D"lin=
+e874">Do this instead: <span class=3D"anchor" id=3D"line-884"></span><span =
+class=3D"anchor" id=3D"line-885"></span><span class=3D"anchor" id=3D"line-8=
+86"></span><span class=3D"anchor" id=3D"line-887"></span><span class=3D"anc=
+hor" id=3D"line-888"></span></p><pre><span class=3D"anchor" id=3D"line-1-82=
+"></span>for ((i=3D1; i&lt;=3Dn; i++)); do
+<span class=3D"anchor" id=3D"line-2-43"></span>...
+<span class=3D"anchor" id=3D"line-3-29"></span>done</pre><span class=3D"anc=
+hor" id=3D"line-889"></span><span class=3D"anchor" id=3D"line-890"></span><=
+p class=3D"line862">In the case of simple iteration over integers, an arith=
+metic <tt class=3D"backtick">for</tt> loop should almost always be preferre=
+d over brace expansion to begin with, because brace expansion pre-expands e=
+very argument which can be slower and unnecessarily consumes memory. <span =
+class=3D"anchor" id=3D"line-891"></span><span class=3D"anchor" id=3D"line-8=
+92"></span></p><p class=3D"line867"><span class=3D"anchor" id=3D"pf34"></sp=
+an> <span class=3D"anchor" id=3D"line-893"></span>
+</p><h2 id=3D"if_.5B.5B_.24foo_.3D_.24bar_.5D.5D_.28depending_on_intent.29"=
+>34. if [[ $foo =3D $bar ]] (depending on intent)</h2>
+<span class=3D"anchor" id=3D"line-894"></span><span class=3D"anchor" id=3D"=
+line-895"></span><p class=3D"line862">When the right-hand side of an <tt cl=
+ass=3D"backtick">=3D</tt> operator inside <a href=3D"http://bash.cumulonim.=
+biz/BashFAQ(2f)031.html">[[</a> is not quoted, bash does <a href=3D"http://=
+bash.cumulonim.biz/glob.html">pattern matching</a> against it, instead of t=
+reating it as a string.  So, in the code above, if <tt class=3D"backtick">b=
+ar</tt> contains <tt class=3D"backtick">*</tt>, the result will <em>always<=
+/em> be true.  If you want to check for equality of strings, the right-hand=
+ side should be quoted: <span class=3D"anchor" id=3D"line-896"></span><span=
+ class=3D"anchor" id=3D"line-897"></span></p><p class=3D"line867"><span cla=
+ss=3D"anchor" id=3D"line-898"></span><span class=3D"anchor" id=3D"line-899"=
+></span></p><pre><span class=3D"anchor" id=3D"line-1-83"></span>if [[ $foo =
+=3D "$bar" ]]</pre><span class=3D"anchor" id=3D"line-900"></span><span clas=
+s=3D"anchor" id=3D"line-901"></span><p class=3D"line874">If you want to do =
+pattern matching, it might be wise to choose variable names that indicate t=
+he right-hand side contains a pattern.  Or use comments. <span class=3D"anc=
+hor" id=3D"line-902"></span><span class=3D"anchor" id=3D"line-903"></span><=
+/p><p class=3D"line862">It's also worth pointing out that if you quote the =
+right-hand side of <tt class=3D"backtick">=3D~</tt> it <em>also</em> forces=
+ a simple string comparison, rather than a regular expression matching.  Th=
+is leads us to: <span class=3D"anchor" id=3D"line-904"></span><span class=
+=3D"anchor" id=3D"line-905"></span></p><p class=3D"line867"><span class=3D"=
+anchor" id=3D"pf35"></span> <span class=3D"anchor" id=3D"line-906"></span>
+</p><h2 id=3D"if_.5B.5B_.24foo_.3D.2BAH4_.27some_RE.27_.5D.5D">35. if [[ $f=
+oo =3D~ 'some RE' ]]</h2>
+<span class=3D"anchor" id=3D"line-907"></span><span class=3D"anchor" id=3D"=
+line-908"></span><p class=3D"line862">The quotes around the right-hand side=
+ of the <tt class=3D"backtick">=3D~</tt> operator cause it to become a stri=
+ng, rather than a <a href=3D"http://bash.cumulonim.biz/RegularExpression.ht=
+ml">RegularExpression</a>.  If you want to use a long or complicated regula=
+r expression and avoid lots of backslash escaping, put it in a variable: <s=
+pan class=3D"anchor" id=3D"line-909"></span><span class=3D"anchor" id=3D"li=
+ne-910"></span></p><p class=3D"line867"><span class=3D"anchor" id=3D"line-9=
+11"></span><span class=3D"anchor" id=3D"line-912"></span><span class=3D"anc=
+hor" id=3D"line-913"></span></p><pre><span class=3D"anchor" id=3D"line-1-84=
+"></span>re=3D'some RE'
+<span class=3D"anchor" id=3D"line-2-44"></span>if [[ $foo =3D~ $re ]]</pre>=
+<span class=3D"anchor" id=3D"line-914"></span><span class=3D"anchor" id=3D"=
+line-915"></span><p class=3D"line862">This also works around the difference=
+ in how <tt class=3D"backtick">=3D~</tt> works across different versions of=
+ bash.  Using a variable avoids some nasty and subtle problems. <span class=
+=3D"anchor" id=3D"line-916"></span><span class=3D"anchor" id=3D"line-917"><=
+/span></p><p class=3D"line867"><span class=3D"anchor" id=3D"pf36"></span> <=
+span class=3D"anchor" id=3D"line-918"></span>
+</p><h2 id=3D"A.5B_-n_.24foo_.5D_or_.5B_-z_.24foo_.5D">36. [ -n $foo ] or [=
+ -z $foo ]</h2>
+<span class=3D"anchor" id=3D"line-919"></span><span class=3D"anchor" id=3D"=
+line-920"></span><p class=3D"line862">When using the <tt class=3D"backtick"=
+>[</tt> command, you <strong>must</strong> <a href=3D"http://bash.cumulonim=
+.biz/Quotes.html">quote</a> each substitution that you give it.  Otherwise,=
+ <tt class=3D"backtick">$foo</tt> could expand to 0 words, or 42 words, or =
+any number of words that isn't 1, which breaks the syntax. <span class=3D"a=
+nchor" id=3D"line-921"></span><span class=3D"anchor" id=3D"line-922"></span=
+></p><p class=3D"line867"><span class=3D"anchor" id=3D"line-923"></span><sp=
+an class=3D"anchor" id=3D"line-924"></span><span class=3D"anchor" id=3D"lin=
+e-925"></span><span class=3D"anchor" id=3D"line-926"></span><span class=3D"=
+anchor" id=3D"line-927"></span><span class=3D"anchor" id=3D"line-928"></spa=
+n><span class=3D"anchor" id=3D"line-929"></span><span class=3D"anchor" id=
+=3D"line-930"></span></p><pre><span class=3D"anchor" id=3D"line-1-85"></spa=
+n>[ -n "$foo" ]
+<span class=3D"anchor" id=3D"line-2-45"></span>[ -z "$foo" ]
+<span class=3D"anchor" id=3D"line-3-30"></span>[ -n "$(some command with a =
+"$file" in it)" ]
+<span class=3D"anchor" id=3D"line-4-16"></span>
+<span class=3D"anchor" id=3D"line-5-12"></span># [[ doesn't perform word-sp=
+litting or glob expansion, so you could also use:
+<span class=3D"anchor" id=3D"line-6-8"></span>[[ -n $foo ]]
+<span class=3D"anchor" id=3D"line-7-6"></span>[[ -z $foo ]]</pre><span clas=
+s=3D"anchor" id=3D"line-931"></span><span class=3D"anchor" id=3D"line-932">=
+</span><p class=3D"line867"><span class=3D"anchor" id=3D"pf37"></span> <spa=
+n class=3D"anchor" id=3D"line-933"></span>
+</p><h2 id=3D"A.5B.5B_-e_.22.24broken_symlink.22_.5D.5D_returns_1_even_thou=
+gh_.24broken_symlink_exists">37. [[ -e "$broken_symlink" ]] returns 1 even =
+though $broken_symlink exists</h2>
+<span class=3D"anchor" id=3D"line-934"></span><span class=3D"anchor" id=3D"=
+line-935"></span><p class=3D"line874">Test follows symlinks, therefore if a=
+ symlink is broken, i.e. it points to a file that doesn't exists, test -e r=
+eturns 1 for it even though it exists. <span class=3D"anchor" id=3D"line-93=
+6"></span><span class=3D"anchor" id=3D"line-937"></span></p><p class=3D"lin=
+e874">In order to work around it (and prepare against it) you should use: <=
+span class=3D"anchor" id=3D"line-938"></span><span class=3D"anchor" id=3D"l=
+ine-939"></span></p><p class=3D"line867"><span class=3D"anchor" id=3D"line-=
+940"></span><span class=3D"anchor" id=3D"line-941"></span></p><pre><span cl=
+ass=3D"anchor" id=3D"line-1-86"></span>[[ -e "$broken_symlink" || -L "$brok=
+en_symlink" ]]</pre><span class=3D"anchor" id=3D"line-942"></span><span cla=
+ss=3D"anchor" id=3D"line-943"></span><p class=3D"line867"><span class=3D"an=
+chor" id=3D"pf38"></span> <span class=3D"anchor" id=3D"line-944"></span>
+</p><h2 id=3D"ed_file_.3C.3C.3C.22g.2BAC8-d.2BAFw.7B0.2C3.2BAFw.7D.2BAC8-s.=
+2BAC8ALw-e.2BAC8-g.22_fails">38. ed file &lt;&lt;&lt;"g/d\{0,3\}/s//e/g" fa=
+ils</h2>
+<span class=3D"anchor" id=3D"line-945"></span><span class=3D"anchor" id=3D"=
+line-946"></span><p class=3D"line874">The problem caused because ed doesn't=
+ accept 0 for \{0,3\}. <span class=3D"anchor" id=3D"line-947"></span><span =
+class=3D"anchor" id=3D"line-948"></span></p><p class=3D"line874">You can ch=
+eck that the following do work: <span class=3D"anchor" id=3D"line-949"></sp=
+an><span class=3D"anchor" id=3D"line-950"></span><span class=3D"anchor" id=
+=3D"line-951"></span></p><pre><span class=3D"anchor" id=3D"line-1-87"></spa=
+n>ed file &lt;&lt;&lt;"g/d\{1,3\}/s//e/g"</pre><span class=3D"anchor" id=3D=
+"line-952"></span><span class=3D"anchor" id=3D"line-953"></span><p class=3D=
+"line862">Note that this happens even though POSIX states that BRE (which i=
+s the Regular Expression flavor used by ed) <a class=3D"http" href=3D"http:=
+//www.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03=
+_06">should accept 0 as the minimum number of occurrences (see section 5)</=
+a>. <span class=3D"anchor" id=3D"line-954"></span><span class=3D"anchor" id=
+=3D"line-955"></span></p><p class=3D"line867"><span class=3D"anchor" id=3D"=
+pf39"></span> <span class=3D"anchor" id=3D"line-956"></span>
+</p><h2 id=3D"expr_sub-string_fails_for_.22match.22">39. expr sub-string fa=
+ils for "match"</h2>
+<span class=3D"anchor" id=3D"line-957"></span><span class=3D"anchor" id=3D"=
+line-958"></span><p class=3D"line874">This works reasonably well - most of =
+the time <span class=3D"anchor" id=3D"line-959"></span><span class=3D"ancho=
+r" id=3D"line-960"></span><span class=3D"anchor" id=3D"line-961"></span><sp=
+an class=3D"anchor" id=3D"line-962"></span><span class=3D"anchor" id=3D"lin=
+e-963"></span></p><pre><span class=3D"anchor" id=3D"line-1-88"></span>word=
+=3Dabcde
+<span class=3D"anchor" id=3D"line-2-46"></span>expr "$word" : ".\(.*\)"
+<span class=3D"anchor" id=3D"line-3-31"></span>bcde</pre><span class=3D"anc=
+hor" id=3D"line-964"></span><span class=3D"anchor" id=3D"line-965"></span><=
+p class=3D"line874">But WILL fail for the word "match" <span class=3D"ancho=
+r" id=3D"line-966"></span><span class=3D"anchor" id=3D"line-967"></span><sp=
+an class=3D"anchor" id=3D"line-968"></span><span class=3D"anchor" id=3D"lin=
+e-969"></span><span class=3D"anchor" id=3D"line-970"></span></p><pre><span =
+class=3D"anchor" id=3D"line-1-89"></span>word=3Dmatch
+<span class=3D"anchor" id=3D"line-2-47"></span>expr "$word" : ".\(.*\)"</pr=
+e><span class=3D"anchor" id=3D"line-971"></span><span class=3D"anchor" id=
+=3D"line-972"></span><p class=3D"line874">The problem is "match" is a keywo=
+rd. <span class=3D"anchor" id=3D"line-973"></span>Solution (GNU only) is pr=
+efix with a '+' <span class=3D"anchor" id=3D"line-974"></span><span class=
+=3D"anchor" id=3D"line-975"></span><span class=3D"anchor" id=3D"line-976"><=
+/span><span class=3D"anchor" id=3D"line-977"></span><span class=3D"anchor" =
+id=3D"line-978"></span></p><pre><span class=3D"anchor" id=3D"line-1-90"></s=
+pan>word=3Dmatch
+<span class=3D"anchor" id=3D"line-2-48"></span>expr + "$word" : ".\(.*\)"
+<span class=3D"anchor" id=3D"line-3-32"></span>atch</pre><span class=3D"anc=
+hor" id=3D"line-979"></span><span class=3D"anchor" id=3D"line-980"></span><=
+p class=3D"line862">Or, y'know, stop using <tt class=3D"backtick">expr</tt>=
+.  You can do everything <tt class=3D"backtick">expr</tt> does by using <a =
+href=3D"http://bash.cumulonim.biz/BashFAQ(2f)073.html">Parameter Expansion<=
+/a>.  What's that thing up there trying to do?  Remove the first letter of =
+a word?  That can be done in POSIX shells using PE: <span class=3D"anchor" =
+id=3D"line-981"></span><span class=3D"anchor" id=3D"line-982"></span></p><p=
+ class=3D"line867"><span class=3D"anchor" id=3D"line-983"></span><span clas=
+s=3D"anchor" id=3D"line-984"></span><span class=3D"anchor" id=3D"line-985">=
+</span><span class=3D"anchor" id=3D"line-986"></span></p><pre><span class=
+=3D"anchor" id=3D"line-1-91"></span>$ word=3Dmatch
+<span class=3D"anchor" id=3D"line-2-49"></span>$ echo "${word#?}"
+<span class=3D"anchor" id=3D"line-3-33"></span>atch</pre><span class=3D"anc=
+hor" id=3D"line-987"></span><span class=3D"anchor" id=3D"line-988"></span><=
+p class=3D"line862">Seriously, there's no excuse for using <tt class=3D"bac=
+ktick">expr</tt> unless you're on Solaris with its non-POSIX-conforming <tt=
+ class=3D"backtick">/bin/sh</tt>.  It's an external process, so it's much s=
+lower than in-process string manipulation.  And since nobody uses it, nobod=
+y understands what it's doing, so your code is obfuscated and hard to maint=
+ain. <span class=3D"anchor" id=3D"line-989"></span><span class=3D"anchor" i=
+d=3D"line-990"></span></p><p class=3D"line867"><span class=3D"anchor" id=3D=
+"pf40"></span> <span class=3D"anchor" id=3D"line-991"></span>
+</p><h2 id=3D"On_UTF-8_and_Byte-Order_Marks_.28BOM.29">40. On UTF-8 and Byt=
+e-Order Marks (BOM)</h2>
+<span class=3D"anchor" id=3D"line-992"></span><span class=3D"anchor" id=3D"=
+line-993"></span><p class=3D"line867"><strong>In general:</strong> Unix UTF=
+-8 text does not use BOM. The encoding of plain text is determined by the l=
+ocale or by mime types or other metadata. While the presence of a BOM would=
+ not normally damage a UTF-8 document meant only for reading by humans, it =
+is problematic (often syntactically illegal) in any text file meant to be i=
+nterpreted by automated processes such as scripts, source code, configurati=
+on files, and so on. Files starting with BOM should be considered equally f=
+oreign as those with MS-DOS linebreaks. <span class=3D"anchor" id=3D"line-9=
+94"></span><span class=3D"anchor" id=3D"line-995"></span></p><p class=3D"li=
+ne867"><strong>In shell scripting:</strong> 'Where UTF-8 is used transparen=
+tly in 8-bit environments, the use of a BOM will interfere with any protoco=
+l or file format that expects specific ASCII characters at the beginning, s=
+uch as the use of "#!" of at the beginning of Unix shell scripts.' <span cl=
+ass=3D"anchor" id=3D"line-996"></span><a class=3D"http" href=3D"http://unic=
+ode.org/faq/utf_bom.html#bom5">http://unicode.org/faq/utf_bom.html#bom5</a>=
+ <span class=3D"anchor" id=3D"line-997"></span><span class=3D"anchor" id=3D=
+"line-998"></span></p><p class=3D"line867"><span class=3D"anchor" id=3D"pf4=
+1"></span> <span class=3D"anchor" id=3D"line-999"></span>
+</p><h2 id=3D"content.3D.24.28.3Cfile.29">41. content=3D$(&lt;file)</h2>
+<span class=3D"anchor" id=3D"line-1000"></span><span class=3D"anchor" id=3D=
+"line-1001"></span><p class=3D"line862">Command substitutions (both <tt>``<=
+/tt> and <tt>$()</tt> forms) remove all trailing newlines from the command =
+inside them; this includes the Bash <tt class=3D"backtick">$(&lt;file)</tt>=
+ shortcut.  This can result in nasty surprises, especially since it's diffi=
+cult to know whether the newline in the output is from <tt class=3D"backtic=
+k">echo</tt> or part of the data. An easy workaround is to add a postfix in=
+side the command substitution and remove it on the outside: <span class=3D"=
+anchor" id=3D"line-1002"></span><span class=3D"anchor" id=3D"line-1003"></s=
+pan><span class=3D"anchor" id=3D"line-1004"></span><span class=3D"anchor" i=
+d=3D"line-1005"></span></p><pre><span class=3D"anchor" id=3D"line-1-92"></s=
+pan>absolute_dir_path_x=3D"$(readlink -fn -- "$dir_path"; echo x)"
+<span class=3D"anchor" id=3D"line-2-50"></span>absolute_dir_path=3D"${absol=
+ute_dir_path_x%x}"</pre><span class=3D"anchor" id=3D"line-1006"></span><spa=
+n class=3D"anchor" id=3D"line-1007"></span><p class=3D"line867"><span class=
+=3D"anchor" id=3D"pf42"></span> <span class=3D"anchor" id=3D"line-1008"></s=
+pan>
+</p><h2 id=3D"for_file_in_..2BAC8.2A_.3B_do_if_.5B.5B_.24file_.21.3D_.2A..2=
+A_.5D.5D">42. for file in ./* ; do if [[ $file !=3D *.* ]]</h2>
+<span class=3D"anchor" id=3D"line-1009"></span><span class=3D"anchor" id=3D=
+"line-1010"></span><p class=3D"line862">It's a good practice to prefix your=
+ <tt>*</tt> with a <tt>./</tt> because it avoids problems with badly (malic=
+iously) named files such as <tt>-rf</tt>.  These files will get treated as =
+options instead of file names if not prefixed by something (such as <tt>./<=
+/tt>). <span class=3D"anchor" id=3D"line-1011"></span><span class=3D"anchor=
+" id=3D"line-1012"></span></p><p class=3D"line862">In this case, however, p=
+roblems arise because the pattern <tt>*.*</tt> won't match the pathname in =
+the <tt>file</tt> variable.  Say your file is called <tt>todo</tt>, the <tt=
+>file</tt> variable will now hold: <tt>./todo</tt>.  This will cause a bad =
+match against the pattern, because of the prefixed <tt>./</tt>. <span class=
+=3D"anchor" id=3D"line-1013"></span><span class=3D"anchor" id=3D"line-1014"=
+></span></p><p class=3D"line862">What you need to do is fix your pattern to=
+ take the prefixed <tt>./</tt> into account: <tt>[[&nbsp;$file&nbsp;!=3D&nb=
+sp;./*.*&nbsp;]]</tt>. <span class=3D"anchor" id=3D"line-1015"></span><span=
+ class=3D"anchor" id=3D"line-1016"></span></p><p class=3D"line874">Alternat=
+ively, if you want to do thing with just the filename, you could get the fi=
+lename out of the pathname: <span class=3D"anchor" id=3D"line-1017"></span>=
+<span class=3D"anchor" id=3D"line-1018"></span></p><p class=3D"line867"><sp=
+an class=3D"anchor" id=3D"line-1019"></span><span class=3D"anchor" id=3D"li=
+ne-1020"></span><span class=3D"anchor" id=3D"line-1021"></span><span class=
+=3D"anchor" id=3D"line-1022"></span><span class=3D"anchor" id=3D"line-1023"=
+></span><span class=3D"anchor" id=3D"line-1024"></span></p><pre><span class=
+=3D"anchor" id=3D"line-1-93"></span>    for path in ./*; do
+<span class=3D"anchor" id=3D"line-2-51"></span>        file=3D${path##*/}
+<span class=3D"anchor" id=3D"line-3-34"></span>
+<span class=3D"anchor" id=3D"line-4-17"></span>        [[ $file !=3D *.* ]]=
+ &amp;&amp; rm "$file"
+<span class=3D"anchor" id=3D"line-5-13"></span>    done</pre><span class=3D=
+"anchor" id=3D"line-1025"></span><span class=3D"anchor" id=3D"line-1026"></=
+span><p class=3D"line862">Another alternative could be to stop using the <t=
+t>./</tt> prefix and solve the risk of dash-prefixed filenames by putting a=
+ <tt>--</tt> on your commands that use the file.  Putting a <tt>--</tt> bef=
+ore expanding filenames on certain commands will tell the command to stop l=
+ooking for options.  The filename can now no longer be mis-parsed as an opt=
+ion.  The downside of this is that not all commands that take options neces=
+sarily support <tt>--</tt> and you make your code more fragile by requiring=
+ that you not forget a <tt>--</tt> anywhere you use the file. <span class=
+=3D"anchor" id=3D"line-1027"></span><span class=3D"anchor" id=3D"line-1028"=
+></span></p><p class=3D"line867"><span class=3D"anchor" id=3D"line-1029"></=
+span><span class=3D"anchor" id=3D"line-1030"></span><span class=3D"anchor" =
+id=3D"line-1031"></span><span class=3D"anchor" id=3D"line-1032"></span></p>=
+<pre><span class=3D"anchor" id=3D"line-1-94"></span>   for file in *; do
+<span class=3D"anchor" id=3D"line-2-52"></span>       [[ $file !=3D *.* ]] =
+&amp;&amp; rm -- "$file" # works with most rm's, but is not guaranteed to w=
+ork with any command.
+<span class=3D"anchor" id=3D"line-3-35"></span>   done</pre><span class=3D"=
+anchor" id=3D"line-1033"></span><span class=3D"anchor" id=3D"line-1034"></s=
+pan><p class=3D"line867"><span class=3D"anchor" id=3D"pf43"></span> <span c=
+lass=3D"anchor" id=3D"line-1035"></span>
+</p><h2 id=3D"somecmd_2.3E.261_.3Elogfile">43. somecmd 2&gt;&amp;1 &gt;logf=
+ile</h2>
+<span class=3D"anchor" id=3D"line-1036"></span><span class=3D"anchor" id=3D=
+"line-1037"></span><p class=3D"line862">This is by far the most common mist=
+ake involving redirections, typically performed by someone wanting to direc=
+t both stdout and stderr to a file or pipe will try this and not understand=
+ why stderr is still showing up on their terminal. If you're perplexed by t=
+his, you probably don't understand how <a class=3D"http" href=3D"http://wik=
+i.bash-hackers.org/howto/redirection_tutorial">redirections</a> or possibly=
+ <a href=3D"http://bash.cumulonim.biz/FileDescriptor.html">file descriptors=
+</a> work to begin with. Redirections are evaluated left-to-right before th=
+e command is executed. This semantically incorrect code essentially means: =
+"first redirect standard error to where standard out is currently pointing =
+(the tty), then redirect standard out to logfile". This is backwards. Stand=
+ard error is already going to the tty. Use: <tt>somecmd&nbsp;&gt;logfile&nb=
+sp;2&gt;&amp;1</tt> instead. See <a href=3D"http://bash.cumulonim.biz/BashF=
+AQ(2f)055.html">a more in-depth explanation</a>, <a class=3D"http" href=3D"=
+http://wiki.bash-hackers.org/scripting/copydescriptor">Copy descriptor expl=
+ained</a>, and <a href=3D"http://bash.cumulonim.biz/BashGuide(2f)InputAndOu=
+tput.html#Redirection">BashGuide - redirection</a>. <span class=3D"anchor" =
+id=3D"line-1038"></span><span class=3D"anchor" id=3D"line-1039"></span></p>=
+<p class=3D"line867"></p><hr><p class=3D"line874"> <span class=3D"anchor" i=
+d=3D"line-1040"></span><a href=3D"http://bash.cumulonim.biz/CategoryShell.h=
+tml">CategoryShell</a> <span class=3D"anchor" id=3D"line-1041"></span><span=
+ class=3D"anchor" id=3D"bottom"></span></p></div>
+</div>
+<hr>
+2012-07-01 04:05
+
+
+</body></html>
+------MultipartBoundary--hDQuimNxZYaPAOLfnkZBnv7Gd00iqwIUl6B23COrfk----
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: http://bash.cumulonim.biz/modernized/img/moin-www.png
+
+iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
+WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1QQaBywH5hnejwAAADV0RVh0Q29tbWVudAAoYykgMjAw
+NCBKYWt1YiBTdGVpbmVyCgpDcmVhdGVkIHdpdGggVGhlIEdJTVCQ2YtvAAAC7ElEQVQ4y62TXWhb
+ZRyHn/ec95xjkzRpm+ajjW3W0KIsuHWyyMSrKagwFG+UKd1FZTgQb4ShoLdSEMX7XYgVR0HE6Y1M
+hjezMLWzlo12K67rXD+znCwfTXKSc5Kc1wvZxO3W5/r/ey7+/H6CBzj+3uwp4C1dyv0KLOX7DaVY
+0HTt7NzM1BcP3ov7wfe/nDR17ceJsWTiyIE0Y6koAcuiXG+ytmmzuLLJjY3CZSHEybmZqav/Ebz2
+7ue5YLjnt1eOHhQHJ+KU603snQ1kKA49/eDYpBJRFla2OT+/chchnr0nkQDRaOin55/JiicyA5SK
+eQZHs0QGh3BabfKb60jfQ+s2eS6Xoeur6IVL188ATwNob3741UfJeH/4aG4cQ/PpyBBoAkNKTEMS
+sCSJaC9D8RixviC57KOkhweOvPHB2WkALRwJnDycHaVSLnLHDRAf3odS4CtAaAjfY7fU4PuLy1yY
+XyRiKfaPDwO8CiBrTjuWTvazcKNAZiKOr/79bL1S4qnJLEIIlFJs796h1WwyFIsAHAbQWl5HsywT
+LRSnUm9h1zwct0vN8fDqNkL8oxNCkIhFubp6E8uQAAMAUtc1v9poacHWDiFpUWgMUjRMOl2fVqnD
+ZLuN63r0hoI4jsO+VIxC0wMoAUhD0/K3torDh8aTZEaGuL25zfzaHh4mTS/Ip99ewRJd3n75ALVa
+jaVrN6E3DfA7gKa63XNLq1t4vgQgPZLi2KEYu4USd6sNqq7gdtnHtm2q1SqP9KdYXc8DfAOgL/18
+7vx47qXTQtfNSNCgx9T5ZXGZ5byi1nDZa7jsOS65EZ3CnsdW2efa2s6vczNT79wvUqVQPHHxsv+d
+78OTjyX44UqVsmfidbq4XgfLEGxUFH8V2lz6Y60shDj10BaOTX/8+mhmZDYc6TMfzyRJDoaxLAOn
+1WbXrvDnrTxbO8XrQpfHH9rCPfoGxswXTpye1a3Ai+iyD4RQyu+oTntdCe2zrz+ZPsP/zd9wbDf3
+MdodlQAAAABJRU5ErkJggg==
+------MultipartBoundary--hDQuimNxZYaPAOLfnkZBnv7Gd00iqwIUl6B23COrfk----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://bash.cumulonim.biz/modernized/css/common.css
+
+@charset "utf-8";
+
+html { color: black; font-family: sans-serif; font-size: 1em; background-co=
+lor: white; }
+
+body { margin: 0px; }
+
+a { color: rgb(0, 68, 179); }
+
+a:visited { color: rgb(255, 123, 179); }
+
+a.nonexistent:visited, a.nonexistent, a.badinterwiki:visited, a.badinterwik=
+i { color: gray; }
+
+a.www::before { content: url("../img/moin-www.png"); margin: 0px 0.2em; }
+
+a.http::before { content: url("../img/moin-www.png"); margin: 0px 0.2em; }
+
+a.https::before { content: url("../img/moin-www.png"); margin: 0px 0.2em; }
+
+a.file::before { content: url("../img/moin-ftp.png"); margin: 0px 0.2em; }
+
+a.ftp::before { content: url("../img/moin-ftp.png"); margin: 0px 0.2em; }
+
+a.nntp::before { content: url("../img/moin-news.png"); margin: 0px 0.2em; }
+
+a.news::before { content: url("../img/moin-news.png"); margin: 0px 0.2em; }
+
+a.telnet::before, a.ssh::before { content: url("../img/moin-telnet.png"); m=
+argin: 0px 0.2em; }
+
+a.irc::before, a.ircs::before { content: url("../img/moin-telnet.png"); mar=
+gin: 0px 0.2em; }
+
+a.mailto::before { content: url("../img/moin-email.png"); margin: 0px 0.2em=
+; }
+
+a.attachment::before { content: url("../img/moin-attach.png"); margin: 0px =
+0.2em; }
+
+a.badinterwiki::before { content: url("../img/moin-inter.png"); margin: 0px=
+ 0.2em; }
+
+a.interwiki::before { content: url("../img/moin-inter.png"); margin: 0px 0.=
+2em; }
+
+a.action::before { content: url("../img/moin-action.png"); margin: 0px 0.2e=
+m; }
+
+li p { margin: 0.25em 0px; }
+
+li.gap { margin-top: 0.5em; }
+
+dt { margin-top: 0.5em; font-weight: bold; }
+
+dd { margin-top: 0px; margin-bottom: 0px; }
+
+dd p { margin: 0.25em 0px; }
+
+a, img, img.drawing { border: 0px; }
+
+pre { border: 1pt solid rgb(174, 189, 204); padding: 5pt; font-family: cour=
+ier, monospace; white-space: pre-wrap; word-wrap: break-word; background-co=
+lor: rgb(243, 245, 247); }
+
+pre.comment { color: red; padding: 0px; margin: 0px; border: 0px; backgroun=
+d-color: rgb(204, 204, 204); }
+
+pre.comment::before { content: url("../img/attention.png"); }
+
+.comment { color: rgb(85, 85, 85); background-color: rgb(221, 221, 255); }
+
+.red { background-color: rgb(255, 204, 204); }
+
+.green { background-color: rgb(204, 255, 204); }
+
+.blue { background-color: rgb(204, 204, 255); }
+
+.yellow { background-color: rgb(255, 242, 159); }
+
+.orange { background-color: rgb(255, 213, 155); }
+
+.solid { border: 2px solid rgb(0, 0, 0); padding: 2px; }
+
+.dashed { border: 2px dashed rgb(0, 0, 0); padding: 2px; }
+
+.dotted { border: 2px dotted rgb(0, 0, 0); padding: 2px; }
+
+.left { text-align: left; }
+
+.center { text-align: center; }
+
+.right { text-align: right; }
+
+.justify { text-align: justify; }
+
+table { margin: 0.5em 0px 0px 0.5em; border-collapse: collapse; }
+
+th, td { padding: 0.25em 0.5em; border: 1pt solid rgb(173, 185, 204); }
+
+td p { margin: 0px; padding: 0px; }
+
+div.table-of-contents { border: 1px solid rgb(187, 187, 187); color: black;=
+ font-size: 80%; text-align: left; margin: 0.5em 0px 0.5em 1em; padding: 0.=
+5em 0.75em 0.5em 0.5em; max-width: 50%; display: inline-table; background-c=
+olor: rgb(238, 238, 238); }
+
+div.table-of-contents ol { margin: 0px; padding: 0px 0px 0px 2em; }
+
+div.table-of-contents ul { margin: 0px; list-style: none; }
+
+div.table-of-contents li { margin: 0px; padding: 0px; }
+
+p.table-of-contents-heading { font-weight: bold; padding: 0px; margin: 0px =
+0px 0.5em; letter-spacing: 0.075em; }
+
+table.navigation { margin: 0px; background: rgb(255, 255, 255); }
+
+.footnotes div { width: 5em; border-top-width: 1pt; border-top-style: solid=
+; border-top-color: gray; }
+
+.footnotes ol { padding: 0px 2em; margin: 0px 0px 1em; }
+
+.footnotes li { }
+
+.info { float: right; font-size: 0.7em; color: gray; }
+
+#pageinfo { margin-top: 2em; }
+
+.seperator { color: gray; }
+
+#pagebottom { clear: both; }
+
+hr { height: 1pt; border: 0px; background-color: rgb(156, 156, 156); }
+
+.hr1 { height: 2pt; }
+
+.hr2 { height: 3pt; }
+
+.hr3 { height: 4pt; }
+
+.hr4 { height: 5pt; }
+
+.hr5 { height: 6pt; }
+
+.hr6 { height: 7pt; }
+
+.u { text-decoration: underline; }
+
+.strike { text-decoration: line-through; }
+
+.warning { color: red; }
+
+.error { color: red; }
+
+strong.highlight { padding: 1pt; background-color: rgb(204, 224, 255); }
+
+.rcrss { float: right; margin: 0px 7px 0px 14px; height: 0px; position: rel=
+ative; top: 9px; }
+
+[div=3D"rtl"] .rcrss { float: left; }
+
+.recentchanges[dir=3D"rtl"] .rcrss { float: left; }
+
+.recentchanges table { clear: both; border-collapse: collapse; border: 1px =
+solid rgb(77, 125, 169); }
+
+.recentchanges td { vertical-align: top; border: none; background: rgb(230,=
+ 234, 240); }
+
+.recentchanges .rcdaybreak td { border: 1px solid rgb(77, 125, 169); backgr=
+ound: rgb(129, 187, 242); }
+
+.rcdaybreak td a { font-size: 0.88em; }
+
+.rcicon1, .rcicon2 { text-align: center; }
+
+.rcpagelink { width: 33%; }
+
+.rctime { font-size: 0.88em; white-space: nowrap; }
+
+.rceditor { white-space: nowrap; font-size: 0.88em; }
+
+.rccomment { width: 50%; color: gray; font-size: 0.88em; }
+
+.userpref table, .userpref td { border: none; }
+
+div.codemsg { margin: 0.5em 0px; padding: 0.5em 0.5em 0.5em 2.5em; border: =
+1pt solid rgb(204, 189, 174); color: black; background: url("../img/alert.p=
+ng") 0.5em 0.5em no-repeat rgb(247, 240, 224); }
+
+div.codearea { margin: 0.5em 0px; padding: 0px; border: 1pt solid rgb(174, =
+189, 204); color: black; background-color: rgb(243, 245, 247); }
+
+div.codearea pre { margin: 0px; padding: 10pt; border: none; }
+
+a.codenumbers { margin: 0px 10pt; font-size: 0.85em; color: gray; }
+
+div.codearea pre span.LineNumber { color: gray; }
+
+div.codearea pre span.ID { color: rgb(0, 0, 0); }
+
+div.codearea pre span.Operator { color: rgb(0, 0, 192); }
+
+div.codearea pre span.Char { color: rgb(0, 64, 128); }
+
+div.codearea pre span.Comment { color: rgb(0, 128, 0); }
+
+div.codearea pre span.Number { color: rgb(0, 128, 192); }
+
+div.codearea pre span.String { color: rgb(0, 64, 128); }
+
+div.codearea pre span.SPChar { color: rgb(0, 0, 192); }
+
+div.codearea pre span.ResWord { color: rgb(160, 0, 0); }
+
+div.codearea pre span.ConsWord { color: rgb(0, 128, 128); font-weight: bold=
+; }
+
+div.codearea pre span.Error { color: rgb(255, 128, 128); border: 1.5pt soli=
+d rgb(255, 0, 0); }
+
+div.codearea pre span.ResWord2 { color: rgb(0, 128, 255); font-weight: bold=
+; }
+
+div.codearea pre span.Special { color: rgb(0, 0, 255); }
+
+div.codearea pre span.Preprc { color: rgb(128, 57, 153); }
+
+div.codearea pre span.DiffAdded { color: rgb(72, 118, 255); }
+
+div.codearea pre span.DiffRemoved { color: rgb(255, 0, 0); }
+
+div.codearea pre span.DiffChanged { color: rgb(255, 127, 80); }
+
+div.codearea pre span.DiffSeparator { color: rgb(34, 139, 34); font-weight:=
+ bold; }
+
+.advancedsearch { border: 1pt solid rgb(173, 185, 204); }
+
+.advancedsearch td { vertical-align: top; border: 0px; background-color: rg=
+b(231, 231, 231); }
+
+.advancedsearch td.searchfor { font-weight: bold; }
+
+.advancedsearch input { border: 1px solid rgb(173, 185, 204); background-co=
+lor: rgb(255, 255, 255); }
+
+.advancedsearch input[disabled] { background-color: rgb(238, 238, 238); }
+
+.advancedsearch td.submit { border-top-width: 1px; border-top-style: solid;=
+ border-top-color: rgb(173, 185, 204); text-align: right; background-color:=
+ rgb(255, 255, 255); }
+
+.advancedsearch optioni, .advancedsearch select { border: 1px solid rgb(173=
+, 185, 204); background-color: rgb(255, 255, 255); }
+
+.searchresults dt { margin-top: 1em; font-weight: normal; }
+
+.searchresults dd, .searchresults p { font-size: 0.85em; }
+
+.searchresults .searchhitinfobar { color: rgb(0, 128, 0); margin-left: 15px=
+; margin-top: 0px; }
+
+p.searchstats { font-size: 0.8em; text-align: right; width: 100%; border-to=
+p-width: 1px; border-top-style: solid; border-top-color: rgb(144, 136, 220)=
+; padding: 2px; background-color: rgb(230, 234, 240); }
+
+p.searchhint { border: 1px solid rgb(144, 136, 220); padding: 2px; backgrou=
+nd-color: rgb(230, 234, 240); }
+
+.searchpages { margin-left: auto; margin-right: auto; }
+
+.searchpages tr, .searchpages td { border: 0px; padding: 5px; margin: 0px; =
+text-align: center; vertical-align: middle; color: rgb(185, 58, 88); font-w=
+eight: bold; font-size: 1.05em; }
+
+.searchpages td a, .searchpages td a:link { text-decoration: underline; }
+
+a.cal-emptyday { color: rgb(119, 119, 119); text-align: center; }
+
+a.cal-usedday { color: rgb(0, 0, 0); font-weight: bold; text-align: center;=
+ }
+
+td.cal-workday { text-align: center; background-color: rgb(221, 221, 255); =
+}
+
+td.cal-weekend { text-align: center; background-color: rgb(255, 221, 221); =
+}
+
+td.cal-today { border-style: solid; border-width: 2pt; text-align: center; =
+background-color: rgb(204, 255, 204); }
+
+td.cal-invalidday { background-color: rgb(204, 204, 204); }
+
+a.cal-link { color: rgb(0, 0, 0); text-decoration: none; }
+
+th.cal-header { text-align: center; background-color: rgb(221, 187, 255); }
+
+table.tip { color: black; font-size: small; font-weight: normal; border-sty=
+le: solid; border-width: 1px; background-color: rgb(255, 136, 136); }
+
+th.tip { font-weight: bold; text-align: center; background-color: rgb(255, =
+68, 68); }
+
+td.tip { text-align: left; }
+
+[dir=3D"rtl"] td.tip { text-align: right; }
+
+#message .hint { font-style: italic; }
+
+#message .info { float: none; font-size: 1em; color: black; }
+
+#message .info::before { content: url("../img/icon-info.png"); margin: 0px =
+0.2em; }
+
+#message .warning::before { content: url("../img/alert.png"); margin: 0px 0=
+.2em; }
+
+#message .error::before { content: url("../img/icon-error.png"); margin: 0p=
+x 0.2em; }
+
+#content div.caution, #content div.important, #content div.note, #content d=
+iv.tip, #content div.warning { border: 1pt solid rgb(229, 229, 229); color:=
+ black; margin: 10pt 30pt; min-height: 64px; padding-left: 64px; background=
+-color: rgb(249, 249, 255); background-position: 8px 8px; background-repeat=
+: no-repeat; }
+
+#content div.caution p, #content div.important p, #content div.note p, #con=
+tent div.tip p, #content div.warning p { margin-top: 8px; }
+
+#content div.tip { background-image: url("../img/admon-tip.png"); }
+
+#content div.note { background-image: url("../img/admon-note.png"); }
+
+#content div.important { background-image: url("../img/admon-important.png"=
+); }
+
+#content div.caution { background-image: url("../img/admon-caution.png"); }
+
+#content div.warning { background-image: url("../img/admon-warning.png"); }
+------MultipartBoundary--hDQuimNxZYaPAOLfnkZBnv7Gd00iqwIUl6B23COrfk----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://bash.cumulonim.biz/modernized/css/screen.css
+
+@charset "utf-8";
+
+body { padding: 0px; border: 0px; }
+
+a:link { color: rgb(68, 119, 255); text-decoration: none; }
+
+a:link:hover, a:link:active { text-decoration: underline; color: green; }
+
+a:visited { text-decoration: none; color: rgb(0, 68, 170); }
+
+a:visited:hover { text-decoration: none; color: red; }
+
+a.nonexistent:link { color: rgb(102, 102, 102); }
+
+a.nonexistent:hover { color: black; text-decoration: underline; }
+
+a.download { font-size: 120%; letter-spacing: 0.05em; font-weight: bold; bo=
+rder: 1px solid rgb(156, 156, 156); padding: 0.5em; text-align: center; bac=
+kground: rgb(231, 231, 231); }
+
+input { }
+
+textarea { font-size: 1em; font-family: monospace; }
+
+.disabled { color: gray; }
+
+#header { margin: 1px; padding: 1px; line-height: 1.1em; background: rgb(23=
+0, 234, 240); }
+
+#logo { float: left; margin: 5px 10px; padding: 0px; font-size: 1.4em; line=
+-height: 1em; font-weight: bold; }
+
+[dir=3D"rtl"] #logo { float: right; }
+
+#logo img { vertical-align: middle; }
+
+#logo a { color: black; text-decoration: none; }
+
+#username { display: block; margin: 8px 12px 4px; padding: 0px; font-size: =
+0.82em; }
+
+#username form { display: inline; }
+
+#username input { display: inline; padding: 0px; margin: 0px; border: none;=
+ color: blue; font-size: 0.82em; cursor: pointer; background: transparent; =
+}
+
+#username input:hover { color: red; }
+
+#searchform { margin: 4px 0.5em 8px; padding: 0px; font-size: 0.82em; float=
+: right; clear: right; text-align: right; }
+
+[dir=3D"rtl"] #searchform { float: left; clear: left; text-align: left; }
+
+#searchform input { font-size: 100%; vertical-align: middle; }
+
+#pagetrail { clear: right; display: inline; margin: 0px 0.88em 0.25em; padd=
+ing: 0px; font-size: 0.88em; }
+
+[dir=3D"rtl"] #pagetrail { clear: left; }
+
+#interwiki { font-size: 1em; }
+
+#locationline { padding: 0px; font-size: 100%; font-weight: normal; margin:=
+ 0.25em 12px 5px; clear: right; }
+
+[dir=3D"rtl"] #locationline { clear: left; }
+
+#pagelocation { font-size: 1.5em; letter-spacing: 0.05em; }
+
+[dir=3D"rtl"] #pagetrail span.sep { visibility: hidden; }
+
+[dir=3D"rtl"] #pagetrail span.sep::after { content: " =C2=AB "; }
+
+#navibar { clear: both; display: block; margin: 0px; padding: 0px 10px; fon=
+t-size: 0.82em; zoom: 1; }
+
+#navibar li { float: left; display: inline; margin: 0px 2px; padding: 2px 5=
+px; border-top-width: 1px; border-right-width: 1px; border-left-width: 1px;=
+ border-style: solid solid none; border-top-color: rgb(170, 204, 221); bord=
+er-right-color: rgb(170, 204, 221); border-left-color: rgb(170, 204, 221); =
+white-space: nowrap; }
+
+[dir=3D"rtl"] #navibar li { float: right; }
+
+#navibar li.wikilink { background: white; }
+
+#navibar li.userlink { background: rgb(230, 234, 240); }
+
+#navibar a, #navibar a:visited { color: black; text-decoration: none; }
+
+#navibar li.current a { font-weight: bold; }
+
+#navibar li:hover { background: rgb(214, 228, 249); }
+
+#navibar li.current, #navibar li.current:hover { border-width: 1px; border-=
+style: solid; border-color: rgb(77, 125, 169) rgb(77, 125, 169) rgb(129, 18=
+7, 242); margin-bottom: -1px; background: rgb(129, 187, 242); }
+
+#pageline { clear: both; margin: 0px; padding: 0px; width: 100%; height: 4p=
+x; line-height: 4px; border-bottom-width: 1px; border-bottom-style: solid; =
+border-bottom-color: rgb(77, 125, 169); border-top-width: 1px; border-top-s=
+tyle: solid; border-top-color: rgb(77, 125, 169); background: rgb(129, 187,=
+ 242); }
+
+.editbar { clear: both; display: block; margin: -1px 0px 0px; padding: 2px =
+8px; font-size: 0.8em; border-bottom-width: 1px; border-bottom-style: solid=
+; border-bottom-color: rgb(77, 125, 169); border-top-width: 1px; border-top=
+-style: solid; border-top-color: rgb(77, 125, 169); background: rgb(214, 22=
+8, 249); }
+
+.editbar form, .editbar form div { display: inline; margin: 0px; }
+
+.editbar select { font-size: 100%; vertical-align: middle; }
+
+.editbar li { display: inline; padding: 0px; margin: 4px 6px; }
+
+.editbar a, .editbar a:visited { color: rgb(0, 68, 179); }
+
+#message { clear: both; margin: 0px; padding: 5px 10px; border-bottom-width=
+: 1px; border-bottom-style: solid; border-bottom-color: rgb(201, 201, 201);=
+ background: rgb(230, 234, 240); }
+
+#message p { margin: 5px 0px; padding: 0px; }
+
+#message div.buttons { font-weight: normal; }
+
+.dialog form { margin: 0px 15px; }
+
+.dialog td { border: none; padding: 5px; }
+
+.dialog td.label { text-align: right; font-weight: bold; width: 25%; }
+
+[dir=3D"rtl"] .dialog td.label { text-align: left; }
+
+.dialog td.content input { width: 100%; }
+
+#page { margin: 0px; padding: 2px 20px 20px; background-color: white; }
+
+#editor-textarea, #editor-help { font-family: monospace; border: 1px solid =
+rgb(140, 172, 187); color: black; padding: 3px; width: 100%; margin-top: 0.=
+5em; background-color: white; }
+
+#editor-help { font-size: small; background-color: rgb(238, 238, 255); }
+
+#editor-comment { font-size: 100%; border: 1px solid rgb(140, 172, 187); co=
+lor: black; vertical-align: middle; padding: 1px; display: inline; width: 7=
+0%; background-color: white; }
+
+#preview, #previewbelow { border: 1px solid rgb(108, 118, 128); padding: 10=
+px 30px 20px; margin-top: 0.5em; background: url("../img/draft.png"); }
+
+#textcha { font-size: 100%; margin-top: 0.5em; border: 2px solid rgb(255, 1=
+36, 136); color: black; vertical-align: middle; padding: 3px 2px; }
+
+#textcha-answer { border: 2px solid rgb(0, 0, 0); padding: 3px 2px; }
+
+input.button { }
+
+#footer { clear: both; margin: 0px; padding: 0px; }
+
+#credits, #version, #timings { margin: 5px 10px; padding: 0px; text-align: =
+center; font-size: 0.88em; color: rgb(108, 118, 128); }
+
+#credits li, #timings li { display: inline; padding: 0px 2px; margin: 0px 4=
+px; }
+
+#credits img { vertical-align: middle; }
+
+.diff { width: 99%; }
+
+.diff-header { font-weight: bold; }
+
+.diff-title { background-color: rgb(192, 192, 192); }
+
+.diff-added { vertical-align: sub; width: 50%; background-color: rgb(224, 2=
+55, 224); }
+
+.diff-removed { vertical-align: sub; width: 50%; background-color: rgb(255,=
+ 255, 224); }
+
+.diff-added span { background-color: rgb(128, 255, 128); }
+
+.diff-removed span { background-color: rgb(255, 255, 128); }
+
+td.diff-info { vertical-align: top; }
+
+div.diff-info { white-space: nowrap; }
+
+div.diff-info-rev-comment span.diff-info-value { white-space: normal; }
+
+div.diff-info-header { width: 100%; padding: 0.25em 0.5em; margin: -0.25em =
+-0.5em 0.25em; text-align: center; background-color: rgb(232, 232, 232); }
+
+td.diff-same { text-align: center; border: 0px; }
+
+table.navigation { float: right; margin: 2px; }
+
+#openididentifier { padding-left: 18px; background: url("../../common/openi=
+d.png") 0px 50% no-repeat; }
+------MultipartBoundary--hDQuimNxZYaPAOLfnkZBnv7Gd00iqwIUl6B23COrfk----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://bash.cumulonim.biz/modernized/css/print.css
+
+@charset "utf-8";
+
+html { font-family: Times, serif; font-size: 12pt; }
+
+body { margin: 1.5cm; }
+
+a, a:visited, a.nonexistent, a.badinterwiki { color: black; text-decoration=
+: none; }
+
+a:hover { text-decoration: underline; }
+
+.info a { color: gray; }
+
+pre { font-size: 10pt; }
+
+a.interwiki::before, a.badinterwiki::before { content: attr(title) ":"; }
+
+a.interwiki img, a.badinterwiki img { display: none; }
+
+.footnotes div { width: 5em; border-top-width: 1pt; border-top-style: solid=
+; border-top-color: gray; }
+
+#header, #sidebar, #footer, #timings, #credits, #interwiki, #pagelocation {=
+ display: none; }
+------MultipartBoundary--hDQuimNxZYaPAOLfnkZBnv7Gd00iqwIUl6B23COrfk------

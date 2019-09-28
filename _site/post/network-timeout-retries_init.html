@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux 网络超时与重传|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux 网络超时与重传</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-08-17 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  network  
+      
+    </div>
+  </div>
+  <hr>
+  <p>在此介绍重传，为了保证可靠性，在 TCP 的三次握手、数据传输、链接关闭阶段都有响应的重传机制。那么，重传的次数都是有那些参数指定？tcp_retries1 和 tcp_retries2 到底有什么区别？什么是 orphan socket ？</p>
+
+<!-- more -->
+
+<p>首先我们查看一下网络中与重传相关的参数有那些。</p>
+
+<h1 id="重传简介">重传简介</h1>
+
+<p>关于重传的控制参数，可以查看内核中的 Documentation/networking/ip-sysctl.txt 文件，内核中的控制参数总共有五个相关参数。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">tcp_syn_retries - INTEGER
+    Number of times initial SYNs for an active TCP connection attempt
+    will be retransmitted. Should not be higher than 255. Default value
+    is 6, which corresponds to 63seconds till the last retransmission
+    with the current initial RTO of 1second. With this the final timeout
+    for an active TCP connection attempt will happen after 127seconds.
+
+tcp_synack_retries - INTEGER
+    Number of times SYNACKs for a passive TCP connection attempt will
+    be retransmitted. Should not be higher than 255. Default value
+    is 5, which corresponds to 31seconds till the last retransmission
+    with the current initial RTO of 1second. With this the final timeout
+    for a passive TCP connection will happen after 63seconds.
+
+tcp_orphan_retries - INTEGER
+    This value influences the timeout of a locally closed TCP connection,
+    when RTO retransmissions remain unacknowledged.
+    See tcp_retries2 for more details.
+
+    The default value is 8.
+    If your machine is a loaded WEB server,
+    you should think about lowering this value, such sockets
+    may consume significant resources. Cf. tcp_max_orphans.
+
+tcp_retries1 - INTEGER
+    This value influences the time, after which TCP decides, that
+    something is wrong due to unacknowledged RTO retransmissions,
+    and reports this suspicion to the network layer.
+    See tcp_retries2 for more details.
+
+    RFC 1122 recommends at least 3 retransmissions, which is the
+    default.
+
+tcp_retries2 - INTEGER
+    This value influences the timeout of an alive TCP connection,
+    when RTO retransmissions remain unacknowledged.
+    Given a value of N, a hypothetical TCP connection following
+    exponential backoff with an initial RTO of TCP_RTO_MIN would
+    retransmit N times before killing the connection at the (N+1)th RTO.
+
+    The default value of 15 yields a hypothetical timeout of 924.6
+    seconds and is a lower bound for the effective timeout.
+    TCP will effectively time out at the first RTO which exceeds the
+    hypothetical timeout.
+
+    RFC 1122 recommends at least 100 seconds for the timeout,
+    which corresponds to a value of at least 8.</code></pre></figure>
+
+<p>简单来说，五个重试参数的含义为：</p>
+
+<ul>
+  <li>
+    <p>tcp_syn_retries：在三次握手阶段，客户端发起链接时，发送 SYN 报文的重试次数。</p>
+  </li>
+  <li>
+    <p>tcp_synack_retries：在三次握手阶段，服务端回应 SYN+ACK 时，发送报文的重试次数。</p>
+  </li>
+  <li>
+    <p>tcp_orphan_retries：在关闭阶段，会影响到主动关闭链接的孤儿 socket 重传。</p>
+  </li>
+  <li>
+    <p>tcp_retries1：在数据传输阶段。</p>
+  </li>
+  <li>
+    <p>tcp_retries2：在数据传输阶段。</p>
+  </li>
+</ul>
+
+<p>在此重点关注一下 tcp_retries1、tcp_retries2 两个参数，以及 tcp_orphan_retries 。</p>
+
+<h1 id="tcp_retries1tcp_retries2">tcp_retries1、tcp_retries2</h1>
+
+<p>这两个参数在上述的介绍中有些模糊，可能由于过于概括，会令人产生很多疑问，甚至产生一些误解。</p>
+
+<ol>
+  <li>
+    <p>当重试超过 tcp_retries1 这个阈值后，到底向网络层报告了什么 suspicion ？</p>
+  </li>
+  <li>
+    <p>tcp_retries1 和 tcp_retries2 对应的是重传次数？其中的时间是怎么计算出来的？</p>
+  </li>
+  <li>
+    <p>tcp_retries2 应该是重传的上限吧，其中的 lower bound for the effective timeout 又是几个意思？不应该是 upper bound 吗？effective timeout 又是做什么的？</p>
+  </li>
+</ol>
+
+<h2 id="源码解析">源码解析</h2>
+
+<p>定时器的初始化是在 tcp_init_xmit_timers() 函数中完成，超时重传相关的是 tcp_write_timer()，实际最终调用的是 tcp_write_timer_handler() 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">tcp_write_timer_handler</span><span class="p">(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nl">ICSK_TIME_EARLY_RETRANS</span><span class="p">:</span>
+        <span class="n">tcp_resume_early_retransmit</span><span class="p">(</span><span class="n">sk</span><span class="p">);</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">ICSK_TIME_LOSS_PROBE</span><span class="p">:</span>
+        <span class="n">tcp_send_loss_probe</span><span class="p">(</span><span class="n">sk</span><span class="p">);</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">ICSK_TIME_RETRANS</span><span class="p">:</span>
+        <span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_pending</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">tcp_retransmit_timer</span><span class="p">(</span><span class="n">sk</span><span class="p">);</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">ICSK_TIME_PROBE0</span><span class="p">:</span>
+        <span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_pending</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">tcp_probe_timer</span><span class="p">(</span><span class="n">sk</span><span class="p">);</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如果是超时重传定时器触发的，就会调用 tcp_retransmit_timer() 进行处理，其中与 tcp_retries 相关的代码调用逻辑如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">tcp_retransmit_timer()
+  |-tcp_write_timeout()              # 判断是否重传了足够的久
+  | |-retransmit_timed_out()         # 判断是否超过了阈值
+  |-tcp_retransmit_skb()             # 如果没有超过了重传阈值，则直接重传报文</code></pre></figure>
+
+<p>接下来看一下 tcp_write_timeout() 的具体实现。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">tcp_write_timeout</span><span class="p">(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">inet_connection_sock</span> <span class="o">*</span><span class="n">icsk</span> <span class="o">=</span> <span class="n">inet_csk</span><span class="p">(</span><span class="n">sk</span><span class="p">);</span>
+    <span class="k">struct</span> <span class="n">tcp_sock</span> <span class="o">*</span><span class="n">tp</span> <span class="o">=</span> <span class="n">tcp_sk</span><span class="p">(</span><span class="n">sk</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">retry_until</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">do_reset</span><span class="p">,</span> <span class="n">syn_set</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">sk</span><span class="o">-&gt;</span><span class="n">sk_state</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">TCPF_SYN_SENT</span> <span class="o">|</span> <span class="n">TCPF_SYN_RECV</span><span class="p">))</span> <span class="p">{</span>
+        <span class="cm">/* 超时发生在三次握手期间，重传次数通过tcp_syn_retries指定 */</span>
+        <span class="p">...</span> <span class="p">...</span>
+        <span class="n">retry_until</span> <span class="o">=</span> <span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_syn_retries</span> <span class="o">?</span> <span class="o">:</span> <span class="n">sysctl_tcp_syn_retries</span><span class="p">;</span>
+        <span class="n">syn_set</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="cm">/* 超时发生在数据发送期间，也就是我们现在讨论的问题 */</span>
+        <span class="cm">/* 下面的函数负责判断重传是否超过阈值，返回真表示超过 */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">retransmits_timed_out</span><span class="p">(</span><span class="n">sk</span><span class="p">,</span> <span class="n">sysctl_tcp_retries1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+            <span class="cm">/* Black hole detection */</span>
+            <span class="n">tcp_mtu_probing</span><span class="p">(</span><span class="n">icsk</span><span class="p">,</span> <span class="n">sk</span><span class="p">);</span> <span class="cm">/* 如果开启了tcp_mtu_probing，则执行PMTU */</span>
+            <span class="cm">/* 更新路由缓存，用以避免由于路由选路变化带来的问题 */</span>
+            <span class="n">dst_negative_advice</span><span class="p">(</span><span class="n">sk</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="n">retry_until</span> <span class="o">=</span> <span class="n">sysctl_tcp_retries2</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sock_flag</span><span class="p">(</span><span class="n">sk</span><span class="p">,</span> <span class="n">SOCK_DEAD</span><span class="p">))</span> <span class="p">{</span>
+            <span class="cm">/* 表示是没有应用在使用的一个孤立的socket */</span>
+            <span class="k">const</span> <span class="kt">int</span> <span class="n">alive</span> <span class="o">=</span> <span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_rto</span> <span class="o">&lt;</span> <span class="n">TCP_RTO_MAX</span><span class="p">;</span>
+
+            <span class="n">retry_until</span> <span class="o">=</span> <span class="n">tcp_orphan_retries</span><span class="p">(</span><span class="n">sk</span><span class="p">,</span> <span class="n">alive</span><span class="p">);</span>
+            <span class="n">do_reset</span> <span class="o">=</span> <span class="n">alive</span> <span class="o">||</span>
+                <span class="o">!</span><span class="n">retransmits_timed_out</span><span class="p">(</span><span class="n">sk</span><span class="p">,</span> <span class="n">retry_until</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">tcp_out_of_resources</span><span class="p">(</span><span class="n">sk</span><span class="p">,</span> <span class="n">do_reset</span><span class="p">))</span>
+                <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* 一般来说，如果没有孤儿socket，那么一般重传次数是tcp_retries2 */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">retransmits_timed_out</span><span class="p">(</span><span class="n">sk</span><span class="p">,</span> <span class="n">retry_until</span><span class="p">,</span>
+                  <span class="n">syn_set</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_user_timeout</span><span class="p">,</span> <span class="n">syn_set</span><span class="p">))</span> <span class="p">{</span>
+        <span class="cm">/* Has it gone just too far? */</span>
+        <span class="n">tcp_write_err</span><span class="p">(</span><span class="n">sk</span><span class="p">);</span> <span class="cm">/* 最终会调用tcp_done关闭TCP流 */</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在如上的函数中，两次超时时间的计算都是通过 retransmits_timed_out() 函数计算的，那么也就是该函数实际会判断是否已经超时。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define tcp_time_stamp      ((__u32)(jiffies))</span>
+
+<span class="k">static</span> <span class="kt">bool</span> <span class="nf">retransmits_timed_out</span><span class="p">(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">,</span>
+                  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">boundary</span><span class="p">,</span>
+                  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">timeout</span><span class="p">,</span>
+                  <span class="kt">bool</span> <span class="n">syn_set</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">linear_backoff_thresh</span><span class="p">,</span> <span class="n">start_ts</span><span class="p">;</span>
+    <span class="cm">/* 如果是在三次握手阶段，syn_set为真 */</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">rto_base</span> <span class="o">=</span> <span class="n">syn_set</span> <span class="o">?</span> <span class="nl">TCP_TIMEOUT_INIT</span> <span class="p">:</span> <span class="n">TCP_RTO_MIN</span><span class="p">;</span>
+
+    <span class="cm">/* 如果设置的重传次数为0，那么就直接退出 */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">inet_csk</span><span class="p">(</span><span class="n">sk</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">icsk_retransmits</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+
+    <span class="cm">/* 获取数据包第一次发送的时间，在tcp_retransmit_skb()中设置 */</span>
+    <span class="n">start_ts</span> <span class="o">=</span> <span class="n">tcp_sk</span><span class="p">(</span><span class="n">sk</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">retrans_stamp</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="o">!</span><span class="n">start_ts</span><span class="p">))</span>
+        <span class="n">start_ts</span> <span class="o">=</span> <span class="n">tcp_skb_timestamp</span><span class="p">(</span><span class="n">tcp_write_queue_head</span><span class="p">(</span><span class="n">sk</span><span class="p">));</span>
+
+    <span class="cm">/* 如果用户态没有指定timeout，则自动计算一个出来 */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">likely</span><span class="p">(</span><span class="n">timeout</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+        <span class="cm">/* 计算一下以rto_base为第一次重传间隔，重传boundary次所需要的时间 */</span>
+        <span class="n">linear_backoff_thresh</span> <span class="o">=</span> <span class="n">ilog2</span><span class="p">(</span><span class="n">TCP_RTO_MAX</span><span class="o">/</span><span class="n">rto_base</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">boundary</span> <span class="o">&lt;=</span> <span class="n">linear_backoff_thresh</span><span class="p">)</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="p">((</span><span class="mi">2</span> <span class="o">&lt;&lt;</span> <span class="n">boundary</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">rto_base</span><span class="p">;</span>
+        <span class="k">else</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="p">((</span><span class="mi">2</span> <span class="o">&lt;&lt;</span> <span class="n">linear_backoff_thresh</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">rto_base</span> <span class="o">+</span>
+                <span class="p">(</span><span class="n">boundary</span> <span class="o">-</span> <span class="n">linear_backoff_thresh</span><span class="p">)</span> <span class="o">*</span> <span class="n">TCP_RTO_MAX</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* 如果数据包第一次发送的时间距离现在的时间间隔，超过了timeout值，则认为重传超于阈值了 */</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">tcp_time_stamp</span> <span class="o">-</span> <span class="n">start_ts</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">timeout</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>从以上的代码分析可以看到，如果用户没有设置超时时间，那么真正起到限制重传次数的并不是真正的重传次数，而是与此相关的一个超时时间。</p>
+
+<p>如上，是以 tcp_retries1 或 tcp_retries2 为 boundary，以 rto_base (如 TCP_RTO_MIN=200ms) 为初始的 RTO，计算出来一个 timeout 值，当重传间隔超过这个 timeout 后，则认为超过了阈值。</p>
+
+<p>如文档中所说的，当 tcp_retries2=15 时，那么计算得到的 timeout 是 924600ms，这个值是如何计算到的？简单来说，还是在 retransmits_timed_out() 函数计算完成，计算过程如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 首先计算thresh
+linear_backoff_thresh = ilog2(TCP_RTO_MAX/rto_base) = ilog2((120*HZ)/(HZ/5)) = ilog2(600) = 9
+
+if (boundary &lt;= linear_backoff_thresh)
+    timeout = ((2 &lt;&lt; boundary) - 1) * rto_base;
+else
+    timeout = ((2 &lt;&lt; linear_backoff_thresh) - 1) * rto_base +
+        (boundary - linear_backoff_thresh) * TCP_RTO_MAX;
+
+----- 此时选择的是第二个分支
+timeout = (2&lt;&lt;9 - 1) * (HZ/5) + (15 - 9) * 120 * HZ = 924.6s</code></pre></figure>
+
+<p>如果用户没有指定超时时间，那么默认就是 924.6s，而对于具体重试了多少次，是与 RTT 相关的。</p>
+
+<ol>
+  <li>
+    <p>如果 RTT 比较小，那么 RTO 初始值就约等于下限 200ms，这时表现出来的现象基本就是刚好重传了 15 次。</p>
+  </li>
+  <li>
+    <p>如果 RTT 较大，比如 RTO 初始值计算得到的是 1000ms，那么根本不需要重传 15 次，重传总间隔就会超过 924.6s 。</p>
+  </li>
+</ol>
+
+<p>对于上述的问题，基本也就有结论了：</p>
+
+<ol>
+  <li>
+    <p>重试超过了 tcp_retries1 之后，怀疑路由有问题，直接更新路由缓存。</p>
+  </li>
+  <li>
+    <p>通过 tcp_retries 计算出来的是时间，而具体重传了多少次是与实际的 RTT 相关的。</p>
+  </li>
+  <li>
+    <p>effective timeout 实际就是 retransmits_timed_out() 函数计算得到的 timeout 值。所谓的 lower / upper bound 是指超时时间的范围，如果是 15 那么实际的重传范围是 [924.6s, 1044.6s) 。</p>
+  </li>
+</ol>
+
+<h1 id="tcp_orphan_retries">tcp_orphan_retries</h1>
+
+<p>首先介绍一下什么是 orphan socket，简单来说就是该 socket 不与任何一个文件描述符相关联。例如，当应用主动调用 close() 关闭一个链接时，此时该 socket 就成为了 orphan，但是该 sock 仍然会保留一段时间，直到最后根据 TCP 协议结束。</p>
+
+<p><img src="/images/linux/four-way-handshake.png" alt="fourway" class="pull-center" /></p>
+
+<p>如上是 TCP 关闭链接时的握手过程。</p>
+
+<p>主动关闭的一方发出 FIN，同时进入 FIN_WAIT1 状态，被动关闭的一方响应 ACK，从而使主动关闭的一方迁移至 FIN_WAIT2 状态，接着被动关闭的一方同样会发出 FIN，主动关闭的一方响应 ACK，同时链接的状态迁移至 TIME_WAIT 。</p>
+
+<p>那么这与 tcp_orphan_retries 参数有什么关系？</p>
+
+<p>正常来说，服务器间的 ACK 确认是非常快的，通常不会有 FIN_WAIT1 状态存在，如果被动关闭的一段很长时间没有响应，此时的 TCP 协议会如何处理呢。</p>
+
+<p>实际上这个参数决定了 FIN_WAIT1 状态的持续时间，其计算方式与 tcp_retries1 的相同。</p>
+
+<p>内核中还有一个容易混淆的参数 net.ipv4.tcp_fin_timeout，它实际上它控制的是 FIN_WAIT2 的超时时间，其定义如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">tcp_fin_timeout - INTEGER
+    The length of time an orphaned (no longer referenced by any
+    application) connection will remain in the FIN_WAIT_2 state
+    before it is aborted at the local end.  While a perfectly
+    valid &quot;receive only&quot; state for an un-orphaned connection, an
+    orphaned connection in FIN_WAIT_2 state could otherwise wait
+    forever for the remote to close its end of the connection.
+    Cf. tcp_max_orphans
+    Default: 60 seconds</code></pre></figure>
+
+<p>需要注意的是，在 tcp_orphan_retries 的定义中，如果要设置成一个比较小的值，该值应该至少大于0，如果是 0 那么实际等同于 8 ，对应的代码如下：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cm">/* Calculate maximal number or retries on an orphaned socket. */</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">tcp_orphan_retries</span><span class="p">(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">,</span> <span class="kt">int</span> <span class="n">alive</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">retries</span> <span class="o">=</span> <span class="n">sysctl_tcp_orphan_retries</span><span class="p">;</span> <span class="cm">/* May be zero. */</span>
+
+    <span class="cm">/* We know from an ICMP that something is wrong. */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sk</span><span class="o">-&gt;</span><span class="n">sk_err_soft</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">alive</span><span class="p">)</span>
+        <span class="n">retries</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="cm">/* However, if socket sent something recently, select some safe</span>
+<span class="cm">     * number of retries. 8 corresponds to &gt;100 seconds with minimal</span>
+<span class="cm">     * RTO of 200msec. */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">retries</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">alive</span><span class="p">)</span>
+        <span class="n">retries</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">retries</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>可以得出结论，如果系统负载较重，有很多处于 FIN_WAIT1 的链接，那么可以通过降低 tcp_orphan_retries 来解决问题，具体设置多少视网络条件而定。</p>
+
+<p>另外，在遇到 DoS 攻击时，可以通过设置 tcp_max_orphans 减小。但是这和用来控制 TIME_WAIT 的最大值的 tcp_max_tw_buckets 参数一样，除非你遇到了 DoS 攻击，否则最好不要降低它。</p>
+
+<h2 id="如何关闭一个链接">如何关闭一个链接</h2>
+
+<p>如果要关闭一个 TCP 连接，那么需要知道相应的 ACK 和 SEQ ，然后才可以 RESET 连接。</p>
+
+<p>为了获取 ACK 和 SEQ 可以有主动与被动两种，分别有 tcpkill 以及 killcx，其中后者是 Perl 写的脚本。</p>
+
+<!--
+http://perthcharles.github.io/2015/09/06/wiki-rtt-estimator/            RTO的计算方法
+-->
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/program-c-tips.html" title="C 语言的奇技淫巧">&larr; Older</a></li> 
+         <li class="next"><a href="/post/mysql-replication-mha.html" title="MySQL 高可用 MHA">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1439740800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/network-timeout-retries_init.html" data-title="Linux 网络超时与重传" data-url="/post/network-timeout-retries_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

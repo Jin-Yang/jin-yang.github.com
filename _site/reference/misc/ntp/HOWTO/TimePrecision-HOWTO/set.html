@@ -1,0 +1,393 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>The Correct Settings for Your Linux Box</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Managing Accurate Date and Time"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="What are Time Zones?"
+HREF="tz.html"><LINK
+REL="NEXT"
+TITLE="Accurate Global Time Synchronization"
+HREF="ntp.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Managing Accurate Date and Time</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="tz.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="ntp.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="set"
+></A
+>4. The Correct Settings for Your Linux Box</H1
+><P
+>For any OS installation, you must know your Time Zone. This is expressed in terms of a city, a state or a country. You must also decide how to set <SPAN
+CLASS="acronym"
+>BIOS</SPAN
+> time, and we may follow two strategies here:</P
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><EM
+>Linux Only Machine</EM
+></DT
+><DD
+><P
+>In this case you should set <SPAN
+CLASS="acronym"
+>BIOS</SPAN
+> time to <SPAN
+CLASS="acronym"
+>UTC</SPAN
+> time. <SPAN
+CLASS="acronym"
+>DST</SPAN
+> changes will be dynamically managed by <A
+HREF="tz.html#tz.linux"
+>Time Zone configurations</A
+>.</P
+></DD
+><DT
+><EM
+>Dual Boot Linux and MS Windows Machine</EM
+></DT
+><DD
+><P
+>Windows handles time in a more primitive way than Linux. For Windows, <SPAN
+CLASS="acronym"
+>BIOS</SPAN
+> time is allways your local time, so <SPAN
+CLASS="acronym"
+>DST</SPAN
+> changes are more aggressive because they directly change hardware clock. And since both Linux and Windows initially get and set time from the hardware, when they are together, Linux must handle it in the same way. So set <SPAN
+CLASS="acronym"
+>BIOS</SPAN
+> time to your localtime.</P
+></DD
+></DL
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="set.tz"
+></A
+>4.1. Setting Time Zone</H2
+><P
+>On Red Hat Linux and derived systems, you can set the hardware clock strategy and Time Zone using the <B
+CLASS="command"
+>timeconfig</B
+> command, that shows a user-friendly dialog. You can also use it non-interactively:</P
+><DIV
+CLASS="example"
+><A
+NAME="AEN338"
+></A
+><P
+><B
+>Example 2. Time Configuration Tool</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="screen"
+><TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>timeconfig "Brasil/East"</B
+>   # set HC to localtime, and TZ to "Brazil/East"
+<TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>timeconfig --utc "Brasil/East"</B
+>   # set HC to UTC, and TZ to "Brazil/East"</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>Anyway, it changes <TT
+CLASS="filename"
+>/etc/sysconfig/clock</TT
+> file that is read at boot time. You can edit it by hand, and that is how it looks:</P
+><DIV
+CLASS="example"
+><A
+NAME="AEN347"
+></A
+><P
+><B
+>Example 3. <TT
+CLASS="filename"
+>/etc/sysconfig/clock</TT
+> file</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;ZONE="Brazil/East"
+UTC=true
+ARC=false</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="set.hwclock"
+></A
+>4.2. Setting the Hardware Clock</H2
+><P
+>I encourage you to set your hardware clock only after understanding how to get accurate time, described on <A
+HREF="ntp.html"
+>Section 5</A
+>.</P
+><P
+>The <B
+CLASS="command"
+>hwclock</B
+> command reads and sets the hardware clock, based on several options you give to it, documented in its man page. But you don't have to use it if you have a modern Linux distribution. After defining your hardware clock strategy and Time Zone, you can use the high level <B
+CLASS="command"
+>setclock</B
+> command to correctly set your hardware clock. You don't need to pass any parameters because <B
+CLASS="command"
+>setclock</B
+> intelligently calls <B
+CLASS="command"
+>hwclock</B
+> to set the <SPAN
+CLASS="acronym"
+>BIOS</SPAN
+> based on your OS current date and time. <EM
+>So you should always use the <B
+CLASS="command"
+>setclock</B
+> command.</EM
+></P
+><P
+>But if you are a minimalist and prefer hard work, here are some <B
+CLASS="command"
+>hwclock</B
+> examples:</P
+><DIV
+CLASS="example"
+><A
+NAME="AEN365"
+></A
+><P
+><B
+>Example 4. <B
+CLASS="command"
+>setclock</B
+> and <B
+CLASS="command"
+>hwclock</B
+> usage</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="screen"
+><TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>setclock</B
+>					# The easy way to set HC
+<TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>hwclock</B
+>					# reads HC
+<TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>hwclock --systohc --utc</B
+>			# set HC with UTC time based on OS current time
+<TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>hwclock --systohc</B
+>				# set HC with local time based on OS current time
+<TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>hwclock --set --date "21 Oct 2004 21:17"</B
+>	# set HC with time specified on string</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>Since the OS time is independent from the hardware clock, any <SPAN
+CLASS="acronym"
+>BIOS</SPAN
+> change we make will take place in the next boot.</P
+><P
+>Another option to change HC is rebooting and accessing your computer <SPAN
+CLASS="acronym"
+>BIOS</SPAN
+> screens. On <A
+HREF="http://ibm.com/servers/eserver/zseries/os/linux/"
+TARGET="_top"
+>IBM e-server zSeries</A
+> platforms you'll have to do it on z/VM level, because Linux here runs on virtual machines created by z/VM.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="tz.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ntp.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>What are Time Zones?</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Accurate Global Time Synchronization</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

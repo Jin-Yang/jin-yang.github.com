@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Python 异步任务队列|JinYang's Blog</title>
+  <meta name="keywords" content="python,异步任务队列,APScheduler,Redis Queue,Celery">
+  <meta name="description" content="Python 中有很多的调度系统，这里简单介绍一下常用的，例如 APScheduler、Redis Queue、Celery 等。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Python 异步任务队列</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-02-10 Wednesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  network ,  python  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Python 中有很多的调度系统，这里简单介绍一下常用的，例如 APScheduler、Redis Queue、Celery 等。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>Python 中 <a href="https://pypi.python.org/pypi/APScheduler/">APScheduler</a> 通常用于跨平台的 cron 操作，可以将任务保存在数据库中，不过比较适合嵌入的应用程序中执行，没有提供独立的执行进程。</p>
+
+<h2 id="redis-queue">Redis Queue</h2>
+
+<p><a href="http://www.python-rq.org">Redis Queue, RQ</a> 是一个比 Celery 更加简单的异步任务队列，当然他的功能没有 Celery 多，复杂程度也没有 Celery 大，但它足够简单，其 Broker 只能是 redis 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># pip install rq
+
+127.0.0.1:6379&gt; type rq:job:fba1419d-2c0a-47a2-83c9-bd614309c92c
+hash
+127.0.0.1:6379&gt; hgetall rq:job:fba1419d-2c0a-47a2-83c9-bd614309c92c
+ 1) &quot;status&quot;
+     2) &quot;finished&quot;
+ 3) &quot;origin&quot;
+     4) &quot;default&quot;
+ 5) &quot;description&quot;
+     6) &quot;database.tasks.reload.reload(1)&quot;
+ 7) &quot;created_at&quot;
+     8) &quot;2016-10-10T13:54:40Z&quot;
+ 9) &quot;enqueued_at&quot;
+    10) &quot;2016-10-10T13:54:40Z&quot;
+11) &quot;timeout&quot;
+    12) &quot;180&quot;
+13) &quot;data&quot;
+    14) &quot;\x80\x02(X\x1c\x00\x00\x00database.tasks.reload.reloadq\x01NK\x01\x85q\x02}q\x03tq\x04.&quot;
+15) &quot;started_at&quot;
+    16) &quot;2016-10-10T13:54:40Z&quot;
+17) &quot;ended_at&quot;
+    18) &quot;2016-10-10T13:54:41Z&quot;
+19) &quot;result&quot;
+    20) &quot;\x80\x02U\x05xxxxxq\x01.&quot;
+21) &quot;ttl&quot;
+    22) &quot;-1&quot;
+
+ttl rq:job:88fc4ae9-a9c7-4532-98b7-e0c06ef01dbb
+
+
+lrange rq:queue:default 1 100              通过list类型存放该队列中所含有的任务
+smembers rq:queues                         通过set保存了所有队列的信息</code></pre></figure>
+
+<p>任务会在 job 执行后调用 cleanup() 函数，默认会设置为 result_ttl 值。</p>
+
+<!--
+### 任务下发
+
+enqueue_job()
+
+timeout specifies the maximum runtime of the job before it'll be considered 'lost'
+result_ttl specifies the expiry time of the key where the job result will be stored
+ttl specifies the maximum queued time of the job before it'll be cancelled
+depends_on specifies another job (or job id) that must complete before this job will be queued
+job_id allows you to manually specify this job's job_id
+at_front will place the job at the front of the queue, instead of the back
+kwargs and args lets you bypass the auto-pop of these arguments, ie: specify a timeout argument for the underlying job function.
+-->
+
+<h2 id="celery">Celery</h2>
+
+<p>Celery 是一个由 Python 编写的简单、灵活、可靠的用来处理大量信息的分布式系统，同时提供一些常用的运维操作工具，通过其提供的接口可以快速实现一个分布式的任务队列。</p>
+
+<p>首先，要理解 Celery 本身不是消息队列，它是管理分布式任务的工具，或者说，它封装好了操作常见任务队列的各种操作，用它可以快速进行任务队列的使用与管理。</p>
+
+<p>当然，也可以自己基于 RabbitMQ 等自己实现，但是成本会更高。</p>
+
+<p>官方给出的解释如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Celery is an asynchronous task queue/job queue based on distributed message passing.
+It is focused on real-time operation, but supports scheduling as well.</code></pre></figure>
+
+<h3 id="常用概念">常用概念</h3>
+
+<p><img src="/images/python/python-celery-process.png" alt="Python Celery Process" title="Python Celery Process" class="pull-center" width="60%" /></p>
+
+<h4 id="brokers">Brokers</h4>
+
+<p>指任务队列本身，Celery 扮演生产者和消费者的角色，常见的有 RabbitMQ、Redis 等。</p>
+
+<h4 id="result-stores--backend">Result Stores / Backend</h4>
+
+<p>也即是保存运行结果的地方，可以是 Redis、Memcached 等缓存，也可以是数据库。</p>
+
+<h4 id="workers">Workers</h4>
+
+<p>任务队列的消费者，从队列中取出任务并执行。</p>
+
+<h4 id="tasks">Tasks</h4>
+
+<p>也就是具体的任务了，一般由用户、触发器或其他操作将任务入队，然后交由 workers 进行处理。</p>
+
+<h3 id="安装">安装</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 可以直接通过pip或者easy_install直接安装
+# pip install -U Celery
+# easy_install -U Celery
+
+----- 直接源码安装，会依赖setuptools工具，可以按需安装
+$ python setup.py build
+# python setup.py install</code></pre></figure>
+
+<p>然后将路径 <code>/usr/local/python27-13/bin/</code> 添加到环境变量 PATH 中。</p>
+
+<p>在安装 setuptools 时，遇到了 <code>ImportError: No module named packaging.version</code> 报错，主要是由于 pip 安装的问题，可以通过如下方式解决。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ wget https://bootstrap.pypa.io/get-pip.py
+# python get-pip.py</code></pre></figure>
+
+<p>另外，也可以降低版本解决。</p>
+
+<h3 id="示例">示例</h3>
+
+<h4 id="实现一个-worker">实现一个 Worker</h4>
+
+<p>实现一个任务，等待执行。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># tasks.py</span>
+<span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="s">&#39;tasks&#39;</span><span class="p">,</span>  <span class="n">backend</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/0&#39;</span><span class="p">,</span> <span class="n">broker</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/1&#39;</span><span class="p">)</span>
+<span class="nd">@app.task</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span></code></pre></figure>
+
+<p>OK，到这里，broker 我们有了，backend 我们有了，task 我们也有了，现在就该运行 worker 进行工作了，在 tasks.py 所在目录下运行：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ celery -A tasks worker --loglevel=info</code></pre></figure>
+
+<p>意思就是运行 tasks 这个任务集合的 worker 进行工作，此时 Redis 中还不包含任务，所以 worker 相当于待命状态。</p>
+
+<h4 id="实现一个触发器">实现一个触发器</h4>
+
+<p>接着就是触发任务执行，最简单方式是再写一个脚本然后调用那个被装饰成 task 的函数。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># trigger.py</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">tasks</span> <span class="kn">import</span> <span class="n">add</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">add</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">ready</span><span class="p">():</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;task done: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">())</span></code></pre></figure>
+
+<p>delay 返回的是一个 AsyncResult 对象，里面存的就是一个异步的结果，当任务完成时 <code>result.ready()</code> 为 true，然后用 <code>result.get()</code> 取结果即可。</p>
+
+<p>这里实际上会一直循环等待，查询任务是否结束，也可以通过 <code>result.get(timeout=10)</code> 设置超时时间。</p>
+
+<h4 id="查看结果">查看结果</h4>
+
+<p>在任务执行的 Worker 中会显示任务的 UUID 信息，其执行结果会保存到 Redis 编号为 0 的数据库中，类型为 string(实际就是字节流)，Key 在开头会添加 <code>celery-task-meta-</code> 前缀。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">redis-cli
+&gt; select 0
+&gt; keys *</code></pre></figure>
+
+<p>在 broker 中，也就是 Redis-1 数据库，包含了如下内容：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">127.0.0.1:6379[1]&gt; keys *
+1) &quot;_kombu.binding.celeryev&quot;       类型为set，
+2) &quot;_kombu.binding.celery&quot;         类型为set，估计是用于标示这个是Celery实例
+3) &quot;_kombu.binding.celery.pidbox&quot;  类型为set，记录了当前含有哪些Worker
+4) &quot;celery&quot;                        类型为list，保存了当前的任务信息，从Producer传递给Worker，为空时会删除
+
+&gt; smembers &quot;_kombu.binding.celery&quot; 查看集合信息
+&gt; lrange celery 0 5                部分任务信息，暂时还没有看懂</code></pre></figure>
+
+<!--
+Celery易于与Web框架集成, 作者常采用的交互逻辑是:
+
+提供提交任务, 查询任务结果两个API, 由客户端决定何时查询结果
+
+采用websocket等技术, 服务器主动向客户端发送结果
+
+当然也可以采用异步IO模式, 这需要一些扩展包的协助:
+
+安装tornado-celery: pip install torando-celery
+
+编写handler:
+
+import tcelery
+tcelery.setup_nonblocking_producer()
+
+from demo.tasks import add
+
+calss Users(RequestHandler):
+    @asynchronous
+    def get():
+        add.apply_async(args=[1,2], callback=self.on_success)
+
+    def on_success(self, response):
+        users = response.result
+        self.write(users)
+        self.finish()
+其它的Web框架也有自己的扩展包:
+-->
+
+<h3 id="高阶用法">高阶用法</h3>
+
+<h4 id="根据任务状态进行不同处理">根据任务状态进行不同处理</h4>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># tasks.py</span>
+<span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span><span class="p">,</span> <span class="n">Task</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="s">&#39;tasks&#39;</span><span class="p">,</span>  <span class="n">backend</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/0&#39;</span><span class="p">,</span> <span class="n">broker</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/1&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">retval</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;task done: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MyTask</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">on_success</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">on_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">einfo</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;task fail, reason: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MyTask</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">on_failure</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">einfo</span><span class="p">)</span>
+<span class="nd">@app.task</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="n">MyTask</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="c"># raise KeyError</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span></code></pre></figure>
+
+<h4 id="绑定任务为实例方法">绑定任务为实例方法</h4>
+
+<p>实际上就是将任务信息通过第一个参数传入，可以获取关于任务的一些相关信息。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># tasks.py</span>
+<span class="kn">from</span> <span class="nn">celery.utils.log</span> <span class="kn">import</span> <span class="n">get_task_logger</span>
+<span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span><span class="p">,</span> <span class="n">Task</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="s">&#39;tasks&#39;</span><span class="p">,</span>  <span class="n">backend</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/0&#39;</span><span class="p">,</span> <span class="n">broker</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/1&#39;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_task_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="nd">@app.task</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span></code></pre></figure>
+
+<p>传入的第一个参数包含了当前任务的信息，相关信息可以查看 <a href="http://docs.celeryproject.org/en/latest/userguide/tasks.html#task-request-info">Celery Task Request</a>，例如判断链式任务是否到结尾等等。上述示例，同时会将任务信息打印到日志中。</p>
+
+<h4 id="重试方法">重试方法</h4>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># tasks.py</span>
+<span class="kn">from</span> <span class="nn">celery.utils.log</span> <span class="kn">import</span> <span class="n">get_task_logger</span>
+<span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span><span class="p">,</span> <span class="n">Task</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="s">&#39;tasks&#39;</span><span class="p">,</span>  <span class="n">backend</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/0&#39;</span><span class="p">,</span> <span class="n">broker</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/1&#39;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_task_logger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="nd">@app.task</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">div</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;doing div&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">y</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">retry</span><span class="p">(</span><span class="n">exc</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">countdown</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></code></pre></figure>
+
+<h4 id="任务状态回调">任务状态回调</h4>
+
+<p>Celery 内建有如下几种任务状态：</p>
+
+<ul>
+  <li>PENDING 任务等待中</li>
+  <li>STARTED 任务已开始</li>
+  <li>SUCCESS 任务执行成功</li>
+  <li>FAILURE 任务执行失败</li>
+  <li>RETRY 任务将被重试</li>
+  <li>REVOKED 任务取消</li>
+</ul>
+
+<p>例如有个比较耗时的任务在运行，需要我们自定义一个任务状态来说明进度并手动更新状态，从而告诉回调当前任务的进度。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># tasks.py</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="s">&#39;tasks&#39;</span><span class="p">,</span>  <span class="n">backend</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/0&#39;</span><span class="p">,</span> <span class="n">broker</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/1&#39;</span><span class="p">)</span>
+
+<span class="nd">@app.task</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foobar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s">&quot;PROGRESS&quot;</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;p&#39;</span><span class="p">:</span> <span class="n">i</span><span class="o">*</span><span class="mi">10</span><span class="p">})</span>
+    <span class="k">return</span> <span class="s">&#39;finish&#39;</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># trigger.py</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">task</span> <span class="kn">import</span> <span class="n">foobar</span>
+ 
+<span class="k">def</span> <span class="nf">pm</span><span class="p">(</span><span class="n">body</span><span class="p">):</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;result&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;status&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;PROGRESS&#39;</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">Processing: {0}%&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;p&#39;</span><span class="p">)))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="se">\r</span><span class="s">&#39;</span>
+        <span class="k">print</span> <span class="n">res</span>
+<span class="k">print</span> <span class="n">foobar</span><span class="o">.</span><span class="n">delay</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">on_message</span><span class="o">=</span><span class="n">pm</span><span class="p">,</span> <span class="n">propagate</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></code></pre></figure>
+
+<p>注意，在 4.0 之后的版本，对于 backend 为 AMQP 处于性能的考虑会直接删除掉 <code>on_message</code> 的异步功能，如果要使用最好用数据库。</p>
+
+<p>在使用 AMQP 作为 result backend 时，Celery 会试着模拟持久化结果集，当任务并发过千时，且过期时间超过一天，那么就是导致 AMQP 性能变差，为此对于 AMQP 的后端就取消掉了这一功能。</p>
+
+<h4 id="定时周期任务">定时/周期任务</h4>
+
+<p>只需要在配置中配置好周期任务，然后在运行一个周期任务触发器即可。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># celery_config.py</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">celery.schedules</span> <span class="kn">import</span> <span class="n">crontab</span>
+<span class="n">CELERY_TIMEZONE</span> <span class="o">=</span> <span class="s">&#39;Asia/Shanghai&#39;</span>
+<span class="n">CELERYBEAT_SCHEDULE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;ptask&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;task&#39;</span><span class="p">:</span> <span class="s">&#39;tasks.period_task&#39;</span><span class="p">,</span>
+        <span class="s">&#39;schedule&#39;</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+<span class="n">CELERY_RESULT_BACKEND</span> <span class="o">=</span> <span class="s">&#39;redis://localhost:6379/0&#39;</span></code></pre></figure>
+
+<p>配置中 schedule 就是间隔执行的时间，这里可以用 <code>datetime.timedelta</code> 或者 crontab 甚至太阳系经纬度坐标进行间隔时间配置，具体可以参考 <a href="http://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html#crontab-schedules">Crontab Schedules</a> 。</p>
+
+<p>默认使用的是 UTC ，可以通过 <code>CELERY_TIMEZONE</code> 设置时区信息。</p>
+
+<p>然后在 tasks.py 中增加要被周期执行的任务。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># tasks.py</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="s">&#39;tasks&#39;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/0&#39;</span><span class="p">,</span> <span class="n">broker</span><span class="o">=</span><span class="s">&#39;redis://localhost:6379/0&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config_from_object</span><span class="p">(</span><span class="s">&#39;celery_config&#39;</span><span class="p">)</span>
+<span class="nd">@app.task</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">period_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;period task done: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></code></pre></figure>
+
+<p>重新运行 worker 并通过 <code>celery -A tasks beat</code> 执行 beat 。</p>
+
+<p>其它的高端用法还有链式任务，除了使用本地的 Python 文件作为 Worker 外，还可以通过 WebHook 实现，允许使用远程的 Web 服务作为 Worker 。</p>
+
+<h2 id="参考">参考</h2>
+
+<p>官方网站可以参考 <a href="http://www.celeryproject.org/">Celery</a>，以及其文档 <a href="http://docs.celeryproject.org/en/latest/index.html">Celery - Distributed Task Queue</a> 。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/mysql-innodb-undrop-tools_init.html" title="InnoDB 崩溃恢复">&larr; Older</a></li> 
+         <li class="next"><a href="/post/python-ansible.html" title="Ansible 简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1455033600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/python-async-queue.html" data-title="Python 异步任务队列" data-url="/post/python-async-queue.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Kafka 简介|JinYang's Blog</title>
+  <meta name="keywords" content="collectd,monitor,linux">
+  <meta name="description" content="介绍下 Collectd 中源码的实现。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Kafka 简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-08-27 Saturday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>Kafka 中可以将 Topic 从物理上划分成一个或多个分区 (Partition)，每个分区在物理上对应一个文件夹，以 <code>topicName_partitionIndex</code> 的命名方式命名，该文件夹下存储这个分区的所有消息 (<code>.log</code>) 和索引文件 (<code>.index</code>)，这使得 Kafka 的吞吐率可以水平扩展。</p>
+
+<p>在通过命令行创建 Topic 时，可以使用 <code>--partitions &lt;numPartitions&gt;</code> 参数指定分区数；也可以在 <code>server.properties</code> 配置文件中配置参数 <code>num.partitions</code> 来指定默认的分区数。需要注意的是，在为 Topic 创建分区时，分区数最好是 broker 数量的整数倍。</p>
+
+<h2 id="kafka-安装">Kafka 安装</h2>
+
+<p>直接从 <a href="http://kafka.apache.org/downloads.html">kafka.apache.org</a> 下载二进制安装包，然后解压。</p>
+
+<h3 id="单机测试">单机测试</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 1. 通过脚本启动单节点Zookeeper实例
+$ bin/zookeeper-server-start.sh -daemon config/zookeeper.properties
+
+----- 2. 启动Kafka服务
+$ bin/kafka-server-start.sh config/server.properties &gt;logs/kafka-start.logs 2&gt;&amp;1 &amp;
+
+----- 3. 创建单分区单副本的topic
+$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
+Created topic &quot;test&quot;.
+
+----- 4. 查看topic
+$ bin/kafka-topics.sh --list --zookeeper localhost:2181
+test
+
+----- 5. 发送消息
+$ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+Hello world！
+Hello Kafka！
+
+----- 6. 消费消息，接收消息并在终端打印，--zookeeper参数在逐渐取消，建议使用后者
+$ bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning
+$ bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+Hello world!
+Hello Kafka!</code></pre></figure>
+
+<h3 id="单机多broker配置">单机多broker配置</h3>
+
+<p>利用单节点部署多个 broker，不同的 broker 设置不同的 id 、监听端口、日志目录。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 1. 新增配置文件，修改上述的三个主要配置
+$ cp config/server.properties config/server-1.properties
+$ cat config/server-1.properties:
+    broker.id=1
+    port=9093
+    log.dir=/tmp/kafka-logs-1
+
+----- 2. 启动Kafka服务
+$ bin/kafka-server-start.sh config/server-1.properties &amp;</code></pre></figure>
+
+<h2 id="librdkafka">librdkafka</h2>
+
+<!--
+Consumer Group
+  多个consumer可以组成一个组，每个消息只能被组中的一个consumer消费，如果想一个消息可以被多个consumer消费的话，那么这些consumer必须在不同的组。
+消息状态
+  消息的状态被保存在consumer中，broker不会关心哪个消息被消费了被谁消费了，只记录一个offset值（指向partition中下一个要被消费的消息位置），这就意味着如果consumer处理不好的话，broker上的一个消息可能会被消费多次。
+    消息有效期：Kafka会长久保留其中的消息，以便consumer可以多次消费，当然其中很多细节是可配置的。
+    批量发送：Kafka支持以消息集合为单位进行批量发送，以提高push效率。
+    push-and-pull : Kafka中的Producer和consumer采用的是push-and-pull模式，即Producer只管向broker push消息，consumer只管从broker pull消息，两者对消息的生产和消费是异步的。
+    负载均衡方面： Kafka提供了一个 metadata API来管理broker之间的负载（对Kafka0.8.x而言，对于0.7.x主要靠zookeeper来实现负载均衡）。
+    同步异步：Producer采用异步push方式，极大提高Kafka系统的吞吐率（可以通过参数控制是采用同步还是异步方式）。
+Partition (分区)
+  一个Topic下可以有多个Partition，Kafka的broker端支持消息分区，Producer可以决定把消息发到哪个分区，在一个分区中消息的顺序就是Producer发送消息的顺序。
+
+librdkafka 用 mklove 编译。
+
+代码运行流程如下
+
+rd_kafka_conf_set()
+  设置全局配置，配置文件中通过Property配置
+rd_kafka_topic_conf_set()
+  设置topic配置
+rd_kafka_brokers_add()
+  设置broker地址，也就是bootstrap broker，启动向broker发送消息的线程
+rd_kafka_new()
+  将上述的conf作为参数，启动kafka主线程，也就是rd_kafka_thread_main()函数
+
+rd_kafka_topic_new建topic
+
+rd_kafka_produce使用本函数发送消息
+
+rd_kafka_poll调用回调函数
+
+还是看发送一条消息的过程
+
+#define HAVE_LIBRDKAFKA_LOG_CB 1
+#undef HAVE_LIBRDKAFKA_LOGGER
+
+新版本使用 rd_kafka_conf_set_log_cb() 替换了 rd_kafka_set_logger() 接口。
+
+简单来说，应用线程向队列扔消息，librdkafka启动的线程负责从队列里取消息并向kafka broker发送消息。
+
+src/rdkafka_transport.c 调用操作系统的 poll() 接口。
+-->
+
+<!--
+rd_kafka_replyq_enq()
+ |-rd_kafka_q_enq()
+-->
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">rd_kafka_produce()                      ← 发送消息
+ |-rd_kafka_msg_new()
+   |-rd_kafka_msg_new0() 创建消息并初始化，包括消息长度、标记位、timeout等内容
+   |-rd_kafka_msg_partitioner() 分区并添加到队列
+   | |-rd_kafka_toppar_get() 获取partition
+   | |-rd_kafka_toppar_enq_msg() 加入队列，等待broker线程取出
+   |   |-rd_kafka_msgq_enq() 真正添加到topic partition队列中，注意需要进行加锁
+   |     |-TAILQ_INSERT_TAIL() 添加到队列末尾
+   |-rd_kafka_msg_destroy()
+rd_kafka_broker_add()
+
+rd_kafka_new() 创建新的实例，会返回rd_kafka_t结构体
+ |-rd_kafka_cgrp_new() 如果是消费者会创建分组
+ |-rd_kafka_thread_main() 为生产者、消费者启动单独线程处理 rd_kafka_thread_main()
+ | |-rd_snprintf() 将线程名称设置为main
+ | |-rd_kafka_q_serve() 从rk_ops队列中读取消息
+ |   |-rd_kafka_op_handle() 处理完成后调用回调函数
+ |-rd_kafka_broker_add() 创建内部broker线程，也就是 rd_kafka_broker_thread_main()
+
+rd_kafka_broker_thread_main()
+ |-rd_kafka_broker_terminating() 如果没有关闭
+ |-rd_kafka_broker_connect() 在初始化以及STATE_DOWN时，不断重试链接
+ | |-rd_kafka_broker_resolve()
+ | | |-rd_getaddrinfo()
+ | |-rd_kafka_transport_connect() 设置网络异步通讯
+ | | |-rd_fd_set_nonblocking()
+ | | |-rd_kafka_transport_poll_set()
+ | |-rd_kafka_broker_set_state()
+ |
+ |-rd_kafka_broker_producer_serve() 处于STATE_UP时根据不同的类型调用不同函数
+ | |-rd_kafka_broker_terminating()
+ | |-rd_kafka_toppar_producer_serve() 会通过TAILQ_FOREACH()从队列中读取，然后调用该函数
+     |-rd_kafka_msgq_concat() 如果有需要发送的消息，则直接将消息从rktp-&gt;rktp_msgq移动到rktp-&gt;rktp_xmit_msgq，并清空前者
+     |-rd_kafka_msgq_age_scan()
+  |-rd_kafka_broker_produce_toppar()
+    |-rd_kafka_buf_new() 新建发送缓冲区
+ | |-rd_kafka_broker_serve() 从队列中读取消息，并将数据发送到网络
+ |   |-rd_kafka_q_pop() 会返回具体的操作类型
+ |   | |-rd_kafka_q_pop_serve()
+ |   |-rd_kafka_broker_op_serve() 根据不同的操作类型调用不同函数接口
+ |   |
+ |   |-rd_kafka_transport_io_serve()
+ |     |-rd_kafka_transport_poll() 调用操作系统的poll()系统调用接口
+ |     |-rd_kafka_transport_poll_clear()
+ |     |-rd_kafka_transport_io_event() 处理返回的IO事件
+ |       |-rd_kafka_send() 例如发送
+ |       |-rd_kafka_recv() 以及接收
+ |-rd_kafka_broker_consumer_serve()</code></pre></figure>
+
+<p>这也就意味着应用程序将消息发送给 rdkafka，然后 rdkafka 会直接将消息保存到队列中，并由其它线程异步发送给 broker 。</p>
+
+<p>在调用 <code>rd_kafka_new()</code> 函数时，会根据入参是消费者还是生产者返回 <code>rd_kafka_t</code> 对象，此时会同时创建一个主处理线程，也就是 <code>rd_kafka_thread_main()</code> 。</p>
+
+<p>在主线程中会从 <code>rd_kafka_t.rk_ops</code> 队列中逐一读取消息，然后根据不同的操作类型 (通过rd_kafka_op_type_t定义) 分别进行处理，其中操作通过 rd_kafka_op_t 定义，操作类型对应了其中的 rko_type 成员，操作执行完后调用 rd_kafka_op_handle() 回调。</p>
+
+<!--
+可以通过 rd_kafka_broker_add() 创建 broker 线程，有如下三种类型：
+    RD_KAFKA_CONFIGURED
+    根据用户配置，生成的broker线程
+    RD_KAFKA_LEARNED
+    内部使用的broker线程，主要针对Client Group使用
+    RD_KAFKA_INTERNAL
+    内部使用的broker线程
+-->
+
+<h2 id="参考">参考</h2>
+
+<!--
+http://leaver.me/2015/09/03/kafka%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B/
+Kafka介绍   http://blog.csdn.net/suifeng3051/article/details/48053965
+ZeroCPY  https://www.ibm.com/developerworks/linux/library/j-zerocopy/
+Kafka failover 机制详解 http://www.cnblogs.com/fxjwind/p/4972244.html
+很多不错的图片 http://zqhxuyuan.github.io/2016/01/13/2016-01-13-Kafka-Picture/
+
+http://blog.csdn.net/auwzb/article/details/9665729
+http://www.cnblogs.com/xhcqwl/p/3905412.html
+http://codingeek.me/2017/04/16/librdkafka%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/collectd-source-code.html" title="Collectd 源码解析">&larr; Older</a></li> 
+         <li class="next"><a href="/post/postgresql-high-available_init.html" title="PG 高可用">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1472227200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/kafka-introduce.html" data-title="Kafka 简介" data-url="/post/kafka-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

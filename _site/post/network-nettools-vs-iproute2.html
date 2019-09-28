@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>netstat VS. ss|JinYang's Blog</title>
+  <meta name="keywords" content="netstat,ss,网络,监控">
+  <meta name="description" content="现在很多系统管理员仍在使用 ifconfig、route、arp 和 netstat 等命令行工具，来管理和排查各种网络配置。这套工具也就是 net-tools 包，源于 BSD TCP/IP 工具箱，但是自 2001 年以后基本就停滞不前。 iproute 作为一套新的网络配置工具，旨在替换原有的 net-tools 工具包，而且，越来越多的发行版本开始使用 iproute 包替换 net-tools。 netstat 和 ss 命令只是这两个包中的代表，以此大概解析下两者的区别。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>netstat VS. ss</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2014-01-30 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>现在很多系统管理员仍在使用 ifconfig、route、arp 和 netstat 等命令行工具，来管理和排查各种网络配置。这套工具也就是 net-tools 包，源于 BSD TCP/IP 工具箱，但是自 2001 年以后基本就停滞不前。</p>
+
+<p>iproute 作为一套新的网络配置工具，旨在替换原有的 net-tools 工具包，而且，越来越多的发行版本开始使用 iproute 包替换 net-tools。</p>
+
+<p>netstat 和 ss 命令只是这两个包中的代表，以此大概解析下两者的区别。</p>
+
+<!-- more -->
+
+<h2 id="iproute-vs-net-tools">iproute VS. net-tools</h2>
+
+<p>两套包都可以完成网络的配置、查看，其中 net-tools 主要通过 procfs 和 ioctl 系统调用，访问和更改内核网络配置；而 iproute 则通过网络链路套接字接口与内核进行联系。</p>
+
+<p>net-tools 采用的 proc 接口与 iproute 采用的 netlink 相比要笨拙的多；另外，ioctl 采用的是同步系统调用，而 netlink 内部采用的是 sock 队列，也就是异步通讯。</p>
+
+<p>除了性能只外，iproute 的用户界面比 net-tools 要来得直观，而且有很多 net-tools 所不支持的功能。</p>
+
+<p><img src="/images/linux/nettools-vs-iproute.jpg" alt="nettools-vs-iproute" title="nettools 与 iproute 的对比图" class="pull-center" width="600" /></p>
+
+<p>具体信息可以参考图片中的网站，仅列举如下部分。</p>
+
+<h3 id="路由表设置">路由表设置</h3>
+
+<p>查看路由表，在 net-tools 中包括了两种方式，而 iproute2 只有一种。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 使用net-tools
+# route -n
+# netstat -rn
+
+----- 使用iproute2
+# ip route show</code></pre></figure>
+
+<p>接下来看看如何修改路由，包括如何添加或改动内核 IP 路由表中的默认路由，添加或者删除静态路由。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 使用net-tools，添加默认路由
+# route add default gw 192.168.1.2 eth0
+# route del default gw 192.168.1.1 eth0
+
+----- 使用iproute2，添加默认路由
+# ip route add default via 192.168.1.2 dev eth0
+# ip route replace default via 192.168.1.2 dev eth0
+
+
+----- 使用net-tools，添加或者删除静态路由
+# route add -net 172.16.32.0/24 gw 192.168.1.1 dev eth0
+# route del -net 172.16.32.0/24
+
+----- 使用iproute2，添加或者删除静态路由
+# ip route add 172.16.32.0/24 via 192.168.1.1 dev eth0
+# ip route del 172.16.32.0/24</code></pre></figure>
+
+<h3 id="源码实现">源码实现</h3>
+
+<p>ip 命令的实现在源码的 ip 目录下，在 ip.c 中根据不同的子命令调用不同的函数，而子命令与相应程序的映射关系在 cmds[] 数组中。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">cmd</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmd</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="p">)(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">);</span>
+<span class="p">}</span> <span class="n">cmds</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">{</span> <span class="s">&quot;address&quot;</span><span class="p">,</span>    <span class="n">do_ipaddr</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;addrlabel&quot;</span><span class="p">,</span>  <span class="n">do_ipaddrlabel</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;maddress&quot;</span><span class="p">,</span>   <span class="n">do_multiaddr</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;route&quot;</span><span class="p">,</span>  <span class="n">do_iproute</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;rule&quot;</span><span class="p">,</span>   <span class="n">do_iprule</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;neighbor&quot;</span><span class="p">,</span>   <span class="n">do_ipneigh</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;neighbour&quot;</span><span class="p">,</span>  <span class="n">do_ipneigh</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;ntable&quot;</span><span class="p">,</span> <span class="n">do_ipntable</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;ntbl&quot;</span><span class="p">,</span>   <span class="n">do_ipntable</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;link&quot;</span><span class="p">,</span>   <span class="n">do_iplink</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;l2tp&quot;</span><span class="p">,</span>   <span class="n">do_ipl2tp</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;tunnel&quot;</span><span class="p">,</span> <span class="n">do_iptunnel</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;tunl&quot;</span><span class="p">,</span>   <span class="n">do_iptunnel</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;tuntap&quot;</span><span class="p">,</span> <span class="n">do_iptuntap</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;tap&quot;</span><span class="p">,</span>    <span class="n">do_iptuntap</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;token&quot;</span><span class="p">,</span>  <span class="n">do_iptoken</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;tcpmetrics&quot;</span><span class="p">,</span> <span class="n">do_tcp_metrics</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;tcp_metrics&quot;</span><span class="p">,</span><span class="n">do_tcp_metrics</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;monitor&quot;</span><span class="p">,</span>    <span class="n">do_ipmonitor</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;xfrm&quot;</span><span class="p">,</span>   <span class="n">do_xfrm</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;mroute&quot;</span><span class="p">,</span> <span class="n">do_multiroute</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;mrule&quot;</span><span class="p">,</span>  <span class="n">do_multirule</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;netns&quot;</span><span class="p">,</span>  <span class="n">do_netns</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;netconf&quot;</span><span class="p">,</span>    <span class="n">do_ipnetconf</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">&quot;help&quot;</span><span class="p">,</span>   <span class="n">do_help</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="mi">0</span> <span class="p">}</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>对于不同的命令可以直接查看对应的函数，如 do_iproute()，而与内核的交互仍然通过 netlink 执行。</p>
+
+<p>关于两者的使用对比，详细可以参考 <a href="http://xmodulo.com/linux-tcpip-networking-net-tools-iproute2.html" title="iproute2 和 net-tools 的简单对比">Linux TCP/IP networking: net-tools vs. iproute2</a> 或者中文翻译版 <a href="http://os.51cto.com/art/201409/450886.htm" title="iproute2 和 net-tools 对比的中文版">net-tools 与 iproute2 大比较</a> 。</p>
+
+<h2 id="netstat-vs-sssocket-statistics">Netstat VS. SS(Socket Statistics)</h2>
+
+<p>ss 用于显示 socket 状态，包括了 TCP sockets, UDP sockets, DCCP sockets, RAW sockets, Unix domain sockets 等统计。</p>
+
+<p>直接通过 man 8 netstat 查看帮助时就可以发现这样的一句话 “This program is obsolete.  Replacement for netstat is ss.”，而且后面还有几个相关的等价示例介绍。</p>
+
+<p>明摆着 Netstat 这是要退居二线的节奏啊。</p>
+
+<p>ss 与内核之间是通过 netlink 机制进行通讯的，相比 Netstat 来说要快速的多，据说即使都使用 procfs，ss 也要快一些，不过没验证过。如果要使用 netlink 机制，需要内核中相关模块的支持，如 tcp_diag、udp_diag、inet_diag、sock_diag 等，也就是 socket 相关的诊断模块。</p>
+
+<p>内核中是否有相关的模块可以通过 lsmod | grep diag 命令查看。</p>
+
+<p>ss 使用的就是 TCP 协议栈中 tcp_diag 模块，一个用于分析统计的模块，可以获得 Linux 内核中第一手的信息。如上所述，如果系统中没有 tcp_diag，实际上 ss 也可以正常运行，只是效率会变得稍慢。</p>
+
+<p>关于 ss 的帮助信息，可以直接通过 ss -h 查看，或者 man 8 ss 查看。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-h, --help                          帮助信息
+-V, --version                       程序版本信息
+-n, --numeric                       不解析服务名称
+-r, --resolve                       解析主机名
+
+-a, --all                           显示所有套接字(sockets)
+-l, --listening                     显示监听状态的套接字(sockets)
+
+-o, --options                       显示计时器信息
+-e, --extended                      显示详细的套接字(sockets)信息
+-m, --memory                        显示套接字(socket)的内存使用情况
+-p, --processes                     显示使用套接字(socket)的进程
+-i, --info                          显示TCP内部信息
+-s, --summary                       显示套接字(socket)使用概况
+
+-4, --ipv4                          仅显示IPv4的套接字(sockets)
+-6, --ipv6                          仅显示IPv6的套接字(sockets)
+-0, --packet                        显示PACKET套接字（socket）
+-t, --tcp                           仅显示TCP套接字(sockets)
+-u, --udp                           仅显示UCP套接字(sockets)
+-d, --dccp                          仅显示DCCP套接字(sockets)
+-w, --raw                           仅显示RAW套接字(sockets)
+-x, --unix                          仅显示Unix套接字(sockets)
+-f, --family=FAMILY                 显示FAMILY类型的套接字(sockets)，支持unix,inet,inet6,link,netlink
+
+-A, --query=QUERY, --socket=QUERY   指定scoket类型
+      QUERY := {all|inet|tcp|udp|raw|unix|packet|netlink}[,QUERY]
+-D, --diag=FILE                     将原始TCP套接字(sockets)信息转储到文件
+-F, --filter=FILE                   从文件中都去过滤器信息</code></pre></figure>
+
+<p>接下来，我们看些 ss 经常会使用到的示例。</p>
+
+<h3 id="ss-使用示例">ss 使用示例</h3>
+
+<p>通过 ss 命令，可以查看网络的统计信息，查看相关类型的接口等。如下的示例很多可以从 man 8 ss 中查看，在此仅标记下。</p>
+
+<h4 id="过滤规则">过滤规则</h4>
+
+<p>总共有两种方法过滤：A) 根据状态；B) 过滤规则。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看所有的SSH链接
+$ ss -o state established &#39;( dport = :ssh or sport = :ssh )&#39;
+----- 所有链接到X Server的链接
+$ ss -x src /tmp/.X11-unix/*
+----- 状态为FIN-WAIT-1的HTTP请求，目的地址为193.233.7/24的所有链接
+$ ss -o state fin-wait-1 &#39;( sport = :http or sport = :https )&#39; dst 193.233.7/24
+----- 根据端口状态过滤lt, gt, eq, ne, le, ge
+$ ss -ltn sport le 500</code></pre></figure>
+
+<h4 id="显示统计信息">显示统计信息</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ss -s
+Total: 1009 (kernel 1079)
+TCP:   57 (estab 23, closed 16, orphaned 2, synrecv 0, timewait 6/0), ports 0
+
+Transport Total     IP        IPv6
+*         1079      -         -
+RAW       2         1         1
+UDP       29        26        3
+TCP       41        34        7
+INET      72        61        11
+FRAG      0         0         0</code></pre></figure>
+
+<h4 id="查看监听端口">查看监听端口</h4>
+
+<p>查看所有打开监听的网络连接端口，可以通过 -p 选项同时显示相应的进程</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># ss -pl
+State      Recv-Q Send-Q    Local Address:Port     Peer Address:Port
+LISTEN     0      80        :::mysql               :::*                 users:((&quot;mysqld&quot;,pid=7241,fd=20))</code></pre></figure>
+
+<h4 id="tcp链接信息">TCP链接信息</h4>
+
+<p>显示所有的TCP链接信息，其中 Recv-Q 表示收到的请求，Send-Q 表示可以接收的请求队列大小。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ss -ta
+State      Recv-Q Send-Q     Local Address:Port     Peer Address:Port
+LISTEN     0      0              127.0.0.1:smux                *:*
+LISTEN     0      0                      *:3690                *:*
+LISTEN     0      0                      *:ssh                 *:*
+ESTAB      0      0        192.168.120.204:ssh         10.2.0.68:49368</code></pre></figure>
+
+<h4 id="tcp状态">TCP状态</h4>
+
+<p>通过TCP状态进行过滤</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 所有状态为established的SMTP连接
+$ ss -o state established &#39;( dport = :smtp or sport = :smtp )&#39;
+
+----- 处于 FIN-WAIT-1状态的源端口为80或者443，目标网络为193.233.7/24所有tcp套接字
+$ ss -o state fin-wait-1 &#39;( sport = :http or sport = :https )&#39; dst 193.233.7/24
+
+----- 通过TCP状态过滤，其中的过滤状态可以通过ss -h查看
+$ ss -4 state FILTER-NAME-HERE</code></pre></figure>
+
+<h4 id="查看unix-socket信息">查看UNIX socket信息</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 列出本地哪个进程连接到X server
+# ss -x src /tmp/.X11-unix/*
+
+----- 查看本地MySQL socket链接信息
+# ss -x src /tmp/mysql.sock
+Netid  State      Recv-Q Send-Q    Local Address:Port          Peer Address:Port
+u_str  ESTAB      0      0         /tmp/mysql.sock 14595374    * 14594660</code></pre></figure>
+
+<h4 id="匹配进程远程地址和端口号">匹配进程、远程地址和端口号</h4>
+
+<p>匹配进程、远程地址和端口号，基本语法为 <code>ss [dst|src] ADDRESS:PORT</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ss dst 192.168.1.5
+$ ss dst 192.168.119.113:http
+$ ss src 192.168.119.113:443</code></pre></figure>
+
+<h4 id="本地或者远程端口">本地或者远程端口</h4>
+
+<p>将本地或者远程端口和一个数比较，选择一个端口的范围，语法为 <code>ss [dport|sport] OP PORT</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># ss  sport = :http
+# ss  dport \&gt; :1024
+
+----- 其中OP操作可以为如下其中的一个比较操作
+&lt;= or le : 小于或等于端口号
+&gt;= or ge : 大于或等于端口号
+== or eq : 等于端口号
+!= or ne : 不等于端口号
+&lt;  or gt : 小于端口号
+&gt;  or lt : 大于端口号</code></pre></figure>
+
+<p>上述的示例基本上可以满足常见的需求了。</p>
+
+<h3 id="查看内核参数">查看内核参数</h3>
+
+<p>通过 ss 并结合 crash 命令可以用来查看与 socket 相关的内核参数信息，详细的信息可以参考 <a href="https://blogs.janestreet.com/inspecting-internal-tcp-state-on-linux/" title="介绍如何通过ss+crash来查看内部TCP的状态">Inspecting Internal TCP State on Linux</a> 中的介绍，在此仅简单说明下。</p>
+
+<p>默认 crash 命令是不会安装的，可以通过如下的命令行进行安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum install crash</code></pre></figure>
+
+<p>该程序可以用来分析内核的 dump 文件，或者对正在运行中的内核进行分析。在此的话，我们可以先通过 ss 命令获取到链接对应的 sock 地址信息，然后再利用 crash 命令查看当前链接的参数信息。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看目的端口号是MySQL的链接详细信息，会显示该链接在内核中的struct sock地址信息
+# ss -eipn &#39;( dport = :mysql )&#39;
+Netid   State    Recv-Q   Send-Q  Local Address:Port    Peer Address:Port
+tcp     ESTAB    0        0       127.0.0.1:57334       127.0.0.1:3306
+    users:((&quot;mysql&quot;,pid=7268,fd=3)) timer:(keepalive,118min,0) uid:1000 ino:13435670 sk:ffff88015e39e180 &lt;-&gt;
+    ... ...
+
+----- 直接启动crash命令，查看sock相关信息，帮助直接查看help struct
+# crash
+... ...
+crash&gt; struct tcp_sock.rcv_nxt,snd_una,reordering ffff88015e39e180
+  rcv_nxt = 1218355271
+  snd_una = 725754512
+  reordering = 3 &#39;\003&#39;</code></pre></figure>
+
+<p>如上，通过 crash 中的 struct 命令就可以显示当时 sock 的相关结构体信息。</p>
+
+<p>每个链接在内核中都会对应一个 struct sock 信息，包括了所有相关的状态信息。实际上，包括 struct sock 在内，TCP 协议中有四个结构体 tcp_sock inet_connection_sock inet_sock sock，而内核代码中经常可以看到对其指针进行强制类型转换，之所以这样，主要是根其成员变量的分布相关。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">sock</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">};</span>
+<span class="k">struct</span> <span class="n">inet_sock</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">sock</span>       <span class="n">sk</span><span class="p">;</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">};</span>
+<span class="k">struct</span> <span class="n">inet_connection_sock</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">inet_sock</span>  <span class="n">icsk_inet</span><span class="p">;</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">};</span>
+<span class="k">struct</span> <span class="n">tcp_sock</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">inet_connection_sock</span> <span class="n">inet_conn</span><span class="p">;</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>而上述的四个结构体，基本上就涵盖了该 socket 链接的所有信息。</p>
+
+<h3 id="源码实现-1">源码实现</h3>
+
+<p>我们可以直接从 <a href="https://www.kernel.org/pub/linux/utils/net/iproute2/" title="iproute2 下载地址">www.kernel.org</a> 下载 iproute2 的源码包，或者在 CentOS 中通过 yumdownloader 下载源码并解压。</p>
+
+<p>其中 ss 相关的源码在 misc/ss.c 中，实现也比较简单，主要是解析选项、通过 netlink 获取内核中的状态数据、展示数据。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">main()
+ |-netlink_show()                     # 根据不同的选项，对应不同的函数
+ |-... ...
+ |-tcp_show()
+   |-inet_show_netlink()              # 主要的通过netlink通讯处理函数
+     |-socket()                       # 建立套接字
+     |-sockdiag_send()
+     | |-tcpdiag_send()               # 如果family==PF_UNSPEC
+     | | |-sendmsg()                  # 发送消息到内核
+     | |-sendmsg()                    # 功能同上，只是不同的分支
+     |-recvmsg()                      # 接收内核返回的消息
+     |-inet_show_sock()               # 显示最终获取的结果</code></pre></figure>
+
+<p>在 inet_show_netlink() 函数中基本就是新建 socket，构建报文，通过 netlink 进行通讯。</p>
+
+<p>以 ss -nti 命令为例，也就是查看 TCP 链接相关的信息，如 RTO、RTT、CWND 等信息。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">inet_show_netlink</span><span class="p">(</span><span class="k">struct</span> <span class="n">filter</span> <span class="o">*</span><span class="n">f</span><span class="p">,</span> <span class="kt">FILE</span> <span class="o">*</span><span class="n">dump_fp</span><span class="p">,</span> <span class="kt">int</span> <span class="n">protocol</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">fd</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_NETLINK</span><span class="p">,</span> <span class="n">SOCK_RAW</span><span class="p">,</span> <span class="n">NETLINK_INET_DIAG</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+    <span class="n">family</span> <span class="o">=</span> <span class="n">PF_INET</span><span class="p">;</span>
+<span class="nl">again</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sockdiag_send</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+    <span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">nladdr</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">nladdr</span><span class="p">));</span>
+    <span class="n">nladdr</span><span class="p">.</span><span class="n">nl_family</span> <span class="o">=</span> <span class="n">AF_NETLINK</span><span class="p">;</span>
+
+    <span class="n">iov</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">iovec</span><span class="p">){</span>
+        <span class="p">.</span><span class="n">iov_base</span> <span class="o">=</span> <span class="n">buf</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">iov_len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+    <span class="p">};</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">tcp_show</span><span class="p">(</span><span class="k">struct</span> <span class="n">filter</span> <span class="o">*</span><span class="n">f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">socktype</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">getenv</span><span class="p">(</span><span class="s">&quot;PROC_NET_TCP&quot;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">getenv</span><span class="p">(</span><span class="s">&quot;PROC_ROOT&quot;</span><span class="p">)</span>
+        <span class="o">&amp;&amp;</span> <span class="n">inet_show_netlink</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">socktype</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">while</span> <span class="p">((</span><span class="n">ch</span> <span class="o">=</span> <span class="n">getopt_long</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="s">&quot;dhaletuwxnro460spbf:miA:D:F:vV&quot;</span><span class="p">,</span>
+                 <span class="n">long_opts</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">))</span> <span class="o">!=</span> <span class="n">EOF</span><span class="p">)</span> <span class="p">{</span>
+       <span class="k">switch</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span> <span class="p">{</span>
+       <span class="k">case</span> <span class="sc">&#39;n&#39;</span><span class="o">:</span>                <span class="c1">// 不解析端口号</span>
+           <span class="n">resolve_services</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+           <span class="k">break</span><span class="p">;</span>
+       <span class="k">case</span> <span class="sc">&#39;i&#39;</span><span class="o">:</span>                <span class="c1">// 显示TCP相关信息</span>
+           <span class="n">show_tcpinfo</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+           <span class="k">break</span><span class="p">;</span>
+       <span class="k">case</span> <span class="sc">&#39;t&#39;</span><span class="o">:</span>                <span class="c1">// 只包括TCP链接</span>
+           <span class="n">current_filter</span><span class="p">.</span><span class="n">dbs</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">TCP_DB</span><span class="p">);</span>
+           <span class="n">do_default</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+           <span class="k">break</span><span class="p">;</span>
+       <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">current_filter</span><span class="p">.</span><span class="n">dbs</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">TCP_DB</span><span class="p">))</span>
+        <span class="n">tcp_show</span><span class="p">(</span><span class="o">&amp;</span><span class="n">current_filter</span><span class="p">,</span> <span class="n">IPPROTO_TCP</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>而与内核中对应的就是 tcp_diag 模块，以 ss -atnn 为例，其显示的内容如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ss -atnn
+State      Recv-Q Send-Q    Local Address:Port       Peer Address:Port
+LISTEN     0      128                   *:4000                  *:*
+ESTAB      0      0         192.168.1.173:48372   101.201.173.115:80
+... ...</code></pre></figure>
+
+<p>如上的命令会输出所有的 socket 相关信息：A) 第一列表示 tcp socket 的状态；B) 第二列和第三列的内容与 socket 所处的状态有关。于此相关的在内核中 tcp_diag 代码如下：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">tcp_diag_get_info</span><span class="p">(</span><span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">,</span> <span class="k">struct</span> <span class="n">inet_diag_msg</span> <span class="o">*</span><span class="n">r</span><span class="p">,</span>
+                  <span class="kt">void</span> <span class="o">*</span><span class="n">_info</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sk</span><span class="o">-&gt;</span><span class="n">sk_state</span> <span class="o">==</span> <span class="n">TCP_LISTEN</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_rqueue</span> <span class="o">=</span> <span class="n">sk</span><span class="o">-&gt;</span><span class="n">sk_ack_backlog</span><span class="p">;</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_wqueue</span> <span class="o">=</span> <span class="n">sk</span><span class="o">-&gt;</span><span class="n">sk_max_ack_backlog</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_rqueue</span> <span class="o">=</span> <span class="kt">max_t</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="n">tp</span><span class="o">-&gt;</span><span class="n">rcv_nxt</span> <span class="o">-</span> <span class="n">tp</span><span class="o">-&gt;</span><span class="n">copied_seq</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_wqueue</span> <span class="o">=</span> <span class="n">tp</span><span class="o">-&gt;</span><span class="n">write_seq</span> <span class="o">-</span> <span class="n">tp</span><span class="o">-&gt;</span><span class="n">snd_una</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如以上中的代码，不同状态的 socket 所返回的数值是不同的。</p>
+
+<h4 id="处于-listen-状态的-socket">处于 LISTEN 状态的 socket</h4>
+
+<ul>
+  <li>
+    <p>Recv-Q：已经完成三次握手，现存放于 accept 队列中，等待应用通过 accept() 系统调用获取 socket 。</p>
+  </li>
+  <li>
+    <p>Send-Q：实际上就是 accetp 队列的最大值，也就是能容纳的最大完成三次握手的链接。</p>
+  </li>
+</ul>
+
+<!--
+#### 非 LISTEN 状态的 socket
+Recv-Q：代表了 receive queue中的字节数目（等待接收的下一个tcp段的序号-尚未从内核空间copy到用户空间的段最前面的一个序号）；Send-Q表示发送queue中容纳的字节数（已加入发送队列中最后一个序号-输出段中最早一个未确认的序号）
+-->
+
+<h3 id="ss-命令的-timer-输出">ss 命令的 timer 输出</h3>
+
+<p>单独拉出来系统介绍一下。</p>
+
+<p>通过 ss 命令查看 timer 选项时，只需要添加一个 -o 选项即可。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ss -atonn
+State      Recv-Q Send-Q   Local Address:Port       Peer Address:Port
+LISTEN     0      128                  *:4000                  *:*
+ESTAB      0      0        192.168.1.173:46445   101.201.173.115:80       timer:(keepalive,6.427ms,0)
+SYN-SENT   0      1        192.168.1.173:9983    101.201.174.210:80       timer:(on,355ms,0)
+TIME-WAIT  0      0            127.0.0.1:4000          127.0.0.1:22173    timer:(timewait,43sec,0)</code></pre></figure>
+
+<p>与上次的输出相比，多了一个 timer 输出，也就是 tcp socket 上的定时器。</p>
+
+<p>在 tcp 内核中，共有 7 个定时器，通过 4 个 timer 实现；分别是：
+通过icsk_retransmit_timer实现的重传定时器、零窗口探测定时器；通过sk_timer实现的连接建立定时器、保活定时器和FIN_WAIT_2定时器；通过icsk_delack_timer实现的延时ack定时器；以及TIME_WAIT定时器。</p>
+
+<p>首先看一下 ss 中是如何进行处理的。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">tmr_name</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="s">&quot;off&quot;</span><span class="p">,</span>        <span class="c1">// 当前socket没有timer</span>
+	<span class="s">&quot;on&quot;</span><span class="p">,</span>         <span class="c1">// 重传timer</span>
+	<span class="s">&quot;keepalive&quot;</span><span class="p">,</span>  <span class="c1">// fin_wait_2或保活定时器，可根据连接的状态确定</span>
+	<span class="s">&quot;timewait&quot;</span><span class="p">,</span>   <span class="c1">// TIME_WAIT 定时器</span>
+	<span class="s">&quot;persist&quot;</span><span class="p">,</span>    <span class="c1">// 零窗口探测定时器</span>
+	<span class="s">&quot;unknown&quot;</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">inet_show_sock</span><span class="p">(</span><span class="k">struct</span> <span class="n">nlmsghdr</span> <span class="o">*</span><span class="n">nlh</span><span class="p">,</span> <span class="k">struct</span> <span class="n">filter</span> <span class="o">*</span><span class="n">f</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">show_options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_timer</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_timer</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">)</span>
+                <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_timer</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">&quot; timer:(%s,%s,%d)&quot;</span><span class="p">,</span>
+                <span class="n">tmr_name</span><span class="p">[</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_timer</span><span class="p">],</span>         <span class="c1">// 对应定时器的类型</span>
+                <span class="n">print_ms_timer</span><span class="p">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_expires</span><span class="p">),</span> <span class="c1">// 超时时间</span>
+                <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_retrans</span><span class="p">);</span>                <span class="c1">// 重传次数</span>
+    <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>ss 的代码很简单，其中非 TIME_WAIT 类型的时钟在 int inet_sk_diag_fill() 函数中完成，对于 TIME_WAIT 定时器信息在内核的 inet_twsk_diag_fill() 函数中完成。</p>
+
+<p>在此，只介绍下前者。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">inet_sk_diag_fill</span><span class="p">(...</span> <span class="p">...)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="cp">#define EXPIRES_IN_MS(tmo)  DIV_ROUND_UP((tmo - jiffies) * 1000, HZ)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_pending</span> <span class="o">==</span> <span class="n">ICSK_TIME_RETRANS</span> <span class="o">||</span>
+        <span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_pending</span> <span class="o">==</span> <span class="n">ICSK_TIME_EARLY_RETRANS</span> <span class="o">||</span>
+        <span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_pending</span> <span class="o">==</span> <span class="n">ICSK_TIME_LOSS_PROBE</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_timer</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_retrans</span> <span class="o">=</span> <span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_retransmits</span><span class="p">;</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_expires</span> <span class="o">=</span> <span class="n">EXPIRES_IN_MS</span><span class="p">(</span><span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_timeout</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_pending</span> <span class="o">==</span> <span class="n">ICSK_TIME_PROBE0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_timer</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_retrans</span> <span class="o">=</span> <span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_probes_out</span><span class="p">;</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_expires</span> <span class="o">=</span> <span class="n">EXPIRES_IN_MS</span><span class="p">(</span><span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_timeout</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">timer_pending</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sk</span><span class="o">-&gt;</span><span class="n">sk_timer</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_timer</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_retrans</span> <span class="o">=</span> <span class="n">icsk</span><span class="o">-&gt;</span><span class="n">icsk_probes_out</span><span class="p">;</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_expires</span> <span class="o">=</span> <span class="n">EXPIRES_IN_MS</span><span class="p">(</span><span class="n">sk</span><span class="o">-&gt;</span><span class="n">sk_timer</span><span class="p">.</span><span class="n">expires</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_timer</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">r</span><span class="o">-&gt;</span><span class="n">idiag_expires</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="cp">#undef EXPIRES_IN_MS</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如上代码所示，ss 命令输出 timer 的含义为类型、过期时间、重试次数。</p>
+
+<p>介绍先到此为止，详细内容后面再添加。</p>
+
+<!--
+http://kristrev.github.io/2013/07/26/passive-monitoring-of-sockets-on-linux/     一个类似与ss的程序
+
+
+
+
+### 条件过滤
+
+大于 net.core.rmem_max 和 net.ipv4.tcp_rmem
+
+ss -nt state established '( dport = :31500 or sport = :31500 )'
+ss -ntm state established '( dport = :31500 or sport = :31500 )'
+ss -nti state established '( dport = :31500 or sport = :31500 )'
+ss -nt state established '( dport = :31500 or sport = :31500 )'
+ss -nt state established '( dport = :31500 or sport = :31500 )'
+
+https://blog.csdn.net/wlh_flame/article/details/6358795
+
+sysctl net.core.wmem_max
+sysctl net.core.rmem_max
+sysctl net.core.wmem_default
+sysctl net.core.rmem_default
+sysctl net.ipv4.tcp_mem
+sysctl net.ipv4.tcp_wmem
+sysctl net.ipv4.tcp_rmem
+
+rcv_space 标示对端可以发送多少数据，可以通过 tcp_get_info() 获取；
+
+内存查看
+
+可以通过 `-m` 查看，实际打印的函数是 `print_skmeminfo()` ，
+
+	printf(" skmem:(r%u,rb%u,t%u,tb%u,f%u,w%u,o%u",
+	       skmeminfo[SK_MEMINFO_RMEM_ALLOC],
+	       skmeminfo[SK_MEMINFO_RCVBUF],
+	       skmeminfo[SK_MEMINFO_WMEM_ALLOC],
+	       skmeminfo[SK_MEMINFO_SNDBUF],
+	       skmeminfo[SK_MEMINFO_FWD_ALLOC],
+	       skmeminfo[SK_MEMINFO_WMEM_QUEUED],
+	       skmeminfo[SK_MEMINFO_OPTMEM]);
+skmem:(r2492160,rb2493952,t0,tb2626560,f2304,w0,o0,bl0)
+
+#!/bin/python
+
+import time
+import socket as sock
+from multiprocessing import Process
+
+svr = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
+svr.setsockopt(sock.SOL_SOCKET, sock.SO_REUSEADDR, 1)
+svr.bind(('127.0.0.1', 31500))
+svr.listen(128)
+
+def handle_client(sock, addr):
+    print 'Handle new connection from %s:%s...' % addr
+    sock.send('Welcome!')
+    try:
+        while True:
+            time.sleep(10)
+            continue
+            data = sock.recv(1024)
+            if data == 'exit' or not data:
+                break;
+            sock.send('Hello %s.' % data)
+            time.sleep(1)
+    finally:
+        sock.close()
+    print 'Connection from %s:%s closed.' % addr
+
+while True:
+    try:
+        cli, addr = svr.accept()
+        #h = threading.Thread(target=handle_client, args=(cli, addr)) # Thread Model
+        h = Process(target=handle_client, args=(cli, addr)) # Process Model
+        h.start()
+        cli.close() # Process Model
+    except KeyboardInterrupt:
+        print 'Quit now.'
+        break
+svr.close()
+#!/bin/python
+
+import time
+import socket as sock
+
+cli = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
+cli.connect(('127.0.0.1', 31500))
+
+print cli.recv(1024)
+
+while True:
+    cli.send("Hello world!")
+    #time.sleep(0.01)
+
+for data in ['Michael', 'Tracy', 'Sarah']:
+    cli.send(data)
+    print cli.recv(1024)
+cli.send('exit')
+cli.close()
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/network-introduce.html" title="Linux 网络协议栈简介">&larr; Older</a></li> 
+         <li class="next"><a href="/post/network-collision-broadcast-domain_init.html" title="冲突域和广播域，以及网桥">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1391011200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/network-nettools-vs-iproute2.html" data-title="netstat VS. ss" data-url="/post/network-nettools-vs-iproute2.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

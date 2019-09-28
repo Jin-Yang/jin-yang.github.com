@@ -1,0 +1,1049 @@
+From: <Saved by Mozilla 5.0 (X11)>
+Subject: generic_netlink_howto
+Date: Thu, 16 Jun 2016 10:04:20 +0800
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----=_NextPart_000_0000_D86B9F59.38FCED9A"
+X-MAF-Information: Produced By MAF V4.0.1rc
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0000_D86B9F59.38FCED9A
+Content-Type: text/html;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://www.linuxfoundation.org/print/5246
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org=
+/TR/xhtml1/DTD/xhtml1-strict.dtd"><html class=3D"js" xmlns=3D"http://www.w3=
+.org/1999/xhtml" xml:lang=3D"en" lang=3D"en"><head>
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3DUTF-8">
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8">
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8=
+">
+<!--[if IE 6]>
+<script type=3D"text/javascript" src=3D"/misc/jquery.js"></script>
+<script type=3D"text/javascript" src=3D"/sites/all/themes/opensourcery/suck=
+erfish.js"></script>
+<![endif]-->
+    <base href=3D"">
+    <title>generic_netlink_howto</title>
+    <script type=3D"text/javascript" src=3D"urn:snapshot-8711547E:http://ww=
+w.linuxfoundation.org/sites/main/files/js/js_c3bb9216350f108e6d4ebee0534fd4=
+07.js"></script>
+<script type=3D"text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+        <meta name=3D"robots" content=3D"noindex, nofollow">
+    <link rel=3D"shortcut icon" href=3D"http://www.linuxfoundation.org/site=
+s/all/themes/opensourcery/favicon.ico" type=3D"image/x-icon">
+    <link type=3D"text/css" rel=3D"stylesheet" media=3D"all" href=3D"urn:sn=
+apshot-EDBD8847:http://www.linuxfoundation.org/sites/main/files/css/css_047=
+126476c65fe0f0ad70e64088316dd.css">
+<link type=3D"text/css" rel=3D"stylesheet" media=3D"print" href=3D"urn:snap=
+shot-8D7C1D85:http://www.linuxfoundation.org/sites/main/files/css/css_a6f76=
+d2fb89f385c326e4732a02026a8.css">
+  </head>
+  <body class=3D"lightbox-processed">
+        <div class=3D"print-logo"></div>
+    <div class=3D"print-site_name">Published on <em>The Linux Foundation</e=
+m> (<a href=3D"http://www.linuxfoundation.org/">http://www.linuxfoundation.=
+org</a>)</div>
+    <p>
+    </p><div class=3D"print-breadcrumb"><a href=3D"http://www.linuxfoundati=
+on.org/">Home</a> &gt; Printer-friendly</div>
+    <hr class=3D"print-hr">
+    <h1 class=3D"print-title">generic_netlink_howto</h1>
+    <div class=3D"print-content"><div id=3D"node-5246" class=3D"node node-t=
+ype-html"><div class=3D"node-inner">
+
+ =20
+ =20
+ =20
+      <div class=3D"meta">
+              <div class=3D"submitted">
+          By Linux Foundatio... - November 19, 2009 - 6:23pm        </div>
+     =20
+              <div class=3D"terms terms-inline"> in <ul class=3D"links inli=
+ne"><li class=3D"taxonomy_term_41 first last"><a href=3D"http://www.linuxfo=
+undation.org/tags/networking" rel=3D"tag" title=3D"">networking</a> <span=
+ class=3D"print-footnote">[1]</span></li>
+</ul></div>
+          </div>
+ =20
+  <div class=3D"content">
+    <p>This document gives a brief introduction to Generic Netlink, some si=
+mple<br>
+examples on how to use it and some recommendations on how to make the most=
+ of<br>
+the Generic Netlink communications interface.  While this document does not=
+<br>
+require that the reader has a detailed understanding of what Netlink is<br>
+and how it works, some basic Netlink knowledge is assumed.  As usual, the<b=
+r>
+kernel source code is your best friend here.
+</p>
+<p>While this document talks briefly about Generic Netlink from a userspace=
+ point<br>
+of view, its primary focus is on the kernel's Generic Netlink API.  It is<b=
+r>
+recommended that application developers who are interested in using Generic=
+<br>
+Netlink make use of the libnl library[1].
+</p>
+<table id=3D"toc" class=3D"toc" summary=3D"Contents">
+<tbody><tr>
+<td>
+<h2>Contents</h2>
+<ul>
+<li class=3D"toclevel-1"><a href=3D"#Generic_Netlink_By_Example">1 Generic=
+ Netlink By Example</a>
+<ul>
+<li class=3D"toclevel-2"><a href=3D"#Registering_A_Family">1.1 Registering=
+ A Family</a></li>
+<li class=3D"toclevel-2"><a href=3D"#Kernel_Communication">1.2 Kernel Commu=
+nication</a>
+<ul>
+<li class=3D"toclevel-3"><a href=3D"#Sending_Messages">1.2.1 Sending Messag=
+es</a></li>
+<li class=3D"toclevel-3"><a href=3D"#Receiving_Messages">1.2.2 Receiving Me=
+ssages</a></li>
+</ul>
+</li>
+<li class=3D"toclevel-2"><a href=3D"#Userspace_Communication">1.3 Userspace=
+ Communication</a></li>
+</ul>
+</li>
+<li class=3D"toclevel-1"><a href=3D"#Architectural_Overview">2 Architectura=
+l Overview</a></li>
+<li class=3D"toclevel-1"><a href=3D"#Implementation_Details">3 Implementati=
+on Details</a>
+<ul>
+<li class=3D"toclevel-2"><a href=3D"#Message_Format">3.1 Message Format</a>=
+</li>
+<li class=3D"toclevel-2"><a href=3D"#Data_Structures">3.2 Data Structures</=
+a>
+<ul>
+<li class=3D"toclevel-3"><a href=3D"#The_genl_family_Structure">3.2.1 The=
+ genl_family Structure</a></li>
+<li class=3D"toclevel-3"><a href=3D"#The_genl_ops_Structure">3.2.2 The genl=
+_ops Structure</a></li>
+<li class=3D"toclevel-3"><a href=3D"#The_genl_info_Structure">3.2.3 The gen=
+l_info Structure</a></li>
+<li class=3D"toclevel-3"><a href=3D"#The_nla_policy_Structure">3.2.4 The nl=
+a_policy Structure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class=3D"toclevel-1"><a href=3D"#Recommendations">4 Recommendations</a>
+<ul>
+<li class=3D"toclevel-2"><a href=3D"#Attributes_And_Message_Payloads">4.1=
+ Attributes And Message Payloads</a></li>
+<li class=3D"toclevel-2"><a href=3D"#Operation_Granularity">4.2 Operation=
+ Granularity</a></li>
+<li class=3D"toclevel-2"><a href=3D"#Acknowledgment_and_Error_Reporting">4.=
+3 Acknowledgment and Error Reporting</a></li>
+</ul>
+</li>
+<li class=3D"toclevel-1"><a href=3D"#References">5 References</a></li>
+</ul>
+</td>
+</tr>
+</tbody></table>
+<p><a name=3D"Generic_Netlink_By_Example"><br>
+</a></p><h2><a name=3D"Generic_Netlink_By_Example"> Generic Netlink By Exam=
+ple</a></h2><a name=3D"Generic_Netlink_By_Example">
+<p></p></a><p></p>
+<p>This section deals with the Generic Netlink subsystem in the Linux kerne=
+l and<br>
+provides a simple example of how in-kernel users can make use of the Generi=
+c<br>
+Netlink API.  Don't forget to review section #4, "Recommendations", before<=
+br>
+writing any code as it can save you, and the people who review your code,<b=
+r>
+lots of time!
+</p>
+<p>The first section explains how to register a Generic Netlink family whic=
+h is<br>
+required for Generic Netlink users who wish to act as servers, listening ov=
+er<br>
+the Generic Netlink bus.  The second section explains how to send and<br>
+receive Generic Netlink messages in the kernel.  Finally, the third section=
+<br>
+provides a brief introduction to using Generic Netlink in userspace.
+</p>
+<p><a name=3D"Registering_A_Family"><br>
+</a></p><h3><a name=3D"Registering_A_Family"> Registering A Family</a></h3>=
+<a name=3D"Registering_A_Family">
+<p></p></a><p></p>
+<p>Registering a Generic Netlink family is a simple four step process: defi=
+ne the<br>
+family, define the operations, register the family, register the operations=
+.<br>
+In order to help demonstrate these steps below is a simple example broken=
+ down<br>
+and explained in detail.
+</p>
+<p>The first step is to define the family itself, which we do by creating=
+ an<br>
+instance of the genl_family structure.  In our simple example we are going=
+ to<br>
+create a new Generic Netlink family named "DOC_EXMPL".
+</p>
+<pre> /* attributes */
+ enum {
+       DOC_EXMPL_A_UNSPEC,
+       DOC_EXMPL_A_MSG,
+       __DOC_EXMPL_A_MAX,
+ };
+ #define DOC_EXMPL_A_MAX (__DOC_EXMPL_A_MAX - 1)
+ /* attribute policy */
+ static struct nla_policy doc_exmpl_genl_policy[DOC_EXMPL_A_MAX + 1] =3D {
+       [DOC_EXMPL_A_MSG] =3D { .type =3D NLA_NUL_STRING },
+ };
+ /* family definition */
+ static struct genl_family doc_exmpl_gnl_family =3D {
+       .id =3D GENL_ID_GENERATE,
+       .hdrsize =3D 0,
+       .name =3D "DOC_EXMPL",
+       .version =3D 1,
+       .maxattr =3D DOC_EXMPL_A_MAX,
+ };
+</pre><p>Figure 1: The DOC_EXMPL family, attributes and policy
+</p>
+<p>You can see above that we defined a new family and the family recognizes=
+ a single attribute, DOC_EXMPL_A_MSG, which is a NULL terminated string. =
+ The GENL_ID_GENERATE macro/constant is really just the value 0x0 and it si=
+gnifies that we want the Generic Netlink controller to assign the channel=
+ number when we register the family.
+</p>
+<p>The second step is to define the operations for the family, which we do=
+ by creating at least one instance of the genl_ops structure.  In this exam=
+ple we are only going to define one operation but you can define up to 255=
+ unique<br>
+operations for each family.
+</p>
+<pre> /* handler */
+ static int doc_exmpl_echo(struct sk_buff *skb, struct genl_info *info)
+ {
+       /* message handling code goes here; return 0 on success, negative
+        * values on failure */
+ }
+ /* commands */
+ enum {
+       DOC_EXMPL_C_UNSPEC,
+       DOC_EXMPL_C_ECHO,
+       __DOC_EXMPL_C_MAX,
+ };
+ #define DOC_EXMPL_C_MAX (__DOC_EXMPL_C_MAX - 1)
+ /* operation definition */
+ static struct genl_ops doc_exmpl_gnl_ops_echo =3D {
+       .cmd =3D DOC_EXMPL_C_ECHO,
+       .flags =3D 0,
+       .policy =3D doc_exmpl_genl_policy,
+       .doit =3D doc_exmpl_echo,
+       .dumpit =3D NULL,
+ };
+</pre><p>Figure 2: The DOC_EXMPL_C_ECHO operation
+</p>
+<p>Here we have defined a single operation, DOC_EXMPL_C_ECHO, which uses th=
+e<br>
+Netlink attribute policy we defined above.  Once registered, this particula=
+r<br>
+operation would call the doc_exmpl_echo() function whenever a<br>
+DOC_EXMPL_C_ECHO message is sent to the DOC_EXMPL family over the Generic<b=
+r>
+Netlink bus.
+</p>
+<p>The third step is to register the DOC_EXMPL family with the Generic Netl=
+ink<br>
+operation.  We do this with a single function call:
+</p>
+<pre> int rc;
+ rc =3D genl_register_family(&amp;doc_exmpl_gnl_family);
+ if (rc=C2=A0!=3D 0)
+     goto failure;
+</pre><p>This call registers the new family name with the Generic Netlink=
+ mechanism and<br>
+requests a new channel number which is stored in the genl_family struct,<br>
+replacing the GENL_ID_GENERATE value.  It is important to remember to<br>
+unregister Generic Netlink families when done as the kernel does allocate<b=
+r>
+resources for each registered family.
+</p>
+<p>The fourth and final step is to register the operations for the family.=
+  Once<br>
+again this is a simple function call:
+</p>
+<pre> int rc;
+ rc =3D genl_register_ops(&amp;doc_exmpl_gnl_family, &amp;doc_exmpl_gnl_ops=
+_echo);
+ if (rc=C2=A0!=3D 0)
+     goto failure;
+</pre><p>This call registers the DOC_EXMPL_C_ECHO operation in association=
+ with the<br>
+DOC_EXMPL family.  The process is now complete.  Other Generic Netlink user=
+s<br>
+can now issue DOC_EXMPL_C_ECHO commands and they will be handled as desired.
+</p>
+<p><a name=3D"Kernel_Communication"><br>
+</a></p><h3><a name=3D"Kernel_Communication"> Kernel Communication</a></h3>=
+<a name=3D"Kernel_Communication">
+<p></p></a><p></p>
+<p>The kernel provides two sets of interfaces for sending, receiving and<br>
+processing Generic Netlink messages.  The majority of the API consists of=
+ the<br>
+general purpose Netlink interfaces, however, there are a small number of<br>
+interfaces specific to Generic Netlink.  The following two "include" files<=
+br>
+define the Netlink and Generic Netlink API for the kernel:
+</p>
+<ul>
+<li> include/net/netlink.h
+</li>
+<li> include/net/genetlink.h
+</li>
+</ul>
+<p><a name=3D"Sending_Messages"><br>
+</a></p><h4><a name=3D"Sending_Messages"> Sending Messages</a></h4><a name=
+=3D"Sending_Messages">
+<p></p></a><p></p>
+<p>Sending Generic Netlink messages is a three step process: allocate memor=
+y for<br>
+the message buffer, create the message, send the message.  In order to help=
+<br>
+demonstrate these steps, below is a simple example using the DOC_EXMPL fami=
+ly.
+</p>
+<p>The first step is to allocate a Netlink message buffer; the easiest way=
+ to do<br>
+this is with the nlsmsg_new() function.
+</p>
+<pre> struct sk_buff *skb;
+ skb =3D genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
+ if (skb =3D=3D NULL)
+     goto failure;
+</pre><p>Figure 3: Allocating a Generic Netlink message buffer
+</p>
+<p>The NLMSG_GOODSIZE macro/constant is a good value to use when you do not=
+ know<br>
+the size of the message buffer at the time of allocation.  Don't forget tha=
+t<br>
+the genlmsg_new() function automatically adds space for the Netlink and<br>
+Generic Netlink message headers.
+</p>
+<p>The second step is to actually create the message payload.  This is obvi=
+ously<br>
+something which is very specific to each service, but a simple example is<b=
+r>
+shown below.
+</p>
+<pre> int rc;
+ void *msg_head;
+ /* create the message headers */
+ msg_head =3D genlmsg_put(skb, pid, seq, type, 0, flags, DOC_EXMPL_C_ECHO,=
+ 1);
+ if (msg_head =3D=3D NULL) {
+     rc =3D -ENOMEM;
+     goto failure;
+ }
+ /* add a DOC_EXMPL_A_MSG attribute */
+ rc =3D nla_put_string(skb, DOC_EXMPL_A_MSG, "Generic Netlink Rocks");
+ if (rc=C2=A0!=3D 0)
+     goto failure;
+ /* finalize the message */
+ genlmsg_end(skb, msg_head);
+</pre><p>Figure 4: Creating a Generic Netlink message payload
+</p>
+<p>The genlmsg_put() function creates the required Netlink and Generic Netl=
+ink<br>
+message headers, populating them with the given values; see the Generic<br>
+Netlink header file for a description of the parameters.  The nla_put_strin=
+g()<br>
+function is a standard Netlink attribute function which adds a string<br>
+attribute to the end of the Netlink message; see the Netlink header file fo=
+r a<br>
+description of the parameters.  The genlmsg_end() function updates the Netl=
+ink<br>
+message header once the message payload has been finalized.  This function<=
+br>
+should be called before sending the message.
+</p>
+<p>The third and final step is to send the Generic Netlink message which ca=
+n be<br>
+done with a single function call.  The example below is for a unicast send,=
+<br>
+but interfaces exist for doing a multicast send of Generic Netlink message.
+</p>
+<pre> int rc;
+ rc =3D genlmsg_unicast(skb, pid);
+ if (rc=C2=A0!=3D 0)
+     goto failure;
+</pre><p>Figure 5: Sending Generic Netlink messages
+</p>
+<p><a name=3D"Receiving_Messages"><br>
+</a></p><h4><a name=3D"Receiving_Messages"> Receiving Messages</a></h4><a=
+ name=3D"Receiving_Messages">
+<p></p></a><p></p>
+<p>Typically, kernel modules act as Generic Netlink servers which means tha=
+t the<br>
+act of receiving messages is handled automatically by the Generic Netlink=
+ bus.<br>
+Once the bus receives the message and determines the correct routing, the<b=
+r>
+message is passed directly to the family specific operation callback for<br>
+processing.  If the kernel is acting as a Generic Netlink client, server<br>
+response messages can be received over the Generic Netlink socket using<br>
+standard kernel socket interfaces.
+</p>
+<p><a name=3D"Userspace_Communication"><br>
+</a></p><h3><a name=3D"Userspace_Communication"> Userspace Communication</a=
+></h3><a name=3D"Userspace_Communication">
+<p></p></a><p></p>
+<p>While Generic Netlink messages can be sent and received using the standa=
+rd<br>
+socket API it is recommended that user space applications use the libnl<br>
+library[1].  The libnl library insulates applications from many of the low<=
+br>
+level Netlink tasks and uses an API which is very similar to the kernel API=
+<br>
+shown above.
+</p>
+<p><a name=3D"Architectural_Overview"><br>
+</a></p><h2><a name=3D"Architectural_Overview"> Architectural Overview</a><=
+/h2><a name=3D"Architectural_Overview">
+<p></p></a><p></p>
+<p>Figure #6 illustrates the basic Generic Netlink architecture which is<br>
+composed of five different types of components:
+</p>
+<ol>
+<li> The Netlink subsystem which serves as the underlying transport layer=
+ for all of the Generic Netlink communications.
+</li>
+<li> The Generic Netlink bus which is implemented inside the kernel, but wh=
+ich is available to userspace through the socket API and inside the kernel=
+ via the normal Netlink and Generic Netlink APIs.
+</li>
+<li> The Generic Netlink users who communicate with each other over the Gen=
+eric Netlink bus; users can exist both in kernel and user space.
+</li>
+<li> The Generic Netlink controller which is part of the kernel and is resp=
+onsible for dynamically allocating Generic Netlink communication channels=
+ and other management tasks.  The Generic Netlink controller is implemented=
+ as a standard Generic Netlink user, however, it listens on a special, pre-=
+allocated Generic Netlink channel.
+</li>
+<li> The kernel socket API.  Generic Netlink sockets are created with the=
+ PF_NETLINK domain and the NETLINK_GENERIC protocol values.
+</li>
+</ol>
+<pre>     +---------------------+      +---------------------+
+     | (3) application "A" |      | (3) application "B" |
+     +------+--------------+      +--------------+------+
+            |                                    |
+            \                                    /
+             \                                  /
+              |                                |
+      +-------+--------------------------------+-------+
+      |       =C2=A0:                              =C2=A0:       |   user-s=
+pace
+ =3D=3D=3D=3D=3D+       =C2=A0:   (5)  kernel socket API     =C2=A0:     =
+  +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+      |       =C2=A0:                              =C2=A0:       |   kernel=
+-space
+      +--------+-------------------------------+-------+
+               |                               |
+         +-----+-------------------------------+----+
+         |        (1)  Netlink subsystem            |
+         +---------------------+--------------------+
+                               |
+         +---------------------+--------------------+
+         |       (2) Generic Netlink bus            |
+         +--+--------------------------+-------+----+
+            |                          |       |
+    +-------+---------+                |       |
+    |  (4) controller |               /         \
+    +-----------------+              /           \
+                                     |           |
+                  +------------------+--+     +--+------------------+
+                  | (3) kernel user "X" |     | (3) kernel user "Y" |
+                  +---------------------+     +---------------------+
+</pre><p>Figure 6: Generic Netlink Architecture
+</p>
+<p>When looking at figure #6 it is important to note that any Generic Netli=
+nk<br>
+user can communicate with any other user over the bus using the same API<br>
+regardless of where the user resides in relation to the kernel/userspace<br>
+boundary.
+</p>
+<p>Generic Netlink communications are essentially a series of different<br>
+communication channels which are multiplexed on a single Netlink family.<br>
+Communication channels are uniquely identified by channel numbers which are=
+<br>
+dynamically allocated by the Generic Netlink controller.  The controller is=
+ a<br>
+special Generic Netlink user which listens on a fixed communication channel=
+,<br>
+number 0x10, which is always present.  Kernel or userspace users which prov=
+ide<br>
+services over the Generic Netlink bus establish new communication channels=
+ by<br>
+registering their services with the Generic Netlink controller.  Users who<=
+br>
+want to use a service query the controller to see if the service exists and=
+<br>
+to determine the correct channel number.
+</p>
+<p><a name=3D"Implementation_Details"><br>
+</a></p><h2><a name=3D"Implementation_Details"> Implementation Details</a><=
+/h2><a name=3D"Implementation_Details">
+<p></p></a><p></p>
+<p>This section provides a more in-depth explanation of the Generic Netlink=
+<br>
+message formats and data structures.
+</p>
+<p><a name=3D"Message_Format"><br>
+</a></p><h3><a name=3D"Message_Format"> Message Format</a></h3><a name=3D"M=
+essage_Format">
+<p></p></a><p></p>
+<p>Generic Netlink uses the standard Netlink subsystem as a transport layer=
+ which<br>
+means that the foundation of the Generic Netlink message is the standard<br>
+Netlink message format - the only difference is the inclusion of a Generic<=
+br>
+Netlink message header.  The format of the message is defined as shown belo=
+w:
+</p>
+<pre>  0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                Netlink message header (nlmsghdr)              |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |           Generic Netlink message header (genlmsghdr)         |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |             Optional user specific message header             |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |           Optional Generic Netlink message payload            |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre><p>Figure 7: Generic Netlink message format
+</p>
+<p>Figure #7 is included only to give you a rough idea of how Generic Netli=
+nk<br>
+messages are formatted and sent "on the wire".  In practice the Netlink and=
+<br>
+Generic Netlink API should insulate most users from the details of the mess=
+age<br>
+format and the Netlink message headers.
+</p>
+<p><a name=3D"Data_Structures"><br>
+</a></p><h3><a name=3D"Data_Structures"> Data Structures</a></h3><a name=3D=
+"Data_Structures">
+<p></p></a><p></p>
+<p>This section focuses on the Generic Netlink data structures as they are<=
+br>
+defined in the kernel.  A similar API exists for userspace applications usi=
+ng<br>
+the libnl library[1].
+</p>
+<p><a name=3D"The_genl_family_Structure"><br>
+</a></p><h4><a name=3D"The_genl_family_Structure"> The genl_family Structur=
+e</a></h4><a name=3D"The_genl_family_Structure">
+<p></p></a><p></p>
+<p>Generic Netlink families are defined by the genl_family structure, which=
+ is<br>
+shown below:
+</p>
+<pre> struct genl_family
+ {
+       unsigned int            id;
+       unsigned int            hdrsize;
+       char                    name[GENL_NAMSIZ];
+       unsigned int            version;
+       unsigned int            maxattr;
+       struct nlattr **        attrbuf;
+       struct list_head        ops_list;
+       struct list_head        family_list;
+ };
+</pre><p>Figure 8: The genl_family structure
+</p>
+<p>The genl_family structure fields are used in the following manner:
+</p>
+<ul>
+<li> unsigned int id<br>This is the dynamically allocated channel number.=
+  A value of 0x0 signifies that the channel number should be assigned by th=
+e controller and the 0x10 value is reserved for use by the controller.  Use=
+rs should always use GENL_ID_GENERATE macro/constant (value 0x0) when regis=
+tering a new family.
+</li>
+<li> unsigned int hdrsize<br>If the family makes use of a family specific=
+ header, its size is stored here.  If there is no family specific header th=
+is value should be zero.
+</li>
+<li> char name[GENL_NAMSIZ]<br>This string should be unique to the family=
+ as it is the key that the controller uses to lookup channel numbers when=
+ requested.
+</li>
+<li> unsigned int version<br>Family specific version number.
+</li>
+<li> unsigned int maxattr<br>Generic Netlink makes use of the standard Netl=
+ink attributes; this value holds the maximum number of attributes defined=
+ for the Generic Netlink family.
+</li>
+<li> struct nlattr **attrbuf<br>This is a private field and should not be=
+ modified.
+</li>
+<li> struct list_head ops_list<br>This is a private field and should not be=
+ modified.
+</li>
+<li> struct list_head family_list<br>This is a private field and should not=
+ be modified.
+</li>
+</ul>
+<p><a name=3D"The_genl_ops_Structure"><br>
+</a></p><h4><a name=3D"The_genl_ops_Structure"> The genl_ops Structure</a><=
+/h4><a name=3D"The_genl_ops_Structure">
+<p></p></a><p></p>
+<p>Generic Netlink operations are defined by the genl_ops structure, which=
+ is<br>
+shown below:
+</p>
+<pre> struct genl_ops
+ {
+       u8                      cmd;
+       unsigned int            flags;
+       struct nla_policy       *policy;
+       int                     (*doit)(struct sk_buff *skb,
+                                       struct genl_info *info);
+       int                     (*dumpit)(struct sk_buff *skb,
+                                         struct netlink_callback *cb);
+       struct list_head        ops_list;
+ };
+</pre><p>Figure 9: The genl_ops structure
+</p>
+<p>The genl_ops structure fields are used in the following manner:
+</p>
+<ul>
+<li> u8 cmd<br>This value is unique across the corresponding Generic Netlin=
+k family and is used to reference the operation.
+</li>
+<li> unsigned int flags<br>This field is used to specify any special attrib=
+utes of the operation.  The following flags may be used (multiple flags can=
+ be OR'd together):
+<ul>
+<li>GENL_ADMIN_PERM<br>The operation requires the CAP_NET_ADMIN privilege
+</li>
+</ul>
+</li>
+<li> struct nla_policy policy<br>This field defines the Netlink attribute=
+ policy for the operation request message.  If specified, the Generic Netli=
+nk mechanism uses this policy to verify all of the attributes in the operat=
+ion request message before calling the operation handler.<br>The attribute=
+ policy is defined as an array of nla_policy structures indexed by the attr=
+ibute number.  The nla_policy structure is defined as shown in figure #11.
+</li>
+<li> int (*doit)(struct skbuff *skb, struct genl_info *info)<br>This callba=
+ck is similar in use to the standard Netlink doit() callback, the primary=
+ difference being the change in parameters.<br>The doit() handler receives=
+ two parameters: the first is the message buffer which triggered the handle=
+r and the second is a Generic Netlink genl_info structure which is defined=
+ as shown in figure #10.
+</li>
+<li> int (*dumpit)(struct sk_buff *skb, struct netlink_callback *cb)<br>Thi=
+s callback is similar in use to the standard Netlink dumpit() callback. The=
+ dumpit() callback is invoked when the Generic Netlink message is received=
+ with the NLM_F_DUMP flag set.<br>The main difference between the dumpit()=
+ handler and the doit() handler is that the dumpit() handler does not alloc=
+ate a message buffer for a response; a pre-allocated sk_buff is passed to=
+ the dumpit() handler as the first parameter.  The dumpit() handler should=
+ fill the message buffer with the appropriate response message and return=
+ the size of the sk_buff, i.e. sk_buff-&gt;len, and the message buffer will=
+ automatically be sent to the Generic Netlink client that initiated the req=
+uest.  As long as the dumpit() handler returns a value greater than zero it=
+ will be called again with a newly allocated message buffer to fill.  When=
+ the handler has no more data to send it should return zero; error conditio=
+ns are indicated by returning a negative value.  If necessary, state can be=
+ preserved in the netlink_callback parameter which is passed to the dumpit(=
+) handler; the netlink_callback parameter values will be preserved across=
+ handler calls for a single request.
+</li>
+<li> struct list_head ops_list<br>This is a private field and should not be=
+ modified.
+</li>
+</ul>
+<p><a name=3D"The_genl_info_Structure"><br>
+</a></p><h4><a name=3D"The_genl_info_Structure"> The genl_info Structure</a=
+></h4><a name=3D"The_genl_info_Structure">
+<p></p></a><p></p>
+<p>Generic Netlink message information is passed by the genl_info structure=
+, which is<br>
+shown below:
+</p>
+<pre>    struct genl_info
+    {
+       u32                     snd_seq;
+       u32                     snd_pid;
+       struct nlmsghdr *       nlhdr;
+       struct genlmsghdr *     genlhdr;
+       void *                  userhdr;
+       struct nlattr **        attrs;
+    };
+</pre><p>Figure 10: The genl_info structure
+</p>
+<p>The fields are populated in the following manner:
+</p>
+<ul>
+<li>u32 snd_seq<br>This is the Netlink sequence number of the request.
+</li>
+<li>u32 snd_pid<br>This is the Netlink PID of the client which issued the=
+ request; it is important to note that the Netlink PID is not the same as=
+ the standard kernel PID.
+</li>
+<li>struct nlmsghdr *nlhdr<br>This is set to point to the Netlink message=
+ header of the request.
+</li>
+<li>struct genlmsghdr *genlhdr<br>This is set to point to the Generic Netli=
+nk message header of the request.
+</li>
+<li>void *userhdr<br>If the Generic Netlink family makes use of a family sp=
+ecific header, this pointer will be set to point to the start of the family=
+ specific header.
+</li>
+<li>struct nlattr **attrs<br>The parsed Netlink attributes from the request=
+; if the Generic Netlink family definition specified a Netlink attribute po=
+licy then the attributes would have already been validated.<br> The doit()=
+ handler should do whatever processing is necessary and return zero on succ=
+ess or a negative value on failure.  Negative return values will cause an=
+ NLMSG_ERROR message to be sent while a zero return value will only cause=
+ the NLMSG_ERROR message to be sent if the request is received with the NLM=
+_F_ACK flag set.
+</li>
+</ul>
+<p><a name=3D"The_nla_policy_Structure"><br>
+</a></p><h4><a name=3D"The_nla_policy_Structure"> The nla_policy Structure<=
+/a></h4><a name=3D"The_nla_policy_Structure">
+<p></p></a><p></p>
+<p>Generic Netlink attribute policy is defined by the nla_policy structure,=
+ which is<br>
+shown below:
+</p>
+<pre>    struct nla_policy
+    {
+       u16             type;
+       u16             len;
+    };
+</pre><p>Figure 11: The nla_policy structure
+</p>
+<p>The fields are used in the following manner:
+</p>
+<ul>
+<li>u16 type<br>This specifies the type of the attribute; presently the fol=
+lowing types are defined for general use:
+<ul>
+<li>NLA_UNSPEC<br>Undefined type
+</li>
+<li>NLA_U8<br>An 8-bit unsigned integer
+</li>
+<li>NLA_U16<br>A 16-bit unsigned integer
+</li>
+<li>NLA_U32<br>A 32-bit unsigned integer
+</li>
+<li>NLA_U64<br>A 64-bit unsigned integer
+</li>
+<li>NLA_FLAG<br>A simple boolean flag
+</li>
+<li>NLA_MSECS<br>A 64-bit time value in msecs
+</li>
+<li>NLA_STRING<br>A variable length string
+</li>
+<li>NLA_NUL_STRING<br>A variable length NULL terminated string
+</li>
+<li>NLA_NESTED<br>A stream of attributes
+</li>
+</ul>
+</li>
+<li>u16 len<br>When the attribute type is one of the string types then this=
+ field should be set to the maximum length of the string, not including the=
+ terminal NULL byte.  If the attribute type is unknown or NLA_UNSPEC then=
+ this field should be set to the exact length of the attribute's payload.<b=
+r>Unless the attribute type is one of the fixed-length types above, a value=
+ of zero indicates that no validation of the attribute should be performed.
+</li>
+</ul>
+<p><a name=3D"Recommendations"><br>
+</a></p><h2><a name=3D"Recommendations"> Recommendations</a></h2><a name=3D=
+"Recommendations">
+<p></p></a><p></p>
+<p>The Generic Netlink mechanism is a very flexible communications mechanis=
+m and as a result there are many different ways it can be used.  The follow=
+ing recommendations are based on conventions within the Linux kernel and sh=
+ould be<br>
+followed whenever possible.  While not all existing kernel code follows the=
+ recommendations outlined here, all new code should consider these recommen=
+dations as requirements.
+</p>
+<p><a name=3D"Attributes_And_Message_Payloads"><br>
+</a></p><h3><a name=3D"Attributes_And_Message_Payloads"> Attributes And Mes=
+sage Payloads</a></h3><a name=3D"Attributes_And_Message_Payloads">
+<p></p></a><p></p>
+<p>When defining new Generic Netlink message formats you must make use of=
+ the Netlink attributes wherever possible.  The Netlink attribute mechanism=
+ has been carefully designed to allow for future message expansion while pr=
+eserving<br>
+backward compatibility.  There are also additional benefits from using Netl=
+ink attributes which include developer familiarity and basic input checking.
+</p>
+<p>Most common data structures can be represented with Netlink attributes:
+</p>
+<dl>
+<dd> scalar values=C2=A0; Most scalar values already have well-defined attr=
+ibute types; see section 4 for details.<br>
+</dd>
+<dd> structures=C2=A0; Structures can be represented using a nested attribu=
+te with the structure fields represented as attributes in the payload of th=
+e container attribute.<br>
+</dd>
+<dd> arrays=C2=A0; Arrays can be represented by using a single nested attri=
+bute as a container with several of the same attribute type inside each rep=
+resenting a spot in the array.<br>
+</dd>
+</dl>
+<p>It is also important to use unique attributes as much as possible.  This=
+ helps make the most of the Netlink attribute mechanisms and provides for=
+ easy changes to the message format in the future.
+</p>
+<p><a name=3D"Operation_Granularity"><br>
+</a></p><h3><a name=3D"Operation_Granularity"> Operation Granularity</a></h=
+3><a name=3D"Operation_Granularity">
+<p></p></a><p></p>
+<p>While it may be tempting to register a single operation for a Generic Ne=
+tlink family and multiplex multiple sub-commands on the single operation,=
+ this is strongly discouraged for security reasons.  Combining multiple beh=
+aviors<br>
+into one operation makes it difficult to restrict the operations using the=
+ existing Linux kernel security mechanisms.
+</p>
+<p><a name=3D"Acknowledgment_and_Error_Reporting"><br>
+</a></p><h3><a name=3D"Acknowledgment_and_Error_Reporting"> Acknowledgment=
+ and Error Reporting</a></h3><a name=3D"Acknowledgment_and_Error_Reporting">
+<p></p></a><p></p>
+<p>It is often necessary for Generic Netlink services to return an ACK or=
+ error code to the client.  It is not necessary to implement an explicit ac=
+knowledgment message as Netlink already provides a flexible acknowledgment=
+ and error reporting message type called NLMSG_ERROR.  When an error occurs=
+ an NLMSG_ERROR message is returned to the client with the error code retur=
+ned by the Generic Netlink operation handler.  Clients can also request the=
+ NLMSG_ERROR message when no error has occurred by setting the NLM_F_ACK fl=
+ag on requests.
+</p>
+<p><a name=3D"References"><br>
+</a></p><h2><a name=3D"References"> References</a></h2><a name=3D"Reference=
+s">
+<p></p></a><p></p>
+<ol>
+<li> <a href=3D"http://people.suug.ch/%7Etgr/libnl" class=3D"external free"=
+ title=3D"http://people.suug.ch/~tgr/libnl" rel=3D"nofollow">http://people.=
+suug.ch/~tgr/libnl</a> <span class=3D"print-footnote">[2]</span>
+</li>
+</ol>
+  </div>
+
+       =20
+</div></div> <!-- /node-inner, /node -->
+</div>
+    <div class=3D"print-footer">
+</div>
+    <hr class=3D"print-hr">
+    <div class=3D"print-source_url"><strong>Source URL:</strong> <a href=3D=
+"http://www.linuxfoundation.org/collaborate/workgroups/networking/genericne=
+tlinkhowto">http://www.linuxfoundation.org/collaborate/workgroups/networkin=
+g/genericnetlinkhowto</a></div>
+    <div class=3D"print-links"><p><strong>Links:</strong><br>[1] http://www=
+.linuxfoundation.org/tags/networking<br>
+[2] http://people.suug.ch/~tgr/libnl<br>
+</p></div>
+     =20
+
+<div id=3D"lightbox2-overlay" style=3D"display: none;"></div>      <div id=
+=3D"lightbox" style=3D"display: none;" class=3D"lightbox2-orig-layout">  =
+      <div style=3D"background-color: rgb(255, 255, 255); color: rgb(161,=
+ 161, 164);" id=3D"outerImageContainer"><div id=3D"modalContainer" style=3D=
+"display: none; padding: 20px;"></div><div id=3D"frameContainer" style=3D"d=
+isplay: none; padding: 20px;"></div><div id=3D"imageContainer" style=3D"dis=
+play: none; padding: 20px;"><img id=3D"lightboxImage" alt=3D""><div id=3D"h=
+overNav"><a style=3D"padding-top: 20px;" id=3D"prevLink" title=3D"Previous"=
+ href=3D"http://www.linuxfoundation.org/collaborate/workgroups/networking/g=
+enericnetlinkhowto#"></a><a style=3D"padding-top: 20px;" id=3D"nextLink" ti=
+tle=3D"Next" href=3D"http://www.linuxfoundation.org/collaborate/workgroups/=
+networking/genericnetlinkhowto#"></a></div></div><div id=3D"loading"><a hre=
+f=3D"http://www.linuxfoundation.org/collaborate/workgroups/networking/gener=
+icnetlinkhowto#" id=3D"loadingLink"></a></div></div>        <div style=3D"b=
+ackground-color: rgb(255, 255, 255); color: rgb(161, 161, 164);" id=3D"imag=
+eDataContainer" class=3D"clearfix">          <div id=3D"imageData"><div id=
+=3D"imageDetails"><span id=3D"caption"></span><span id=3D"numberDisplay"></=
+span></div><div id=3D"bottomNav"><div id=3D"frameHoverNav"><a style=3D"padd=
+ing-top: 20px;" id=3D"framePrevLink" title=3D"Previous" href=3D"http://www.=
+linuxfoundation.org/collaborate/workgroups/networking/genericnetlinkhowto#"=
+></a><a style=3D"padding-top: 20px;" id=3D"frameNextLink" title=3D"Next" hr=
+ef=3D"http://www.linuxfoundation.org/collaborate/workgroups/networking/gene=
+ricnetlinkhowto#"></a></div><a style=3D"background-color: rgb(255, 255, 255=
+); color: rgb(161, 161, 164);" id=3D"bottomNavClose" title=3D"Close" href=
+=3D"http://www.linuxfoundation.org/collaborate/workgroups/networking/generi=
+cnetlinkhowto#"></a><a id=3D"bottomNavZoom" href=3D"http://www.linuxfoundat=
+ion.org/collaborate/workgroups/networking/genericnetlinkhowto#"></a><a id=
+=3D"bottomNavZoomOut" href=3D"http://www.linuxfoundation.org/collaborate/wo=
+rkgroups/networking/genericnetlinkhowto#"></a><a id=3D"lightshowPause" titl=
+e=3D"Pause Slideshow" href=3D"http://www.linuxfoundation.org/collaborate/wo=
+rkgroups/networking/genericnetlinkhowto#" style=3D"display: none;"></a><a=
+ id=3D"lightshowPlay" title=3D"Play Slideshow" href=3D"http://www.linuxfoun=
+dation.org/collaborate/workgroups/networking/genericnetlinkhowto#" style=3D=
+"display: none;"></a></div></div>        </div>      </div></body></html>
+------=_NextPart_000_0000_D86B9F59.38FCED9A
+Content-Type: image/vnd.microsoft.icon
+Content-Transfer-Encoding: base64
+Content-Location: http://www.linuxfoundation.org/sites/all/themes/opensourcery/favicon.ico
+
+AAABAAEAICAQAAAAAADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAgAIAAAAAAAAAAAAAEAAA
+AAAAAAAAAAAA////AIRBAAD3z6UAhGFCAIRhYwDG38YAhEFCAMbHxgAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAYzMzMzMzMzFCIiIiIiIiIDMzMzMzMzMxQiIiIiIiIiIzMzMzMzMzMUIiIiIi
+IiIiMzMzMzMzMzFCIiIiIiIiIjMzMzMzMzMxQiIiIiIiIiIzMzMzMzMzMUIiIiIiIiIiMzMzMzMz
+MzGEREREIiIiIjMzMzYREREREREREWIiIiIzMzMxEREREREREREVIiIiMzMzMRERERERERERFSIi
+IjMzMzERERERERERERUiIiIzMzMxEREREREREREVIiIiMzMzMRERERERERERFSIiIjMzMzERERER
+ERERERUiIiIzMzMxEREREREREREVIiIiMzMzMRERERERERERFSIiIjMzMzERERERERERERUiIiIz
+MzMxEREREREREREVIiIiMzMzMRERERERERERFSIiIjMzMzERERERERERERUiIiIzMzMxERERERER
+EREVIiIiMzMzMRERERERERERFSIiIhERERERERERERERERUiIiJERESBEREREREREREVIiIiIiIi
+JhERERERERERYiIiIiIiIiJERERERERERCIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIi
+IiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiciIiIiIiIiIiIiIiIiIiIgQiIiIi
+IiIiIiIiIiIiInAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAQ==
+------=_NextPart_000_0000_D86B9F59.38FCED9A
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-EDBD8847:http://www.linuxfoundation.org/sites/main/files/css/css_047126476c65fe0f0ad70e64088316dd.css
+
+/* Effective stylesheet produced by snapshot save */
+.terms-inline { display: inline; }
+hr { height: 1px; border: 1px solid gray; }
+img { border: 0px none; }
+table { border-collapse: collapse; }
+.clear-block::after { content: "."; display: block; height: 0px; clear: bot=
+h; visibility: hidden; }
+tbody { border-top: 1px solid rgb(204, 204, 204); }
+ul.links { margin: 0px; padding: 0px; }
+ul.links.inline { display: inline; }
+ul.links li { display: inline; list-style-type: none; padding: 0px 0.5em;=
+ }
+.date-clear-block::after { content: " "; display: block; height: 0px; clear=
+: both; visibility: hidden; }
+#lightbox { position: absolute; top: 40px; left: 0px; width: 100%; z-index:=
+ 100; text-align: center; line-height: 0; }
+#outerImageContainer { position: relative; background-color: rgb(255, 255,=
+ 255); width: 250px; height: 250px; margin: 0px auto; min-width: 240px; ove=
+rflow: hidden; }
+#imageContainer, #frameContainer, #modalContainer { padding: 10px; }
+#modalContainer { line-height: 1em; overflow: auto; }
+#loading { height: 25%; width: 100%; text-align: center; line-height: 0; po=
+sition: absolute; top: 40%; left: 45%; }
+#hoverNav { position: absolute; top: 0px; left: 0px; height: 100%; width:=
+ 100%; z-index: 10; }
+#imageContainer > #hoverNav { left: 0px; }
+#frameHoverNav { z-index: 10; margin-left: auto; margin-right: auto; width:=
+ 20%; position: absolute; bottom: 0px; height: 45px; }
+#hoverNav a, #frameHoverNav a { outline: medium none; }
+#prevLink, #nextLink { width: 49%; height: 100%; background: transparent ur=
+l("urn:not-loaded:http://www.linuxfoundation.org/sites/all/modules/contrib/=
+lightbox2/images/blank.gif") no-repeat scroll 0% 0%; display: block; }
+#prevLink, #framePrevLink { left: 0px; float: left; }
+#nextLink, #frameNextLink { right: 0px; float: right; }
+#prevLink:hover, #prevLink:visited:hover, #prevLink.force_show_nav, #frameP=
+revLink { background: transparent url("urn:not-loaded:http://www.linuxfound=
+ation.org/sites/all/modules/contrib/lightbox2/images/prev.gif") no-repeat=
+ scroll left 15%; }
+#nextLink:hover, #nextLink:visited:hover, #nextLink.force_show_nav, #frameN=
+extLink { background: transparent url("urn:not-loaded:http://www.linuxfound=
+ation.org/sites/all/modules/contrib/lightbox2/images/next.gif") no-repeat=
+ scroll right 15%; }
+#prevLink.force_show_nav:hover, #prevLink.force_show_nav:visited:hover, #fr=
+amePrevLink:hover, #framePrevLink:visited:hover { background: transparent=
+ url("urn:not-loaded:http://www.linuxfoundation.org/sites/all/modules/contr=
+ib/lightbox2/images/prev_hover.gif") no-repeat scroll left 15%; }
+#nextLink.force_show_nav:hover, #nextLink.force_show_nav:visited:hover, #fr=
+ameNextLink:hover, #frameNextLink:visited:hover { background: transparent=
+ url("urn:not-loaded:http://www.linuxfoundation.org/sites/all/modules/contr=
+ib/lightbox2/images/next_hover.gif") no-repeat scroll right 15%; }
+#framePrevLink, #frameNextLink { width: 45px; height: 45px; display: block;=
+ position: absolute; bottom: 0px; }
+#imageDataContainer { font: 10px/1.4em Verdana,Helvetica,sans-serif; backgr=
+ound-color: rgb(255, 255, 255); margin: 0px auto; min-width: 240px; }
+#imageData { padding: 0px 10px; }
+#imageData #imageDetails { width: 70%; float: left; text-align: left; }
+#imageData #caption { font-weight: bold; }
+#imageData #numberDisplay { display: block; clear: left; padding-bottom: 1e=
+m; }
+#imageData #bottomNav { height: 66px; }
+#lightbox2-overlay { position: absolute; top: 0px; left: 0px; z-index: 90;=
+ width: 100%; height: 500px; background-color: rgb(0, 0, 0); }
+.clearfix::after { content: "."; display: block; height: 0px; clear: both;=
+ visibility: hidden; }
+#bottomNavClose { display: block; background: transparent url("urn:not-load=
+ed:http://www.linuxfoundation.org/sites/all/modules/contrib/lightbox2/image=
+s/close.gif") no-repeat scroll left center; margin-top: 33px; float: right;=
+ padding-top: 0.7em; height: 26px; width: 26px; }
+#bottomNavClose:hover { background-position: right center; }
+#loadingLink { display: block; background: transparent url("urn:not-loaded:=
+http://www.linuxfoundation.org/sites/all/modules/contrib/lightbox2/images/l=
+oading.gif") no-repeat scroll 0% 0%; width: 32px; height: 32px; }
+#bottomNavZoom { display: none; background: transparent url("urn:not-loaded=
+:http://www.linuxfoundation.org/sites/all/modules/contrib/lightbox2/images/=
+expand.gif") no-repeat scroll 0% 0%; width: 34px; height: 34px; position:=
+ relative; left: 30px; float: right; }
+#bottomNavZoomOut { display: none; background: transparent url("urn:not-loa=
+ded:http://www.linuxfoundation.org/sites/all/modules/contrib/lightbox2/imag=
+es/contract.gif") no-repeat scroll 0% 0%; width: 34px; height: 34px; positi=
+on: relative; left: 30px; float: right; }
+#lightshowPlay { margin-top: 42px; float: right; margin-right: 5px; margin-=
+bottom: 1px; height: 20px; width: 20px; background: transparent url("urn:no=
+t-loaded:http://www.linuxfoundation.org/sites/all/modules/contrib/lightbox2=
+/images/play.png") no-repeat scroll 0% 0%; }
+#lightshowPause { margin-top: 42px; float: right; margin-right: 5px; margin=
+-bottom: 1px; height: 20px; width: 20px; background: transparent url("urn:n=
+ot-loaded:http://www.linuxfoundation.org/sites/all/modules/contrib/lightbox=
+2/images/pause.png") no-repeat scroll 0% 0%; }
+#lightboxImage {  }
+div.view div.views-admin-links li a::before { content: "["; }
+div.view div.views-admin-links li a::after { content: "]"; }
+body { margin: 1em; background-color: rgb(255, 255, 255); font-family: sans=
+-serif; }
+td { padding: 5px; }
+a:link { color: rgb(0, 0, 0); }
+a:visited { color: rgb(0, 0, 0); }
+a:hover { color: rgb(0, 0, 255); }
+.print-footnote { font-size: xx-small; }
+.print-site_name {  }
+.print-breadcrumb { font-size: x-small; }
+.print-title {  }
+.print-content {  }
+.print-hr { border: 0px none; height: 1px; width: 100%; color: rgb(158, 158=
+, 158); background-color: rgb(158, 158, 158); }
+.print-source_url { font-size: small; }
+.print-links { font-size: small; }
+.print-footer { text-align: center; }
+
+------=_NextPart_000_0000_D86B9F59.38FCED9A
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-8D7C1D85:http://www.linuxfoundation.org/sites/main/files/css/css_a6f76d2fb89f385c326e4732a02026a8.css
+
+/* Effective stylesheet produced by snapshot save */
+
+------=_NextPart_000_0000_D86B9F59.38FCED9A
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-8711547E:http://www.linuxfoundation.org/sites/main/files/js/js_c3bb9216350f108e6d4ebee0534fd407.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_D86B9F59.38FCED9A--

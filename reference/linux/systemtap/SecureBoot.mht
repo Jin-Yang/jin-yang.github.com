@@ -1,0 +1,1300 @@
+From: <Saved by Mozilla 5.0 (X11)>
+Subject: SecureBoot - Systemtap Wiki
+Date: Sun, 02 Oct 2016 23:10:57 +0800
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----=_NextPart_000_0000_336892C6.A57886FD"
+X-MAF-Information: Produced By MAF V4.0.1rc
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: text/html;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki.html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/htm=
+l4/strict.dtd"><html><head>
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3DUTF-8">
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3DUTF-8">
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8">
+<meta name=3D"robots" content=3D"index,nofollow">
+
+<title>SecureBoot - Systemtap Wiki</title>
+<script type=3D"text/javascript" src=3D"urn:snapshot-17CA30D7:file:///home/=
+andy/SecureBoot%20-%20Systemtap%20Wiki_files/common.js"></script>
+
+<script type=3D"text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+
+
+<link rel=3D"stylesheet" type=3D"text/css" charset=3D"utf-8" media=3D"all"=
+ href=3D"urn:snapshot-1B1CF9AF:file:///home/andy/SecureBoot%20-%20Systemtap=
+%20Wiki_files/common.css">
+<link rel=3D"stylesheet" type=3D"text/css" charset=3D"utf-8" media=3D"scree=
+n" href=3D"urn:snapshot-4257F93F:file:///home/andy/SecureBoot%20-%20Systemt=
+ap%20Wiki_files/screen.css">
+<link rel=3D"stylesheet" type=3D"text/css" charset=3D"utf-8" media=3D"print=
+" href=3D"urn:snapshot-3C802241:file:///home/andy/SecureBoot%20-%20Systemta=
+p%20Wiki_files/print.css">
+<link rel=3D"stylesheet" type=3D"text/css" charset=3D"utf-8" media=3D"proje=
+ction" href=3D"urn:snapshot-E7A5C27E:file:///home/andy/SecureBoot%20-%20Sys=
+temtap%20Wiki_files/projection.css">
+
+<!-- css only for MS IE6/IE7 browsers -->
+<!--[if lt IE 8]>
+   <link rel=3D"stylesheet" type=3D"text/css" charset=3D"utf-8" media=3D"al=
+l" href=3D"/moin_static197/modern/css/msie.css">
+<![endif]-->
+
+
+<link rel=3D"alternate" title=3D"Systemtap Wiki: SecureBoot" href=3D"https:=
+//sourceware.org/systemtap/wiki/SecureBoot?diffs=3D1&amp;show_att=3D1&amp;a=
+ction=3Drss_rc&amp;unique=3D0&amp;page=3DSecureBoot&amp;ddiffs=3D1" type=3D=
+"application/rss+xml">
+
+
+<link rel=3D"Start" href=3D"https://sourceware.org/systemtap/wiki/HomePage">
+<link rel=3D"Alternate" title=3D"Wiki Markup" href=3D"https://sourceware.or=
+g/systemtap/wiki/SecureBoot?action=3Draw">
+<link rel=3D"Alternate" media=3D"print" title=3D"Print View" href=3D"https:=
+//sourceware.org/systemtap/wiki/SecureBoot?action=3Dprint">
+<link rel=3D"Appendix" title=3D"Screenshot_kvm-rawhide-64-uefi-1_2014-02-27=
+_13_59_45_crop.png" href=3D"https://sourceware.org/systemtap/wiki/SecureBoo=
+t?action=3DAttachFile&amp;do=3Dview&amp;target=3DScreenshot_kvm-rawhide-64-=
+uefi-1_2014-02-27_13_59_45_crop.png">
+<link rel=3D"Appendix" title=3D"Screenshot_kvm-rawhide-64-uefi-1_2014-02-27=
+_14_00_13_crop.png" href=3D"https://sourceware.org/systemtap/wiki/SecureBoo=
+t?action=3DAttachFile&amp;do=3Dview&amp;target=3DScreenshot_kvm-rawhide-64-=
+uefi-1_2014-02-27_14_00_13_crop.png">
+<link rel=3D"Appendix" title=3D"Screenshot_kvm-rawhide-64-uefi-1_2014-02-27=
+_14_00_35_crop.png" href=3D"https://sourceware.org/systemtap/wiki/SecureBoo=
+t?action=3DAttachFile&amp;do=3Dview&amp;target=3DScreenshot_kvm-rawhide-64-=
+uefi-1_2014-02-27_14_00_35_crop.png">
+<link rel=3D"Appendix" title=3D"Screenshot_kvm-rawhide-64-uefi-1_2014-02-27=
+_14_00_44_crop.png" href=3D"https://sourceware.org/systemtap/wiki/SecureBoo=
+t?action=3DAttachFile&amp;do=3Dview&amp;target=3DScreenshot_kvm-rawhide-64-=
+uefi-1_2014-02-27_14_00_44_crop.png">
+<link rel=3D"Appendix" title=3D"Screenshot_kvm-rawhide-64-uefi-1_2014-02-27=
+_14_00_53_crop.png" href=3D"https://sourceware.org/systemtap/wiki/SecureBoo=
+t?action=3DAttachFile&amp;do=3Dview&amp;target=3DScreenshot_kvm-rawhide-64-=
+uefi-1_2014-02-27_14_00_53_crop.png">
+<link rel=3D"Appendix" title=3D"Screenshot_kvm-rawhide-64-uefi-1_2014-02-27=
+_14_01_06_crop.png" href=3D"https://sourceware.org/systemtap/wiki/SecureBoo=
+t?action=3DAttachFile&amp;do=3Dview&amp;target=3DScreenshot_kvm-rawhide-64-=
+uefi-1_2014-02-27_14_01_06_crop.png">
+<link rel=3D"Search" href=3D"https://sourceware.org/systemtap/wiki/FindPage=
+">
+<link rel=3D"Index" href=3D"https://sourceware.org/systemtap/wiki/TitleInde=
+x">
+<link rel=3D"Glossary" href=3D"https://sourceware.org/systemtap/wiki/WordIn=
+dex">
+<link rel=3D"Help" href=3D"https://sourceware.org/systemtap/wiki/HelpOnForm=
+atting">
+</head>
+
+<body dir=3D"ltr" lang=3D"en">
+
+<div id=3D"header">
+<div id=3D"logo"><a href=3D"https://sourceware.org/systemtap/wiki/HomePage"=
+><img src=3D"file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/syst=
+emtaplogo.png" alt=3D"systemtap wiki"></a></div>
+
+<form id=3D"searchform" method=3D"get" action=3D"#">
+<div>
+<input name=3D"action" value=3D"fullsearch" type=3D"hidden">
+<input name=3D"context" value=3D"180" type=3D"hidden">
+<label style=3D"display: none;" for=3D"searchinput">Search:</label>
+<input class=3D"disabled" id=3D"searchinput" name=3D"value" value=3D"Search=
+" size=3D"20" onfocus=3D"" onblur=3D"" onkeyup=3D"" onchange=3D"" alt=3D"Se=
+arch" type=3D"text">
+<input disabled=3D"disabled" id=3D"titlesearch" name=3D"titlesearch" value=
+=3D"Titles" alt=3D"Search Titles" type=3D"submit">
+<input disabled=3D"disabled" id=3D"fullsearch" name=3D"fullsearch" value=3D=
+"Text" alt=3D"Search Full Text" type=3D"submit">
+</div>
+</form>
+<script type=3D"text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+
+<ul id=3D"username"><li><a href=3D"https://sourceware.org/systemtap/wiki/Se=
+cureBoot?action=3Dlogin" id=3D"login" rel=3D"nofollow">Login</a></li></ul>
+<div id=3D"locationline">
+<div id=3D"interwiki"><span><a href=3D"https://sourceware.org/systemtap/wik=
+i/HomePage" rel=3D"nofollow">Self</a></span></div>
+
+<ul id=3D"pagelocation">
+<li><a class=3D"backlink" href=3D"https://sourceware.org/systemtap/wiki/Sec=
+ureBoot?action=3Dfullsearch&amp;context=3D180&amp;value=3Dlinkto%3A%22Secur=
+eBoot%22" rel=3D"nofollow" title=3D"Click to do a full-text search for this=
+ title">SecureBoot</a></li>
+</ul>
+
+</div>
+
+
+<ul id=3D"navibar">
+<li class=3D"wikilink"><a href=3D"https://sourceware.org/systemtap/wiki/Hom=
+ePage">HomePage</a></li><li class=3D"wikilink"><a href=3D"https://sourcewar=
+e.org/systemtap/wiki/RecentChanges">RecentChanges</a></li><li class=3D"wiki=
+link"><a href=3D"https://sourceware.org/systemtap/wiki/FindPage">FindPage</=
+a></li><li class=3D"wikilink"><a href=3D"https://sourceware.org/systemtap/w=
+iki/HelpContents">HelpContents</a></li><li class=3D"current"><a href=3D"#">=
+SecureBoot</a></li>
+</ul>
+
+<div id=3D"pageline"><hr style=3D"display:none;"></div>
+
+<ul class=3D"editbar"><li><span class=3D"disabled">Immutable Page</span></l=
+i><li class=3D"toggleCommentsButton" style=3D"display:none;"><a href=3D"#"=
+ class=3D"nbcomment" onclick=3D"">Comments</a></li><li><a class=3D"nbinfo"=
+ href=3D"https://sourceware.org/systemtap/wiki/SecureBoot?action=3Dinfo" re=
+l=3D"nofollow">Info</a></li><li><a class=3D"nbattachments" href=3D"https://=
+sourceware.org/systemtap/wiki/SecureBoot?action=3DAttachFile" rel=3D"nofoll=
+ow">Attachments</a></li><li>
+<form class=3D"actionsmenu" method=3D"GET" action=3D"#">
+<div>
+   =20
+    <select name=3D"action" onchange=3D"">
+        <option selected=3D"selected" value=3D"show">More Actions:</option>=
+<option value=3D"raw">Raw Text</option>
+<option value=3D"print">Print View</option>
+<option value=3D"RenderAsDocbook">Render as Docbook</option>
+<option value=3D"refresh">Delete Cache</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">-----------=
+-------------</option>
+<option value=3D"SpellCheck">Check Spelling</option>
+<option value=3D"LikePages">Like Pages</option>
+<option value=3D"LocalSiteMap">Local Site Map</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">-----------=
+-------------</option>
+<option value=3D"RenamePage" disabled=3D"disabled" class=3D"disabled">Renam=
+e Page</option>
+<option value=3D"DeletePage" disabled=3D"disabled" class=3D"disabled">Delet=
+e Page</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">-----------=
+-------------</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">Subscribe=
+ User</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">-----------=
+-------------</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">Remove Spam=
+</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">Revert to=
+ this revision</option>
+<option value=3D"PackagePages">Package Pages</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">-----------=
+-------------</option>
+<option value=3D"Load">Load</option>
+<option value=3D"Save">Save</option>
+<option value=3D"SlideShow">SlideShow</option>
+    </select>
+   =20
+   =20
+</div>
+<script type=3D"text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+</form>
+</li></ul>
+
+</div>
+
+<div id=3D"page" dir=3D"ltr" lang=3D"en">
+<div dir=3D"ltr" id=3D"content" lang=3D"en"><span class=3D"anchor" id=3D"to=
+p"></span>
+<span class=3D"anchor" id=3D"line-1"></span><span class=3D"anchor" id=3D"li=
+ne-2"></span><span class=3D"anchor" id=3D"line-3"></span><span class=3D"anc=
+hor" id=3D"line-4"></span><p class=3D"line867">
+</p><h1 id=3D"Systemtap_UEFI_Secure_Boot_Support">Systemtap UEFI Secure Boo=
+t Support</h1>
+<span class=3D"anchor" id=3D"line-5"></span><p class=3D"line867"><span clas=
+s=3D"anchor" id=3D"line-6"></span></p><p class=3D"line874">Systemtap releas=
+e 2.5 contains UEFI Secure Boot support.. This new functionality lets syste=
+mtap work on systems with secure boot set up in their UEFI firmware. There=
+ are actually several different keys sets involved in the UEFI Secure Boot=
+ functionality. We're going to add the a public certificate to the MOK (Mac=
+hine Owner Keys) database that systemtap will use to sign modules. <span cl=
+ass=3D"anchor" id=3D"line-7"></span><span class=3D"anchor" id=3D"line-8"></=
+span></p><p class=3D"line874">Here's how the new functionality works. In sh=
+ort, the systemtap compile server has been taught to sign modules with a MO=
+K (Machine Owner Key) that it has in common with a client system. Then, com=
+piling and running modules is the same as running on a non-secure boot syst=
+em. <span class=3D"anchor" id=3D"line-9"></span><span class=3D"anchor" id=
+=3D"line-10"></span></p><p class=3D"line874">Here's the long version of how=
+ this works. First, you'd need a system with UEFI firmware with secure boot=
+ turned on. If you don't have such a system, you can build a virtual machin=
+e with UEFI firmware. For details, see the following Fedora wiki page: <spa=
+n class=3D"anchor" id=3D"line-11"></span><span class=3D"anchor" id=3D"line-=
+12"></span></p><p class=3D"line867"><a class=3D"https" href=3D"https://fedo=
+raproject.org/wiki/Testing_secureboot_with_KVM">https://fedoraproject.org/w=
+iki/Testing_secureboot_with_KVM</a> <span class=3D"anchor" id=3D"line-13"><=
+/span><span class=3D"anchor" id=3D"line-14"></span></p><p class=3D"line874"=
+>The first thing to do is set up a systemtap compile server (or use an exis=
+ting one if you have one) that includes commit c813433. The systemtap compi=
+le server system can be on the same system as your client or a different sy=
+stem. Assuming your server is up and running, here we go. On the client sys=
+tem, try listing systemtap compile servers: <span class=3D"anchor" id=3D"li=
+ne-15"></span><span class=3D"anchor" id=3D"line-16"></span></p><p class=3D"=
+line867"><span class=3D"anchor" id=3D"line-17"></span><span class=3D"anchor=
+" id=3D"line-18"></span><span class=3D"anchor" id=3D"line-19"></span><span=
+ class=3D"anchor" id=3D"line-20"></span></p><pre><span class=3D"anchor" id=
+=3D"line-1"></span># stap --list-servers
+<span class=3D"anchor" id=3D"line-2"></span>Systemtap Compile Server Status=
+ for 'online,trusted,compatible'
+<span class=3D"anchor" id=3D"line-3"></span>No servers found</pre><span cla=
+ss=3D"anchor" id=3D"line-21"></span><p class=3D"line874">Notice we didn't=
+ find any trusted, compatible, online servers. This is actually to be expec=
+ted. The client is now smart enough to know that it needs MOK signed module=
+s, and gets a list of MOKs that the server can sign modules with. The clien=
+t compares the list of server MOKs to the list of MOKs installed on the cli=
+ent. Since at this point the server and client don't have any MOKs in commo=
+n, the client and server aren't compatible. <span class=3D"anchor" id=3D"li=
+ne-22"></span><span class=3D"anchor" id=3D"line-23"></span></p><p class=3D"=
+line874">So, let's fix that. We could create a MOK by hand and install it=
+ on the client and server. But, the easier way is to let the systemtap comp=
+ile server send us a MOK to install on the client. First, we'll need to fin=
+d the server: <span class=3D"anchor" id=3D"line-24"></span><span class=3D"a=
+nchor" id=3D"line-25"></span></p><p class=3D"line867"><span class=3D"anchor=
+" id=3D"line-26"></span><span class=3D"anchor" id=3D"line-27"></span><span=
+ class=3D"anchor" id=3D"line-28"></span><span class=3D"anchor" id=3D"line-2=
+9"></span></p><pre><span class=3D"anchor" id=3D"line-1-1"></span># stap --l=
+ist-servers=3Dall
+<span class=3D"anchor" id=3D"line-2-1"></span>Systemtap Compile Server Stat=
+us for 'all'
+<span class=3D"anchor" id=3D"line-3-1"></span> host=3Dkvm-rawhide-64-uefi-1=
+.local address=3D10.15.1.3 port=3D39587 sysinfo=3D"3.14.0-0.rc2.git4.1.fc21=
+.x86_64 x86_64" version=3D2.5 certinfo=3D"00:9e:56:9b:5e"</pre><span class=
+=3D"anchor" id=3D"line-30"></span><p class=3D"line874">Now that we know the=
+ host name ('kvm-rawhide-64-uefi-1.local') and port number (39587), we can=
+ ask that server to compile a module for us: <span class=3D"anchor" id=3D"l=
+ine-31"></span><span class=3D"anchor" id=3D"line-32"></span></p><p class=3D=
+"line867"><span class=3D"anchor" id=3D"line-33"></span><span class=3D"ancho=
+r" id=3D"line-34"></span><span class=3D"anchor" id=3D"line-35"></span><span=
+ class=3D"anchor" id=3D"line-36"></span><span class=3D"anchor" id=3D"line-3=
+7"></span><span class=3D"anchor" id=3D"line-38"></span><span class=3D"ancho=
+r" id=3D"line-39"></span></p><pre><span class=3D"anchor" id=3D"line-1-2"></=
+span># stap --use-server=3Dkvm-rawhide-64-uefi-1.local:39587 -e 'probe begi=
+n { exit() }'
+<span class=3D"anchor" id=3D"line-2-2"></span>Server: No matching machine=
+ owner key (MOK) available on the server to sign the module.
+<span class=3D"anchor" id=3D"line-3-2"></span>Server: The server has no mac=
+hine owner key (MOK) in common with this system. Use the following command=
+ to import a server MOK into this system, then reboot:
+<span class=3D"anchor" id=3D"line-4"></span>
+<span class=3D"anchor" id=3D"line-5"></span>        mokutil --import signin=
+g_key.x509
+<span class=3D"anchor" id=3D"line-6"></span>Passes: via server failed.  Try=
+ again with another '-v' option.</pre><span class=3D"anchor" id=3D"line-40"=
+></span><p class=3D"line874">The server realized that it and the client had=
+ no MOK in common. So, it generated a new MOK (if necessary), and sent the=
+ public certificate  down to the client. In this case the server didn't hav=
+e any existing MOKs, so it had to generate a new one. So, as the message sa=
+ys above, we have to use 'mokutil' as root to add this new MOK to the UEFI=
+ firmware. <span class=3D"anchor" id=3D"line-41"></span><span class=3D"anch=
+or" id=3D"line-42"></span></p><p class=3D"line867"><span class=3D"anchor"=
+ id=3D"line-43"></span><span class=3D"anchor" id=3D"line-44"></span><span=
+ class=3D"anchor" id=3D"line-45"></span><span class=3D"anchor" id=3D"line-4=
+6"></span></p><pre><span class=3D"anchor" id=3D"line-1-3"></span># mokutil=
+ --import signing_key.x509
+<span class=3D"anchor" id=3D"line-2-3"></span> input password:
+<span class=3D"anchor" id=3D"line-3-3"></span> input password again:</pre><=
+span class=3D"anchor" id=3D"line-47"></span><p class=3D"line874">If the UEF=
+I firmware doesn't have a MOK password, mokutil will ask you to create one=
+ here. At this point, you'll need to reboot the client system. Upon reboot,=
+ you'll see something like the following. The following screenshots are fro=
+m the OVMF firmware. Each vendor's firmware will be a little different, but=
+ the steps should be similar. First, go down to 'Enroll Mok': <span class=
+=3D"anchor" id=3D"line-48"></span><span class=3D"anchor" id=3D"line-49"></s=
+pan></p><p class=3D"line867"><img alt=3D"Screenshot_kvm-rawhide-64-uefi-1_2=
+014-02-27_14:00:13_crop.png" class=3D"attachment" src=3D"file:///home/andy/=
+SecureBoot%20-%20Systemtap%20Wiki_files/SecureBoot.png" title=3D"Screenshot=
+_kvm-rawhide-64-uefi-1_2014-02-27_14:00:13_crop.png"> <span class=3D"anchor=
+" id=3D"line-50"></span><span class=3D"anchor" id=3D"line-51"></span></p><p=
+ class=3D"line874">Then the firmware gives you the option of viewing the ne=
+w MOK or continuing. Let's continue. <span class=3D"anchor" id=3D"line-52">=
+</span><span class=3D"anchor" id=3D"line-53"></span></p><p class=3D"line867=
+"><img alt=3D"Screenshot_kvm-rawhide-64-uefi-1_2014-02-27_14:00:35_crop.png=
+" class=3D"attachment" src=3D"file:///home/andy/SecureBoot%20-%20Systemtap%=
+20Wiki_files/SecureBoot-1.png" title=3D"Screenshot_kvm-rawhide-64-uefi-1_20=
+14-02-27_14:00:35_crop.png"> <span class=3D"anchor" id=3D"line-54"></span><=
+span class=3D"anchor" id=3D"line-55"></span></p><p class=3D"line874">It the=
+n asks you to to confirm enrollment. <span class=3D"anchor" id=3D"line-56">=
+</span><span class=3D"anchor" id=3D"line-57"></span></p><p class=3D"line867=
+"><img alt=3D"Screenshot_kvm-rawhide-64-uefi-1_2014-02-27_14:00:44_crop.png=
+" class=3D"attachment" src=3D"file:///home/andy/SecureBoot%20-%20Systemtap%=
+20Wiki_files/SecureBoot-2.png" title=3D"Screenshot_kvm-rawhide-64-uefi-1_20=
+14-02-27_14:00:44_crop.png"> <span class=3D"anchor" id=3D"line-58"></span><=
+span class=3D"anchor" id=3D"line-59"></span></p><p class=3D"line874">Then=
+ you will need to enter the password you used when running 'mokutil --impor=
+t'. <span class=3D"anchor" id=3D"line-60"></span><span class=3D"anchor" id=
+=3D"line-61"></span></p><p class=3D"line867"><img alt=3D"Screenshot_kvm-raw=
+hide-64-uefi-1_2014-02-27_14:00:53_crop.png" class=3D"attachment" src=3D"fi=
+le:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/SecureBoot-3.png"=
+ title=3D"Screenshot_kvm-rawhide-64-uefi-1_2014-02-27_14:00:53_crop.png">=
+ <span class=3D"anchor" id=3D"line-62"></span><span class=3D"anchor" id=3D"=
+line-63"></span></p><p class=3D"line874">Finally, the firmware will ask you=
+ to reboot. <span class=3D"anchor" id=3D"line-64"></span><span class=3D"anc=
+hor" id=3D"line-65"></span></p><p class=3D"line867"><img alt=3D"Screenshot_=
+kvm-rawhide-64-uefi-1_2014-02-27_14:01:06_crop.png" class=3D"attachment" sr=
+c=3D"file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/SecureBoot-4=
+.png" title=3D"Screenshot_kvm-rawhide-64-uefi-1_2014-02-27_14:01:06_crop.pn=
+g"> <span class=3D"anchor" id=3D"line-66"></span><span class=3D"anchor" id=
+=3D"line-67"></span></p><p class=3D"line874">Here's a note about running a=
+ VM with the OVMF UEFI firmware. Right now, there is no persistent storage=
+ for the OVMF UEFI firmware in qemu. So, if you power down your VM, you'll=
+ have to reinstall the MOKs. This bug/missing feature is being worked on up=
+stream in qemu. <span class=3D"anchor" id=3D"line-68"></span><span class=3D=
+"anchor" id=3D"line-69"></span></p><p class=3D"line874">After the reboot,=
+ you can run 'mokutil --list-enrolled' to see the new key: <span class=3D"a=
+nchor" id=3D"line-70"></span><span class=3D"anchor" id=3D"line-71"></span><=
+/p><p class=3D"line867"><span class=3D"anchor" id=3D"line-72"></span><span=
+ class=3D"anchor" id=3D"line-73"></span><span class=3D"anchor" id=3D"line-7=
+4"></span><span class=3D"anchor" id=3D"line-75"></span><span class=3D"ancho=
+r" id=3D"line-76"></span><span class=3D"anchor" id=3D"line-77"></span><span=
+ class=3D"anchor" id=3D"line-78"></span></p><pre><span class=3D"anchor" id=
+=3D"line-1-4"></span># mokutil --list-enrolled | egrep -i 'SHA1|Issuer'
+<span class=3D"anchor" id=3D"line-2-4"></span>SHA1 Fingerprint: 1f:52:31:74=
+:bb:46:94:02:54:d7:bb:42:26:e6:cb:8f:fd:52:89:c1
+<span class=3D"anchor" id=3D"line-3-4"></span>        Issuer: O=3DSystemtap=
+, CN=3DSystemtap module signing key
+<span class=3D"anchor" id=3D"line-4-1"></span>SHA1 Fingerprint: 7e:68:65:1d=
+:52:68:5f:7b:f5:8e:a0:1d:78:4d:2f:90:d3:f4:0f:0a
+<span class=3D"anchor" id=3D"line-5-1"></span>        Issuer: CN=3DFedora=
+ Secure Boot CA
+<span class=3D"anchor" id=3D"line-6-1"></span>                CA Issuers -=
+ URI:https://fedoraproject.org/wiki/Features/SecureBoot</pre><span class=3D=
+"anchor" id=3D"line-79"></span><p class=3D"line874">After the reboot, when=
+ we list servers, the compile server will show up as compatible, since the=
+ client and server have a MOK in common: <span class=3D"anchor" id=3D"line-=
+80"></span><span class=3D"anchor" id=3D"line-81"></span></p><p class=3D"lin=
+e867"><span class=3D"anchor" id=3D"line-82"></span><span class=3D"anchor"=
+ id=3D"line-83"></span><span class=3D"anchor" id=3D"line-84"></span><span=
+ class=3D"anchor" id=3D"line-85"></span></p><pre><span class=3D"anchor" id=
+=3D"line-1-5"></span># stap --list-servers
+<span class=3D"anchor" id=3D"line-2-5"></span>Systemtap Compile Server Stat=
+us for 'online,trusted,compatible'
+<span class=3D"anchor" id=3D"line-3-5"></span> host=3Dkvm-rawhide-64-uefi-1=
+.local address=3D10.15.1.3 port=3D36138 sysinfo=3D"3.14.0-0.rc2.git4.1.fc21=
+.x86_64 x86_64" version=3D2.5 certinfo=3D"00:9e:56:9b:5e" mok_fingerprints=
+=3D"1f:52:31:74:bb:46:94:02:54:d7:bb:42:26:e6:cb:8f:fd:52:89:c1"</pre><span=
+ class=3D"anchor" id=3D"line-86"></span><p class=3D"line874">OK, let's try=
+ to compile and run a module now: <span class=3D"anchor" id=3D"line-87"></s=
+pan><span class=3D"anchor" id=3D"line-88"></span></p><p class=3D"line867"><=
+span class=3D"anchor" id=3D"line-89"></span><span class=3D"anchor" id=3D"li=
+ne-90"></span><span class=3D"anchor" id=3D"line-91"></span><span class=3D"a=
+nchor" id=3D"line-92"></span><span class=3D"anchor" id=3D"line-93"></span><=
+span class=3D"anchor" id=3D"line-94"></span><span class=3D"anchor" id=3D"li=
+ne-95"></span><span class=3D"anchor" id=3D"line-96"></span><span class=3D"a=
+nchor" id=3D"line-97"></span><span class=3D"anchor" id=3D"line-98"></span><=
+span class=3D"anchor" id=3D"line-99"></span><span class=3D"anchor" id=3D"li=
+ne-100"></span></p><pre><span class=3D"anchor" id=3D"line-1-6"></span># sta=
+p -ve 'probe begin { printf("hello\n"); exit() }'
+<span class=3D"anchor" id=3D"line-2-6"></span>Using a compile server.
+<span class=3D"anchor" id=3D"line-3-6"></span>Pass 1: parsed user script an=
+d 100 library script(s) using 211876virt/29220res/2984shr/26476data kb, in=
+ 200usr/100sys/506real ms.
+<span class=3D"anchor" id=3D"line-4-2"></span>Pass 2: analyzed script: 1 pr=
+obe(s), 1 function(s), 0 embed(s), 0 global(s) using 212404virt/29996res/32=
+28shr/27004data kb, in 10usr/0sys/31real ms.
+<span class=3D"anchor" id=3D"line-5-2"></span>Pass 3: translated to C into=
+ "&lt;server&gt;/stap000000/stap_e8600a4143178ae7777f6ff068e92399_1018_src.=
+c" using 212528virt/30164res/3372shr/27128data kb, in 0usr/0sys/3real ms.
+<span class=3D"anchor" id=3D"line-6-2"></span>Pass 4: compiled C into "stap=
+_e8600a4143178ae7777f6ff068e92399_1018.ko" in 2510usr/2180sys/8643real ms.
+<span class=3D"anchor" id=3D"line-7"></span>Server: Module signed with MOK,=
+ fingerprint "1f:52:31:74:bb:46:94:02:54:d7:bb:42:26:e6:cb:8f:fd:52:89:c1"
+<span class=3D"anchor" id=3D"line-8"></span>Passes: via server  host=3Dkvm-=
+rawhide-64-uefi-1.local address=3D0.0.0.0 port=3D36138 sysinfo=3D"3.14.0-0.=
+rc2.git4.1.fc21.x86_64 x86_64" version=3D2.5 certinfo=3D"00:9e:56:9b:5e" mo=
+k_fingerprints=3D"1f:52:31:74:bb:46:94:02:54:d7:bb:42:26:e6:cb:8f:fd:52:89:=
+c1" using 191072virt/5456res/4360shr/1036data kb, in 10usr/60sys/11052real=
+ ms.
+<span class=3D"anchor" id=3D"line-9"></span>Pass 5: starting run.
+<span class=3D"anchor" id=3D"line-10"></span>hello
+<span class=3D"anchor" id=3D"line-11"></span>Pass 5: run completed in 30usr=
+/190sys/620real ms.</pre><span class=3D"anchor" id=3D"line-101"></span><p=
+ class=3D"line874">Once the client and server have a MOK in common, compili=
+ng and running modules is fairly transparent. Notice we didn't have to use=
+ the '--use-server' option, the client realized that since it requires MOK=
+ signed modules, it must use a compile server. <span class=3D"anchor" id=3D=
+"line-102"></span><span class=3D"anchor" id=3D"line-103"></span></p><p clas=
+s=3D"line867">
+</p><h2 id=3D"Manually_Creating_Secure_Boot_Modules">Manually Creating Secu=
+re Boot Modules</h2>
+<span class=3D"anchor" id=3D"line-104"></span><p class=3D"line874">If you'd=
+ like to create a signed module by hand, here are the steps you'd go throug=
+h. <span class=3D"anchor" id=3D"line-105"></span><span class=3D"anchor" id=
+=3D"line-106"></span></p><p class=3D"line874">First, create a set of MOK ke=
+ys. Run the following command (using systemtap's 'x509.genkey' config file)=
+ : <span class=3D"anchor" id=3D"line-107"></span><span class=3D"anchor" id=
+=3D"line-108"></span></p><p class=3D"line867"><span class=3D"anchor" id=3D"=
+line-109"></span><span class=3D"anchor" id=3D"line-110"></span><span class=
+=3D"anchor" id=3D"line-111"></span><span class=3D"anchor" id=3D"line-112"><=
+/span></p><pre><span class=3D"anchor" id=3D"line-1-7"></span># openssl req=
+ -new -nodes -utf8 -sha256 -days 36500 -batch -x509 \
+<span class=3D"anchor" id=3D"line-2-7"></span>    -config x509.genkey -outf=
+orm DER -out signing_key.x509 \
+<span class=3D"anchor" id=3D"line-3-7"></span>    -keyout signing_key.priv<=
+/pre><span class=3D"anchor" id=3D"line-113"></span><p class=3D"line874">Tha=
+t generates 'signing_key.x509' and 'signing_key.priv'. <span class=3D"ancho=
+r" id=3D"line-114"></span><span class=3D"anchor" id=3D"line-115"></span></p=
+><p class=3D"line874">Then, install the key on the server as described abov=
+e by running <span class=3D"anchor" id=3D"line-116"></span><span class=3D"a=
+nchor" id=3D"line-117"></span></p><p class=3D"line867"><span class=3D"ancho=
+r" id=3D"line-118"></span><span class=3D"anchor" id=3D"line-119"></span></p=
+><pre><span class=3D"anchor" id=3D"line-1-8"></span>mokutil --import signin=
+g_key.x509</pre><span class=3D"anchor" id=3D"line-120"></span><p class=3D"l=
+ine874">Then create and sign the module: <span class=3D"anchor" id=3D"line-=
+121"></span><span class=3D"anchor" id=3D"line-122"></span></p><p class=3D"l=
+ine867"><span class=3D"anchor" id=3D"line-123"></span><span class=3D"anchor=
+" id=3D"line-124"></span><span class=3D"anchor" id=3D"line-125"></span><spa=
+n class=3D"anchor" id=3D"line-126"></span></p><pre><span class=3D"anchor"=
+ id=3D"line-1-9"></span># stap -m hello -vp4 -e 'probe begin { printf("hell=
+o\n"); exit() }'
+<span class=3D"anchor" id=3D"line-2-8"></span># /usr/src/kernels/`uname -r`=
+/scripts/sign-file sha512 signing_key.priv
+<span class=3D"anchor" id=3D"line-3-8"></span>signing_key.x509 hello.ko</pr=
+e><span class=3D"anchor" id=3D"line-127"></span><span class=3D"anchor" id=
+=3D"bottom"></span></div><p id=3D"pageinfo" class=3D"info" dir=3D"ltr" lang=
+=3D"en">None: SecureBoot  (last edited 2015-01-05 22:52:58 by <span title=
+=3D"DavidSmith @ nat-pool-hsv-t.redhat.com[66.187.233.204]"><a class=3D"non=
+existent" href=3D"https://sourceware.org/systemtap/wiki/DavidSmith" title=
+=3D"DavidSmith @ nat-pool-hsv-t.redhat.com[66.187.233.204]">DavidSmith</a><=
+/span>)</p>
+
+<div id=3D"pagebottom"></div>
+</div>
+
+
+<div id=3D"footer">
+<ul class=3D"editbar"><li><span class=3D"disabled">Immutable Page</span></l=
+i><li class=3D"toggleCommentsButton" style=3D"display:none;"><a href=3D"#"=
+ class=3D"nbcomment" onclick=3D"">Comments</a></li><li><a class=3D"nbinfo"=
+ href=3D"https://sourceware.org/systemtap/wiki/SecureBoot?action=3Dinfo" re=
+l=3D"nofollow">Info</a></li><li><a class=3D"nbattachments" href=3D"https://=
+sourceware.org/systemtap/wiki/SecureBoot?action=3DAttachFile" rel=3D"nofoll=
+ow">Attachments</a></li><li>
+<form class=3D"actionsmenu" method=3D"GET" action=3D"#">
+<div>
+   =20
+    <select name=3D"action" onchange=3D"">
+        <option selected=3D"selected" value=3D"show">More Actions:</option>=
+<option value=3D"raw">Raw Text</option>
+<option value=3D"print">Print View</option>
+<option value=3D"RenderAsDocbook">Render as Docbook</option>
+<option value=3D"refresh">Delete Cache</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">-----------=
+-------------</option>
+<option value=3D"SpellCheck">Check Spelling</option>
+<option value=3D"LikePages">Like Pages</option>
+<option value=3D"LocalSiteMap">Local Site Map</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">-----------=
+-------------</option>
+<option value=3D"RenamePage" disabled=3D"disabled" class=3D"disabled">Renam=
+e Page</option>
+<option value=3D"DeletePage" disabled=3D"disabled" class=3D"disabled">Delet=
+e Page</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">-----------=
+-------------</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">Subscribe=
+ User</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">-----------=
+-------------</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">Remove Spam=
+</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">Revert to=
+ this revision</option>
+<option value=3D"PackagePages">Package Pages</option>
+<option value=3D"show" disabled=3D"disabled" class=3D"disabled">-----------=
+-------------</option>
+<option value=3D"Load">Load</option>
+<option value=3D"Save">Save</option>
+<option value=3D"SlideShow">SlideShow</option>
+    </select>
+   =20
+   =20
+</div>
+<script type=3D"text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+</form>
+</li></ul>
+
+<ul id=3D"credits">
+<li><a href=3D"http://moinmo.in/" title=3D"This site uses the MoinMoin Wiki=
+ software.">MoinMoin Powered</a></li><li><a href=3D"http://moinmo.in/Python=
+" title=3D"MoinMoin is written in Python.">Python Powered</a></li><li><a hr=
+ef=3D"http://moinmo.in/GPL" title=3D"MoinMoin is GPL licensed.">GPL license=
+d</a></li><li><a href=3D"http://validator.w3.org/check?uri=3Dreferer" title=
+=3D"Click here to validate this page.">Valid HTML 4.01</a></li>
+</ul>
+
+
+</div>
+
+
+
+</body></html>
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/systemtaplogo.png
+
+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
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/SecureBoot.png
+
+iVBORw0KGgoAAAANSUhEUgAAAoYAAAHHCAIAAACtBA56AAAAiXpUWHRSYXcgcHJvZmlsZSB0eXBl
+IGV4aWYAAHjaVY7ZCcNADET/twqXoGt1lBMWG9JByreEnCx5H6NhEMOM8/O+xlEg0JBprqEKiYQE
+vdI4NAyABFg3tXkuYzra8WBqo+EGsh/lyb9MVtfLxEynLl2U7XQy8izNomqFmhG7xBW6hv/zZb8B
+veIGRfQsWUC7AUsAAAoGaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49
+Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/Pgo8eDp4bXBtZXRhIHhtbG5zOng9
+ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA0LjQuMC1FeGl2MiI+CiA8cmRmOlJE
+RiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMi
+PgogIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICB4bWxuczpleGlmPSJodHRwOi8v
+bnMuYWRvYmUuY29tL2V4aWYvMS4wLyIKICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5j
+b20vdGlmZi8xLjAvIgogICBleGlmOlBpeGVsWERpbWVuc2lvbj0iNjQ2IgogICBleGlmOlBpeGVs
+WURpbWVuc2lvbj0iNDU1IgogICB0aWZmOkltYWdlV2lkdGg9IjY0NiIKICAgdGlmZjpJbWFnZUhl
+aWdodD0iNDU1IgogICB0aWZmOk9yaWVudGF0aW9uPSIxIi8+CiA8L3JkZjpSREY+CjwveDp4bXBt
+ZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAog
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAg
+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
+RK5CYII=
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/SecureBoot-1.png
+
+iVBORw0KGgoAAAANSUhEUgAAAoMAAAHKCAIAAAD3s9bgAAAAiXpUWHRSYXcgcHJvZmlsZSB0eXBl
+IGV4aWYAAHjaVY7ZCcNADET/t4qUoGt1lGMWG9xByo+EnCx5H6NhEMOM831f41Ug0JBprqEKiYQE
+HWkcGgZAAqyb2jyXMR3teDC10XAD2Y/y5F8mq+tlYqZTly7KdjoZeZZmUbVCzYhd4gxdw//5On4D
+esUHSBwsgPsaQ8MAAAoGaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49
+Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/Pgo8eDp4bXBtZXRhIHhtbG5zOng9
+ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA0LjQuMC1FeGl2MiI+CiA8cmRmOlJE
+RiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMi
+PgogIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICB4bWxuczpleGlmPSJodHRwOi8v
+bnMuYWRvYmUuY29tL2V4aWYvMS4wLyIKICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5j
+b20vdGlmZi8xLjAvIgogICBleGlmOlBpeGVsWERpbWVuc2lvbj0iNjQzIgogICBleGlmOlBpeGVs
+WURpbWVuc2lvbj0iNDU4IgogICB0aWZmOkltYWdlV2lkdGg9IjY0MyIKICAgdGlmZjpJbWFnZUhl
+aWdodD0iNDU4IgogICB0aWZmOk9yaWVudGF0aW9uPSIxIi8+CiA8L3JkZjpSREY+CjwveDp4bXBt
+ZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAog
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAg
+Cjw/eHBhY2tldCBlbmQ9InciPz64yQJPAAAAA3NCSVQICAjb4U/gAAAIVUlEQVR42u3d65KaMACA
+0djxYfNIedz+oM3EQFAuAcRzpjNd2RWUWfczQTEEAAAAAAA42iOEZC8AwLFi/uqPnQEAJ1JiAFBi
+AFBiAECJAUCJAQAlBgAlBgD6eg7/Jaf3AIDOYmyXeOYnAICNZka8ZqcB4ExKDABKDABKDAAoMQAo
+MQCgxACgxACAEgOAEgMASgwAd/O0C2Cp8vyxMU6fTnb3s7jnrVRrbi1vrSH/WHmxugvVwvJidX+d
+rB6MieE0Mf7rUK5RXtJpc4uWz/e4rGlObL79VbNbdxxQYrhooe86DSDAoMQgxrtlFbgIx4lh58iN
+D8S+PeBaXeVqRTcgBmNi+JoMjzs6tHl8/HW8vHW8tsd4fWlWZRiUGL7Aulwd/wKoFZszoQ1KDHeO
+8VfcKTEGJQYAJQY+cL/ho2ExKDHIMHBP3sUEm4pbvhnpwwaXP18eVx5W1TqXZOtareWLxruT223d
+HU81YF+PEFLwfkEAOOS5e37Gm78yOw0AZ1JiAFBiAFBiAECJAUCJAQAlBgAlBgCUGACUGABQYgBQ
+YgBAiQFAiQEAJQYAJQYAlBgAlBgAUGIAUGIAQIkBQIkBACUGACUGAJQYAJQYAFBiAFBiAFBiAECJ
+AUCJAQAlBgAlBgCUGACUGABQYgBQYgBAiQFAiQEAJQYAJQYAlBgAlBgAUGIAUGIAQIkBQIkBACUG
+ACUGAJQYAJQYAFBiAFBiAFBiAECJAUCJAQAlBgAlBgCUGACUGABQYgBQYgBAiQFAiQEAJQYAJQYA
+lBgAlBgAUGIAUGIAQIkBQIkBACUGACUGAJQYAJQYAFBiAFBiAECJAUCJAUCJAQAlBgAlBgCUGACU
+GABQYgBQYgBAiQFAiQEAJQYAJQYAlBgAlBgAUGIAUGIAQIkBQIkBACUGACUGAJQYAJQYAFBiAFBi
+AECJAUCJAUCJAQAlBgAlBgCUGACUGABQYgBQYgBAiQFAiQEAJQYAJQYAlBgAlBgAUGIAUGIAQIkB
+QIkBACUGACUGAJQYAJQYAFBiAFBiAECJAUCJAQAlBgAlBgAlBgCUGACUGABQYgBQYgBAiQFAiQEA
+JQYAJQYAlBgAlBgAUGIAUGIAQIkBQIkBACUGACUGAJQYAJQYAFBiAFBiAECJAUCJAQAlBgAlBgAl
+BgCUGACUGABQYgBQYgBAiQFAiQGAXp52ASyVkn2wXoz2ASgxKIpnMHAZZqcBQIkBQIkBACUGACUG
+AJQYAJQYAFBiAFBiAECJAUCJAYD9OO809DKcZjmfnrq62Hu7vbd1zFbAmBjoG7MeH4pwWOyHDflc
+B1Bi4LSxvhjDdman4TTHzOseNisOKDF838iyamQ1uCxHnOuON09ed8f1A9uZnYarDIhzAod/YfOs
+byux+64fUGJgQe+BqzE7DdcyM9BMaXFZx1fZcSAr86DEYBT7ZlXDG6XKdconXI3Zaejb1GEMuv1l
+UOV6ACUGFsd4xcTy5EudV9+At+s/5RkGoMRwRIxbr5QOo7czDYEcnz3j8yS3+jq//nJ512cYQOUR
+QvKIgqWj1Rs/XvrdO39n8Hej+P2PxsSAWMIleO00qO/LRRkGJQYOJb2gxPA1zcrDyNeLfDr8ntqN
+8OscJwYAJQaAX2V2Gs6RihdKxW2HalNK0cFeMCYGlmY4xjgUNG04ieXMdVNKyekxQYmBVoZ3GRAD
+387sNJyvU4w1HpQYWDNcrlKax9D5u+M57WqcXX43L5xfz/jr1u0B9mV2Gq6V4fjfuJHj5eUUd5XJ
+cTVb61l6ewAlBoD7MDsNvB+pA0oMnMOxYejN7DQYdwJKDL83ysz13SvDvc/j4TwhoMRwwxiXr44u
+F47flfRJ1yffxfQ2n+V2J1+zvej2AEs9hg8mGx6qHmUw36yybbK0YlT9ut+MsPmp3/+qs9GYGAAu
+QYkBQIkB4Fd5PzF8Ls1eZN1uBGNiAECJAUCJAQAlBgAlBgCUGACUGABQYgC4K2f2gJV8QiCgxHAO
+H8IE7MjsNAAoMQAoMQCgxACgxACAEgOAEgMASgwASgwAKDEAKDEAoMQAoMQAgBIDgBIDAEoMAEoM
+ACgxACgxAKDEAKDEAIASA4ASAwBKDABKDAAoMQAoMQAoMQCgxACgxACAEgOAEgMASgwASgwAKDEA
+KDEAoMQAoMQAgBIDgBIDAEoMAEoMACgxACgxAKDEAKDEAIASA4ASAwBKDABKDAAoMQAoMQAoMQCg
+xACgxACAEgOAEgMASgwASgwAKDEAKDEAoMQAoMQAgBIDgBIDAEoMAEoMACgxACgxAKDEAKDEAIAS
+A4ASAwBKDABKDAAoMQAoMQCgxACgxACgxACAEgOAEgMASgwASgwAKDEAKDEAoMQAoMQAgBIDgBID
+AEoMAEoMACgxACgxAKDEAKDEAIASA4ASAwBKDABKDAAoMQAoMQCgxACgxACgxACAEgOAEgMASgwA
+SgwAKDEAKDEAoMQAoMQAgBIDgBIDAEoMAEoMACgxACgxAKDEAKDEAIASA4ASAwBKDABKDAAoMQAo
+MQCgxACgxACAEgOAEgOAEgMASgwASgwAKDEAKDEAoMQAoMQAgBIDgBIDAEoMAEoMACgxACgxAKDE
+AKDEAIASA4ASAwBKDABKDAAoMQAoMQCgxACgxACAEgOAEgOAEgMASgwASgwAKDEAKDEAoMQAoMQA
+gBIDgBIDAEoMAEoMACgxACgxAKDEAKDEAIASA4ASAwBKDABKDAAoMQAoMQCgxACgxACAEgOAEgOA
+EgMASgwASgwAKDEAKDEAoMQAoMQAQE/P8kJKdggAHOoRgvwCwMFi/srsNACcSYkBQIkBQIkBACUG
+ACUGAJQYAH7BX2PHoNGg/uw9AAAAAElFTkSuQmCC
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/SecureBoot-2.png
+
+iVBORw0KGgoAAAANSUhEUgAAAoUAAAHKCAIAAAD6raanAAAAiHpUWHRSYXcgcHJvZmlsZSB0eXBl
+IGV4aWYAAHjaVY7ZCcNADET/t4qUoPsoxyw2uIOUH4l1suR9jIZBDDPO932NV4NAQ9TD0gwKSUk6
+ygQsGAAJsG/p4rmM5WjHg2kZy3CQ/ShP/kXZwi4Xd1ObNqna6WRkba2iboWekbskFFYN/+fz+A1Y
+Kz5IbCyCw4nLRQAACgZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i
+77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+Cjx4OnhtcG1ldGEgeG1sbnM6eD0i
+YWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDQuNC4wLUV4aXYyIj4KIDxyZGY6UkRG
+IHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+
+CiAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9u
+cy5hZG9iZS5jb20vZXhpZi8xLjAvIgogICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNv
+bS90aWZmLzEuMC8iCiAgIGV4aWY6UGl4ZWxYRGltZW5zaW9uPSI2NDUiCiAgIGV4aWY6UGl4ZWxZ
+RGltZW5zaW9uPSI0NTgiCiAgIHRpZmY6SW1hZ2VXaWR0aD0iNjQ1IgogICB0aWZmOkltYWdlSGVp
+Z2h0PSI0NTgiCiAgIHRpZmY6T3JpZW50YXRpb249IjEiLz4KIDwvcmRmOlJERj4KPC94OnhtcG1l
+dGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAK
+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
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/SecureBoot-3.png
+
+iVBORw0KGgoAAAANSUhEUgAAAocAAAHLCAIAAAA1BKU/AAAAiXpUWHRSYXcgcHJvZmlsZSB0eXBl
+IGV4aWYAAHjaVY7dDcQwCIPfM8WNwF8gjNNGrdQNbvwD0WtUPxjLQp/cju91tk8KgZp0G+qqEBIX
+py3CgBIDIAHmDS/dlzESrboxVVAfBrIe5e7/6qxDTxMz7Tp1UtDpYOSeHqCkQs7wBQlkYfjdz/0Z
+UCt+SMwshZqHAHUAAAoGaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49
+Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/Pgo8eDp4bXBtZXRhIHhtbG5zOng9
+ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA0LjQuMC1FeGl2MiI+CiA8cmRmOlJE
+RiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMi
+PgogIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICB4bWxuczpleGlmPSJodHRwOi8v
+bnMuYWRvYmUuY29tL2V4aWYvMS4wLyIKICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5j
+b20vdGlmZi8xLjAvIgogICBleGlmOlBpeGVsWERpbWVuc2lvbj0iNjQ3IgogICBleGlmOlBpeGVs
+WURpbWVuc2lvbj0iNDU5IgogICB0aWZmOkltYWdlV2lkdGg9IjY0NyIKICAgdGlmZjpJbWFnZUhl
+aWdodD0iNDU5IgogICB0aWZmOk9yaWVudGF0aW9uPSIxIi8+CiA8L3JkZjpSREY+CjwveDp4bXBt
+ZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAog
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAg
+Cjw/eHBhY2tldCBlbmQ9InciPz7scQt+AAAAA3NCSVQICAjb4U/gAAAIG0lEQVR42u3dXXaiMACA
+UZ3DYrMkljsP7WRyQhJAfgxw71NLESmjfiaM9PUCAAAAAIAevf99MToWAHC6kH7zx/EAgE6oMgCo
+MgCgygCgygCAKgOAKgMAqgwA1zNk34+uJgIABwthWZXbawMAW7RHv2awAaAXqgwAqgwAqDIAqDIA
+oMoAoMoAgCoDgCoDAKoMAKoMAOxjcAh4juLlZ3e/6nu8l2zLteXtTaUrf7CFVXu4yy/e2GZjheyf
+xqX4MVaG+4uv9SEc+Lpf2/Lae5y+h9hrn4/43WeTHH86/b3ibeO/iz9ehyrDcyMNoMogzF0Yx61j
+0yUD5cZwOZ26WL4puCXnlXluiqYlyE641pa/Dj4Pmm68WKkd9yfbfnE7xXXad+E8MRgrwyfZS9uT
+ndesLT/6PGg6dqydAt9lf2q53fh77bU/YKwMj5AOf1fdqp/973BT/R83UGXoN8z3ngBYfqva9PjG
+Nz3pdoQZVBm8z1iaz/S2uxQ0+5j1tP1G1VDkvDKP5nOxO74hWHIwnTkGVYZrJ3ntJ5dWrd8I6sef
+mDr/hqDKcOEML3z1T9cvlixup3hdzOxWteVLetkejLb3Z/nbkdp2pssX7m22HQNlmPWOz9P06epp
+A7Sj7lUCdnoGBWNlQJKhR/4PNrCoxP/f2EsyqDLwLTIMpzGDDQCqDACoMgCoMgCgygCgygCAKgOA
+KgMAqgwAqgwAqDIAqDIAoMoAoMoAgCoDgCoDAKoMAKoMAKgyAKDKAKDKAIAqA4AqAwCqDACqDACo
+MgCoMgCgygCgygCAKgOAKgMAqgwAqgwAqDIAqDIAoMoAoMoAgCoDAKoMAKoMAKgyAKgyAKDKAKDK
+AIAqA4AqAwCqDACqDACoMgCoMgCgygCgygCAKgOAKgMAqgwAqgwAqDIAoMoAoMoAgCoDgCoDAKoM
+AKoMAKgyAKgyAKDKAKDKAIAqA4AqAwCqDACqDACoMgCoMgCgygCAKgOAKgMAqgwAqgwAqDIAqDIA
+oMoAoMoAgCoDgCoDAKoMAKoMAKgyAKgyAKDKAKDKAIAqA4AqAwCqDACoMgCoMgCgygCgygCAKgOA
+KgMAqgwAqgwAqDIAqDIAoMoAoMoAgCoDgCoDAKoMAKoMAKgyAKgyAKDKAIAqA4AqAwCqDACqDACo
+MgCoMgCgygCgygCAKgOAKgMAqgwAqgwAqDIAqDIAoMoAoMoAgCoDAKoMAKoMAKgyAKgyAKDKAKDK
+AIAqA4AqAwCqDACqDACoMgCoMgCgygCgygCAKgOAKgMAqgwAqgwAqDIAoMoAoMoAgCoDgCoDAKoM
+AKoMAKgyAKgyAKDKAKDKAIAqA4AqAwCqDAB3NzgEXMg4OgZsFYJjgCqDV1W8q4M5ZrABQJUBAFUG
+AFUGAFQZAFQZAFBlAFBlAECVAUCVAQBVBoB7cR1sbmh6uePOL50dd9glvsFYGe4mti2E3687/7ME
+YgyoMgCoMgBQ4rwyz5JOZafzxtkUd/xRcfnPwmyd4lR5tn7x/HFjdj27I8BYGW7l50xzVtAYv+xH
+teWzEc3Wj1837hrAWJmnjIxXZa+28l7tLA6yD71HQJWhi5FxrdPZauNYmNyuLU+3JpyAKsPnQ+fG
+CeC4WsxtbTnAEZxXhk2NP/ST0NlIHVBleERfi/GbjaJxM7Cvd3z9Sd/+e62h5+Hp7OOzfSY4Ll8y
+od1enm3k1fxkVHt/lL6fxw+c+zgMqoxXVTx+oMcqm8EGgF6oMgCoMgCgygCgygCAKgOAKgMAqgwA
+qgwAqDIAqDIAoMoAcC+DQ8Dl+JPDgCrD9/lrP8C9mcEGAFUGAFQZAFQZAFBlAFBlAECVAUCVAQBV
+husax74uWNbb/oAqAwCqDACqDACoMgCgygCgygCAKgOAKgMAcwaHADrhwh2AKsP3heAYAK+XGWwA
+UGUAQJUBQJUBAFUGAFUGAFQZAFQZAFBlAFBlAECVAUCVAQBVBgBVBgBUGQBUGQBQZQBQZQBAlQEA
+VQYAVQYAVBkAVBkAUGUAUGUAQJUBQJUBAFUGAFUGAFQZAFQZAFBlAFBlAECVAUCVAQBVBgBVBgBU
+GQBQZQBQZQBAlQFAlQEAVQYAVQYAVBkAVBkAUGUAUGUAQJUBQJUBAFUGAFUGAFQZAFQZAFBlAECV
+AUCVAQBVBgBVBgBUGQBUGQBQZQBQZQBAlQFAlQEAVQYAVQYAVBkAVBkAUGUAUGUAQJUBQJUBAFUG
+AFQZAFQZAFBlAFBlAECVAUCVAQBVBgBVBgBUGQBUGQBQZQBQZQBAlQFAlQEAVQYAVQYAVBkAVBkA
+UGUAQJUBQJUBAFUGAFUGAFQZAFQZAFBlAFBlAECVAUCVAQBVBgBVBgBUGQBUGQBQZQBQZQBAlQFA
+lQEAVQYAVBkAVBkAUGUAUGUAQJUBQJUBAFUGAFUGAFQZAFQZAFBlAFBlAECVAUCVAQBVBgBVBgBU
+GQBQZQBQZQBAlQFAlQEAVQYAVQYAVBkAVBkAUGUAUGUAQJUBQJUBAFUGAFUGAFQZAFQZAFBlAFBl
+AECVAQBVBgBVBgBUGQBUGQBQZQBQZQBAlQFAlQEAVQYAVQYAVBkAVBkAUGUAUGUAQJUBQJUBAFUG
+AFUGAFQZAFBlAFBlAECVAUCVAQBVBgBVBgBUGQBUGQBQZQBQZQBAlQFAlQEAVQYAVQYAVBkAVBkA
+UGUAQJUBQJUBAFUGAFUGAFqG4tJxdGQA4GzvGGLHAgBOF9JvzGADQC9UGQBUGQBQZQBQZQBAlQFA
+lQEAVQaA6/kLJ/xytdLaeD4AAAAASUVORK5CYII=
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/SecureBoot-4.png
+
+iVBORw0KGgoAAAANSUhEUgAAAoIAAAHJCAIAAACe5c9wAAAAiXpUWHRSYXcgcHJvZmlsZSB0eXBl
+IGV4aWYAAHjaVY7ZCcNADET/twqXoGt1lBMWG9JByreEnCx5H6NhEMOM8/O+xlEg0JBprqEKiYQE
+vdI4NAyABFg3tXkuYzra8WBqo+EGsh/lyb9MVtfLxEynLl2U7XQy8izNomqFmhG7xAm6hv/zFb8B
+veIGRXQsV7HohP8AAAoGaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49
+Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/Pgo8eDp4bXBtZXRhIHhtbG5zOng9
+ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA0LjQuMC1FeGl2MiI+CiA8cmRmOlJE
+RiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMi
+PgogIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICB4bWxuczpleGlmPSJodHRwOi8v
+bnMuYWRvYmUuY29tL2V4aWYvMS4wLyIKICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5j
+b20vdGlmZi8xLjAvIgogICBleGlmOlBpeGVsWERpbWVuc2lvbj0iNjQyIgogICBleGlmOlBpeGVs
+WURpbWVuc2lvbj0iNDU3IgogICB0aWZmOkltYWdlV2lkdGg9IjY0MiIKICAgdGlmZjpJbWFnZUhl
+aWdodD0iNDU3IgogICB0aWZmOk9yaWVudGF0aW9uPSIxIi8+CiA8L3JkZjpSREY+CjwveDp4bXBt
+ZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAog
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAg
+Cjw/eHBhY2tldCBlbmQ9InciPz597sjwAAAAA3NCSVQICAjb4U/gAAAH5UlEQVR42u3dQXKbMABA
+UaXjw+pIOm4XTCnBGAQWSIL3pos6YUCBDD/CgYQAAAAAT/MTQrIXAOByMYTwx24AgFpkGABkGABk
+GACQYQCQYQBAhgFAhgGAYl7j/5LHeADAyWL8kOHFTwMARSxOd12UBoBqZBgAZBgAZBgAkGEAkGEA
+QIYBQIYBABkGABkGAGQYAPrzsgv4xvsjUofHko8fb+0p5Sn18eD0RsZZ6zgW3+7e/dnsNzBmw5Cl
+zZNXL39GrJ1x1jqOZbd7YH+qLzJMf8V15gKQYWrOWpQYYBfvDXOu9/fYZlcIN8u9uPzwwdk6Z29L
+vy//vvDm8jHOl9/8Mt8HszLm/HGubHfcaOb6F/fbqcdx7zgPbLfIcV/8FJgNc4cZ83BqG0+Fw7/N
+U16p5ceXs//nr3/vqbnsODf37Ww9e/dbzkH8Zv2Hx5m5fMHjnv+jCZgN002Da63t+62Xre81e+lp
+3xXFL95oMDLMzeW3ariMOV1+/RS5d/n18Qxrm15KzRltzvLHxln2EFz/M8rZ6+lluyDD9DQZmr1p
+t9mPvcvXmv0cGOddJ7X3uC0KjvHeMDz0aoS5IMgwerD9q0y7apG5/KfF9m7uvC/87PEUfz5GkXGe
+vf+rH3d49xNCmv6A7CoNx6ZWs5P77D6TzRuKMtcfPt9wkrn+vTf2TN/rXRnqyvLr9zLlj3Nz05n7
+eXbvUKn9n3lD18pXmrn+Y+M5fOOTsyLFz5aT76gow9z1mxugjwy7KI0GA1TjN6XpOL3/f6TUYECG
+4TK6C9yDi9IAIMMAIMMAgAwDgAwDADIMADIMAMgwAMgwACDDACDDAIAMA4AMAwAyDAAyDADIMADI
+MADIMAAgwwAgwwCADAOADAMAMgwAMgwAyDAAyDAAIMMAIMMAgAwDgAwDADIMADIMAMgwAMgwAMgw
+ACDDACDDAIAMA4AMAwAyDAAyDADIMADIMAAgwwAgwwCADAOADAMAMgwAMgwAMgwAyDAAyDAAIMMA
+IMMAgAwDgAwDADIMADIMAMgwAMgwACDDACDDAIAMA4AMAwAyDAAyDAAyDADIMADIMAAgwwAgwwCA
+DAOADAMAMgwAMgwAyDAAyDAAIMMAIMMAgAwDgAwDgAwDADIMADIMAMgwAMgwACDDACDDAIAMA4AM
+AwAyDAAyDADIMADIMAAgwwAgwwCADAOADAOADAMAMgwAMgwAyDAAyDAAIMMAIMMAgAwDgAwDADIM
+ADIMAMgwAMgwACDDACDDACDDdgEAyDAAyDAAIMMAIMMAgAwDgAwDADIMADIMAMgwAMgwACDDACDD
+AIAMA4AMAwAyDAAyDAAyDADIMADIMAAgwwAgwwCADAOADAMAMgwAMgwAyDAAyDAAIMMAIMMAgAwD
+gAwDADIMADIMADIMAMgwAMgwACDDACDDAIAMA4AMAwAyDAAyDADIMADIMAAgwwAgwwCADANAA152
+ATQopZpbj9ERABmGx7s+h3XzDw/kojQAyDAAyDAAIMMAIMMAgAwDgAwDADIMAP3z+A5oyvjAjvT7
+5WXS0jAAs2EAkGEAoBQXpaFv6fdjoGOM0w9OX0Z/sQHMhoHiDY7/KC7IMNBoqu0KkGEAQIbBVBiQ
+YeBsGgwyDFSeEAMyDNSZCisxyDAAIMNgQgzIMADgYZbQ90w3pTSd6Zr7ggwDl5Z484PuWYJmuSgN
+ADIMADIMAFzGe8PQlLT6stYwALNhAJBhAECGAUCGAQAZBgAZBgBkGABkGAD4xOM7oF3+ThLIMFCB
+P4kED+GiNADIMADIMAAgwwAgwwCADAOADAMAMgwAMgwAyDAAyDAAIMMAIMMAgAwDgAwDADIMADIM
+ADIMAMgwAMgwACDDACDDAIAMA4AMAwAyDAAyDADIMADIMAAgwwAgwwCADAOADAMAMgwAMgwAMgwA
+yDAAyDAAIMMAIMMAgAwDgAwDADIMADIMAMgwAMgwACDDACDDAIAMA4AMA4AMAwAyDAAyDADIMADI
+MAAgwwAgwwCADAOADAMAMgwAMgwAyDAAyDAAIMMAIMMAgAwDgAwDgAwDADIMADIMAMgwAMgwACDD
+ACDDAIAMA4AMAwAyDAAyDADIMADIMAAgwwAgwwAgwwCADAOADAMAMgwAMgwAyDAAyDAAIMMAIMMA
+gAwDgAwDADIMADIMAMgwAMgwACDDACDDACDDAIAMA4AMAwAyDAAyDADIMADIMAAgwwAgwwCADAOA
+DAMAMgwAMgwAyDAAyDAAyLBdAAAyDAAyDADIMADIMAAgwwAgwwCADAOADAMAMgwAMgwAyDAAyDAA
+IMMAIMMAgAwDgAwDgAwDADIMADIMAMgwAMgwACDDACDDAIAMA4AMAwAyDAAyDADIMADIMAAgwwAg
+wwCADAOADAOADAMAMgwAMgwAyDAAyDAAIMMAIMMAgAwDgAwDADIMADIMAMgwAMgwACDDACDDACDD
+AIAMA4AMAwAyDAAyDADIMADIMAAgwwAgwwCADAOADAMAMgwAMgwAyDAAyDAAIMMAIMMAIMMAgAwD
+gAwDADIMADIMAMgwAMgwACDDACDDAIAMA4AMAwAyDAAyDADIMADIMADIMAAgwwAgwwCADAOADAMA
+MgwAMgwAyDAAyDAAIMMAIMMAgAwDgAwDAItes9cp2ScAcJGfEIQXAK4Xg4vSAFCRDAOADAOADAMA
+MgwAMgwAyDAA3M9fQWaZSHZ3R0AAAAAASUVORK5CYII=
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-1B1CF9AF:file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/common.css
+
+/* Effective stylesheet produced by snapshot save */
+html { background-color: white; color: black; font-family: Arial,Lucida Gra=
+nde,sans-serif; font-size: 1em; }
+body { margin: 0px; }
+a { color: rgb(0, 68, 179); }
+a:visited { color: rgb(89, 123, 179); }
+a.nonexistent:visited, a.badinterwiki:visited, a.nonexistent, a.badinterwik=
+i { color: gray; }
+a.www::before { content: url("file:///home/andy/SecureBoot%20-%20Systemtap%=
+20Wiki_files/moin-www.png"); margin: 0px 0.2em; }
+a.http::before { content: url("file:///home/andy/SecureBoot%20-%20Systemtap=
+%20Wiki_files/moin-www.png"); margin: 0px 0.2em; }
+a.https::before { content: url("file:///home/andy/SecureBoot%20-%20Systemta=
+p%20Wiki_files/moin-www.png"); margin: 0px 0.2em; }
+a.file::before { content: url("urn:not-loaded:https://sourceware.org/moin_s=
+tatic197/modern/img/moin-ftp.png"); margin: 0px 0.2em; }
+a.ftp::before { content: url("urn:not-loaded:https://sourceware.org/moin_st=
+atic197/modern/img/moin-ftp.png"); margin: 0px 0.2em; }
+a.nntp::before { content: url("urn:not-loaded:https://sourceware.org/moin_s=
+tatic197/modern/img/moin-news.png"); margin: 0px 0.2em; }
+a.news::before { content: url("urn:not-loaded:https://sourceware.org/moin_s=
+tatic197/modern/img/moin-news.png"); margin: 0px 0.2em; }
+a.telnet::before, a.ssh::before { content: url("urn:not-loaded:https://sour=
+ceware.org/moin_static197/modern/img/moin-telnet.png"); margin: 0px 0.2em; }
+a.irc::before, a.ircs::before { content: url("urn:not-loaded:https://source=
+ware.org/moin_static197/modern/img/moin-telnet.png"); margin: 0px 0.2em; }
+a.mailto::before { content: url("urn:not-loaded:https://sourceware.org/moin=
+_static197/modern/img/moin-email.png"); margin: 0px 0.2em; }
+a.attachment::before { content: url("urn:not-loaded:https://sourceware.org/=
+moin_static197/modern/img/moin-attach.png"); margin: 0px 0.2em; }
+a.badinterwiki::before { content: url("urn:not-loaded:https://sourceware.or=
+g/moin_static197/modern/img/moin-inter.png"); margin: 0px 0.2em; }
+a.interwiki::before { content: url("urn:not-loaded:https://sourceware.org/m=
+oin_static197/modern/img/moin-inter.png"); margin: 0px 0.2em; }
+a, img, img.drawing { border: 0px none; }
+pre { border: 1pt solid rgb(174, 189, 204); background-color: rgb(243, 245,=
+ 247); padding: 5pt; font-family: courier,monospace; white-space: pre-wrap;=
+ word-wrap: break-word; }
+pre.comment::before { content: url("urn:not-loaded:https://sourceware.org/m=
+oin_static197/modern/img/attention.png"); }
+.info { float: right; font-size: 0.7em; color: gray; }
+#pageinfo { margin-top: 2em; }
+#pagebottom { clear: both; }
+hr { height: 1pt; background-color: rgb(156, 156, 156); border: 0px none;=
+ }
+.advancedsearch optioni, select { border: 1px solid rgb(173, 185, 204); bac=
+kground-color: rgb(255, 255, 255); }
+#message .info::before { content: url("urn:not-loaded:https://sourceware.or=
+g/moin_static197/modern/img/icon-info.png"); margin: 0px 0.5em 0px 0.25em;=
+ vertical-align: middle; }
+#message .warning::before { content: url("urn:not-loaded:https://sourceware=
+.org/moin_static197/modern/img/alert.png"); margin: 0px 0.5em 0px 0.125em;=
+ vertical-align: middle; }
+#message .error::before { content: url("urn:not-loaded:https://sourceware.o=
+rg/moin_static197/modern/img/icon-error.png"); margin: 0px 0.5em 0px 0.125e=
+m; vertical-align: middle; }
+
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/moin-www.png
+
+iVBORw0KGgoAAAANSUhEUgAAAAsAAAALAgMAAADUwp+1AAAACVBMVEUA/wC/v78AAP+0MGACAAAA
+AnRSTlP/AOW3MEoAAAABYktHRAJmC3xkAAAALUlEQVR42mMIZQgBwikMEUxLGLIUVjBkaS1gyGKA
+4CigWFjXFIbQVSEMoaEhAPFLC8/vqdQnAAAAAElFTkSuQmCC
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-4257F93F:file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/screen.css
+
+/* Effective stylesheet produced by snapshot save */
+body { padding: 0px; border: 0px none; }
+a:link { text-decoration: none; }
+a:link:hover, a:link:active { text-decoration: underline; color: green; }
+a:visited { text-decoration: none; color: blue; }
+a:visited:hover { text-decoration: none; color: red; }
+input {  }
+.disabled { color: gray; }
+#header { margin: 1px; padding: 1px; background: rgb(231, 231, 231) none re=
+peat scroll 0% 0%; line-height: 1.1em; }
+#logo { float: left; margin: 5px 10px; padding: 0px; font-size: 1.4em; line=
+-height: 1em; font-weight: bold; }
+#logo img { vertical-align: middle; }
+#logo a { color: black; text-decoration: none; }
+#username { display: inline; margin: 5px 12px; padding: 0px; text-align: ri=
+ght; font-size: 0.82em; white-space: nowrap; }
+#username li { display: inline; padding: 0px 0.5em 0px 0px; }
+#searchform { float: right; margin: 5px 10px; padding: 0px; white-space: no=
+wrap; font-size: 0.82em; }
+#interwiki { margin: 5px 12px; display: inline; font-size: 1em; }
+#interwiki span::after { content: ":"; }
+#locationline { clear: right; padding: 0px; }
+#pagelocation { display: inline; margin: 5px 12px; padding: 0px; font-size:=
+ 1.5em; }
+#pagetrail li, #pagelocation li { display: inline; margin: 0px; }
+#pagetrail li::after { content: " =C2=BB "; }
+[dir=3D"rtl"] #pagetrail li::after { content: " =C2=AB "; }
+#pagetrail li:last-child::after { content: ""; }
+#pagelocation li::after { content: "/ "; }
+[dir=3D"rtl"] #pagelocation li::after { content: " \\ "; }
+#pagelocation li:last-child::after { content: ""; }
+#navibar { clear: both; display: block; margin: 0px; padding: 0px 10px; fon=
+t-size: 0.82em; }
+#navibar li { float: left; display: inline; margin: 0px 2px; padding: 2px=
+ 5px; border-width: 1px 1px medium; border-style: solid solid none; border-=
+color: rgb(156, 156, 156) rgb(156, 156, 156) -moz-use-text-color; -moz-bord=
+er-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-col=
+ors: none; -moz-border-left-colors: none; border-image: none; white-space:=
+ nowrap; }
+#navibar li.wikilink { background: white none repeat scroll 0% 0%; }
+#navibar a, #navibar a:visited { color: black; text-decoration: none; }
+#navibar li.current a { font-weight: bold; }
+#navibar li:hover { background: rgb(204, 204, 204) none repeat scroll 0% 0%=
+; }
+#navibar li.current, #navibar li.current:hover { background: rgb(129, 187,=
+ 242) none repeat scroll 0% 0%; }
+#pageline { clear: both; margin: 0px; padding: 0px; width: 100%; height: 4p=
+x; line-height: 4px; border-bottom: 1px solid rgb(156, 156, 156); backgroun=
+d: rgb(129, 187, 242) none repeat scroll 0% 0%; }
+.editbar { clear: both; display: block; margin: 0px; padding: 0px 8px; whit=
+e-space: nowrap; background: white none repeat scroll 0% 0%; font-size: 0.8=
+em; }
+.editbar form, .editbar form div { display: inline; margin: 0px; }
+.editbar li { display: inline; padding: 0px; margin: 4px 6px; }
+#header .editbar { border-bottom: 1px dotted rgb(156, 156, 156); }
+#footer .editbar { border-top: 1px dotted rgb(156, 156, 156); border-bottom=
+: 1px solid rgb(156, 156, 156); }
+.editbar a, .editbar a:visited { color: rgb(0, 68, 179); }
+#page { background-color: white; margin: 0px; padding: 2px 20px 20px; }
+#footer { clear: both; margin: 0px; padding: 0px; }
+#credits, #version, #timings { margin: 5px 10px; padding: 0px; text-align:=
+ center; font-size: 0.88em; color: rgb(108, 118, 128); }
+#credits li, #timings li { display: inline; padding: 0px 2px; margin: 0px=
+ 4px; }
+
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-3C802241:file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/print.css
+
+/* Effective stylesheet produced by snapshot save */
+html { font-family: Times,serif; font-size: 12pt; }
+body { margin: 1.5cm; }
+a, a:visited, a.nonexistent, a.badinterwiki { color: black; text-decoration=
+: none; }
+a:hover { text-decoration: underline; }
+.info a { color: gray; }
+pre { font-size: 10pt; }
+a.interwiki::before, a.badinterwiki::before { content: attr(title) ":"; }
+#header, #sidebar, #footer, #timings, #credits, #interwiki, #pagelocation=
+ { display: none; }
+
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-E7A5C27E:file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/projection.css
+
+/* Effective stylesheet produced by snapshot save */
+@import url("urn:snapshot-6821D3D2:file:///home/andy/SecureBoot%20-%20Syste=
+mtap%20Wiki_files/screen-1.css");
+html { line-height: 1.8em; }
+body, b, em, a, span, div, p, td { font-size: 18pt; }
+h1 { font-size: 26pt; }
+h2 { font-size: 22pt; }
+tt, pre { font-size: 16pt; }
+#interwiki, #pagelocation, #pageinfo { display: none; }
+
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-6821D3D2:file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/screen-1.css
+
+/* Effective stylesheet produced by snapshot save */
+body { padding: 0px; border: 0px none; }
+a:link { text-decoration: none; }
+a:link:hover, a:link:active { text-decoration: underline; color: green; }
+a:visited { text-decoration: none; color: blue; }
+a:visited:hover { text-decoration: none; color: red; }
+input {  }
+.disabled { color: gray; }
+#header { margin: 1px; padding: 1px; background: rgb(231, 231, 231) none re=
+peat scroll 0% 0%; line-height: 1.1em; }
+#logo { float: left; margin: 5px 10px; padding: 0px; font-size: 1.4em; line=
+-height: 1em; font-weight: bold; }
+#logo img { vertical-align: middle; }
+#logo a { color: black; text-decoration: none; }
+#username { display: inline; margin: 5px 12px; padding: 0px; text-align: ri=
+ght; font-size: 0.82em; white-space: nowrap; }
+#username li { display: inline; padding: 0px 0.5em 0px 0px; }
+#searchform { float: right; margin: 5px 10px; padding: 0px; white-space: no=
+wrap; font-size: 0.82em; }
+#interwiki { margin: 5px 12px; display: inline; font-size: 1em; }
+#interwiki span::after { content: ":"; }
+#locationline { clear: right; padding: 0px; }
+#pagelocation { display: inline; margin: 5px 12px; padding: 0px; font-size:=
+ 1.5em; }
+#pagetrail li, #pagelocation li { display: inline; margin: 0px; }
+#pagetrail li::after { content: " =C2=BB "; }
+[dir=3D"rtl"] #pagetrail li::after { content: " =C2=AB "; }
+#pagetrail li:last-child::after { content: ""; }
+#pagelocation li::after { content: "/ "; }
+[dir=3D"rtl"] #pagelocation li::after { content: " \\ "; }
+#pagelocation li:last-child::after { content: ""; }
+#navibar { clear: both; display: block; margin: 0px; padding: 0px 10px; fon=
+t-size: 0.82em; }
+#navibar li { float: left; display: inline; margin: 0px 2px; padding: 2px=
+ 5px; border-width: 1px 1px medium; border-style: solid solid none; border-=
+color: rgb(156, 156, 156) rgb(156, 156, 156) -moz-use-text-color; -moz-bord=
+er-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-col=
+ors: none; -moz-border-left-colors: none; border-image: none; white-space:=
+ nowrap; }
+#navibar li.wikilink { background: white none repeat scroll 0% 0%; }
+#navibar a, #navibar a:visited { color: black; text-decoration: none; }
+#navibar li.current a { font-weight: bold; }
+#navibar li:hover { background: rgb(204, 204, 204) none repeat scroll 0% 0%=
+; }
+#navibar li.current, #navibar li.current:hover { background: rgb(129, 187,=
+ 242) none repeat scroll 0% 0%; }
+#pageline { clear: both; margin: 0px; padding: 0px; width: 100%; height: 4p=
+x; line-height: 4px; border-bottom: 1px solid rgb(156, 156, 156); backgroun=
+d: rgb(129, 187, 242) none repeat scroll 0% 0%; }
+.editbar { clear: both; display: block; margin: 0px; padding: 0px 8px; whit=
+e-space: nowrap; background: white none repeat scroll 0% 0%; font-size: 0.8=
+em; }
+.editbar form, .editbar form div { display: inline; margin: 0px; }
+.editbar li { display: inline; padding: 0px; margin: 4px 6px; }
+#header .editbar { border-bottom: 1px dotted rgb(156, 156, 156); }
+#footer .editbar { border-top: 1px dotted rgb(156, 156, 156); border-bottom=
+: 1px solid rgb(156, 156, 156); }
+.editbar a, .editbar a:visited { color: rgb(0, 68, 179); }
+#page { background-color: white; margin: 0px; padding: 2px 20px 20px; }
+#footer { clear: both; margin: 0px; padding: 0px; }
+#credits, #version, #timings { margin: 5px 10px; padding: 0px; text-align:=
+ center; font-size: 0.88em; color: rgb(108, 118, 128); }
+#credits li, #timings li { display: inline; padding: 0px 2px; margin: 0px=
+ 4px; }
+
+------=_NextPart_000_0000_336892C6.A57886FD
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-17CA30D7:file:///home/andy/SecureBoot%20-%20Systemtap%20Wiki_files/common.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_336892C6.A57886FD--

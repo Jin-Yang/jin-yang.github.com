@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>HPACK 介绍|JinYang's Blog</title>
+  <meta name="keywords" content="hpack,http2">
+  <meta name="description" content="Google 直接在 HTTP1.X 的基础上设计了 SPDY 协议，对头部使用 deflate 算法进行压缩，一并解决了多路复用和优先级等问题。而 HTTP2 的实现就是参考了 SPDY 协议，但是专门为头部压缩设计了一套压缩算法，就是这里的 HPACK 。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>HPACK 介绍</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2018-11-16 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Google 直接在 HTTP1.X 的基础上设计了 SPDY 协议，对头部使用 deflate 算法进行压缩，一并解决了多路复用和优先级等问题。而 HTTP2 的实现就是参考了 SPDY 协议，但是专门为头部压缩设计了一套压缩算法，就是这里的 HPACK 。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>目前分别对应两个协议为 <a href="https://www.rfc-editor.org/rfc/rfc7540.txt">HTTP2 RFC7540</a> 以及 <a href="https://www.rfc-editor.org/rfc/rfc7541.txt">HPACK RFC7541</a>，其中 HPACK 主要是为了解决 HTTP1.X 中被诟病的无意义且重复的头部。</p>
+
+<h2 id="详解">详解</h2>
+
+<p>简单的说，HPACK 使用 2 个索引表(静态、动态索引表)来把头部映射到索引值，并对不存在的头部使用 huffman 编码，并动态缓存到索引，从而达到压缩头部的效果。</p>
+
+<p>头部的内容包括了 <code>Header Name</code> 和 <code>Header Value</code> 两部分，不同的类型包含了不同的内容。</p>
+
+<h3 id="静态索引表">静态索引表</h3>
+
+<p>预先定义好的内容，只有固定的几十个值，如果要发送的值符合静态表时，用对应的 Index 替换即可，这样就大大压缩了头部的大小，如果遇到不在静态表中的值，就会用到动态表。</p>
+
+<p>详细可以参考协议中的 <code>Static Table Definition</code> 部分的介绍，如下是部分示例。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">+-------+-----------------------------+---------------+
+| Index | Header Name                 | Header Value  |
++-------+-----------------------------+---------------+
+| 1     | :authority                  |               |
+| 2     | :method                     | GET           |
+| 3     | :method                     | POST          |
+| 4     | :path                       | /             |
+| 5     | :path                       | /index.html   |
+| 6     | :scheme                     | http          |
+| 7     | :scheme                     | https         |
+| 8     | :status                     | 200           |
+| 9     | :status                     | 204           |
+| 10    | :status                     | 206           |
+| 11    | :status                     | 304           |
+| 12    | :status                     | 400           |
+| 13    | :status                     | 404           |
+| 14    | :status                     | 500           |
+| 15    | accept-charset              |               |
+| 16    | accept-encoding             | gzip, deflate |
+| 17    | accept-language             |               |
+| 18    | accept-ranges               |               |
+| 19    | accept                      |               |
+| 20    | access-control-allow-origin |               |
+| 21    | age                         |               |
+| 22    | allow                       |               |
+| 23    | authorization               |               |
+| 24    | cache-control               |               |
+| 25    | content-disposition         |               |
+
+                     ... ...
+
+| 60    | via                         |               |
+| 61    | www-authenticate            |               |
++-------+-----------------------------+---------------+</code></pre></figure>
+
+<h3 id="动态索引">动态索引</h3>
+
+<p>动态表是一个由先进先出的队列维护的有空间限制的表，同样维护的是头部与对应的索引。每个动态表只针对一个连接，每个连接的压缩解压缩的上下文有且仅有一个动态表。</p>
+
+<p>那么动态表就是，当一个头部没有出现过的时候，会把他插入动态表中，下次同名的值就可能会在表中查到到索引并替换掉头部。</p>
+
+<!--
+动态表的大小 = (每个 Header 的字节数的和+32) * 键值对个数
+
+为什么要加32呢，32是为了头所占用的额外空间和计算头被引用次数而估计的值。
+而动态表的最大字节数由 HTTP/2 的 SETTING 帧中的 SETTINGS_HEADER_TABLE_SIZE 来控制。
+同时压缩时，可以插入一个字节来动态的修改动态表的大小，但是不可以超过上面预设的值。这个下面会介绍。
+那么动态表是如何管理大小呢，2种情况下，动态表会被修改：
+
+压缩方用上述方式要求动态修改动态表的大小。在这种情况下，如果新的值更小，并且当前大小超过了新值，就会从旧至新，不断的删除头，直到小于等于新的大小。
+收到或发出一个新的头部，会触发插入和可能的删除操作。 RFC 里面说的比较复杂，我用等价的语义解释一下。新的值被插到队首，一样从旧到新删除直到空间占用小于等于最大值。那么在这种情况下，如果新来的头比最大值还要大，就等于变相的清除了动态表。
+
+动态索引表中最新的值是索引值最小的，最旧的值是索引值最大的。
+动态表与静态表共同组成了索引表的索引空间。
+-->
+
+<h2 id="数据格式">数据格式</h2>
+
+<p>基本的数据类型包括了两种：无符号整形(用来标示索引、字符串长度)、字符串长度。</p>
+
+<h3 id="数字表示">数字表示</h3>
+
+<p>编码时通过前面的几位 <code>prefix</code> 标示不同类型的报文，所以对于数值来说有如下的解析方法：</p>
+
+<ul>
+  <li>剩余字节足够表示数值，那么直接使用。</li>
+  <li>如果不足，则依次增加 8bit ，其中第一位标示是否结束。</li>
+</ul>
+
+<p>示例如下。</p>
+
+<h5 id="用-5-位前缀表示-10">用 5 位前缀表示 10</h5>
+
+<p>这里限制位数为 5，由于 10 小于 <code>2^5-1</code> 可以直接表示为 <code>01010</code> ，那么结果为：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0   1   2   3   4   5   6   7
++---+---+---+---+---+---+---+---+
+| X | X | X | 0 | 1 | 0 | 1 | 0 |   10 stored on 5 bits
++---+---+---+---+---+---+---+---</code></pre></figure>
+
+<h5 id="用-5-位前缀表示-1337">用 5 位前缀表示 1337</h5>
+
+<p>因为 <code>1337&gt;2^5-1</code> 那么前 5 位只能表示到 31 ，剩余 <code>1337-31 = 13061</code>；接下来 <code>1306&gt;2^7 =128</code>，因为八位字节第一位是标志位，所以表示范围只有 <code>2^7-1</code> 。</p>
+
+<!--
+I % 128 == 26，26用7位2进制表示是0011010，由于I >128 还需要继续延续，所以标志位取1，得到第二行应该是10011010
+I / 128 = 10,10用7位2进制表示是0001010,标志位取0即可所以最终结果如下：
+-->
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"> 0   1   2   3   4   5   6   7
++---+---+---+---+---+---+---+---+
+| X | X | X | 1 | 1 | 1 | 1 | 1 |  Prefix = 31, I = 1306
+| 1 | 0 | 0 | 1 | 1 | 0 | 1 | 0 |  1306&gt;=128, encode(154), I=1306/128
+| 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 |  10&lt;128, encode(10), done
++---+---+---+---+---+---+---+---+</code></pre></figure>
+
+<h3 id="字符串编码">字符串编码</h3>
+
+<p>有了无符号整数编码的基础，接着可以对字符串进行编码，如下所示:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  0   1   2   3   4   5   6   7
++---+---+---+---+---+---+---+---+
+| H |    String Length (7+)     |
++---+---------------------------+
+|  String Data (Length octets)  |
++-------------------------------+</code></pre></figure>
+
+<!--
+H : 表示是否是 huffman 编码，1 是 0 不是
+StringLength : 表示随后跟随的字符串的长度，用上述的整数编码方式编码
+StringData: 如果是 huffman 编码，则使用 huffman 编码后的字符串，否则就是原始串。
+静态HUFFMAN编码
+先简单介绍一下 huffman 编码，huffman 编码是一个根据字符出现的概率重新编排字符的二进制代码，从而压缩概率高的字符串，进而压缩整个串的长度。如果不了解的话，建议先去学习一下，这里不再赘述。
+这里的 huffman 编码是静态的，是根据过去大量的 Http 头的数据从而选出的编码方案。整个静态表在这里  http://httpwg.org/specs/rfc7541.html#huffman.code
+-->
+
+<!--
+https://segmentfault.com/a/1190000017011816
+-->
+
+<h2 id="索引表使用">索引表使用</h2>
+
+<p>静态索引表和动态索引表是联合使用的，某些场景下，动态索引表可以转换成类似静态索引表的场景，如下会有详细的介绍。</p>
+
+<p>关于静态索引表可以在规范中直接搜索 <code>Static Table Definition</code> 即可，在处理索引表时，包括了三种场景类型：A) name 和 value 都确定，例如 <code>:method: GET</code>、<code>:status:200</code> ；B) 只有 Name 确定，例如 <code>:authority</code>、<code>cookie</code> 等；C) Name 和 Value 都不在静态索引中。</p>
+
+<p>动态索引表最初是一个空表，当每次解压头部的时候，就可能会添加新的条目，而且允许有完全相同的 Name-Value 对，在添加完动态索引表之后，那么下次的请求就可以直接引用了，从而后续的压缩会更高。</p>
+
+<p>需要更新动态索引表的包括了上述的后面两种场景。注意，为了防止解压时内存占用过大，动态索引表的大小是有限制的。</p>
+
+<h4 id="场景-a">场景 A</h4>
+
+<p>预定义字段中有 Name 以及 Value 的值，那么二进制数据格式如下所示，第一位固定为 1 后面 7 位为映射的索引值。</p>
+
+<p>可以在静态索引表和动态索引表。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">     0   1   2   3   4   5   6   7
+   +---+---+---+---+---+---+---+---+
+   | 1 |        Index (7+)         |
+   +---+---------------------------+</code></pre></figure>
+
+<p>注意，索引表是从 1 开始编码的，如果出现 0 那么则认为是错误的。</p>
+
+<h4 id="场景-b">场景 B</h4>
+
+<p>也就是在静态索引表中有 Name 但是没有 Value 的值，报文的格式如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"> 0   1   2   3   4   5   6   7
++---+---+---+---+---+---+---+---+
+| 0 | 1 |      Index (6+)       |
++---+---+-----------------------+
+| H |     Value Length (7+)     |
++---+---------------------------+
+| Value String (Length octets)  |
++-------------------------------+</code></pre></figure>
+
+<p>此时，前两位固定为 <code>01</code>，后 6 位表示索引值，取到对应的 Name ，例如 <code>01010000</code> 对应的索引为 32 对应了静态表中的 Name 是 cookie ，接下来就是使用字符串表示法表示对应的 Value 字段，解码之后，这个字段就被加到动态表中，下次编码的时候会直接使用情况类似静态索引的方法。</p>
+
+<p>另外有一种类似的场景，就是 Name 在索引空间，但是 Value 不在且不需要更新动态表，此时前四位固定为 0000，其它情况与上述一致。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0   1   2   3   4   5   6   7
++---+---+---+---+---+---+---+---+
+| 0 | 0 | 0 | 0 |  Index (4+)   |
++---+---+-----------------------+
+| H |     Value Length (7+)     |
++---+---------------------------+
+| Value String (Length octets)  |
++-------------------------------+</code></pre></figure>
+
+<p>还有一种，是严格不需要更新的报文，其前四位是 <code>0001</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0   1   2   3   4   5   6   7
++---+---+---+---+---+---+---+---+
+| 0 | 0 | 0 | 1 |  Index (4+)   |
++---+---+-----------------------+
+| H |     Value Length (7+)     |
++---+---------------------------+
+| Value String (Length octets)  |
++-------------------------------+</code></pre></figure>
+
+<h3 id="场景-c">场景 C</h3>
+
+<p>Name 和 Value 都不在索引空间，且需要更新动态表。这与场景 B 类似，只需要将 Name 的字符串表示补充上即可，并且把 Index 值设置为 0 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"> 0   1   2   3   4   5   6   7
++---+---+---+---+---+---+---+---+
+| 0 | 1 |           0           |
++---+---+-----------------------+
+| H |     Name Length (7+)      |
++---+---------------------------+
+|  Name String (Length octets)  |
++---+---------------------------+
+| H |     Value Length (7+)     |
++---+---------------------------+
+| Value String (Length octets)  |
++-------------------------------+</code></pre></figure>
+
+<p>同样，有一种 Name 和 Value 都不在索引空间，且不需要更新动态表，此时前 4 位是 0 ，其它与上述相同。</p>
+
+<p>还有一种严格不需要更新的，此时前 4 位是 <code>0001</code> 。</p>
+
+<p>简言之，需要更新的前两位是 <code>01</code> ，不需要更新的 <code>00</code> ，严格不需要更新的是第 3、4 位是 <code>01</code> 。</p>
+
+<h4 id="其它">其它</h4>
+
+<p>关于不需要更新和绝对不允许更新区别如下：</p>
+
+<ul>
+  <li>不需要更新，本次的发送过程不更新该字段到动态表，如果有多次转发，那么并不对转发做要求；</li>
+  <li>绝对不允许更新，如果这个请求被多次转发才到目标，那么转发的所有中间对于该字段也必须采用相同的处理方案。</li>
+</ul>
+
+<h2 id="压缩">压缩</h2>
+
+<p>简单来说，gzip 是一种数据格式，在原始数据前增加了 10 字节的头信息；尾部增加了校验码和长度字节，仅使用 deflate 算法对数据部分进行了压缩。</p>
+
+<p>deflate 是一种压缩算法，是 huffman 编码的一种加强，也就是说 deflate 是最基础的算法，gzip 在 deflate 的 raw data 前增加了 10 个字节的 gzheader，尾部添加了 8 个字节的校验字节（可选 crc32 和 adler32） 和长度标识字节。</p>
+
+<!--
+## 示例
+
+假设以下是要被编码的头信息。
+
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:method: GET
+:scheme: http
+:path: /
+:authority: www.example.com</code></pre></figure>
+
+
+这里大概说一下， :xxxx 为 name 的 header， 实际上是 HTTP/2 所谓的伪头的概念。就是把HTTP1.X的请求头替换成伪头对应的 name 和 value，然后再编码传输，完全的定义在这里 http://httpwg.org/specs/rfc7540.html#PseudoHeaderFields
+
+最终编码后的内容如下。
+
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">8286 8441 8cf1 e3c2 e5f2 3a6b a0ab 90f4 ff
+     82 = 10000010 -&gt; 静态表Index = 2 -&gt; :method: GET
+     86 = 10000110 -&gt; 静态表Index = 6 -&gt; :scheme: http
+     84 = 10000100 -&gt; 静态表Index = 4 -&gt; :path: /
+     41 = 01000001 -&gt; name = 静态表1 = :authority</code></pre></figure>
+
+
+其实解析很简单，就按照上面我画的解码状态机来就好了:
+接着是一个字面字符串的解码,表示 header :authority 对应的 value
+8c = 10001100 -> 第一个 bit 为1，表示 huffman 编码，字符串的长度为 1100b = 12
+接着解析12个字节为 huffman 编码后的字符
+f1e3 c2e5 f23a 6ba0 ab90 f4ff， 查表可知为www.example.com
+从而得到最后一个头部 :authority: www.example.com
+
+
+### HPACK
+
+https://tools.ietf.org/html/rfc7541
+
+包含了两个索引表：A) 静态索引表，包含了最通用的一些头、状态、方法等等；B) 动态索引表
+
+假设发送的请求为 `GET https://example.com/resource` ，当然还包含了一些头，例如是 `user-agent: Mozilla/5.0 ...` ，那么
+https://blog.csdn.net/u010129119/article/details/79392545
+https://www.jianshu.com/p/f44b930cfcac
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-socket-port-range-introduce.html" title="Linux Socket 端口使用">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-huffman-stuff-simple-introduce.html" title="Huffman 编码简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1542297600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-network-http2-hpack-introduce.html" data-title="HPACK 介绍" data-url="/post/linux-network-http2-hpack-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

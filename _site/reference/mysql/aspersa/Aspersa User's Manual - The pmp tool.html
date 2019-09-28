@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20pmp%20tool_files/default.css" media="screen">
+<title>Aspersa User's Manual - The pmp tool</title>
+</head>
+<body>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The pmp tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The pmp tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+<p>The <em>pmp</em> tool is a poor man's profiler, inspired by <a href="http://poormansprofiler.org/">poormansprofiler.org</a>.
+  It can create and summarize full stack traces of processes on Linux.  
+Summaries of stack traces can be an invaluable tool for diagnosing what a
+ process is waiting for.</p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>The tool has the following command-line options:</p>
+
+<dl>
+<dt>-b BINARY</dt><dd>Specifies the name of a process to trace and summarize.  The default value is 'mysqld'.</dd>
+<dt>-i ITERATIONS</dt><dd>Specifies how many times to get a stack trace from the process.  The default value is 1.</dd>
+<dt>-k KEEPFILE</dt><dd>Specifies a file to hold the stack traces.  The 
+specified file will not be removed when the program finishes, so you can
+ re-analyze it if you wish.</dd>
+<dt>-l MAXLEN</dt><dd>Specifies how many symbols to aggregate from each thread.  Default is unlimited.</dd>
+<dt>-p PID</dt><dd>Specifies a process ID to trace and summarize. Causes -b to be ignored.</dd>
+<dt>-s SLEEPTIME</dt><dd>Specifies how long to sleep between each iteration, if -i is given.  Default value is 0.</dd>
+</dl>
+
+<p>Any additional arguments on the command-line are treated as file 
+names containing the results of a stack trace previously gathered, which
+ is to be summarized.</p>
+
+<h2>How it Works</h2>
+
+<p>The tool performs two tasks: it gets a stack trace, and it summarizes
+ the stack trace.  If a file is given on the command-line, the tool 
+skips the first step and just aggregates the file.</p>
+
+<p>To summarize the stack trace, the tool extracts the function name 
+(symbol) from each level of the stack, and combines them with commas. It
+ does this for each thread in the output.  Afterwards, it sorts similar 
+threads together and counts how many of each one there are, then sorts 
+them most-frequent first.</p>
+
+<h2>Example Usage</h2>
+
+<p>Here is an example of a process that has 35 threads waiting for a condition, and a variety of other activity:</p>
+
+<code>
+     35 pthread_cond_wait,end_thread,handle_one_connection,start_thread,clone
+     20 read,read,vio_read,my_real_read,my_net_read,handle_one_connection,start_thread,clone
+     18 pthread_cond_wait,os_event_wait_low,os_aio_simulated_handle,fil_aio_wait,io_handler_thread,start_thread,clone
+      3 pthread_cond_wait,MYSQL_LOG::wait_for_update,mysql_binlog_send,dispatch_command,handle_one_connection,start_thread,clone
+      1 select,os_thread_sleep,srv_master_thread,start_thread,clone
+      1 select,os_thread_sleep,srv_lock_timeout_and_monitor_thread,start_thread,clone
+      1 select,os_thread_sleep,srv_error_monitor_thread,start_thread,clone
+      1 select,handle_connections_sockets,main
+      1 do_sigwait,sigwait,signal_hand,start_thread,clone
+      1 btr_search_guess_on_hash,btr_cur_search_to_nth_level,btr_pcur_open_with_no_init,row_search_for_mysql,ha_innobase::index_read,join_read_always_key,sub_select,evaluate_join_record,sub_select,evaluate_join_record,sub_select,evaluate_join_record,sub_select,evaluate_join_record,sub_select,evaluate_join_record,sub_select,do_select,JOIN::exec,mysql_select,handle_select,mysql_execute_command,mysql_parse,dispatch_command,handle_one_connection,start_thread,clone
+      1 btr_cur_search_to_nth_level,btr_estimate_n_rows_in_range,ha_innobase::records_in_range,check_quick_keys,check_quick_keys,check_quick_keys,check_quick_keys,check_quick_keys,check_quick_keys,check_quick_keys,check_quick_keys,check_quick_keys,check_quick_keys,check_quick_keys,check_quick_select,get_key_scans_params,SQL_SELECT::test_quick_select,get_quick_record_count,make_join_statistics,JOIN::optimize,mysql_select,handle_select,mysql_execute_command,mysql_parse,dispatch_command,handle_one_connection,start_thread,clone
+</code>
+
+<p>Sometimes summaries such as the above are hard to read because of the
+ verbosity, or because even though the top of the stack is similar for 
+many threads, they arrived there from different places.  In such cases, 
+the -l option can help; here we see the output for the same data, but 
+with <strong>-l 2</strong>.  This is perhaps over-simplifying and -l 5 might be a better value, but it illustrates the effect of the option:</p>
+
+<code>
+     35 pthread_cond_wait,end_thread
+     20 read,read
+     18 pthread_cond_wait,os_event_wait_low
+      3 select,os_thread_sleep
+      3 pthread_cond_wait,MYSQL_LOG::wait_for_update
+      1 select,handle_connections_sockets
+      1 do_sigwait,sigwait
+      1 btr_search_guess_on_hash,btr_cur_search_to_nth_level
+      1 btr_cur_search_to_nth_level,btr_estimate_n_rows_in_range
+</code>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>CentOS 安装与配置|JinYang's Blog</title>
+  <meta name="keywords" content="linux,centos,安装,配置">
+  <meta name="description" content="CentOS (Community Enterprise Operating System) 也即社区版的企业操作系统，是 Linux 的发行版本之一，来自于 Red Hat Enterprise Linux 所开放的源码编译而成。因此，对稳定性较高的服务器通常以 CentOS 替代商业版的 Red Hat 。两者的不同在于 CentOS 并不包含封闭源代码软件。下面会介绍桌面版的 CentOS 在安装时需要作的一些常用配置。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>CentOS 安装与配置</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-08-20 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>CentOS (Community Enterprise Operating System) 也即社区版的企业操作系统，是 Linux 的发行版本之一，来自于 Red Hat Enterprise Linux 所开放的源码编译而成。因此，对稳定性较高的服务器通常以 CentOS 替代商业版的 Red Hat 。</p>
+
+<p>两者的不同在于 CentOS 并不包含封闭源代码软件。下面会介绍桌面版的 CentOS 在安装时需要作的一些常用配置。</p>
+
+<!-- more -->
+
+<p><img src="/images/linux/centos-logo.png" alt="centos logo" title="centos logo" class="pull-center" /></p>
+
+<h2 id="安装-centos">安装 CentOS</h2>
+
+<p>对于 CentOS 桌面版的安装也比较简单，完全是基于图形界面的，安装时可以从 <a href="https://www.centos.org/download/">www.centos.org</a> 上下载相应版本，一般用 LiveGNOME 或者 LiveKDE 。</p>
+
+<p>当然，也可以从国内的一些镜像网站上下载，例如 <a href="http://mirrors.aliyun.com/">阿里云镜像</a>、<a href="http://mirrors.sohu.com/">搜狐镜像</a>、<a href="http://mirrors.163.com/">网易镜像</a> 上下载。</p>
+
+<p>下载了 ISO 镜像之后可以通过如下方式安装到 U 盘中，如果有 Linux 发行版，安装过程将很简单；如下是通过 dd 命令直接复制即可。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看U盘的设备号
+# fdisk -l
+... ...
+Disk /dev/sdc: 4002 MB, 4002910208 bytes, 7818184 sectors
+... ...
+
+----- 将ISO镜像原样复制到U盘中
+# dd if=xxx.iso of=/dev/sdb
+
+----- 从另外一个终端执行，查看复制到U盘的进度
+# while killall -USR1 dd; do sleep 5; done</code></pre></figure>
+
+<p>接下来就看看如何配置一些常用的环境。</p>
+
+<h2 id="常用软件配置">常用软件配置</h2>
+
+<h3 id="安装编译环境">安装编译环境</h3>
+
+<p>如下是安装 C/C++ 编译工具。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum install gcc
+# yum install gcc-c++             # 安装g++</code></pre></figure>
+
+<h3 id="支持-ntfs-文件系统">支持 NTFS 文件系统</h3>
+
+<p>可以在安装完第三方软件源 EPEL 之后通过如下命令安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
+# yum update
+
+# yum --enablerepo=epel install ntfs-3g</code></pre></figure>
+
+<p>但是如果是最新版本的 CentOS，可能在三方库中没有相应的安装包，那么此时就需要从源码编译安装。直接从 <a href="http://www.tuxera.com/community/ntfs-3g-download/">www.tuxera.com</a> 下载源码，然后通过如下方式编译。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ tar -zxvf ntfs-3g_ntfsprogs-2014.2.15.tgz
+$ cd ntfs-3g_ntfsprogs-2014.2.15
+$ ./configure
+$ make
+# make install                # 完成安装，需要root权限</code></pre></figure>
+
+<p>接下来配置为自动挂载，假设对应的磁盘为 /dev/sda5 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># blkid /dev/sda5             # 查看UUID
+# vi /etc/fstab               # 添加如下的内容
+UUID=xxxxxxxxxxx /media/disk  ntfs-3g defaults 0 0</code></pre></figure>
+
+<h3 id="安装-flash-插件">安装 Flash 插件</h3>
+
+<p>直接从如下网站 <a href="http://get.adobe.com/cn/flashplayer/">www.adobe.com</a> 获得，主要有两种方法。</p>
+
+<p>A) YUM 安装。下载时选择 “YUM，适用于Linux(YUM)”，实际会下载一个 RPM 安装包，用来安装 adobe 的 yum 源配置文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># rpm -ivh adobe-release-i386-1.0-1.noarch.rpm        安装Adobe的源
+# yum install flash-plugin                            安装falsh插件</code></pre></figure>
+
+<p>B）RPM 安装。在下载页面选择 “.rpm，适用于其它Linux”，此时将会直接下载 RPM 安装包，可以直接通过 RPM 进行安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># rpm -ivh flash-plugin-11.2.202.297-release.i386.rpm</code></pre></figure>
+
+<h3 id="gnome-terminal配置">Gnome-Terminal配置</h3>
+
+<p>A) 取消声音。Edit-&gt;Preferences-&gt;Profiles-&gt;选择对应配置文件[Edit]-&gt;General-&gt;取消Terminal bell。</p>
+
+<p>B) 设置启动快捷键。在 CentOS 的系统菜单中选择 Applications -&gt; System Tools -&gt; Keyboard -&gt; Shortcuts -&gt; Custom Shortcuts 设置命令为 gnome-terminal –hide-menubar –maximize，详细参数可以参考 gnome-terminal –help-window-options。</p>
+
+<p>C) 颜色设置。个人比较喜欢的颜色配置，文本颜色 #dbfef8，背景颜色 #2f4f4f 。</p>
+
+<p>D) 设置为半透明。首先尝试在 Edit-&gt;Preferences 菜单中设置，如果不生效，则在 ~/.bashrc 文件中添加如下内容，其中 80 对应不同的透明度。</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="k">if</span> <span class="o">[</span> -n <span class="s2">&quot;$WINDOWID&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nv">TRANSPARENCY_HEX</span><span class="o">=</span><span class="k">$(</span><span class="nb">printf </span>0x%x <span class="k">$((</span><span class="m">0</span>xffffffff <span class="o">*</span> <span class="m">80</span> <span class="o">/</span> <span class="m">100</span><span class="k">)))</span>
+    xprop -id <span class="s2">&quot;$WINDOWID&quot;</span> -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY <span class="s2">&quot;$TRANSPARENCY_HEX&quot;</span>
+<span class="k">fi</span></code></pre></figure>
+
+<p>另外，可以将 bash 替换为 zsh 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># chsh -s /bin/zsh     # 修改默认shell</code></pre></figure>
+
+<p>guake，一个不错的弹出式终端工具，很酷，不过感觉不太实用。</p>
+
+<h3 id="绘图软件">绘图软件</h3>
+
+<p>inkscape 用于绘制矢量图，另一个比较简单的是 <a href="http://www.xfig.org/userman/">xfig</a> ，一款 old style 的画图工具。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum install inkscape</code></pre></figure>
+
+<p>另外一个就是 GIMP，同样可以通过 YUM 安装，方式同上。</p>
+
+<h3 id="虚拟机">虚拟机</h3>
+
+<p>常用的是 VirtualBox，可以直接从 <a href="https://www.virtualbox.org/">www.virtualbox.org</a> 上下载相应的安装包，也就是 CentOS 的版本，然后通过如下方式安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum install kernel-devel                      # 编译内核模块时需要该包
+# rpm -ivh VirtualBox-x.x.x.rpm                 # 安装
+# /sbin/vboxconfig                              # 重新编译内核模块</code></pre></figure>
+
+<p>安装时可以直接参考网上的文章。</p>
+
+<h3 id="浏览器设置">浏览器设置</h3>
+
+<p>主要包括了比较常用的 FireFox 以及 Chrome，其中前者是默认安装的。</p>
+
+<h4 id="firefox">Firefox</h4>
+
+<p>可以安装常用的插件，如 Regular Expressions Tester (一个正则表达式的测试工具)、Vimperator (将对火狐的部分操作改为VIM模式)、Mozilla Archive Format (用来保存查看mhtml格式的文件)。</p>
+
+<h5 id="安装最新版本">安装最新版本</h5>
+
+<p>有部分的开发工具需要最新版本的 firefox ，可以从 <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox Download</a> 下载最新版本，然后通过如下步骤安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 1. 删除老版本
+# yum remove firefox
+# unlink /usr/bin/firefox
+
+----- 2. 下载并将压缩包解压到/usr/local目录下
+# ln -s /usr/local/firefox/firefox /usr/bin/firefox</code></pre></figure>
+
+<h4 id="chrome">Chrome</h4>
+
+<p>可以参考 <a href="http://www.tecmint.com/install-google-chrome-on-redhat-centos-fedora-linux/">Google Chrome 51 Released – Install on RHEL/CentOS 7/6 and Fedora 23-15</a></p>
+
+<h3 id="chm-阅读器">CHM 阅读器</h3>
+
+<p>Linux 中常见的 chm 阅读器有 xchm、kchmiewer 等，在 CentOS 可以直接安装 xchm 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum --enablerepo=nux-dextop,epel install xchm</code></pre></figure>
+
+<h3 id="音频视频软件">音频/视频软件</h3>
+
+<p>在 CentOS 中，默认使用的是 Rythmbox/Totem，不过感觉使用有点麻烦，还是用 Mplayer/Audacious 比较方便，不过需要依赖 nux-dextop 源，当然也可以从 <a href="http://pkgs.org/search/">pkgs.org</a> 上下载相关的二进制文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum --enablerepo=nux-dextop install mplayer audacious plugins-freeworld-mp3</code></pre></figure>
+
+<p>对于 Mplayer，如果使用时无法缩放，可以在 ~/.mplayer/config 中添加 zoom=yes 配置项。</p>
+
+<p>其中 plugins-freeworld-mp3 是 Audacious 中的 MP3 解码器。不过默认的外观不太好看，不过还好支持其它主题，可以从 <a href="http://gnome-look.org">gnome-look.org</a> 中的 XMMS Themes 中选择主题，保存在 /usr/share/audacious/Skins 目录下，然后可以从 Audacious 的 Settings 窗口中看到。</p>
+
+<p>对于中文，在主窗口中右击，选择 Settings-&gt;Playlist-&gt;Compalibility[Fallback…]，设置为 cp936 (比其它的要更通用)，重新加载播放列表即可。</p>
+
+<p>另外，除上述的 GUI 播放器之外，还有些终端播放器，如 <a href="https://github.com/cmus/cmus">Console Music</a>、<a href="https://moc.daper.net/">Music On Console</a> (<a href="https://github.com/sagitter/moc">Github</a>) 。</p>
+
+<h3 id="笔记类">笔记类</h3>
+
+<p>比较悲剧，Linux 下面没有发现很好用的笔记软件，其中 WizNote 算是比较好用的，不过还是有 BUGs 。</p>
+
+<h4 id="tagspace">tagspace</h4>
+
+<p>直接从官网 <a href="http://www.tagspaces.org/">www.tagspaces.org</a> 下载，然后解压直接运行即可。</p>
+
+<h4 id="为知笔记">为知笔记</h4>
+
+<p>一个跨平台的笔记 <a href="http://www.wiz.cn/">www.wiz.cn</a>，安装方法可以查看 <a href="https://github.com/wizteam/wizqtclient">GitHub</a>，可以查看相关的开源依赖 <a href="http://blog.wiz.cn/wiznote-opensource.html">为知笔记中使用的开源组件和协议</a> 。</p>
+
+<h4 id="markdown">MarkDown</h4>
+
+<p>一些网页的工具， <a href="https://stackedit.io/editor">StackEdit</a>、<a href="https://markable.in/">Markable</a>、<a href="https://www.zybuluo.com/mdeditor">Cmd Markdown</a>、<a href="http://mahua.jser.me/">MaHua</a>、<a href="https://maxiang.io/">马克飞象</a> 。</p>
+
+<h4 id="haroopad">Haroopad</h4>
+
+<p>一个 MarkDown 软件，使用 Chromium 作为 UI，可以参考 <a href="http://pad.haroopress.com/">官方文档</a> 。</p>
+
+<!--
+$ tar -zxvf haroopad-v0.12.2_amd64.tar.gz
+$ tar -zxvf data.tar.gz
+# cp -r --link usr /usr                         # 创建硬链接
+$ tar -zxvf control.tar.gz
+# ./postinst
+# vi /usr/share/applications/Haroopad.desktop   # 修改ICON
+... ...
+Icon=/usr/share/icons/hicolor/128x128/apps/haroopad.png
+... ...
+-->
+
+<h4 id="其它">其它</h4>
+
+<p>另外，两个在 Mac 上很经典的软件 Mou 以及 <a href="http://macdown.uranusjr.com/features/">MacDown</a>，对于 MacDown 源码可以参考 <a href="https://github.com/MacDownApp/macdown">Github</a> 。</p>
+
+<h2 id="参考">参考</h2>
+
+<p>官方的镜像列表，可以参考 <a href="https://www.centos.org/download/mirrors/">List of CentOS Mirrors</a> 。</p>
+
+<!--
+gpg签名
+/etc/pki/rpm-gpg/RPM*
+rpm 安装时可能会报 NOKEY 的错误信息 --nogpgcheck nosignature
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/mysql-backup-strategy_init.html" title="MySQL 备份策略">&larr; Older</a></li> 
+         <li class="next"><a href="/post/git-branch-model.html" title="Git 分支管理">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1440000000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/centos-config-from-scratch.html" data-title="CentOS 安装与配置" data-url="/post/centos-config-from-scratch.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

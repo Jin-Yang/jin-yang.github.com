@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Java JDBC 驱动介绍|JinYang's Blog</title>
+  <meta name="keywords" content="java,jdbc">
+  <meta name="description" content="JDBC (Java Datebase Connectivity) 实际是一个独立于特定数据库管理系统、通用的 SQL 数据库存取和操作的公共接口，它是 JAVA 访问数据库的一种标准。也就是说它只是接口规范，具体实现是各数据库厂商提供的驱动程序。接下来，先看看 JDBC 的使用方法，然后看看其具体的实现原理。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Java JDBC 驱动介绍</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-10-19 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  program ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>JDBC (Java Datebase Connectivity) 实际是一个独立于特定数据库管理系统、通用的 SQL 数据库存取和操作的公共接口，它是 JAVA 访问数据库的一种标准。也就是说它只是接口规范，具体实现是各数据库厂商提供的驱动程序。</p>
+
+<p>接下来，先看看 JDBC 的使用方法，然后看看其具体的实现原理。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>JDBC 作为 JAVA 的接口规范，为上层提供了统一的接口。</p>
+
+<p>对于 Java 中的持久化方案，可以通过 JDBC 直接访问数据库，封装接口，或者直接使用第三方 O/R (Object Relational Mapping，对象关系映射) 工具，如 Hibernate、mybatis；这些工具都是对 JDBC 的封装。</p>
+
+<p>在 JDBC 中常用的接口有：</p>
+
+<ul>
+  <li>
+    <p>Java.sql.Driver 接口<br />JDBC 驱动程序需要实现的接口，供数据库厂商使用，不同数据库提供不用的实现；应用程序通过驱动程序管理器类 (java.sql.DriverManager) 去调用这些 Driver 实现。</p>
+  </li>
+  <li>
+    <p>DriverManager类<br />用来创建连接，它本身就是一个创建Connection的工厂，设计的时候使用的就是Factory模式，给各数据库厂商提供接口，各数据库厂商需要实现它； Connection接口，根据提供的不同驱动产生不同的连接； Statement 接口，用来发送SQL语句；</p>
+  </li>
+  <li>
+    <p>Resultset 接口<br />用来接收查询语句返回的查询结果。</p>
+  </li>
+</ul>
+
+<p>接下来简单介绍 JDBC 的使用方法。</p>
+
+<h3 id="简单使用-jdbc-接口">简单使用 JDBC 接口</h3>
+
+<p>JDBC 使用步骤大致包括了：A) 注册加载一个驱动；B) 创建数据库连接；C) 创建 statement，发送 SQL 语句；D) 执行 SQL 语句；E) 处理返回的结果；F) 关闭 statement 和 connection 。</p>
+
+<h4 id="1-加载与注册驱动">1. 加载与注册驱动</h4>
+
+<p>通过调用 Class 类的静态方法 forName()，向其传递要加载的 JDBC 驱动的类名。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&quot;com.mysql.jdbc.Driver&quot;</span><span class="o">);</span>             <span class="c1">// 注册MYSQL数据库驱动器</span>
+<span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&quot;oracle.jdbc.driver.OracleDriver&quot;</span><span class="o">);</span>   <span class="c1">// 注册ORACLE数据库驱动器</span></code></pre></figure>
+
+<h4 id="2-建立连接">2. 建立连接</h4>
+
+<p>通过调用 DriverManager 类的 getConnection() 方法建立到数据库的连接。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">uid</span><span class="o">,</span> <span class="n">pwd</span><span class="o">);</span></code></pre></figure>
+
+<p>其中，JDBC URL 用于标识一个被注册的驱动程序，驱动程序管理器通过这个 URL 选择正确的驱动程序，从而建立到数据库的连接。</p>
+
+<p>JDBC URL 的标准由三部分组成，各部分间用冒号 <code>":"</code> 分隔，格式为 <code>协议:(子协议):(子名称)</code>；其中，JDBC URL 中的协议总是 jdbc；子协议用于标识一个数据库驱动程序；子名称是一种标识数据库的方法，子名称根据不同的子协议而变化，用子名称的目的是为了定位数据库提供足够的信息。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">URL: jdbc:mysql://localhost:3306/mydbname           // MySQL的JDBC
+URL: jdbc:oracle:thin:@localhost:1521:mydbname      // Oracle的JDBC</code></pre></figure>
+
+<p>注：上述的 URL 标示的方法是一个 JNI (Java Native Interface) 方式的命名，允许 Java 代码和其他语言写的代码进行交互。</p>
+
+<h4 id="3-访问数据库">3. 访问数据库</h4>
+
+<p>数据库连接用于向数据库服务器发送命令以及 SQL 语句，在 java.sql 包中有 3 个接口分别定义了对数据库的调用的不同方式。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/*--- Statement 对象用于执行静态的SQL语句，并且返回执行结果 */</span>
+<span class="n">Statement</span> <span class="n">sm</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">createStatement</span><span class="o">();</span>                 <span class="c1">// 创建该对象</span>
+<span class="n">sm</span><span class="o">.</span><span class="na">executeQuery</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>                                  <span class="c1">// 数据查询语句select</span>
+<span class="n">sm</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>                                 <span class="c1">// 数据更新语句delete、update、insert、drop等</span>
+
+<span class="cm">/*--- PreparedStatement 接口是Statement的子接口，它表示一条预编译过的SQL语句</span>
+<span class="cm"> * 该对象所代表的SQL语句中的参数用问号表示，并调用PreparedStatement对象的setXXX()方法来设置这些参数</span>
+<span class="cm"> */</span>
+<span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">&quot;INSERT INTO user (id,name) VALUES (?,?)&quot;</span><span class="o">;</span>
+<span class="n">PreparedStatement</span> <span class="n">ps</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>     <span class="c1">// 创建对象</span>
+<span class="n">ps</span><span class="o">.</span><span class="na">setInt</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>                                       <span class="c1">// 设置参数</span>
+<span class="n">ps</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="s">&quot;admin&quot;</span><span class="o">);</span>
+<span class="n">ResultSet</span> <span class="n">rs</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="na">executeQuery</span><span class="o">();</span>                      <span class="c1">// 查询操作</span>
+<span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>                            <span class="c1">// 更新操作</span>
+
+
+<span class="cm">/*--- Callable Statement 当不直接使用 SQL 语句，而是调用数据库中的存储过程时，要用到该接口</span>
+<span class="cm"> * 其中 CallabelStatement 是从 PreparedStatement 继承</span>
+<span class="cm"> */</span>
+<span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">&quot;{call insert_users(?,?)}&quot;</span><span class="o">;</span>
+<span class="n">CallableStatement</span> <span class="n">st</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">prepareCall</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>          <span class="c1">// 调用存储过程</span>
+<span class="n">st</span><span class="o">.</span><span class="na">setInt</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+<span class="n">st</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="s">&quot;admin&quot;</span><span class="o">);</span>
+<span class="n">st</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>                                          <span class="c1">// 执行SQL语句，可以是任何类型的SQL</span></code></pre></figure>
+
+<p>代码中建议使用 PreparedStatement，而非 Statement；相比来说，前者的代码可读性和可维护性较高，可以提高 SQL 执行性能，更加安全（如防止 sql 注入）。</p>
+
+<p>SQL 注入是利用某些系统没有对用户输入的数据进行充分的检查，而在用户输入数据中注入非法的 SQL 语句段或命令，从而利用系统的 SQL 引擎完成恶意行为的做法。</p>
+
+<h4 id="4-处理执行结果">4. 处理执行结果</h4>
+
+<p>查询语句，返回记录集 ResultSet；更新语句，返回数字，表示该更新影响的记录数。该对象以逻辑表格的形式封装了查询操作的结果集，相关接口由数据库驱动实现。</p>
+
+<p>ResultSet 接口的常用方法：通过 <code>next()</code> 将游标往后移动一行，成功返回true，该对象维护了一个指向当前数据行的游标，初始的时候，游标在第一行之前，可以通过 ResultSet 对象的 <code>next()</code> 方法移动到下一行。</p>
+
+<p><code>getXXX(String name)</code>：返回当前游标下某个字段的值，如：<code>getInt("id")</code> 或 <code>getSting("name")</code>。</p>
+
+<h4 id="5-释放数据库连接">5. 释放数据库连接</h4>
+
+<p>一般是在 finally 语句里面进行释放资源。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">rs</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>                                            <span class="c1">// 关闭结果集</span>
+<span class="n">ps</span><span class="o">.</span><span class="na">close</span><span class="o">();</span> <span class="o">/</span> <span class="n">st</span><span class="o">.</span><span class="na">close</span><span class="o">();</span> <span class="o">/</span> <span class="n">sm</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>                <span class="c1">// 相应地接口</span>
+<span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>                                          <span class="c1">// 关闭链接</span></code></pre></figure>
+
+<p>下图是使用 JDBC 的通用流程。</p>
+
+<p><img src="/images/java/jdba_basic_cycle.png" alt="jdbc-basic-cycle" title="JDBC的基本调用流程" class="pull-center" /></p>
+
+<p>相关的示例可以直接从 <a href="/reference/java/GetConnection.java" title="使用JDBC的简单示例">JDBC 简单示例</a> 下载，或者参考如下代码：</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// javac GetConnection.java</span>
+<span class="c1">// java -classpath .:/usr/share/java/mysql-connector-java.jar GetConnection</span>
+
+<span class="kn">import</span> <span class="nn">java.sql.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.text.SimpleDateFormat</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GetConnection</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">){</span>
+        <span class="k">try</span><span class="o">{</span>
+            <span class="c1">// 调用Class.forName()方法加载驱动程序</span>
+            <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&quot;com.mysql.jdbc.Driver&quot;</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;成功加载MySQL驱动！&quot;</span><span class="o">);</span>
+        <span class="o">}</span><span class="k">catch</span><span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">e1</span><span class="o">){</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;找不到MySQL驱动!&quot;</span><span class="o">);</span>
+            <span class="n">e1</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="n">String</span> <span class="n">url</span><span class="o">=</span><span class="s">&quot;jdbc:mysql://localhost:3306/mysql&quot;</span><span class="o">;</span>    <span class="c1">// JDBC的URL</span>
+        <span class="c1">// 调用DriverManager对象的getConnection()方法，获得一个Connection对象</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">Connection</span> <span class="n">conn</span><span class="o">;</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span><span class="s">&quot;root&quot;</span><span class="o">,</span><span class="s">&quot;password&quot;</span><span class="o">);</span>
+            <span class="n">Statement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">createStatement</span><span class="o">();</span> <span class="c1">// 创建Statement对象</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;成功连接到数据库！&quot;</span><span class="o">);</span>
+            <span class="n">ResultSet</span> <span class="n">rs</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="na">executeQuery</span><span class="o">(</span><span class="s">&quot;select now() now&quot;</span><span class="o">);</span>
+            <span class="k">while</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="na">next</span><span class="o">()){</span>
+                <span class="c1">//Retrieve by column name</span>
+                <span class="n">java</span><span class="o">.</span><span class="na">sql</span><span class="o">.</span><span class="na">Timestamp</span> <span class="n">time</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getTimestamp</span><span class="o">(</span><span class="s">&quot;now&quot;</span><span class="o">);</span>
+                <span class="n">SimpleDateFormat</span> <span class="n">sdf</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">SimpleDateFormat</span><span class="o">(</span><span class="s">&quot;yyyy-MM-dd HH:mm:ss&quot;</span><span class="o">);</span>
+                <span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="n">sdf</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">time</span><span class="o">);</span>
+                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;NOW: &quot;</span> <span class="o">+</span> <span class="n">str</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;释放相关资源！&quot;</span><span class="o">);</span>
+            <span class="n">rs</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="n">stmt</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">){</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>如果还没有安装 JDBC 可以通过如下的方式安装。</p>
+
+<p>在 CentOS 中可以通过 <code>yum install mysql-connector-java</code> 命令安装 JDBC 驱动，此时，默认会保存在 <code>/usr/share/java/mysql-connector-java.jar</code> ，使用这个包需要包含全路径，可以设置 <code>CLASSPATH</code> 环境变量，或者在运行时通过 <code>-classpath</code> 指定：</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">$</span> <span class="n">javac</span> <span class="n">GetConnection</span>
+<span class="n">$</span> <span class="n">java</span> <span class="o">-</span><span class="n">classpath</span> <span class="o">.:/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">mysql</span><span class="o">-</span><span class="n">connector</span><span class="o">-</span><span class="n">java</span><span class="o">.</span><span class="na">jar</span> <span class="n">GetConnection</span></code></pre></figure>
+
+<p>在 Eclipse 中可通过 <code>[右健] -&gt; Properties -&gt; Java Build Path -&gt; Libraries -&gt; Add External JARs</code> 。</p>
+
+<p>当然，也可以从 <a href="http://www.mysql.com/products/connector/">MySQL官网</a> 下载不同的 MySQL Connectors 版本。</p>
+
+<h3 id="批量处理">批量处理</h3>
+
+<p>需要批量插入或者更新记录时，可以采用 Java 的批量更新机制，这一机制允许多条语句一次性提交给数据库批量处理，通常比单独提交处理更有效率。有如下两种方式：</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/*--- Statement批量处理 */</span>
+<span class="n">stmt</span><span class="o">.</span><span class="na">addBatch</span><span class="o">(</span><span class="s">&quot;insert into test value(1, &#39;foobar&#39;)&quot;</span><span class="o">);</span> <span class="c1">// 添加需要批量处理的SQL语句或是参数</span>
+<span class="n">stmt</span><span class="o">.</span><span class="na">addBatch</span><span class="o">(</span><span class="s">&quot;insert into test value(2, &#39;oooops&#39;)&quot;</span><span class="o">);</span>
+<span class="n">stmt</span><span class="o">.</span><span class="na">addBatch</span><span class="o">(</span><span class="s">&quot;select * from test&quot;</span><span class="o">);</span>
+<span class="n">stmt</span><span class="o">.</span><span class="na">executeBatch</span><span class="o">();</span>                                  <span class="c1">// 执行批量处理语句，返回影响行数</span>
+<span class="n">stmt</span><span class="o">.</span><span class="na">clearBatch</span><span class="o">();</span>                                    <span class="c1">// 清除stmt中积攒的参数列表</span>
+
+<span class="cm">/*--- PreparedStatement批量传参 */</span>
+<span class="n">PreparedStatement</span> <span class="n">ps</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">preparedStatement</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
+<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">100000</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="n">ps</span><span class="o">.</span><span class="na">setInt</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
+    <span class="n">ps</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="s">&quot;name&quot;</span><span class="o">+</span><span class="n">i</span><span class="o">);</span>
+    <span class="n">ps</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="s">&quot;email&quot;</span><span class="o">+</span><span class="n">i</span><span class="o">);</span>
+    <span class="n">ps</span><span class="o">.</span><span class="na">addBatch</span><span class="o">();</span>
+    <span class="k">if</span><span class="o">((</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">)%</span><span class="mi">1000</span><span class="o">==</span><span class="mi">0</span><span class="o">){</span>
+        <span class="n">ps</span><span class="o">.</span><span class="na">executeBatch</span><span class="o">();</span>   <span class="c1">// 批量处理</span>
+        <span class="n">ps</span><span class="o">.</span><span class="na">clearBatch</span><span class="o">();</span>     <span class="c1">// 清空ps中积攒的sql</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>通常会遇到两种批量执行 SQL 的情况：多条 SQL 语句批量处理；一个 SQL 语句的批量传参。实际上，上述的执行过程仍然是串行的，也就是说当第一条执行完成后，才会执行下一条，可以执行不同类型的 DML。批量执行的 SQL 最终接口为 <code>executeBatchInternal()@PreparedStatement.class</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kt">long</span><span class="o">[]</span> <span class="nf">executeBatchInternal</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">batchHasPlainStatements</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">connection</span><span class="o">.</span><span class="na">getRewriteBatchedStatements</span><span class="o">())</span> <span class="o">{</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="n">canRewriteAsMultiValueInsertAtSqlLevel</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="nf">executeBatchedInserts</span><span class="o">(</span><span class="n">batchTimeout</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">connection</span><span class="o">.</span><span class="na">versionMeetsMinimum</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">batchHasPlainStatements</span>
+                 <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">batchedArgs</span> <span class="o">!=</span> <span class="kc">null</span>
+                 <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">batchedArgs</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="cm">/* cost of option setting rt-wise */</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="nf">executePreparedBatchAsMultiStatement</span><span class="o">(</span><span class="n">batchTimeout</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nf">executeBatchSerially</span><span class="o">(</span><span class="n">batchTimeout</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">statementExecuting</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+        <span class="n">clearBatch</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="o">...</span> <span class="o">...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>如上所述，JDBC 驱动默认情况下会无视 <code>executeBatch()</code> 语句，把期望批量执行的一组 SQL 语句拆散，一条一条地发给 MySQL 数据库，直接造成较低的性能。</p>
+
+<p>而且在没有设置 autocommit 时，也是每条 SQL 提交一次。</p>
+
+<p>只有把 <code>rewriteBatchedStatements</code> 参数置为 <code>true</code>，驱动才会帮你批量执行 SQL 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">jdbc:mysql://ip:port/db?rewriteBatchedStatements=true</code></pre></figure>
+
+<p><code>rewriteBatchedStatements</code> 对于 <code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code> 都有效，只不过对 <code>INSERT</code> 会预先重排一下 SQL 语句。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">batchDelete(10条): 一次请求，内容: &quot;delete from t where id = 1; delete from t where id = 2; ......&quot;
+batchUpdate(10条): 一次请求，内容: &quot;update t set ... where id = 1; update t set ... where id = 2; ......&quot;
+batchInsert(10条): 一次请求，内容: &quot;insert into t(...) values(...), (...), ...&quot;</code></pre></figure>
+
+<p>需要注意的是，即使 <code>rewriteBatchedStatements=true</code>，<code>batchDelete()</code> 和 <code>batchUpdate()</code> 也不一定会走批量。当 <code>batchSize&lt;=3</code> 时，驱动会宁愿一条一条地执行 SQL 。</p>
+
+<p>其它的操作如执行事务、获取元数据、批量执行等操作，以后再补充。</p>
+
+<h2 id="源码解析">源码解析</h2>
+
+<p>如上所述，JDBC 提供了一个统一的接口，对于不同的驱动，除了加载驱动以及建立链接时的 URL 不同只外，其它的操作基本相同。</p>
+
+<p>除了需要 JDBC 的源码之外，还需要 openjdk 的源码。</p>
+
+<p><img src="/images/java/jdbc_structure.png" alt="jdbc-structure" title="JDBC框架整体架构" class="pull-center" width="700" /></p>
+
+<p>DriverManager 类，实际是在 rt.jar 包中，而其源码在 openjdk 中，对应 <code>DriverManager.java</code> 。</p>
+
+<h3 id="注册加载">注册加载</h3>
+
+<p>应用程序首先通过如下程序加载驱动器。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&quot;com.mysql.jdbc.Driver&quot;</span><span class="o">);</span></code></pre></figure>
+
+<p>首先介绍一下什么是 <code>Class.forName()</code> 。</p>
+
+<h4 id="classforname">Class.forName()</h4>
+
+<p>简单来说 <code>Class.forName(xxx.xx)</code> 就是要求 JVM 查找并加载指定的类，在加载的同时会执行该类的静态代码段，其返回值是一个类。</p>
+
+<p>而 <code>newInstance()</code> 就是根据类初始化一个实例，也就是说如下的两种方式，其效果是一样的：</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">A</span> <span class="n">a</span> <span class="o">=</span> <span class="o">(</span><span class="n">A</span><span class="o">)</span><span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&quot;package.A&quot;</span><span class="o">).</span><span class="na">newInstance</span><span class="o">();</span>
+<span class="n">A</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">A</span><span class="o">();</span></code></pre></figure>
+
+<p><code>Class.forName().newInstance()</code> 和 <code>new()</code> 区别是：A) 前者是一个方法，后者是一个关键字；B) 前者生成对象只能调用无参的构造函数，而后者没有限制。</p>
+
+<p>使用 <code>Class.forName()</code> 的目的是为了动态加载类，如需要实例化对象，还需要调用 <code>newInstance()</code> 。而实际上，在我们的示例中，并没有调用 <code>newInstance()</code>，Why？？？</p>
+
+<p>如上所述，JVM 要先加载 class，而静态代码是和 class 绑定的，class 装载成功就表示执行了你的静态代码了，而且以后的实例化等操作将不会再执行这段静态代码了。</p>
+
+<p>实际上，JDBC 规范中明确要求这个 Driver 类必须向 DriverManager 注册自己，例如，对于 MySQL 来说，在 <code>src/com/mysql/jdbc/Driver.java</code> 中，实现了 <code>java.sql.Driver</code> 接口，在初始化时有如下操作：</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Driver</span> <span class="kd">extends</span> <span class="n">NonRegisteringDriver</span> <span class="kd">implements</span> <span class="n">java</span><span class="o">.</span><span class="na">sql</span><span class="o">.</span><span class="na">Driver</span> <span class="o">{</span>
+    <span class="kd">static</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">java</span><span class="o">.</span><span class="na">sql</span><span class="o">.</span><span class="na">DriverManager</span><span class="o">.</span><span class="na">registerDriver</span><span class="o">(</span><span class="k">new</span> <span class="nf">Driver</span><span class="o">());</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">E</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;Can&#39;t register driver!&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">Driver</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+        <span class="c1">// Required for Class.forName().newInstance()</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>也就是说，对于 JDBC 是否使用了 <code>newInstance()</code>，两者是一样的。</p>
+
+<h3 id="drivermanager">DriverManager</h3>
+
+<p>在继续讲解之前，可以看到，对应 DriverManager 类有一个静态匿名函数，也就是执行 <code>loadInitialDrivers()</code> 函数。</p>
+
+<p>在 <code>jdk/src/share/classes/java/sql/DriverManager.java</code> 中，通过 <code>registeredDrivers.addIfAbsent()</code> 将新建的 DriverInfo 信息保存。</p>
+
+<h3 id="获取链接">获取链接</h3>
+
+<p>实际上获取链接有多个接口，其入参是不同的，通常会使用如下的接口。在该函数中，如果正常，则会返回一个链接，否则会返回 NULL 。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Drivermanager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span></code></pre></figure>
+
+<p>而对于所有的接口，最终会调用如下的私有函数：</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="nf">getConnection</span><span class="o">(</span>
+    <span class="n">String</span> <span class="n">url</span><span class="o">,</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">Properties</span> <span class="n">info</span><span class="o">,</span> <span class="n">Class</span> <span class="n">caller</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="k">for</span><span class="o">(</span><span class="n">DriverInfo</span> <span class="n">aDriver</span> <span class="o">:</span> <span class="n">registeredDrivers</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Connection</span> <span class="n">con</span> <span class="o">=</span> <span class="n">aDriver</span><span class="o">.</span><span class="na">driver</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">info</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span> <span class="o">...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>也就是最终会调用 JDBC-MySQL Driver 的 <code>connect()</code> 函数。该函数先通过 <code>parseURL()</code> 解析 URL 中的信息，并保存在 Properties 中，该对象用于保存一些配置信息。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// ### 1  @src/com/mysql/jdbc/NonRegisteringDriver.java</span>
+<span class="kd">public</span> <span class="n">java</span><span class="o">.</span><span class="na">sql</span><span class="o">.</span><span class="na">Connection</span> <span class="nf">connect</span><span class="o">(</span><span class="n">String</span> <span class="n">url</span><span class="o">,</span> <span class="n">Properties</span> <span class="n">info</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+    <span class="o">...</span> <span class="o">...</span>                       <span class="c1">// 对传入的URL进行一些判断，如负载均衡等</span>
+
+    <span class="c1">// parseURL函数声明：public Properties parseURL(String url, Properties defaults)</span>
+    <span class="k">if</span> <span class="o">((</span><span class="n">props</span> <span class="o">=</span> <span class="n">parseURL</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">info</span><span class="o">))</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="k">try</span> <span class="o">{</span>                        <span class="c1">// 解析完参数后返回Properties对象，然后会初始化链接</span>
+        <span class="n">Connection</span> <span class="n">newConn</span> <span class="o">=</span> <span class="n">com</span><span class="o">.</span><span class="na">mysql</span><span class="o">.</span><span class="na">jdbc</span><span class="o">.</span><span class="na">ConnectionImpl</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span>
+            <span class="n">host</span><span class="o">(</span><span class="n">props</span><span class="o">),</span> <span class="n">port</span><span class="o">(</span><span class="n">props</span><span class="o">),</span> <span class="n">props</span><span class="o">,</span> <span class="n">database</span><span class="o">(</span><span class="n">props</span><span class="o">),</span> <span class="n">url</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">newConn</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="o">...</span> <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="c1">// ### 2</span>
+<span class="kd">protected</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="nf">getInstance</span><span class="o">(...)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="n">Util</span><span class="o">.</span><span class="na">isJdbc4</span><span class="o">())</span> <span class="o">{</span>       <span class="c1">// 老接口</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">ConnectionImpl</span><span class="o">(</span><span class="n">hostToConnectTo</span><span class="o">,</span> <span class="n">portToConnectTo</span><span class="o">,</span> <span class="n">info</span><span class="o">,</span> <span class="n">databaseToConnectTo</span><span class="o">,</span> <span class="n">url</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="o">(</span><span class="n">Connection</span><span class="o">)</span> <span class="n">Util</span><span class="o">.</span><span class="na">handleNewInstance</span><span class="o">(</span><span class="n">JDBC_4_CONNECTION_CTOR</span><span class="o">,</span>
+        <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span> <span class="o">{</span> <span class="n">hostToConnectTo</span><span class="o">,</span> <span class="n">Integer</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">portToConnectTo</span><span class="o">),</span> <span class="n">info</span><span class="o">,</span> <span class="n">databaseToConnectTo</span><span class="o">,</span> <span class="n">url</span> <span class="o">},</span> <span class="kc">null</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>而 <code>Util.handleNewInstance()</code> 函数实际执行 <code>Class.forName("com.mysql.jdbc.JDBC4Connection").newInstance()</code> 。该函数会调用基类 <code>class ConnectionImpl</code> 的构造函数。</p>
+
+<p>也就是说，对于 JDBC4 最终调用的仍然与老接口类似。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">ConnectionImpl</span><span class="o">(...)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">dbmd</span> <span class="o">=</span> <span class="n">getMetaData</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>    <span class="c1">// 获取数据库信息</span>
+        <span class="n">initializeSafeStatementInterceptors</span><span class="o">();</span>
+        <span class="n">createNewIO</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>                       <span class="c1">// 创建远程IO链接</span>
+        <span class="n">unSafeStatementInterceptors</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="o">...</span> <span class="o">...</span>
+<span class="o">}</span></code></pre></figure>
+
+<h3 id="socket的连接创建">Socket的连接创建</h3>
+
+<p>连接创建是通过 <code>ConnectionImp::createNewIO()</code> 方法执行。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">createNewIO</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">isForReconnect</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="n">connectOneTryOnly</span><span class="o">()</span>
+    <span class="o">...</span> <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kt">void</span> <span class="nf">connectOneTryOnly</span><span class="o">(...)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="o">...</span> <span class="o">...</span>
+        <span class="n">coreConnect</span><span class="o">(</span><span class="n">mergedProps</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span> <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kt">void</span> <span class="nf">coreConnect</span><span class="o">(</span><span class="n">Properties</span> <span class="n">mergedProps</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">io</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MysqlIO</span><span class="o">(...);</span>   <span class="c1">// MysqlIO的创建，用来于服务器进行通信</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">doHandshake</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">user</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">password</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">database</span><span class="o">);</span>
+    <span class="o">...</span> <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="nf">MysqlIO</span><span class="o">(...)</span> <span class="o">{</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="c1">// 创建得到一个socket</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">mysqlConnection</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">socketFactory</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">host</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">port</span><span class="o">,</span> <span class="n">props</span><span class="o">);</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="c1">// 创建input流</span>
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">connection</span><span class="o">.</span><span class="na">getUseReadAheadInput</span><span class="o">())</span> <span class="o">{</span>
+        <span class="o">...</span> <span class="o">...</span>
+    <span class="o">}</span>
+    <span class="c1">// 创建output流</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">mysqlOutput</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">BufferedOutputStream</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mysqlConnection</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">(),</span> <span class="mi">16384</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<h3 id="执行sql">执行SQL</h3>
+
+<p><code>createStatement()</code> 有三类接口，最终都会调用如下接口。其中前两个参数为：对返回的结果集进行指定相应的模式功能，可参照 ResultSet 的常量设置。</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">java</span><span class="o">.</span><span class="na">sql</span><span class="o">.</span><span class="na">Statement</span> <span class="nf">createStatement</span><span class="o">(...)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+    <span class="n">checkClosed</span><span class="o">();</span>
+    <span class="c1">// getLoadBalanceSafeProxy() 为相应的连接</span>
+    <span class="n">StatementImpl</span> <span class="n">stmt</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">StatementImpl</span><span class="o">(</span><span class="n">getLoadBalanceSafeProxy</span><span class="o">(),</span> <span class="k">this</span><span class="o">.</span><span class="na">database</span><span class="o">);</span>
+    <span class="n">stmt</span><span class="o">.</span><span class="na">setResultSetType</span><span class="o">(</span><span class="n">resultSetType</span><span class="o">);</span>
+    <span class="n">stmt</span><span class="o">.</span><span class="na">setResultSetConcurrency</span><span class="o">(</span><span class="n">resultSetConcurrency</span><span class="o">);</span>
+
+    <span class="k">return</span> <span class="n">stmt</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="n">java</span><span class="o">.</span><span class="na">sql</span><span class="o">.</span><span class="na">ResultSet</span> <span class="nf">executeQuery</span><span class="o">(</span><span class="n">String</span> <span class="n">sql</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">locallyScopedConn</span><span class="o">.</span><span class="na">getCacheResultSetMetadata</span><span class="o">())</span> <span class="o">{</span> <span class="c1">// 是否应用缓存ResultSetMeta</span>
+    <span class="o">}</span>
+
+    <span class="c1">// ConnectionImpl中执行sql语句</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">results</span> <span class="o">=</span> <span class="n">locallyScopedConn</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">sql</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">resultSetType</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">resultSetConcurrency</span><span class="o">,</span>
+            <span class="n">doStreaming</span><span class="o">,</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">currentCatalog</span><span class="o">,</span> <span class="n">cachedFields</span><span class="o">);</span>
+    <span class="o">...</span> <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">synchronized</span> <span class="n">ResultSetInternalMethods</span> <span class="nf">execSQL</span><span class="o">(...)</span> <span class="o">{</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="c1">// 进入MysqlIO中执行查询操作</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">sqlQueryDirect</span><span class="o">(</span><span class="n">callingStatement</span><span class="o">,</span> <span class="n">sql</span><span class="o">,</span>
+            <span class="n">encoding</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">maxRows</span><span class="o">,</span> <span class="n">resultSetType</span><span class="o">,</span>
+            <span class="n">resultSetConcurrency</span><span class="o">,</span> <span class="n">streamResults</span><span class="o">,</span> <span class="n">catalog</span><span class="o">,</span>
+            <span class="n">cachedMetadata</span><span class="o">);</span>
+    <span class="o">...</span> <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="kd">final</span> <span class="n">ResultSetInternalMethods</span> <span class="nf">sqlQueryDirect</span><span class="o">(...)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="c1">// 发送查询命与sql查询语句，并得到查询结果(socket处理)</span>
+    <span class="n">Buffer</span> <span class="n">resultPacket</span> <span class="o">=</span> <span class="n">sendCommand</span><span class="o">(</span><span class="n">MysqlDefs</span><span class="o">.</span><span class="na">QUERY</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">queryPacket</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="o">...</span> <span class="o">...</span>
+    <span class="c1">// 封装成ResultSet</span>
+    <span class="n">ResultSetInternalMethods</span> <span class="n">rs</span> <span class="o">=</span> <span class="n">readAllResults</span><span class="o">(</span><span class="n">callingStatement</span><span class="o">,</span> <span class="n">maxRows</span><span class="o">,</span> <span class="n">resultSetType</span><span class="o">,</span>
+            <span class="n">resultSetConcurrency</span><span class="o">,</span> <span class="n">streamResults</span><span class="o">,</span> <span class="n">catalog</span><span class="o">,</span> <span class="n">resultPacket</span><span class="o">,</span>
+            <span class="kc">false</span><span class="o">,</span> <span class="o">-</span><span class="mi">1L</span><span class="o">,</span> <span class="n">cachedMetadata</span><span class="o">);</span>
+    <span class="o">...</span> <span class="o">...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>很多接口还没有深入了解，有时间继续。</p>
+
+<h2 id="参考">参考</h2>
+
+<!--
+http://www.mamicode.com/info-detail-965290.html         【JDBC发展史】从JDBC1.0到JDBC4.0
+http://shmilyaw-hotmail-com.iteye.com/blog/1926513       ServiceLoader和DriverManager使用总结
+http://wuquanyin1011.iteye.com/blog/1409455              MySQL JDBC 驱动源码分析
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/network-protocols.html" title="Linux 通讯协议">&larr; Older</a></li> 
+         <li class="next"><a href="/post/kernel-memory-proc-filesystem_init.html" title="Linux 内存 Proc">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1445184000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/java-jdbc-introduce.html" data-title="Java JDBC 驱动介绍" data-url="/post/java-jdbc-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

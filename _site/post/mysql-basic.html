@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL 基本介绍|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL 基本介绍</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-04-12 Sunday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>在此主要介绍下与数据库相关的一些操作，其中有一部分是与 MySQL 相关的功能。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p><img src="/images/databases/mysql/sql-logo.jpg" alt="sql logo" title="sql logo" class="pull-right" /></p>
+
+<p>首先简单介绍一下 SQL (Structured Query Language) 相关的标准；SQL-92 是最常用的 SQL 标准，其定义了一些常见的语法等，详细的可参考 <a href="http://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt">SQL-92</a> ，也可查看 <a href="/reference/mysql/SQL1992.txt">本地文档</a> 。</p>
+
+<p>其中 SQL 常见的操作包括如下：</p>
+
+<ul>
+  <li>DDL：数据库模式定义语言，create 。</li>
+  <li>DML：数据操纵语言，insert、delete、update 。</li>
+  <li>DCL：数据库控制语言 ，grant、remove 。</li>
+  <li>DQL：数据库查询语言，select 。</li>
+</ul>
+
+<p>不过不同的数据库对 SQL-92 标准会有所扩展，这也就造成了一些数据库操作的不兼容，或者是一些细节上的差异。</p>
+
+<p>对于 MySQL，在 Linux 主机上的默认存储位置为 /var/lib/mysql/ ； FreeBSD 在 /var/db/mysql；如果想要修改可以通过符号链接即可。</p>
+
+<p>如果是单独进行安装的，可以通过如下命令查看 MySQL 是否安装成功。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ mysqladmin --version</code></pre></figure>
+
+<h3 id="示例数据库">示例数据库</h3>
+
+<p>通常最基本的是熟悉简单的 join 操作，以及基本的 CRUD(Create, Retrieve, Update, Delete) 操作，如下包括了很多教程示例，可以参考 <a href="https://www3.ntu.edu.sg/home/ehchua/programming/sql/SampleDatabases.html">MySQL Sample Databases</a> 中的介绍，在此简单列举几个。</p>
+
+<p>下面的示例可以参考 <a href="http://www.mysqltutorial.org/">MySQLTutorial</a>，数据库的数据也可以从 <a href="/reference/mysql/from_mysqltutorial.sql">本地下载</a> ，然后通过 source 导入。下图是对应的 ER 图，其中关于 ER-Diagram 相关的介绍可以参考 <a href="https://www.lucidchart.com/pages/ER-diagram-symbols-and-meaning">ER Diagram Symbols and Meaning (LucidChart)</a> 。</p>
+
+<p><img src="/images/databases/mysql/sample_database_store.png" alt="sample sql" title="sample sql" class="pull-center" width="60%" /></p>
+
+<p>上述是一个销售汽车的模型，包括了常见的模型以及使用数据。</p>
+
+<!--
+Customers，保存了用户的信息。
+Products，产品信息，也就是车的信息。
+ProductLines: stores a list of product line categories.
+Orders: stores  sales orders placed by customers.
+OrderDetails: stores sales order line items for each sales order.
+Payments: stores payments made by customers based on their accounts.
+Employees: stores all employee information as well as the organization structure such as who reports to whom.
+Offices: stores sales office data.
+-->
+
+<p>另外，可以参考 <a href="https://launchpad.net/test-db/">employee</a> 的示例数据库，现在已经迁移到 <a href="https://github.com/datacharmer/test_db">github</a>，其文档位于 <a href="http://dev.mysql.com/doc/employee/en/">Employees Sample Database</a> ，可以直接从 <a href="/reference/mysql/test_db-master.zip">本地下载</a> 。</p>
+
+<p><img src="/images/databases/mysql/employees-schema.png" alt="employees schema" title="employees schema" class="pull-center" width="50%" /></p>
+
+<p>其中 README.md 中包括了如何进行安装。</p>
+
+<p>还有一个经常使用的示例数据库 <a href="https://dev.mysql.com/doc/sakila/en/">Sakila Sample Database</a>。</p>
+
+<p><img src="/images/databases/mysql/sample-sakila-schema.png" alt="sample sakila schema" title="sample sakila schema" class="pull-center" width="90%" /></p>
+
+<h2 id="时间">时间</h2>
+
+<p>MySQL 中有三种时间类型，官方的解释如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">The DATE type is used for values with a date part but no time part. MySQL
+retrieves and displays DATE values in &#39;YYYY-MM-DD&#39; format. The supported
+range is &#39;1000-01-01&#39; to &#39;9999-12-31&#39;.
+
+The DATETIME type is used for values that contain both date and time parts.
+MySQL retrieves and displays DATETIME values in &#39;YYYY-MM-DD HH:MM:SS&#39; format.
+The supported range is &#39;1000-01-01 00:00:00&#39; to &#39;9999-12-31 23:59:59&#39;.
+
+The TIMESTAMP data type is used for values that contain both date and time
+parts. TIMESTAMP has a range of &#39;1970-01-01 00:00:01&#39; UTC to &#39;2038-01-19
+03:14:07&#39; UTC.</code></pre></figure>
+
+<!--
+发现DATETIME类型只支持mysql 5.6.5+
+
+|:----:|:--------------------|:--------------------|
+| 特性 |DATETIME|TIMESTAMP |
+| 显示 |YYYY-MM-DD HH:MM:SS|YYYY-MM-DD HH:MM:SS|
+| 范围 |1000-01-01 00:00:00 ~ 9999-12-31 23:59:59|1970-01-01 00:00:00 ~ 2038-01-19 03:14:07|
+| 存储 |8字节存储，采用数值格式|4字节存储，以UTC格式存储|
+| 时区 |无时区概念|时区转换，存储时对当前的时区进行转换，检索时再转换回当前的时区 |
+| 特性 |无|在insert, update时可以设置为自动更新时间|
+-->
+
+<h3 id="特殊属性">特殊属性</h3>
+
+<p>timestamp 有两个比较特殊的属性，分别是 <code>ON UPDATE CURRENT_TIMESTAMP</code> 和 <code>CURRENT_TIMESTAMP</code> 两种，使用情况分别如下：</p>
+
+<h4 id="current_timestamp">CURRENT_TIMESTAMP</h4>
+
+<p>当要向数据库执行 INSERT 操作时，如果有 timestamp 字段属性设为 CURRENT_TIMESTAMP，则无论这个字段有没有值都会插入当前系统时间。</p>
+
+<h4 id="on-update-current_timestamp">ON UPDATE CURRENT_TIMESTAMP</h4>
+
+<p>当执行 update 操作时，并且字段有上述的属性时，则字段无论值有没有变化，它的值也会跟着更新为当前 UPDATE 操作时的时间。</p>
+
+<p>简单测试如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 新建测试表
+mysql&gt; CREATE TABLE foobar (
+  id INT(10) UNSIGNED NOT NULL PRIMARY KEY,
+  gmt_create TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  gmt_modify TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+Query OK, 0 rows affected (0.06 sec)
+
+----- 新写入数据时，会自动更新DEFAULT CURRENT_TIMESTAMP对应字段
+mysql&gt; INSERT INTO foobar(id, gmt_modify) VALUES(1, now());
+Query OK, 1 row affected (0.01 sec)
+mysql&gt; SELECT * FROM foobar;
++----+---------------------+---------------------+
+| id | gmt_create          | gmt_modify          |
++----+---------------------+---------------------+
+|  1 | 2016-04-23 13:04:59 | 2016-04-23 13:04:59 |
++----+---------------------+---------------------+
+1 row in set (0.00 sec)
+
+----- 在执行UPDATE语句时，会更新ON UPDATE CURRENT_TIMESTAMP对应字段
+mysql&gt; UPDATE foobar SET id=2 WHERE id=1;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+mysql&gt; SELECT * FROM foobar;
++----+---------------------+---------------------+
+| id | gmt_create          | gmt_modify          |
++----+---------------------+---------------------+
+|  2 | 2016-04-23 13:04:59 | 2016-04-23 13:06:27 |
++----+---------------------+---------------------+
+1 row in set (0.01 sec)</code></pre></figure>
+
+<h3 id="默认值">默认值</h3>
+
+<p>从 MySQL 5.6.6 之后，可能会发现如下的 Warning 日志，<code>TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).</code> 这是因为这一版本之后，timestamp 类型的默认行为已经取消。</p>
+
+<p>在此之前，TIMESTAMP 类型的默认行为是：</p>
+
+<ul>
+  <li>TIMESTAMP 列如果没有明确声明 NULL 属性，则默认为 NOT NULL (而其它数据类型，未显示声明 NOT NULL，则允许 NULL值)，当设置 TIMESTAMP 的列值为 NULL，会自动存储为当前 timestamp。</li>
+  <li>表中的第一个 TIMESTAMP 列，如果没有声明 NULL 属性、DEFAULT 或者 ON UPDATE，会自动分配 <code>DEFAULT CURRENT_TIMESTAMP</code> 和 <code>ON UPDATE CURRENT_TIMESTAMP</code> 属性。</li>
+  <li>表中第二个 TIMESTAMP 列，如果没有声明 NULL 或 DEFAULT 值，则默认设置 <code>'0000-00-00 00:00:00'</code>；插入行时没有指明改列的值，该列默认分配 <code>'0000-00-00 00:00:00'</code>，且无警告。</li>
+</ul>
+
+<p>如果要关闭警告，如上所述，可以在启动时添加 <code>--explicit_defaults_for_timestamp</code> 参数，或者在下面的配置文件中添加如下的参数：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">[mysqld]
+explicit_defaults_for_timestamp=true</code></pre></figure>
+
+<p>重启 MySQL 后，此时 TIMESTAMP 的行为如下：</p>
+
+<ul>
+  <li>如果没有显示声明 <code>NOT NULL</code> 属性，也就是是允许 NULL 值的，可以直接设置改列为 NULL，而没有默认的填充行为。</li>
+  <li>不会默认分配 <code>DEFAULT CURRENT_TIMESTAMP</code> 和 <code>ON UPDATE CURRENT_TIMESTAMP</code> 属性。</li>
+  <li>声明为 <code>NOT NULL</code> 且没有默认子句的 TIMESTAMP 列是没有默认值的；往数据表中插入列，又没有给 TIMESTAMP 列赋值时，如果是严格 SQL 模式，会抛出一个错误，如果严格 SQL 模式没有启用，该列会赋值为 <code>'0000-00-00 00:00:00'</code> ，同时出现一个警告(和 MySQL 处理其他时间类型数据一样，如 DATETIME)。</li>
+</ul>
+
+<p>显然，通过该参数关闭了 timestamp 类型字段所拥有的一些会让人感到奇怪的默认行为，如果仍需要默认行为，则需要在建表的时候指定。</p>
+
+<h2 id="外键">外键</h2>
+
+<!--
+在使用 foreign key 时需要遵守以下几点规则：
+
+1，有外键约束的表，必须是innodb型
+2，外键约束的二个表，本来就相关系的表，并且要有索引关系，如果没有，创建外键时也可以创建索引。
+3，不支持对外键列的索引前缀。这样的后果之一是BLOB和TEXT列不被包括在一个外键中，这是因为对这些列的索引必须总是包含一个前缀长度。
+4，mysql外键的名子在数据库内要是唯一的
+-->
+
+<p>创建外键的语法规则如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">[CONSTRAINT symbol] FOREIGN KEY [id] (index_col_name, ...)
+    REFERENCES tbl_name (index_col_name, ...)
+    [ON DELETE {RESTRICT | CASCADE | SET NULL | NO ACTION}]
+    [ON UPDATE {RESTRICT | CASCADE | SET NULL | NO ACTION}]</code></pre></figure>
+
+<p>外键维护数据完整性的 5 种方式：</p>
+
+<ol>
+  <li>CASCADE: 从父表删除或更新且自动删除或更新子表中匹配的行，可以为 <code>ON DELETE CASCADE</code> 和 <code>ON UPDATE CASCADE</code> ；</li>
+  <li>SET NULL: 从父表删除或更新行，设置子表中的外键列为 NULL，需要对应列也可为 NULL 。</li>
+  <li>NO ACTION: SQL-92 标准中，如果有外键的，那么删除或更新主键时会报错；</li>
+  <li>RESTRICT: 拒绝对父表的删除或更新操作。一些数据库有延期检查，一般 NO ACTION 是一个延期检查；而在 MySQL 中，外键约束是被立即检查的，所以 RESTRICT 与上述同样。</li>
+  <li>SET DEFAULT: 这个动作被解析程序识别，但 InnoDB 不支持包含 <code>ON DELETE SET DEFAULT</code> 或 <code>ON UPDATE SET DEFAULT</code> 子句的表定义。</li>
+</ol>
+
+<p>如下是测试用例：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 创建用户表
+mysql&gt; CREATE TABLE `user` (
+  `id` int(11) NOT NULL auto_increment COMMENT &#39;用户ID&#39;,
+  `name` varchar(50) NOT NULL default &#39;&#39; COMMENT &#39;名字&#39;,
+  `sex` int(1) NOT NULL default &#39;0&#39; COMMENT &#39;0为男，1为女&#39;,
+  PRIMARY KEY  (`id`)
+) ENGINE=innodb DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+----- 写入测试数据
+mysql&gt; INSERT INTO user(name, sex) VALUES(&quot;andy&quot;, 0),(&quot;lily&quot;, 1);
+
+----- 创建订单表
+mysql&gt; CREATE TABLE `order` (
+  `order_id` INT(11) NOT NULL AUTO_INCREMENT COMMENT &#39;订单ID&#39;,
+  `u_id` INT(11) NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;用户ID&#39;,
+  `username` VARCHAR(50) NOT NULL DEFAULT &#39;&#39; COMMENT &#39;用户名&#39;,
+  `money` INT(11) NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;钱数&#39;,
+  `datetime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;生成时间&#39;,
+  PRIMARY KEY(`order_id`),
+  INDEX (`u_id`),
+  FOREIGN KEY order_f_key (u_id) REFERENCES user(id)
+) ENGINE=innodb DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+mysql&gt; INSERT INTO `order`(`u_id`, `username`, `money`, `datetime`)
+       VALUES(&#39;1&#39;, &#39;andy&#39;,&#39;10&#39;, CURRENT_TIMESTAMP);
+
+----- 由于order表中有依赖，导致删除user表时失败
+mysql&gt; DELETE FROM user WHERE id =1;
+----- 写入数据时由于user表中不存在，导致写入失败
+mysql&gt; INSERT INTO `order`(`u_id`, `username`, `money`, `datetime`)
+       VALUES(&#39;5&#39;, &#39;foobar&#39;, &#39;123&#39;, CURRENT_TIMESTAMP);
+
+----- MySQL中没有修改外键操作，需要先删除再重新添加
+mysql&gt; ALTER TABLE `order` DROP FOREIGN KEY order_ibfk_1;
+mysql&gt; ALTER TABLE `order` ADD FOREIGN KEY(u_id) REFERENCES user(id)
+       ON DELETE CASCADE ON UPDATE CASCADE;
+
+mysql&gt; REPLACE INTO `order`(`u_id`, `username`, `money`, `datetime`)
+       VALUES(&#39;2&#39;, &#39;andy&#39;,&#39;10&#39;, CURRENT_TIMESTAMP);</code></pre></figure>
+
+<h2 id="其它">其它</h2>
+
+<h3 id="注释">注释</h3>
+
+<p>在 MySQL 中可以通过 <code>#</code> (从开始到结束)、<code>/* ... */</code> (可以多行) 表示注释内容；从 MySQL-3.23 版本开始，可以通过 <code>/*! ... */</code> 这种特有的注释方式标示 MySQL 特有特性。</p>
+
+<p>MySQL 会解析其中的关键字，而其它数据库则会视为注释，从而保证兼容性。另外，从 3.23 开始支持 <code>"-- "</code> 格式的注释，功能与 <code>#</code> 类似；需要注意的是，双短划线之后有一个空格。</p>
+
+<p>接下来，重点说下 <code>/*! ... */</code> 这个注释，简言之，MySQL 会执行其中的内容，例如，MySQL 支持 STRAIGHT_JOIN 写法，而其它数据库可能不支持，那么就可以写成 <code>SELECT /*! STRAIGHT_JOIN */ col1 FROM table1,table2 WHERE...</code> 这种方式。</p>
+
+<p>另外，可以在叹号后面添加版本号，表示只有当 MySQL 的版本大于等于该版本时才会执行，例如只有 MySQL-3.23.02 之后才支持 TEMPORARY，那么可以写为 <code>CREATE /*!32302 TEMPORARY */ TABLE t (a INT);</code> 。</p>
+
+<p>其它的示例 <code>CREATE DATABASE `blog` /*!40100 DEFAULT CHARACTER SET latin1 */;</code> 。</p>
+
+<!--
+### 字符串操作函数
+
+CONCAT(str1,str2,…)返回连接参数产生的字符串，返回值的规则如下：
+
+1. 如有任何一个参数为NULL，则返回值为NULL
+
+mysql> select concat("foobar", null);
++------------------------+
+| concat("foobar", null) |
++------------------------+
+| NULL                   |
++------------------------+
+1 row in set (0.00 sec)
+2. 如果所有参数均为非二进制字符串，则结果为非二进制字符串；
+3. 如果自变量中含有任一二进制字符串，则结果为一个二进制字符串；
+4. 一个数字参数被转化为与之相等的二进制字符串格式；若要避免这种情况，可使用显式类型 cast, 例如： SELECT CONCAT(CAST(int_col AS CHAR), char_col)。
+
+CONCAT_WS(separator,str1,str2,…)
+CONCAT_WS()是CONCAT With Separator的简写，第一个参数是其它参数的分隔符，可以是字符串或者其它类型，如果为NULL，则结果为NULL；另外，函数会忽略任何分隔符参数后的NULL值。
+mysql> SELECT CONCAT_WS(',', 'First Name', 'Second Name', 'Last Name') AS name;
++----------------------------------+
+| name                             |
++----------------------------------+
+| First Name,Second Name,Last Name |
++----------------------------------+
+1 row in set (0.00 sec)
+mysql> SELECT CONCAT_WS(',', 'First Name', NULL, 'Last Name') AS name;
++----------------------+
+| name                 |
++----------------------+
+| First Name,Last Name |
++----------------------+
+1 row in set (0.00 sec)
+
+group_concat
+-->
+
+<h3 id="sql_mode">sql_mode</h3>
+
+<p>sql_mode 是个很容易被忽视的变量，在生产环境必须将这个值设置为严格模式，所以开发、测试环境的数据库也必须要设置，这样在开发测试阶段就可以发现问题</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看变量
+mysql&gt; SHOW VARIABLES LIKE &#39;sql_mode%&#39;\G
+ *************************** 1. row ***************************
+ Variable_name: sql_mode
+         Value: ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,
+         NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+         1 row in set (0.01 sec)
+
+----- 设置变量
+mysql&gt; SET GLOBAL sql_mode=&#39;&#39;;</code></pre></figure>
+
+<p>简单列举如下常用的，详细可以参考官方手册 <a href="https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html">MySQL Reference Manual - Server SQL Modes</a> 。 <!--https://segmentfault.com/a/1190000005936172--></p>
+
+<ul>
+  <li>NO_ZERO_IN_DATE<br />在严格模式下，不允许日期和月份为零。</li>
+  <li>NO_ZERO_DATE<br />不允许插入零日期，插入零日期会抛出错误而不是警告。</li>
+  <li>NO_AUTO_CREATE_USER<br />禁止 GRANT 创建密码为空的用户。</li>
+  <li>ONLY_FULL_GROUP_BY<br />参考如下。</li>
+</ul>
+
+<h4 id="only_full_group_by">ONLY_FULL_GROUP_BY</h4>
+
+<p>对于 <code>GROUP BY</code> 聚合操作，如果在 SELECT 中的列没有在 <code>GROUP BY</code> 中出现 (可以是聚合函数)，那么认为这个 SQL 是不合法的。</p>
+
+<p>例如 <code>select language_id, count(1), length from film group by language_id;</code> 是不合法的，原因是 MySQL 允许在 SELECT 列表中存在除聚集函数或 <code>GROUP BY</code> 以外的表达式，但是这些表达式的结果并不确定，通常也就没有太多意义，反而可能会导致错误。</p>
+
+<p>实际上 SQLServer、Oracle、PostgreSQL 基本都不支持这种语法，为此，MySQL 5.7 修订了这一语义。另外，需要注意 <code>SELECT id+1 FROM tt GROUP BY 1+id;</code> 这种是不允许的，而 <code>SELECT id+1 FROM tt GROUP BY id+1;</code> 则可以。</p>
+
+<h3 id="show-tables">show tables</h3>
+
+<p>默认在使用 LIKE 过滤时，不能使用 AND/OR 等条件，可以通过如下方式添加过滤条件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 只能使用单个like语句
+mysql&gt; SHOW TABLES LIKE &#39;host%&#39;;
+
+----- 如果要使用多个，需要使用WHERE子句，其中FROM子句可以省略
+mysql&gt; SHOW TABLES FROM `sys` WHERE `Tables_in_sys` LIKE &#39;user%&#39; OR `Tables_in_sys` LIKE &#39;host%&#39;;</code></pre></figure>
+
+<!--
+select * from mysql.user where user like 'root%' and host like 'local%';
+%匹配多个任意字符；_匹配单个任意字符；
+也可以使用正则表达式，也即[NOT] REGEXP操作符或者[NOT] RLIKE。
+-->
+
+<!---
+http://blog.csdn.net/imzoer/article/details/8277797
+-->
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html">MySQL Reference Manual - Server SQL Modes</a></p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/mysql-mysqld-safe.html" title="MySQL 启动脚本">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-daemon-process_init.html" title="MySQL 基本介绍">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1428768000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-basic.html" data-title="MySQL 基本介绍" data-url="/post/mysql-basic.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

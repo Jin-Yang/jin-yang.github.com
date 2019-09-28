@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Lua 源码解析|JinYang's Blog</title>
+  <meta name="keywords" content="lua,源码解析">
+  <meta name="description" content="Lua 类似于 Java、Python，实际执行的都不是机器码，而是运行在虚拟机上的，而虚拟机则屏蔽了底层不同的硬件，从而使得这些程序可以跨平台执行，包括不同的操作系统以及不同的硬件平台。相比而言，Lua 的代码十分简单，源码总共才 2W 行左右，但是却实现了很多不错的特性。接下来，我们看看 Lua 具体是如何工作的。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Lua 源码解析</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-10-28 Wednesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  program ,  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Lua 类似于 Java、Python，实际执行的都不是机器码，而是运行在虚拟机上的，而虚拟机则屏蔽了底层不同的硬件，从而使得这些程序可以跨平台执行，包括不同的操作系统以及不同的硬件平台。</p>
+
+<p>相比而言，Lua 的代码十分简单，源码总共才 2W 行左右，但是却实现了很多不错的特性。</p>
+
+<p>接下来，我们看看 Lua 具体是如何工作的。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>Lua 的代码同样可以被编译，不过与 C/C++ 不同的是，是将源程序编译成为字节码，然后交由虚拟机解释执行。在 Lua 中，每个函数编译器都将创建一个原型(prototype)，它由一组指令及其使用到的常量组成。</p>
+
+<p>最初的 Lua 虚拟机是基于栈的，到 1993 年，Lua5.0 版本，采用了基于寄存器的虚拟机，使得 Lua 的解释效率得到提升。</p>
+
+<p>相比来说，Lua 的代码十分简单，源码可以直接从 <a href="http://www.lua.org/download.html">www.lua.org</a> 上下载，其中有关虚拟机相关的内容可以参考 lua.c 和 luac.c 的实现。其中 luac 实现了如何编译 lua 程序，而 lua 则包括了运行的虚拟机。</p>
+
+<h2 id="虚拟机">虚拟机</h2>
+
+<p>Lua 一直把虚拟机执行代码的效率作为一个非常重要的设计目标，而采用什么样的指令系统的对于虚拟机的执行效率来说至关重要，通常根据指令获取操作数的方式不同，可以把虚拟机分为两种：基于栈的虚拟机 (Stack Based VM) 以及基于寄存器的虚拟机 (Register Based VM)。</p>
+
+<h3 id="stack-based-vm">Stack based VM</h3>
+
+<p>目前，大多数的虚拟机都采用传统的 Stack Based VM，如 JVM、Python，该模型的指令一般都是在当前 stack 中获取和保存操作数。例如，一个简单的加法赋值运算 a=b+c，对于该模型，一般会被转化成如下的指令。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">push b;     // 将变量b的值压入stack
+push c;     // 将变量c的值压入stack
+add;        // 将stack顶部的两个值弹出后相加，然后将结果压入stack顶
+mov a;      // 将stack顶部结果放到a中</code></pre></figure>
+
+<p>由于 Stack Based VM 的指令都是基于当前 stack 来查找操作数的，这就相当于所有操作数的存储位置都是运行期决定的，在编译器的代码生成阶段不需要额外为在哪里存储操作数费心，所以 stack based 的编译器实现起来相对比较简单直接，也正因为这个原因，每条指令占用的存储空间也比较小。</p>
+
+<p>但是，对于一个简单的运算，stack based vm 会使用过多的指令组合来完成，这样就增加了整体指令集合的长度。vm 会使用同样多的迭代次数来执行这些指令，这对于效率来说会有很大的影响。并且，由于操作数都要放到stack上面，使得移动这些操作数的内存复制大大增加，这也会影响到效率。</p>
+
+<h3 id="register-based-vm">Register Based VM</h3>
+
+<p>Lua 采用该模型，指令都是在已经分配好的寄存器中存取操作数，对于上面的运算，Register Based VM 一般会使用如下的指令。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">add a b c; // 将b与c对应的寄存器的值相加，将结果保存在a对应的寄存器中</code></pre></figure>
+
+<p>Register Based VM 的指令可以直接对应标准的 3 地址指令，用一条指令完成了上面多条指令的计算工作，并且有效地减少了内存复制操作，这样的指令系统对于效率有很大的帮助。</p>
+
+<p>不过，在编译器设计上，就要在代码生成阶段对寄存器进行分配，采用图着色这样的算法，增加了实现的复杂度，并且每条指令所占用的存储空间也相应的增加了。</p>
+
+<p>接下来查看 lua 的实现细节。</p>
+
+<h2 id="类型定义">类型定义</h2>
+
+<p>Lua 是一种动态类型的语言 (dynamically typed language)，也就是说，在定义的变量中不包含类型的信息，只有相应的值才会包含类型信息。</p>
+
+<p>本类型有八种：nil、boolean、number、string、function、userdata、thread 和 table，在 src/lua.h 文件中定义，如 LUA_TSTRING、LUA_TFUNCTIOIN 等。</p>
+
+<p>需要注意的数据类型是 userdata，在内部实现分为了 LUA_TLIGHTUSERDATA 和 LUA_TUSERDATA，两者都对应 void* 指针，区别在于，前者是由 Lua 外部的使用者来完成，后者则是通过 Lua 内部来完成，也就是说前者是通过用户来维护其生命周期。</p>
+
+<p>另外，Lua 支持垃圾回收，内部用一个宏 iscollectable() 标示哪些类型需要进行 gc 操作，包括 LUA_TSTRING 之后的数据类型，都需要进行 gc 操作。</p>
+
+<figure class="highlight"><pre><code class="language-lua" data-lang="lua"><span class="o">#</span><span class="n">define</span> <span class="n">iscollectable</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>  <span class="p">(</span><span class="n">ttype</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">LUA_TSTRING</span><span class="p">)</span></code></pre></figure>
+
+<p>需要 gc 的数据类型，都会有一个 CommonHeader 成员，并且这个成员在结构体定义的最开始部分。在 Lua 中，值通过 TValue 结构体来表示。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">union</span> <span class="n">Value</span> <span class="p">{</span>
+  <span class="n">GCObject</span> <span class="o">*</span><span class="n">gc</span><span class="p">;</span>    <span class="cm">/* collectable objects */</span>
+  <span class="kt">void</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>         <span class="cm">/* light userdata */</span>
+  <span class="kt">int</span> <span class="n">b</span><span class="p">;</span>           <span class="cm">/* booleans */</span>
+  <span class="n">lua_CFunction</span> <span class="n">f</span><span class="p">;</span> <span class="cm">/* light C functions */</span>
+  <span class="n">lua_Integer</span> <span class="n">i</span><span class="p">;</span>   <span class="cm">/* integer numbers */</span>
+  <span class="n">lua_Number</span> <span class="n">n</span><span class="p">;</span>    <span class="cm">/* float numbers */</span>
+<span class="p">}</span> <span class="n">Value</span><span class="p">;</span>
+
+<span class="cp">#define TValuefields Value value_; int tt_</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">lua_TValue</span> <span class="p">{</span>
+  <span class="n">TValuefields</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">TValue</span><span class="p">;</span></code></pre></figure>
+
+<p>在 Lua 中个被称为 Tagged Values，也就是包括了一个值以及其类型。在 Value 中，gc 表示需要垃圾回收的一些值，如 string、table 等；p 表示 light userdata，不会被 gc 的。</p>
+
+<p>注意，由于 Value 采用了 union 类型，这里可能会导致空间的浪费，对于某些硬件是可以进行优化的。</p>
+
+<h3 id="tables">Tables</h3>
+
+<p>Table 是 Lua 中唯一表示数据结构的类型，其中的函数环境 (env)、元表 (metatable)、模块 (module) 和注册表 (registery) 等都是通过 table 表示。在 Lua-5.0 后，table 是以一种混合型数据结构来实现的，它包含一个哈希表部分和一个数组部分。</p>
+
+<p>对于哈希部分，如果发生冲突则通过链表解决。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">union</span> <span class="n">TKey</span> <span class="p">{</span>
+  <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">TValuefields</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">next</span><span class="p">;</span>  <span class="cm">/* for chaining (offset for next node) */</span>
+  <span class="p">}</span> <span class="n">nk</span><span class="p">;</span>
+  <span class="n">TValue</span> <span class="n">tvk</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">TKey</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">Node</span> <span class="p">{</span>
+  <span class="n">TValue</span> <span class="n">i_val</span><span class="p">;</span>
+  <span class="n">TKey</span> <span class="n">i_key</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">Node</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">Table</span> <span class="p">{</span>
+  <span class="n">CommonHeader</span><span class="p">;</span>
+  <span class="n">lu_byte</span> <span class="n">flags</span><span class="p">;</span>  <span class="cm">/* 1&lt;&lt;p means tagmethod(p) is not present */</span>
+  <span class="n">lu_byte</span> <span class="n">lsizenode</span><span class="p">;</span>  <span class="cm">/* log2 of size of &#39;node&#39; array */</span>
+  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">sizearray</span><span class="p">;</span>  <span class="cm">/* size of &#39;array&#39; array */</span>
+  <span class="n">TValue</span> <span class="o">*</span><span class="n">array</span><span class="p">;</span>  <span class="cm">/* array part */</span>
+  <span class="n">Node</span> <span class="o">*</span><span class="n">node</span><span class="p">;</span>
+  <span class="n">Node</span> <span class="o">*</span><span class="n">lastfree</span><span class="p">;</span>  <span class="cm">/* any free position is before this position */</span>
+  <span class="k">struct</span> <span class="n">Table</span> <span class="o">*</span><span class="n">metatable</span><span class="p">;</span>
+  <span class="n">GCObject</span> <span class="o">*</span><span class="n">gclist</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">Table</span><span class="p">;</span></code></pre></figure>
+
+<p>成员 array、sizearray 用于表示数组部分及其大小，node、lsizenode 表示哈希部分，不过需要注意的是，后者保存的是哈希表大小的幂次，而非真实大小，比如哈希表的大小为 2^N，则 lsizenode 的值是 N。</p>
+
+<h4 id="新建">新建</h4>
+
+<p>table 也是可以进行垃圾回收的对象。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">Table</span> <span class="o">*</span><span class="nf">luaH_new</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">GCObject</span> <span class="o">*</span><span class="n">o</span> <span class="o">=</span> <span class="n">luaC_newobj</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">LUA_TTABLE</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">Table</span><span class="p">));</span>
+  <span class="n">Table</span> <span class="o">*</span><span class="n">t</span> <span class="o">=</span> <span class="n">gco2t</span><span class="p">(</span><span class="n">o</span><span class="p">);</span>
+  <span class="n">t</span><span class="o">-&gt;</span><span class="n">metatable</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+  <span class="n">t</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">=</span> <span class="n">cast_byte</span><span class="p">(</span><span class="o">~</span><span class="mi">0</span><span class="p">);</span>
+  <span class="n">t</span><span class="o">-&gt;</span><span class="n">array</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+  <span class="n">t</span><span class="o">-&gt;</span><span class="n">sizearray</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">setnodevector</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">t</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>首先，所有可 GC 的对象均通过 luaC_newobj() 创建一个新的可回收对象，并把创建的对象放到 GC 链表中；然后，通过 setnodevector() 来初始化 table 哈希表部分，其初始大小为 1 且 node 指向一个静态全局变量 dummynode_ 而非 NULL，从而减少操作表时的判断操作。</p>
+
+<h4 id="查找">查找</h4>
+
+<p>实际上也就是对于 t[key] 操作所执行的过程。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">const</span> <span class="n">TValue</span> <span class="o">*</span><span class="nf">luaH_get</span> <span class="p">(</span><span class="n">Table</span> <span class="o">*</span><span class="n">t</span><span class="p">,</span> <span class="k">const</span> <span class="n">TValue</span> <span class="o">*</span><span class="n">key</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">switch</span> <span class="p">(</span><span class="n">ttype</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nl">LUA_TSHRSTR</span><span class="p">:</span> <span class="k">return</span> <span class="n">luaH_getshortstr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">tsvalue</span><span class="p">(</span><span class="n">key</span><span class="p">));</span>
+    <span class="k">case</span> <span class="nl">LUA_TNUMINT</span><span class="p">:</span> <span class="k">return</span> <span class="n">luaH_getint</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">ivalue</span><span class="p">(</span><span class="n">key</span><span class="p">));</span>
+    <span class="k">case</span> <span class="nl">LUA_TNIL</span><span class="p">:</span> <span class="k">return</span> <span class="n">luaO_nilobject</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">LUA_TNUMFLT</span><span class="p">:</span> <span class="p">{</span>
+      <span class="n">lua_Integer</span> <span class="n">k</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">luaV_tointeger</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="cm">/* index is int? */</span>
+        <span class="k">return</span> <span class="n">luaH_getint</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span>  <span class="cm">/* use specialized version */</span>
+      <span class="cm">/* else... */</span>
+    <span class="p">}</span>  <span class="cm">/* FALLTHROUGH */</span>
+    <span class="k">default</span><span class="o">:</span>
+      <span class="k">return</span> <span class="n">getgeneric</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如上，根据不同的类型的下标，会进入不同的查询。</p>
+
+<p>对于字符串类型，通过 luaH_getstr() 先获得相应字符串在哈希表中的链表，然后遍历这个链表，采用内存地址比较字符串，若找到则返回相应的值，否则 nil 。</p>
+
+<p>如果是整型则调用 luaH_getint() 查找，如果 key 的值小于等于数组大小，则直接返回相应的值，否则去哈希表中去查找。</p>
+
+<p>对应其他类型，统一调用 getgeneric()，也就是计算 hash 值并在链表中查找，通过 luaV_equalobj() 对各种类型进行比较。</p>
+
+<h4 id="赋值">赋值</h4>
+
+<p>也就是 t[“key”]=1，会调用函数 luaH_set() 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">TValue</span> <span class="o">*</span><span class="nf">luaH_set</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="n">Table</span> <span class="o">*</span><span class="n">t</span><span class="p">,</span> <span class="k">const</span> <span class="n">TValue</span> <span class="o">*</span><span class="n">key</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="n">TValue</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">luaH_get</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">!=</span> <span class="n">luaO_nilobject</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">TValue</span> <span class="o">*</span><span class="p">,</span> <span class="n">p</span><span class="p">);</span>
+  <span class="k">else</span> <span class="k">return</span> <span class="n">luaH_newkey</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>首先查找 key 是否在 table 中，存在则替换原来的值，否则调用 luaH_newkey() 插入新值。</p>
+
+<h2 id="虚拟机的体系结构图">虚拟机的体系结构图</h2>
+
+<p>如上所述，所谓的 Register Based VM 是指指令的寻址方式，而实际上，Lua 解释器还是一个以栈为中心的结构。</p>
+
+<p><img src="/images/lua/structure.png" alt="lua operation classes" title="lua operation classes" class="pull-center" /></p>
+
+<p>在 struct lua_State 中，有许多个字段用于描述这个栈结构，其中 stack 成员用于指向绝对栈底，而 base 指向了当前正在执行的函数的第一个参数，而 top 指向栈顶的第一个空元素。</p>
+
+<p>可以看到，这个体系结构中并没有独立出来的寄存器，从以下代码来看：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">#define RA(i)    (base+GETARG_A(i))
+/* to be used after possible stack reallocation */
+#define RB(i)    check_exp(getBMode(GET_OPCODE(i)) == OpArgR, base+GETARG_B(i))
+#define RC(i)    check_exp(getCMode(GET_OPCODE(i)) == OpArgR, base+GETARG_C(i))
+#define RKB(i)    check_exp(getBMode(GET_OPCODE(i)) == OpArgK, \
+    ISK(GETARG_B(i)) ? k+INDEXK(GETARG_B(i)) : base+GETARG_B(i))
+#define RKC(i)    check_exp(getCMode(GET_OPCODE(i)) == OpArgK, \
+    ISK(GETARG_C(i)) ? k+INDEXK(GETARG_C(i)) : base+GETARG_C(i))
+#define KBx(i)    check_exp(getBMode(GET_OPCODE(i)) == OpArgK, k+GETARG_Bx(i))</code></pre></figure>
+
+<p>当指令操作数的类型是寄存器时，它的内容是以 base 为基址在栈上的索引值。如图所示，寄存器实际是 base 之上栈元素的别名；当指令操作数的类型的常数时，它首先判断 B 操作数的最位是否为零；如果是零，则按照和寄存器的处理方法一样做，如果不是零，则在常数表中找相应的值。</p>
+
+<p>Lua 中函数的执行过程是这样的，首先将函数压栈，然后依次将参数压栈，形成图中所示的栈的内容. 因此 R[0] 到 R[n] 分别表示了 Arg[1] 到 Arg[N+1]。</p>
+
+<p>在第一个参数之下，就是当前正在执行的函数，对于 Lua 的函数来说，指向类型为 Prototype 的 TValue，在 Prototype 中字段 code 指向了一个数组用来表示组成这个函数的所有指令，字段 k 指向一个数组来表示这个函数使用到的所有常量。最后，Lua 在解释执行过程中有专门的变量 pc 来指向下一条要执行的指令。</p>
+
+<p>如上图所示，每个函数的 Proto 都有一个属于本函数的常量表，用于存放编译过程中函数所用到的常量。</p>
+
+<p>另外，在 Proto 中还包含了一个 upvalue 描述表，用于存放在编译过程中确定的本函数所使用的 upvalue。在运行时，通过 OP_CLOSURE 指令创建一个 closure 时，会根据 Proto 中的描述，为这个 closure 初始化 upvalue 表，该表的访问不需要使用名称，而是通过 id 进行。</p>
+
+<h3 id="字节码">字节码</h3>
+
+<p>Lua 的指令使用一个 32bit 的 unsigned integer 表示，可以通过 luac 编译成字节码，或者直接查看。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看foobar.lua的具体内容
+$ cat foobar.lua
+#!/usr/bin/lua
+print(&#39;Hello World&#39;)
+
+----- 然后通过luac命令编译
+$ luac foobar.lua
+
+----- 两个以上-l会打印详细信息
+$ luac -l -l foobar.lua</code></pre></figure>
+
+<p>然后通过 vi 的 :%!xxd 或者 hexedit 查看编译后的文件，其中 lua5.1 的字节码文件的头部长 12 字节。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">1b4c 7561 5100 0104 0804 0800</code></pre></figure>
+
+<p>其中的字符为 1-4) “\033Lua”；5) 标识 lua 的版本号，lua5.1 为 0x51；6) 保留，默认是 0x0；7) 标识字节序，little-endian 为 0x01，big-endian 为 0x00；8) sizeof(int) 大小；9) sizeof(size_t)；10) sizeof(Instruction)，内部指令类型的大小；11) sizeof(lua_Number)，lua_Number 即为 double；12) 判断 lua_Number 类型起否有效，一般为 0x00。</p>
+
+<p>其中 lua5.2 字节码文件头的长度为 18 字节。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">1b4c 7561 5200 0104 0804 0800 1993 0d0a 1a0a</code></pre></figure>
+
+<p>其中第 1-12 字节与 lua5.1 意义相同，第 5 字节在 lua5.2 中为 0x52；第 13-18 字节是为了捕获字节码的转换错误而设置的，其值为 “\x19\x93\r\n\x1a\n”。</p>
+
+<h3 id="体系结构与指令系统">体系结构与指令系统</h3>
+
+<p>和虚拟机以及指令相关的文件主要有两个: lopcodes.c 和 lvm.c，这两个文件分别用于描述操作码(指令)和虚拟机。</p>
+
+<p>Lua5.2 共有 40 条指令，通过 enum OpCode 定义，而 luaP_opnames[]、luaP_opmodes[] 分别描述了这些指令的名称和模式，根据指令参数的不同，可以将所有指令分为 4 类。</p>
+
+<p><img src="/images/lua/operation.png" alt="lua operation classes" title="lua operation classes" class="pull-center" /></p>
+
+<p>除 sBx 之外，所有的指令参数都是 unsigned integer 类型，而 sBx 可以表示负数，但表示方法比较特殊。sBx 的 18bit 可表示的最大整数为 262143，这个数的一半 131071 用来表示 0，所以 -1 可以表示为 -1 + 131071，也就是 131070，而 +1 可以表示为 +1 + 131071，也就是 131072。</p>
+
+<p>ABC 一般用来存放指令操作数据的地址，而地址可以分成 3 种：寄存器id、常量表id、upvalue id。Lua 将当前函数的 stack 作为寄存器使用，编号从 0 开始，当前函数的 stack 与寄存器数组是相同的概念，stack(n) 其实就是 register(n)。</p>
+
+<p>A 被大多数指令用来指定计算结果的目标寄存器地址，B、C 用来存放寄存器地址和常量地址，并通过最左面的一个 bit 来区分。在指令生成阶段，如果 B 或 C 所引用的常量地址超出了表示范围，则首先会生成指令将常量装载到临时寄存器，然后再将 B 或 C 改为使用该寄存器地址。</p>
+
+<p>区别在于，后面部是分割成为两个长度为 9 位的操作符(B, C)，一个无符号的 18 位操作符 Bx 还是有符号的 18 位操作符 sBx，这些定义的代码如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cm">/*</span>
+<span class="cm">** size and position of opcode arguments.</span>
+<span class="cm">*/</span>
+<span class="cp">#define SIZE_C      9</span>
+<span class="cp">#define SIZE_B      9</span>
+<span class="cp">#define SIZE_Bx     (SIZE_C + SIZE_B)</span>
+<span class="cp">#define SIZE_A      8</span>
+<span class="cp">#define SIZE_Ax     (SIZE_C + SIZE_B + SIZE_A)</span>
+
+<span class="cp">#define SIZE_OP     6</span>
+
+<span class="cp">#define POS_OP      0</span>
+<span class="cp">#define POS_A       (POS_OP + SIZE_OP)</span>
+<span class="cp">#define POS_C       (POS_A + SIZE_A)</span>
+<span class="cp">#define POS_B       (POS_C + SIZE_C)</span>
+<span class="cp">#define POS_Bx      POS_C</span>
+<span class="cp">#define POS_Ax      POS_A</span></code></pre></figure>
+
+<h3 id="指令操作模式">指令操作模式</h3>
+
+<p>也就是 luaP_opmodes[]，使用一个字节来表示指令的操作模式，其具体含义如下：</p>
+
+<ul>
+  <li>
+    <p>最高位来表示是否是一条测试指令，之所以将这一类型的指令特别地标识出来，是因为 Lua 的指令长度是 32 位，对于分支指令来说，要想在这 32 位中既表示两个操作数来做比较，同时还要表示一个跳转的地址，是很困难的。因此将这种指令分成两条，第一条是测试指令，紧接着一条无条件跳转。如果判断条件成立则将 PC(Program Counter，指示下一条要执行的指令) 加一，跳过下一条无条件跳转指令，继续执行；否则跳转。</p>
+  </li>
+  <li>
+    <p>第二位用于表示 A 操作数是否被设置。</p>
+  </li>
+  <li>
+    <p>接下来的二位用于表示操作数 B 的格式，OpArgN 表示操作数未被使用，OpArgU 表示操作数被使用(立即数)，OpArgR 表示表示操作数是寄存器或者跳转的偏移量，OpArgK 表示操作数是寄存器或者常量。</p>
+  </li>
+</ul>
+
+<h2 id="虚拟机的执行">虚拟机的执行</h2>
+
+<p>首先看下 Lua 虚拟机是如何执行的，对应函数的源码是 lua.c，编译之后是一个 stand-alone 的解析器，默认会进入一个交互式的命令行解析器，当然也可以执行一个 lua 脚本文件。</p>
+
+<p>该程序最终会调用 luaV_execute() 函数执行，开始会初始化 global_State、lua_State 两个结构体，用来保存上下文的相关信息。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">main()
+ |-luaL_newstate()                  # 创建global_State+lua_State，并初始化
+ |-lua_pcall()                      # 实际会调用pmain()函数
+   |                                # 根据不同的参数调用不同的函数
+   |-runargs()                      # 执行命令行通过-e指定的命令
+   |-doREPL()                       # 执行交互模式，也即read-eval-print loop
+   |-handle_script()                # 执行lua脚本
+     |-luaL_loadfile()              # 加载lua文件，后面详细介绍
+     | |-lua_load()
+     |
+     |-docall()                     # 调用执行
+       |-lua_pcall()
+         |-luaD_pcall()             # 实际会调用f_call()函数</code></pre></figure>
+
+<p>在调用函数执行过程中，最终会调用 luaV_execute() 函数。
+<!--
+其中，pc 被初始化成为了 L->savedpc，base 被初始化成为了 L->base，即程序从 L->savedpc 开始执行，其中 L->savedpc 在函数调用的预处理过程中指向了当前函数的 code，而 L->base 指向栈中当前函数的下一个位置；cl 表示当前正在执行闭包，k 指向当前闭包的常量表。
+--></p>
+
+<p>其中，主要处理字节码的是 for(;;){} 循环，也即进入到解释器的主循环，处理很简单，取得当前指令，pc 递增，初始化 ra，然后根据指令的操作码进行选择；然后接下来是一大串的 switch … case … 处理。</p>
+
+<p>接下来对其中有主要的几类指令进行说明。</p>
+
+<h3 id="传值类的指令以-move-为代表">传值类的指令，以 MOVE 为代表</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">luaV_execute</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">)</span> <span class="p">{</span>
+      <span class="p">...</span> <span class="p">...</span>
+      <span class="n">vmcase</span><span class="p">(</span><span class="n">OP_MOVE</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">setobjs2s</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">RB</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
+        <span class="n">vmbreak</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="cp">#define setobjs2s    setobj</span>
+<span class="cp">#define setobj(L,obj1,obj2) \</span>
+<span class="cp">    { TValue *io1=(obj1); *io1 = *(obj2); \</span>
+<span class="cp">      (void)L; checkliveness(G(L),io1); }</span></code></pre></figure>
+
+<p>该指令将操作数 A、B 都做为寄存器，然后将 B 的值给 A，而实现也是简单明了，只有一句。宏展开以后，可以看到，R[A]、R[B] 的类型是 TValue，只是将这两域的值传过来即可。对于可回收对象来说，真实值不会保存在栈上，所以只是改了指针，而对于非可回收对象来说，则是直接将值从 R[B] 赋到 R[A]。</p>
+
+<h3 id="数值运算类指令以-add-为代表">数值运算类指令，以 ADD 为代表</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">luaV_execute</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">)</span> <span class="p">{</span>
+      <span class="p">...</span> <span class="p">...</span>
+      <span class="n">vmcase</span><span class="p">(</span><span class="n">OP_ADD</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">TValue</span> <span class="o">*</span><span class="n">rb</span> <span class="o">=</span> <span class="n">RKB</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+        <span class="n">TValue</span> <span class="o">*</span><span class="n">rc</span> <span class="o">=</span> <span class="n">RKC</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+        <span class="n">lua_Number</span> <span class="n">nb</span><span class="p">;</span> <span class="n">lua_Number</span> <span class="n">nc</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ttisinteger</span><span class="p">(</span><span class="n">rb</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">ttisinteger</span><span class="p">(</span><span class="n">rc</span><span class="p">))</span> <span class="p">{</span>
+          <span class="n">lua_Integer</span> <span class="n">ib</span> <span class="o">=</span> <span class="n">ivalue</span><span class="p">(</span><span class="n">rb</span><span class="p">);</span> <span class="n">lua_Integer</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">ivalue</span><span class="p">(</span><span class="n">rc</span><span class="p">);</span>
+          <span class="n">setivalue</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">intop</span><span class="p">(</span><span class="o">+</span><span class="p">,</span> <span class="n">ib</span><span class="p">,</span> <span class="n">ic</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">tonumber</span><span class="p">(</span><span class="n">rb</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">nb</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">tonumber</span><span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">nc</span><span class="p">))</span> <span class="p">{</span>
+          <span class="n">setfltvalue</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">luai_numadd</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">nb</span><span class="p">,</span> <span class="n">nc</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span> <span class="n">Protect</span><span class="p">(</span><span class="n">luaT_trybinTM</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">rb</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">TM_ADD</span><span class="p">));</span> <span class="p">}</span>
+        <span class="n">vmbreak</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span>
+<span class="cp">#define intop(op,v1,v2) l_castU2S(l_castS2U(v1) op l_castS2U(v2))</span></code></pre></figure>
+
+<p>当两个值都是数值的话，其中关键的一行是 setivalue(ra, intop(+, ib, ic));，也就是两个操作数相加以后把值赋给 R[A]。值得注意的是，操作数 B,C 都是 RK，即可能是寄存器也可能是常量，这最决于最 B 和 C 的最高位是否为 1，如果是 1 则常量，反之则是寄存器；具体可以参考宏 RKB 的实现。</p>
+
+<p>如果两个操作数不是数值，但可以转换成 Number，则调用 setfltvalue(ra, luai_numadd(L, nb, nc));。如果无法转换，则使用元表机制，该函数的实现如下:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">luaT_callbinTM</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="k">const</span> <span class="n">TValue</span> <span class="o">*</span><span class="n">p1</span><span class="p">,</span> <span class="k">const</span> <span class="n">TValue</span> <span class="o">*</span><span class="n">p2</span><span class="p">,</span>
+                    <span class="n">StkId</span> <span class="n">res</span><span class="p">,</span> <span class="n">TMS</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="n">TValue</span> <span class="o">*</span><span class="n">tm</span> <span class="o">=</span> <span class="n">luaT_gettmbyobj</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">event</span><span class="p">);</span>  <span class="cm">/* try first operand */</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">ttisnil</span><span class="p">(</span><span class="n">tm</span><span class="p">))</span>
+    <span class="n">tm</span> <span class="o">=</span> <span class="n">luaT_gettmbyobj</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">event</span><span class="p">);</span>  <span class="cm">/* try second operand */</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">ttisnil</span><span class="p">(</span><span class="n">tm</span><span class="p">))</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">luaT_callTM</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">tm</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">luaT_trybinTM</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="k">const</span> <span class="n">TValue</span> <span class="o">*</span><span class="n">p1</span><span class="p">,</span> <span class="k">const</span> <span class="n">TValue</span> <span class="o">*</span><span class="n">p2</span><span class="p">,</span>
+                    <span class="n">StkId</span> <span class="n">res</span><span class="p">,</span> <span class="n">TMS</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">luaT_callbinTM</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">event</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">case</span> <span class="nl">TM_CONCAT</span><span class="p">:</span>
+        <span class="n">luaG_concaterror</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">);</span>
+      <span class="cm">/* call never returns, but to avoid warnings: *//* FALLTHROUGH */</span>
+      <span class="k">case</span> <span class="nl">TM_BAND</span><span class="p">:</span> <span class="k">case</span> <span class="nl">TM_BOR</span><span class="p">:</span> <span class="k">case</span> <span class="nl">TM_BXOR</span><span class="p">:</span>
+      <span class="k">case</span> <span class="nl">TM_SHL</span><span class="p">:</span> <span class="k">case</span> <span class="nl">TM_SHR</span><span class="p">:</span> <span class="k">case</span> <span class="nl">TM_BNOT</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">lua_Number</span> <span class="n">dummy</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">tonumber</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dummy</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">tonumber</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dummy</span><span class="p">))</span>
+          <span class="n">luaG_tointerror</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">);</span>
+        <span class="k">else</span>
+          <span class="n">luaG_opinterror</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="s">&quot;perform bitwise operation on&quot;</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="cm">/* calls never return, but to avoid warnings: *//* FALLTHROUGH */</span>
+      <span class="k">default</span><span class="o">:</span>
+        <span class="n">luaG_opinterror</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="s">&quot;perform arithmetic on&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>上面 luaT_trybinTM() 用于调用元表中的元方法，因为在 Lua 老版本中元方法也被叫做 tag method，所以函数最后是以 TM 结尾的。</p>
+
+<p>在 luaT_callTM() 中，将元方法、第一、第二操作数先后压栈，再调用并取因返回值。</p>
+
+<h3 id="逻辑运算类指令以-eq-为代表">逻辑运算类指令，以 EQ 为代表</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">luaV_execute</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">)</span> <span class="p">{</span>
+      <span class="p">...</span> <span class="p">...</span>
+      <span class="n">vmcase</span><span class="p">(</span><span class="n">OP_EQ</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">TValue</span> <span class="o">*</span><span class="n">rb</span> <span class="o">=</span> <span class="n">RKB</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+        <span class="n">TValue</span> <span class="o">*</span><span class="n">rc</span> <span class="o">=</span> <span class="n">RKC</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+        <span class="n">Protect</span><span class="p">(</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">luaV_equalobj</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">rb</span><span class="p">,</span> <span class="n">rc</span><span class="p">)</span> <span class="o">!=</span> <span class="n">GETARG_A</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="n">ci</span><span class="o">-&gt;</span><span class="n">u</span><span class="p">.</span><span class="n">l</span><span class="p">.</span><span class="n">savedpc</span><span class="o">++</span><span class="p">;</span>
+          <span class="k">else</span>
+            <span class="n">donextjump</span><span class="p">(</span><span class="n">ci</span><span class="p">);</span>
+        <span class="p">)</span>
+        <span class="n">vmbreak</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span>
+<span class="cp">#define dojump(ci,i,e) \</span>
+<span class="cp">  { int a = GETARG_A(i); \</span>
+<span class="cp">    if (a != 0) luaF_close(L, ci-&gt;u.l.base + a - 1); \</span>
+<span class="cp">    ci-&gt;u.l.savedpc += GETARG_sBx(i) + e; }</span>
+
+<span class="cp">#define donextjump(ci)  { i = *ci-&gt;u.l.savedpc; dojump(ci, i, 1); }</span></code></pre></figure>
+
+<p>其中 luaV_equalobj() 与之前的算术运算类似，如果 RK[B]==RK[C] 并且 A 为 1 的情况下，也就是条件为真，则会使用 pc 取出下一条指令，调用 dojump() 进行跳转.</p>
+
+<h3 id="函数调用类指令以-call-为代表">函数调用类指令，以 CALL 为代表</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">luaV_execute</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">)</span> <span class="p">{</span>
+      <span class="p">...</span> <span class="p">...</span>
+      <span class="n">vmcase</span><span class="p">(</span><span class="n">P_CALL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="n">GETARG_B</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">nresults</span> <span class="o">=</span> <span class="n">GETARG_C</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="n">L</span><span class="o">-&gt;</span><span class="n">top</span> <span class="o">=</span> <span class="n">ra</span><span class="o">+</span><span class="n">b</span><span class="p">;</span>  <span class="cm">/* else previous instruction set top */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">luaD_precall</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">nresults</span><span class="p">))</span> <span class="p">{</span>  <span class="cm">/* C function? */</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">nresults</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">L</span><span class="o">-&gt;</span><span class="n">top</span> <span class="o">=</span> <span class="n">ci</span><span class="o">-&gt;</span><span class="n">top</span><span class="p">;</span>  <span class="cm">/* adjust results */</span>
+          <span class="n">Protect</span><span class="p">((</span><span class="kt">void</span><span class="p">)</span><span class="mi">0</span><span class="p">);</span>  <span class="cm">/* update &#39;base&#39; */</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>  <span class="cm">/* Lua function */</span>
+          <span class="n">ci</span> <span class="o">=</span> <span class="n">L</span><span class="o">-&gt;</span><span class="n">ci</span><span class="p">;</span>
+          <span class="k">goto</span> <span class="n">newframe</span><span class="p">;</span>  <span class="cm">/* restart luaV_execute over new Lua function */</span>
+        <span class="p">}</span>
+        <span class="n">vmbreak</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>其中分为了 C 以及 Lua。</p>
+
+<h2 id="闭包实现">闭包实现</h2>
+
+<p>在 Lua 中，函数和闭包都是通过闭包实现的。</p>
+
+<h3 id="结构体">结构体</h3>
+
+<p>Lua 中包括了两种闭包：C 闭包和 Lua 闭包，分别通过两种结构体表示。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define CommonHeader    GCObject *next; lu_byte tt; lu_byte marked</span>
+<span class="cp">#define ClosureHeader \</span>
+<span class="cp">    CommonHeader; lu_byte nupvalues; GCObject *gclist</span>
+
+<span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="n">lua_CFunction</span><span class="p">)</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">);</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">CClosure</span> <span class="p">{</span>
+  <span class="n">ClosureHeader</span><span class="p">;</span>
+  <span class="n">lua_CFunction</span> <span class="n">f</span><span class="p">;</span>
+  <span class="n">TValue</span> <span class="n">upvalue</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>  <span class="cm">/* list of upvalues */</span>
+<span class="p">}</span> <span class="n">CClosure</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">LClosure</span> <span class="p">{</span>
+  <span class="n">ClosureHeader</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">Proto</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+  <span class="n">UpVal</span> <span class="o">*</span><span class="n">upvals</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>  <span class="cm">/* list of upvalues */</span>
+<span class="p">}</span> <span class="n">LClosure</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">union</span> <span class="n">Closure</span> <span class="p">{</span>
+  <span class="n">CClosure</span> <span class="n">c</span><span class="p">;</span>
+  <span class="n">LClosure</span> <span class="n">l</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">Closure</span><span class="p">;</span></code></pre></figure>
+
+<p>Lua 语言本身是支持闭包的，而所谓的闭包实际上就是把几个值和函数绑定在一起，在 Lua 中，这些值被称为 upvalues；而且，在 Lua 中，每个函数可以和一个 env 绑定。</p>
+
+<h2 id="lua-代码编译">Lua 代码编译</h2>
+
+<p>关于 lua 代码是如何编译的，可以查看 luac 的代码实现。代码需要执行时，会通过 Proto 格式保存，字节码保存在 code 成员变量中。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">Proto</span> <span class="p">{</span>
+  <span class="n">CommonHeader</span><span class="p">;</span>
+  <span class="n">lu_byte</span> <span class="n">numparams</span><span class="p">;</span>  <span class="cm">/* number of fixed parameters */</span>
+  <span class="n">lu_byte</span> <span class="n">is_vararg</span><span class="p">;</span>
+  <span class="n">lu_byte</span> <span class="n">maxstacksize</span><span class="p">;</span>  <span class="cm">/* number of registers needed by this function */</span>
+  <span class="kt">int</span> <span class="n">sizeupvalues</span><span class="p">;</span>  <span class="cm">/* size of &#39;upvalues&#39; */</span>
+  <span class="kt">int</span> <span class="n">sizek</span><span class="p">;</span>  <span class="cm">/* size of &#39;k&#39; */</span>
+  <span class="kt">int</span> <span class="n">sizecode</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">sizelineinfo</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">sizep</span><span class="p">;</span>  <span class="cm">/* size of &#39;p&#39; */</span>
+  <span class="kt">int</span> <span class="n">sizelocvars</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">linedefined</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">lastlinedefined</span><span class="p">;</span>
+  <span class="n">TValue</span> <span class="o">*</span><span class="n">k</span><span class="p">;</span>  <span class="cm">/* constants used by the function */</span>
+  <span class="n">Instruction</span> <span class="o">*</span><span class="n">code</span><span class="p">;</span>       <span class="c1">// opcodes，操作码，以数组格式保存，类型为[int|long]</span>
+  <span class="k">struct</span> <span class="n">Proto</span> <span class="o">**</span><span class="n">p</span><span class="p">;</span>  <span class="cm">/* functions defined inside the function */</span>
+  <span class="kt">int</span> <span class="o">*</span><span class="n">lineinfo</span><span class="p">;</span>  <span class="cm">/* map from opcodes to source lines (debug information) */</span>
+  <span class="n">LocVar</span> <span class="o">*</span><span class="n">locvars</span><span class="p">;</span>  <span class="cm">/* information about local variables (debug information) */</span>
+  <span class="n">Upvaldesc</span> <span class="o">*</span><span class="n">upvalues</span><span class="p">;</span>  <span class="cm">/* upvalue information */</span>
+  <span class="k">struct</span> <span class="n">LClosure</span> <span class="o">*</span><span class="n">cache</span><span class="p">;</span>  <span class="cm">/* last-created closure with this prototype */</span>
+  <span class="n">TString</span>  <span class="o">*</span><span class="n">source</span><span class="p">;</span>  <span class="cm">/* used for debug information */</span>
+  <span class="n">GCObject</span> <span class="o">*</span><span class="n">gclist</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">Proto</span><span class="p">;</span></code></pre></figure>
+
+<p>Lua 源码中可以通过 luaL_loadfile()、luaL_loadstring()、luaL_loadbuffer() 载入并编译 lua 代码，而这些函数实际调用的是 lua_load() 函数。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">lua_load()@lapi.c
+  |-lua_lock()
+  |-luaZ_init()
+  |-luaD_protectedparser()
+  | |-luaZ_initbuffer()
+  | |-luaD_pcall()                    # 实际调用的是f_parser()
+  | | |-zgetc()                       # 获取第一个字符，判断是否已经编译
+  | | |                               #=================
+  | | |-checkmode()                   # 1. 如果是二进制
+  | | |-luaU_undump()                 #  1.1 加载预编译的二进制代码
+  | | |-checkmode()                   # 2. 如果是文本
+  | | |-luaY_parser()
+  | | | |-mainfunc()
+  | | |   |-luaX_next()
+  | | |   | |-llex()
+  | | |   |-statlist()                # 词法解析主函数
+  | | |     |-statement()             # 根据相应的词法进行处理
+  | | |       |-ifstat()              #
+  | | |       |-whilestat()
+  | | |                               #=================
+  | | |-luaF_initupvals()
+  | |-luaZ_freebuffer()               # 释放一系列缓存
+  | |-... ...
+  |-lua_unlock()</code></pre></figure>
+
+<p>Lua 是一个轻量级高效率的语言，不仅体现在它本身虚拟机的运行效率上，而且也体现在他整个的编译系统的实现上，因为绝大多数的 lua 脚本需要运行期动态的加载编译，如果编译过程本身非常耗时，或者占用很多的内存，也同样会影响到整体的运行效率。</p>
+
+<p>编译系统的工作就是将符合语法规则的 chunk 转换成可运行的 closure，closure 对象是 Lua 运行期一个函数的实例对象。除此之外，还有 Proto 对象，这是 lua 内部代表一个 closure 原型的对象，有关函数的大部分信息都保存在这里：</p>
+
+<ul>
+  <li>指令列表：包含了函数编译后生成的虚拟机指令。</li>
+  <li>常量表：这个函数运行期需要的所有常量，在指令中，常量使用常量表id进行索引。</li>
+  <li>子proto表：所有内嵌于这个函数的proto列表，在OP_CLOSURE指令中的proto id就是索引的这个表。</li>
+  <li>局部变量描述：这个函数使用到的所有局部变量名称，以及生命期。由于所有的局部变量运行期都被转化成了寄存器id，所以这些信息只是debug使用。</li>
+  <li>Upvalue描述：设个函数所使用到的Upvalue的描述，用来在创建closure时初始化Upvalue。</li>
+</ul>
+
+<p>每个 closure 都对应着自己的 proto，而运行期一个 proto 可以产生多个 closure 来代表这个函数实例。</p>
+
+<!--
+
+可以参考云风编写的文档，如下为本地文档 <a href="reference/source/lua 源码鉴赏 readinglua 云风.pdf">lua 源码鉴赏</a>，关于源码解析可以参考 <a href="http://blog.csdn.net/yuanlin2008/article/category/1307277">探索Lua5.2内部实现</a>，或者 <a href="https://github.com/lichuang/Lua-Source-Internal">lua 详解</a> 以及相关的 <a href="http://www.codedump.info/?tag=lua">codedump 个人博客</a>。<br><br>
+
+http://simohayha.iteye.com/blog/517748                               lua源码剖析(一)
+http://blog.csdn.net/column/details/luainternals.html                探索Lua5.2内部实现
+http://blog.csdn.net/INmouse/article/details/1540418                 Lua源码分析(1)
+http://www.cppblog.com/airtrack/archive/2012/07/19/184211.aspx
+-->
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/security-how-to-save-password.html" title="Linux 密码管理">&larr; Older</a></li> 
+         <li class="next"><a href="/post/mysql-innodb-isolation-level.html" title="InnoDB 隔离级别">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1445961600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/lua-sourcecode.html" data-title="Lua 源码解析" data-url="/post/lua-sourcecode.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

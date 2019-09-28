@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>while(SUCC!=try());|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li class="active" ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2019-06-30 Sunday</span>
+  <p style="margin-top:10px;">
+    
+       <p>CPU 的发展因为受制于制造工艺和成本限制，CPU 的频率、内存的访问速度都没有太多质的突破，但是两者直接的访问处理速度相差越来越大。</p>
+
+<p>所以，目前在 CPU 和内存之间包含了多级缓存，用来提高 CPU 的处理速度。</p>
+
+<p>那么 CPU Cache 也就成了理解计算机体系架构的重要知识点，同样也是并发编程设计中的技术难点。</p>
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#program"> program </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/linux-program-cpu-cache-introduce_init.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2019-06-05 Wednesday</span>
+  <p style="margin-top:10px;">
+    
+       <p>决策树算法是从数据的特征出发，并以此作为基础划分不同的类。</p>
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/artificial-intelligence-decision-tree-introduce.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2019-05-30 Thursday</span>
+  <p style="margin-top:10px;">
+    
+       <p>正常来说，如果要使用 eBPF 提供的能力，需要完成 “编写BPF代码-编译成字节码-注入内核-获取结果-展示” 这一整套流程，而且会非常复杂。</p>
+
+<p>而 bcc 是通过 Python 编写的一个 eBPF 工具集，使得上述的 整个过程更加便捷。</p>
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/linux-ebpf-bcc-tools-introduce.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2019-05-20 Monday</span>
+  <p style="margin-top:10px;">
+    
+       <p>Berkeley Packet Filter, BPF 提供了强大的网络包过滤规则，可以确定应该检查哪些流量、忽略哪些流量等，而内核近几年发展的 Extended BPF, eBPF 实际上将应用范围，处理效率进行了更新。</p>
+
+<p>eBPF 是 Linux 内核近几年最为引人注目的特性之一，通过一个内核内置的字节码虚拟机，完成数据包过滤、调用栈跟踪、耗时统计、热点分析等等高级功能。</p>
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/linux-ebpf-basic-usage-introduce.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/math-monte-carlo-sample-introduce.html">采样算法</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2019-05-12 Sunday</span>
+  <p style="margin-top:10px;">
+    
+       <p>经常会在各类的算法中看到 “蒙特卡罗” (Monte Carlo) 的字样，例如 Markov Chain Monte Carlo, MCMC、以及 AlphaGo 使用的蒙特卡洛搜索树。</p>
+
+<p>在使用 Monte-Carlo 时，除了所谓的采样之外，在解决贝叶斯问题的时候，很多地方还使用了积分，这时就是通过 Monte-Carlo 的样本和去近似积分。</p>
+
+<p>而所谓的采样，实际上就是根据某种分布去生成一些数据点，最简单的例如抛硬币、掷骰子等，服从均匀分布。</p>
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/math-monte-carlo-sample-introduce.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/golang-concept-memory-module-introduce.html">GoLang 内存模型</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2019-05-01 Wednesday</span>
+  <p style="margin-top:10px;">
+    
+       <p>在 Golang 中所谓的内存模型，定义的是，对多个协程中共享的变量，一个协程中怎样可以看到其它协程的写入。</p>
+
+<p>当多个协程同时操作一个数据时，可以通过管道、同步原语 (sync 包中的 Mutex 以及 RWMutex)、原子操作 (sync/atomic 包中)。</p>
+
+<p>除此之外，为了保证语义的正确性，Golang 还对一些常见的场景做了语义上的约束。</p>
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#program"> program </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/golang-concept-memory-module-introduce.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/golang-concept-concurrency-module-introduce.html">GoLang 并发模型</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2019-04-29 Monday</span>
+  <p style="margin-top:10px;">
+    
+       
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/golang-concept-concurrency-module-introduce.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/statistic-tools-stan-introduce.html">Stan 简介</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2019-04-25 Thursday</span>
+  <p style="margin-top:10px;">
+    
+       <p>概率建模分析使用较多的三个软件有 Stan PyMc3 Edward ，其中后者是 Google 出品的，据说在某些场景下要比 Stan 快很多。</p>
+
+<p>Stan 是一种语言，可以在生物、物理、工程等领域进行统计建模、数据分析、预测等。</p>
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/statistic-tools-stan-introduce.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+
+<div class="row"><center>
+
+  <nav><ul class="pagination pagination-lg">
+   
+     <li class="disabled"><a title="Go to newest articles">&laquo;</a></li>
+     <li class="disabled"><a title="Go to newer articles">&lsaquo;</a></li>
+   
+   
+     <li class="disabled"><span>page <strong>1</strong> of <strong>72</strong></span></li>
+   
+   
+     <li><a href="/page2" title="Go to older articles">&rsaquo;</a></li>
+     <li><a href="/page72" title="Go to oldest articles">&raquo;</a></li>
+   
+  </ul></nav>
+
+</center></div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

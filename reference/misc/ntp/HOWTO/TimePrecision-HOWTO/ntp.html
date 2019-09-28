@@ -1,0 +1,776 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Accurate Global Time Synchronization</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Managing Accurate Date and Time"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="The Correct Settings for Your Linux Box"
+HREF="set.html"><LINK
+REL="NEXT"
+TITLE="Precise Time with the chrony Program"
+HREF="ntp.chrony.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Managing Accurate Date and Time</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="set.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="ntp.chrony.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="ntp"
+></A
+>5. Accurate Global Time Synchronization</H1
+><P
+>To have accurate time in all your systems is as important as having a solid network security strategy (achieved by much more than simple firewall boxes). It is one of the primary components of a system administration based on good practices, which leads to organization and security. Specially when administering distributed applications, web-services, or even a distributed security monitoring tool, accurate time is a must.</P
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="ntp.ntp"
+></A
+>5.1. <SPAN
+CLASS="acronym"
+>NTP</SPAN
+>: The Network Time Protocol</H2
+><P
+>We won't discuss here the protocol, but how this wonderful invention, added to the pervasivenes of the Internet, can be useful for us. You can find more about it at <A
+HREF="http://www.ntp.org/"
+TARGET="_top"
+>www.ntp.org</A
+>.</P
+><P
+>Once your system is properly setup, <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> will manage to keep its time accurate, making very small adjustments to not impact the running applications.</P
+><P
+>People can get exact time using hardware based on atom's electrons frequency. There is also a method based on <SPAN
+CLASS="acronym"
+>GPS</SPAN
+> (Global Positioning System). The first is more accurate, but the second is pretty good also. Atomic clocks require very special and expensive equipment, but their maintainers (usually universities and research labs) connect them to computers, that run an <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> daemon, and some of them are connected to the Internet, that finally let us access them for free. And this is how we'll synchronize our systems.</P
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="ntp.arch"
+></A
+>5.2. Building a Simple Time Synchronization Architecture</H2
+><P
+>You will need:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>A direct or indirect (through a firewall) connection to the Internet.</P
+></LI
+><LI
+><P
+>Choose some <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> servers. You can use the public server <A
+HREF="http://www.fortytwo.ch/time/"
+TARGET="_top"
+>pool.ntp.org</A
+>, or choose some from the <A
+HREF="http://www.eecis.udel.edu/~mills/ntp/clock2a.html"
+TARGET="_top"
+>stratum 2 public time servers</A
+> on <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> website. If you don't have an Internet access, your <SPAN
+CLASS="acronym"
+>WAN</SPAN
+> administrator (must be a clever guy) can provide you some internal addresses.</P
+></LI
+><LI
+><P
+>Have the <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> package installed in all systems you want to synchronize. You can find RPMs in your favorite Linux distribution CD, or <A
+HREF="http://rpmfind.net/linux/rpm2html/search.php?query=ntp"
+TARGET="_top"
+>make a search</A
+> on <A
+HREF="http://rpmfind.net/"
+TARGET="_top"
+>rpmfind.net</A
+>.</P
+></LI
+></OL
+><P
+>Here is an example of good architecture:</P
+><DIV
+CLASS="figure"
+><A
+NAME="AEN417"
+></A
+><P
+><B
+>Figure 1. Local Relay Servers for NTP</B
+></P
+><P
+><IMG
+SRC="ntp.png"
+ALIGN="center"></P
+></DIV
+><P
+>If you have several machines to synchronize, <EM
+>do not</EM
+> make them all access the remote <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> servers you chose. Only 2 of your server farm's machines must access remote <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> servers, and the other machines will sync with these 2. We will call them the <EM
+>Relay Servers</EM
+>.</P
+><P
+>Your Relay Servers can be any machine already available in your network. <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> consumes low memory and CPU. You don't need a dedicated machine for it.</P
+><DIV
+CLASS="tip"
+><P
+></P
+><TABLE
+CLASS="tip"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="../images/tip.gif"
+HSPACE="5"
+ALT="Tip"></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>It is a good idea to create hostname aliases for your local Relay Servers like ntp1.my.com and ntp2.my.com, and use only these names when configuring the client machines. This way you can move the <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> functionality to a new Relay Server (with a different IP and hostname), without having to reconfigure the clients. Ask your <SPAN
+CLASS="acronym"
+>DNS</SPAN
+> administrator to create such aliases.</P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="ntp.configs"
+></A
+>5.3. <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> Configurations</H2
+><P
+></P
+><DIV
+CLASS="variablelist"
+><DL
+><DT
+><EM
+>For Your Relay Servers</EM
+></DT
+><DD
+><P
+>Edit <TT
+CLASS="filename"
+>/etc/ntp.conf</TT
+> and add the remote servers you chose:</P
+><DIV
+CLASS="example"
+><A
+NAME="AEN441"
+></A
+><P
+><B
+>Example 5. Relay machines' <TT
+CLASS="filename"
+>/etc/ntp.conf</TT
+></B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;.
+.
+server  otherntp.server.org	# A stratum 1 server at server.org
+server  ntp.research.gov	# A stratum 2 server at research.gov
+.
+.</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>Again, you can use the public server <A
+HREF="http://www.fortytwo.ch/time/"
+TARGET="_top"
+>pool.ntp.org</A
+>, or get a list of <A
+HREF="http://www.eecis.udel.edu/~mills/ntp/clock2a.html"
+TARGET="_top"
+>public stratum 2 time servers</A
+> from <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> website.</P
+></DD
+><DT
+><EM
+>For Your Clients</EM
+></DT
+><DD
+><P
+>Edit <TT
+CLASS="filename"
+>/etc/ntp.conf</TT
+> and add your Relay Servers with a standard name:</P
+><DIV
+CLASS="example"
+><A
+NAME="AEN455"
+></A
+><P
+><B
+>Example 6. Client machines' <TT
+CLASS="filename"
+>/etc/ntp.conf</TT
+></B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;.
+.
+server  ntp1.my.com		# My first local relay
+server  ntp2.my.com		# My second local relay
+.
+.</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+></DL
+></DIV
+><P
+>If your machine has a UTC time difference bigger than some minutes comparing to the <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> servers, <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> will not work. So you must do a first full sync, and I recommend you to do it in a non-production hour. You need to do it only when you are making the initial <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> setup. Never more:</P
+><DIV
+CLASS="example"
+><A
+NAME="AEN463"
+></A
+><P
+><B
+>Example 7. First sync</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="screen"
+><TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>ntpdate otherntp.research.gov</B
+>	<A
+NAME="sync1"
+><IMG
+SRC="../images/callouts/1.gif"
+HSPACE="0"
+VSPACE="0"
+BORDER="0"
+ALT="(1)"></A
+>
+24 Mar 18:16:36 ntpdate[10254]: step time server 200.100.20.10 offset -15.266188 sec
+<TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>ntpdate otherntp.research.gov</B
+>	<A
+NAME="sync2"
+><IMG
+SRC="../images/callouts/2.gif"
+HSPACE="0"
+VSPACE="0"
+BORDER="0"
+ALT="(2)"></A
+>
+24 Mar 18:16:43 ntpdate[10255]: adjust time server 200.100.20.10 offset -0.000267 sec</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="calloutlist"
+><DL
+COMPACT="COMPACT"
+><DT
+><A
+HREF="ntp.html#sync1"
+><IMG
+SRC="../images/callouts/1.gif"
+HSPACE="0"
+VSPACE="0"
+BORDER="0"
+ALT="(1)"></A
+></DT
+><DD
+>First full sync. We were 15 seconds late.</DD
+><DT
+><A
+HREF="ntp.html#sync2"
+><IMG
+SRC="../images/callouts/2.gif"
+HSPACE="0"
+VSPACE="0"
+BORDER="0"
+ALT="(2)"></A
+></DT
+><DD
+>Second full sync, just to be sure. Now we are virtually 0 seconds late, which is good.</DD
+></DL
+></DIV
+></DIV
+><P
+>The last step is to start or restart the <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> daemons in each machine:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="screen"
+>&#13;<TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>service ntpd restart</B
+>
+			</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="ntp.watch"
+></A
+>5.4. Watching Your Box Synchronizing</H2
+><P
+>Now you have everything setup. <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> will softly keep your machine time synchronized. You can watch this process using the NTP Query (<B
+CLASS="command"
+>ntpq</B
+> command):</P
+><DIV
+CLASS="example"
+><A
+NAME="AEN487"
+></A
+><P
+><B
+>Example 8. A time synchronization status</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="screen"
+><TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>ntpq -p</B
+>
+     remote           refid      st t when poll reach   delay   offset  jitter
+==============================================================================
+-jj.cs.umb.edu   gandalf.sigmaso  3 u   95 1024  377   31.681  -18.549   1.572
+ milo.mcs.anl.go ntp0.mcs.anl.go  2 u  818 1024  125   41.993  -15.264   1.392
+-mailer1.psc.edu ntp1.usno.navy.  2 u  972 1024  377   38.206   19.589  28.028
+-dr-zaius.cs.wis ben.cs.wisc.edu  2 u  502 1024  357   55.098    3.979   0.333
++taylor.cs.wisc. ben.cs.wisc.edu  2 u  454 1024  347   54.127    3.379   0.047
+-ntp0.cis.strath harris.cc.strat  3 u  507 1024  377  115.274   -5.025   1.642
+*clock.via.net   .GPS.            1 u  426 1024  377  107.424   -3.018   2.534
+ ntp1.conectiv.c 0.0.0.0         16 u    - 1024    0    0.000    0.000 4000.00
++bonehed.lcs.mit .GPS.            1 u  984 1024  377   25.126    0.131  30.939
+-world.std.com   204.34.198.40    2 u  119 1024  377   24.229   -6.884   0.421</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><P
+></P
+><DIV
+CLASS="variablelist"
+><P
+><B
+>The meaning of each column</B
+></P
+><DL
+><DT
+><EM
+>remote</EM
+></DT
+><DD
+><P
+>Is the name of the remote <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> server. If you use the <TT
+CLASS="option"
+>-n</TT
+> switch, you will see the IP addresses of these servers instead of their hostnames.</P
+></DD
+><DT
+><EM
+>refid</EM
+></DT
+><DD
+><P
+>Indicates where each server is getting its time right now. It can be a server hostname or something like <SPAN
+CLASS="acronym"
+>.GPS.</SPAN
+>, indicating a Global Positioning System source.</P
+></DD
+><DT
+><EM
+>st</EM
+></DT
+><DD
+><P
+><EM
+>Stratum</EM
+> is a number from 1 to 16, to indicate the remote server precision. 1 is the most accurate, 16 means 'server unreachable'. Your Stratum will be equal to the accurate remote server plus 1. Never connect to a Stratum 1 server, use Stratum 2 servers! Stratum 2 servers are also good for our purposes, and this policy is good for reducing the traffic to the Stratum 1 servers.</P
+></DD
+><DT
+><EM
+>poll</EM
+></DT
+><DD
+><P
+>The polling interval (in seconds) between time requests. The value will range between the minimum and maximum allowed polling values. Initially the value will be smaller to allow synchronization to occur quickly. After the clocks are 'in sync' the polling value will increase to reduce network traffic and load on popular time servers.</P
+></DD
+><DT
+><EM
+>reach</EM
+></DT
+><DD
+><P
+>This is an octal representation of an array of 8 bits, representing the last 8 times the local machine tried to reach the server. The bit is set if the remote server was reached.</P
+></DD
+><DT
+><EM
+>delay</EM
+></DT
+><DD
+><P
+>The amount of time (seconds) needed to receive a response for a "what time is it" request.</P
+></DD
+><DT
+><EM
+>offset</EM
+></DT
+><DD
+><P
+>The most important value. The difference of time between the local and remote server. In the course of synchronization, the offset time lowers down, indicating that the local machine time is getting more accurate.</P
+></DD
+><DT
+><EM
+>jitter</EM
+></DT
+><DD
+><P
+>Dispersion, also called Jitter, is a measure of the statistical variance of the offset across several successive request/response pairs. Lower dispersion values are preferred over higher dispersion values. Lower dispersions allow more accurate time synchronization.</P
+></DD
+></DL
+></DIV
+><P
+></P
+><DIV
+CLASS="variablelist"
+><P
+><B
+>The meaning of the signs before server hostname</B
+></P
+><DL
+><DT
+><EM
+>-</EM
+></DT
+><DD
+><P
+>Means the local NTP service doesn't like this server very much</P
+></DD
+><DT
+><EM
+>+</EM
+></DT
+><DD
+><P
+>Means the local NTP service likes this server</P
+></DD
+><DT
+><EM
+>x</EM
+></DT
+><DD
+><P
+>Marks a bad host</P
+></DD
+><DT
+><EM
+>*</EM
+></DT
+><DD
+><P
+>Indicates the current favorite</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="ntp.boot"
+></A
+>5.5. Configure to Automatically Run <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> at Boot</H2
+><P
+>You may want to have <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> running all the time even if you reboot your machine. On each machine, do the following:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="screen"
+>&#13;<TT
+CLASS="prompt"
+>bash# </TT
+><B
+CLASS="command"
+>chkconfig --level 2345 ntpd on</B
+>
+			</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>This will ensure autostart.</P
+><P
+>If your machine is up and running for a long time (months, years) without rebooting, you'll find a big discrepancy between the inaccurate hardware clock and the (now very accurate) system time. Modern Linux distributions copy OS time to the HC everytime the system is shutdown, using a <A
+HREF="set.html#set.hwclock"
+>mechanism similar to the <B
+CLASS="command"
+>setclock</B
+> command</A
+>. This way, in the next OS boot, you'll get date and time almost as accurate as it was when you shutdown the machine.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="set.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ntp.chrony.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>The Correct Settings for Your Linux Box</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Precise Time with the <B
+CLASS="command"
+>chrony</B
+> Program</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

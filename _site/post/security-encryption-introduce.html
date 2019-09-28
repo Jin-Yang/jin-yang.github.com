@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>加密算法简介|JinYang's Blog</title>
+  <meta name="keywords" content="加密算法">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>加密算法简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2014-06-01 Sunday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>开放网络中数据传输的安全性一直是一个热门的话题，特别是电子商务兴起的今天，各种攻击欺骗手段更是层出不穷，安全的网络传输需求愈显重要。</p>
+
+<p>在此简单介绍一些常见的加密算法等。</p>
+
+<!-- more -->
+
+<h2 id="对称加密">对称加密</h2>
+
+<p>也就是 symmetric-key encryption，其中常见的算法包括了 AES、DES、3DES 等。</p>
+
+<p>对称加密指的是可以使用同一个密钥对内容进行加密和解密，相比非对称加密，它的特点是加/解密速度快，并且加密的内容长度几乎没有限制。</p>
+
+<p><img src="/images/linux/encrypt-symmetric-key.gif" alt="encrypt symmetric key" title="encrypt symmetric key" class="pull-center" /></p>
+
+<p>DES 是一种分组数据加密技术，也即先将数据分成固定长度的小数据块，然后进行加密，速度较快，适用于大量数据加密。3DES 是一种基于 DES 的加密算法，使用 3 个不同密匙对同一个分组数据块进行 3 次加密，从而使得密文强度更高。</p>
+
+<p>相较于 DES/3DES 而言，AES 算法有着更高的速度和资源使用效率，安全级别也较之更高了，被称为下一代加密标准。</p>
+
+<h2 id="非对称加密公钥加密">非对称加密/公钥加密</h2>
+
+<p>也就是 asymmetric/public-key encryption，常见的加密算法有 RSA、DSA、ECC 等。</p>
+
+<p>非对称加密有两个密钥，分别为公钥和私钥，其中公钥公开给所有人，私钥永远只能自己知道。</p>
+
+<p><img src="/images/linux/encrypt-asymmetric-encryption.gif" alt="encrypt asymmetric key" title="encrypt asymmetric key" class="pull-center" /></p>
+
+<p>使用公钥加密的信息只能使用私钥解密，使用私钥加密只能使用公钥解密。前者用来传输需要保密的信息，因为全世界只有知道对应私钥的人才可以解密；后者用来作数字签名，因为公钥对所有人公开的，可以用来确认这个信息是否是从私钥的拥有者发出的。</p>
+
+<p>RSA 和 DSA 的安全性及其它各方面性能相似，而 ECC 较之则有很多性能优越，包括处理速度、带宽要求、存储空间等。</p>
+
+<p>PS. 理论上来说，无法通过公钥算出私钥，或者说以现在的计算能力需要几亿万年才能算出来。</p>
+
+<h2 id="安全散列算法">安全散列算法</h2>
+
+<p>也就是 Secure Hash Algorithm，常见的算法包括了 MD5、SHA1、HMAC 等。</p>
+
+<p>将任意长度的二进制值映射为较短的固定长度的二进制值，这个短的二进制值称为哈希值，这个算法具有不可逆、碰撞低等特性。同时该类算法可以用作数字签名，用来证实某个信息确实是由某个人发出的，同时可以保证信息没有被修改。</p>
+
+<p>实际上，简单来说，这种算法有两个特性：A) 不同的输入一定得出不同的 hash 值；B) 无法从 hash 值倒推出原来的输入。</p>
+
+<p><img src="/images/linux/encrypt-digital-signature.jpg" alt="encrypt digital signature" title="encrypt digital signature" class="pull-center" width="70%" /></p>
+
+<p>数字签名通常先使用一个 Hash 函数或者消息摘要算法，获得可以唯一对应原信息的摘要信息，然后通过私钥加密。这样其它人就可以通过公钥解密摘要信息，然后使用同样的算法对接收到的信息计算摘要，如果两者获得的摘要信息相同即可。</p>
+
+<p>在数据传输前，使用 MD5 和 SHA1 算法需要发送和接收方在数据传送之前就知道密匙生成算法，而 HMAC 需要生成一个密匙，发送方用此密匙对数据进行摘要处理，接收方再利用此密匙对接收到的数据进行摘要处理，再判断生成的密文是否相同。</p>
+
+<h3 id="简介">简介</h3>
+
+<p>MD5 的全称是 <code>Message-Digest Algorithm 5</code> (信息-摘要算法)，128 位长度，目前 MD5 是一种不可逆算法，具有很高的安全性，它对应任何字符串都可以加密成一段唯一的固定长度的代码。</p>
+
+<p>SHA1 的全称是 <code>Secure Hash Algorithm</code> (安全哈希算法) ，SHA1 基于 MD5，加密后的数据长度更长，它对长度小于 264 的输入，产生长度为 160bit 的散列值。</p>
+
+<p>另外，Python 内置的 hashlib 模块就包括了 md5 和 sha1 算法，而且使用起来也极为方便。</p>
+
+<h2 id="其它">其它</h2>
+
+<p>简单介绍一下一些常见的使用内容。</p>
+
+<h3 id="选择密钥长度">选择密钥长度</h3>
+
+<p>如果在选定了加密算法后，那采用多少位的密钥呢？</p>
+
+<p>一般来说，密钥越长，运行的速度就越慢，应该根据的我们实际需要的安全级别来选择，一般来说，RSA 建议采用 1024 位的数字，ECC 建议采用 160 位，AES 采用 128 位即可。</p>
+
+<p>常见的加密算法速度可以参考如下。</p>
+
+<p><img src="/images/linux/encrypt-truecrypt-speedtest.png" alt="encrypt truecrypt speedtest" title="encrypt truecrypt speedtest" class="pull-center" /></p>
+
+<p>如果只是加密一段信息，也不是经常需要，那可以用最强的加密算法，甚至也可以用不同的算法加密两次。如果想要加密速度快点，那就用 AES 。</p>
+
+<h3 id="radix64-base64">RADIX64 BASE64</h3>
+
+<p>PGP 和 S/MIME 均使用了 Radix-64 编码，而该编码实际是基于 Base64。由两部分构成，分别是 Base64 编码后的数据和一个 CRC(24-bits) 校验和。</p>
+
+<p>Base64 是使用 64 个通用的可打印字符来存储和表示二进制字数据，同时也可以进行简单的加密。Base64 字符集包括 <code>"A-Z"</code>、<code>"a-z"</code>、<code>"0-9"</code>、<code>"+"</code>、<code>"/"</code> 以及后缀填充 <code>"="</code> 共计 65 个字符。</p>
+
+<p>Base64 实质上是以 6bits 为单位，并将其影射为规定的字符集。通常，数据以字节为单位的存储，也即 8bits，而 Base64 使用 6bits 表示一个字符，这就导致了计算机中的三个字节 (8bits*3) 在经过 Base64 编码后将变成四个字符 (6bits*4)，转码后比原数据长大约三分之一。</p>
+
+<p>转码时只需使用一个 24bits 的缓冲区，依次从原数据中读入三个字节的数据，再每次从缓冲中取 6bits 转化成 Base64 字符输出。因此，如果是 3bytes 的整数倍，则不需要 “=” 填充，生于两字节添加一个 “=”，剩余一个字节添加 “==” 。</p>
+
+<p>其中，rfc2045 定义了 MIME 中的 Base64 传输编码；而 rfc4880 协议则定义了 OpenPGP 中使用的 Radix-64 编码。</p>
+
+<h2 id="文件完整性认证">文件完整性认证</h2>
+
+<p>通常为了防止文件的内容被修改，如一个文件号称是包含了补丁的文件，却被人加入了木马；同时也可以用来保证文件的完整性，防止文件被损坏。</p>
+
+<p>当然，一些 hash 算法可能会被破解，所以一些网站则提供了多种完整性校验方法。</p>
+
+<h3 id="md5">MD5</h3>
+
+<p>计算出下载文件的 MD5 哈希值，然后与发布者提供的 MD5 哈希值比较，通过判断是否一致来断定文件在发布者发布之后有没有被篡改过。</p>
+
+<p>使用的假设是，同一个文件产生的 MD5 哈希值是唯一的，但这点已经有办法通过对文件进行少量的修改，让文件的 MD5 后的哈希值保持一致，虽然操作起来有点难，但是确实有风险。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ md5sum file-name                              # 计算MD5哈希值
+da9741366673b5066e74f5307c7d08d7  file-name
+$ md5sum file-name &gt; file-name.md5              # 将计算的哈希值保存到文件，可含多个
+$ md5sum -c file-name.md5                       # 校验文件是否被修改
+file-name: OK                                   # 失败为 file-name: FAILED ...</code></pre></figure>
+
+<h3 id="sha">SHA</h3>
+
+<p>原理同 MD5 一样，相比 MD5 来说更安全一些，而且在在 HASH 求值方面，MD5 退出的舞台将由 SHAn 占据。SHA 家族有五个算法：SHA-1、SHA-224、SHA-256、SHA-384 和 SHA-512，后四种有时候称为 SHA2 ，分别对应 linux 中的 sha…sum 命令。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ sha1sum file-name                                 # 计算SHA1哈希值
+b14cb291f379140f1466381be80466c6722e4b1a  file-name
+$ sha1sum file-name &gt; file-name.sha1                # 将计算的哈希值保存到文件，可含多个
+$ sha1sum -c file-name.sha1                         # 校验文件是否被修改
+file-name: OK                                       # 失败为 file-name: FAILED ...</code></pre></figure>
+
+<h3 id="pgp">PGP</h3>
+
+<p>实际上原理很简单，也就是使用非对称加密。首先生成唯一的密钥对，包括了公钥和私钥，然后执行如下步骤。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">发布者：
+    1. 将密钥对中的公钥发布到公钥服务器；
+    2. 通过私钥对需要发布的文件进行签名，得到签名文件；
+    3. 将文件和用私钥生成的签名一起发布；
+
+下载者：
+    1. 下载发布者发布的文件和签名；
+    2. 使用 PGP 获取发布者发布到服务器的公钥；
+    3. 使用公钥校验文件签名。</code></pre></figure>
+
+<p>关于 GnuGP 的使用，详细可参考 MySQL 的内容 <a href="http://dev.mysql.com/doc/refman/5.7/en/checking-gpg-signature.html">2.1.3.2 Signature Checking Using GnuPG</a> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --import pubkey.asc                                      # 从官网上下载公钥，然后导入
+$ gpg --keyserver keyserver.ubuntu.com --recv-keys 8D253E8A    # 或者可以直接从服务器导入
+
+$ gpg --verify downloaded-file-sign.asc                        # 如果没有导入公钥，则会提示No public key</code></pre></figure>
+
+<p>到现在为止，我们可以确认该文件在上传之后没有被修改过。</p>
+
+<p>但是，需要注意的是这个是未受信任的签名认证，因为这个公钥谁都可以发布上去的。如果确实需要进一步认证，可能还要联系下真正的发布者，确认这个密钥的指纹 (fingerprint)，这也就是为什么在上述验证时可能会出现 WARNING 。</p>
+
+<p>但是通常来说，通过用户名和邮箱就可以基本确定的。当确认信任该公钥后，可以通过如下的子命令设置信任该公钥，这样就不会再出现上面的 WARNING 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gpg --edit-key &#39;user-id&#39; + sign</code></pre></figure>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="http://www.win.tue.nl/~aeb/linux/hh/thompson/trust.html">Reflections on Trusting Trust</a> 通常简称 RoTT 《对信任不疑的信任》，一个比较经典的文章，是肯汤普逊 (Ken Thompson) 1983 年获得图灵奖时的演说：你最终还是要绝对信任某一人，在这个问题上没有第二条路可走。</p>
+
+<p><a href="http://server.51cto.com/News-369437_all.htm">安全加解密技术 盘点密码学进阶史</a> 一篇不错的介绍文章，可以参考 <a href="/reference/linux/history_of_encrypt.mht">本地文档</a> 。</p>
+
+<!--
+关于RSA加密算法的介绍  AES DES
+http://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html
+http://www.cnblogs.com/vamei/p/3480994.html
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/details-about-dstat.html" title="dstat 使用及其原理">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-timer-functions.html" title="Linux 时间函数">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1401552000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/security-encryption-introduce.html" data-title="加密算法简介" data-url="/post/security-encryption-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

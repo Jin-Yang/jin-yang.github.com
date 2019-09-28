@@ -1,0 +1,639 @@
+From: <Saved by Mozilla 5.0 (X11)>
+Subject: =?utf-8?Q?=E5=9B=BE=E8=A7=A3Git?=
+Date: Mon, 23 Jan 2017 23:16:14 +0800
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----=_NextPart_000_0000_009F6D2A.D9384C32"
+X-MAF-Information: Produced By MAF V4.0.1rc
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0000_009F6D2A.D9384C32
+Content-Type: text/html;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://marklodato.github.io/visual-git-guide/index-zh-cn.html
+
+<!DOCTYPE html><html lang=3D"zh-CN"><head>
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3DUTF-8">
+  <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8">
+  <title>=E5=9B=BE=E8=A7=A3Git</title>
+  <link rel=3D"stylesheet" type=3D"text/css" href=3D"urn:snapshot-503239F6:=
+http://marklodato.github.io/visual-git-guide/visual-git-guide.css">
+  <script src=3D"urn:snapshot-715E5DB0:http://www.google-analytics.com/ga.j=
+s" async=3D"" type=3D"text/javascript"></script><script type=3D"text/javasc=
+ript" src=3D"urn:snapshot-23F247D7:http://marklodato.github.io/visual-git-g=
+uide/visual-git-guide.js"></script>
+</head>
+<body onload=3D"">
+  <h1 id=3D"top">=E5=9B=BE=E8=A7=A3Git</h1>
+
+  <div id=3D"language-box">
+    <a>=E5=85=B6=E4=BB=96=E8=AF=AD=E8=A8=80:</a>
+    <ul>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-de.=
+html">Deutsch</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-en.=
+html">English</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-es.=
+html">Espa=C3=B1ol</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-fr.=
+html">Fran=C3=A7ais</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-it.=
+html">Italiano</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-ja.=
+html">=E6=97=A5=E6=9C=AC=E8=AA=9E</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-ko.=
+html">=ED=95=9C=EA=B5=AD=EC=96=B4</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-pl.=
+html">Polski</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-pt.=
+html">Portugu=C3=AAs</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-ru.=
+html">=D0=A0=D1=83=D1=81=D1=81=D0=BA=D0=B8=D0=B9</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-sk.=
+html">Sloven=C4=8Dina</a></li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-vi.=
+html">Ti=E1=BA=BFng Vi=E1=BB=87t</a></li>
+      <li class=3D"selected">=E7=AE=80=E4=BD=93=E4=B8=AD=E6=96=87</li>
+      <li><a href=3D"http://marklodato.github.io/visual-git-guide/index-zh-=
+tw.html">=E6=AD=A3=E9=AB=94=E4=B8=AD=E6=96=87</a></li>
+    </ul>
+  </div>
+
+  <p style=3D"display: block;" id=3D"link-to-png">=E5=A6=82=E6=9E=9C=E5=9B=
+=BE=E7=89=87=E4=B8=8D=E8=83=BD=E6=98=BE=E7=A4=BA=EF=BC=8C=E8=AF=95=E8=AF=95=
+<a href=3D"http://marklodato.github.io/visual-git-guide/index-zh-cn.html?no=
+-svg">=E9=9D=9ESVG=E7=89=88</a></p>
+
+  <p id=3D"link-to-svg">SVG=E5=9B=BE=E7=89=87=E5=B7=B2=E8=A2=AB=E7=A6=81=E7=
+=94=A8
+  <a href=3D"http://marklodato.github.io/visual-git-guide/index.html">=EF=
+=BC=88=E9=87=8D=E6=96=B0=E5=90=AF=E7=94=A8SVG=EF=BC=89</a></p>
+
+  <p>=E6=AD=A4=E9=A1=B5=E5=9B=BE=E8=A7=A3git=E4=B8=AD=E7=9A=84=E6=9C=80=E5=
+=B8=B8=E7=94=A8=E5=91=BD=E4=BB=A4=E3=80=82=E5=A6=82=E6=9E=9C=E4=BD=A0=E7=A8=
+=8D=E5=BE=AE=E7=90=86=E8=A7=A3git=E7=9A=84=E5=B7=A5=E4=BD=9C=E5=8E=9F=E7=90=
+=86=EF=BC=8C=E8=BF=99=E7=AF=87=E6=96=87=E7=AB=A0=E8=83=BD=E5=A4=9F=E8=AE=A9=
+=E4=BD=A0=E7=90=86=E8=A7=A3=E7=9A=84=E6=9B=B4=E9=80=8F=E5=BD=BB=E3=80=82
+  =E5=A6=82=E6=9E=9C=E4=BD=A0=E6=83=B3=E7=9F=A5=E9=81=93=E8=BF=99=E4=B8=AA=
+=E7=AB=99=E7=82=B9=E6=80=8E=E6=A0=B7=E4=BA=A7=E7=94=9F=EF=BC=8C=E8=AF=B7=E5=
+=89=8D=E5=BE=80<a href=3D"http://github.com/MarkLodato/visual-git-guide">Gi=
+tHub
+    repository</a>=E3=80=82</p>
+
+
+
+  <h2 id=3D"contents">=E6=AD=A3=E6=96=87</h2>
+  <ol>
+    <li><a href=3D"#basic-usage">=E5=9F=BA=E6=9C=AC=E7=94=A8=E6=B3=95</a></=
+li>
+    <li><a href=3D"#conventions">=E7=BA=A6=E5=AE=9A</a></li>
+    <li><a href=3D"#commands-in-detail">=E5=91=BD=E4=BB=A4=E8=AF=A6=E8=A7=
+=A3</a>
+      <ol>
+        <li><a href=3D"#diff">Diff</a></li>
+        <li><a href=3D"#commit">Commit</a></li>
+        <li><a href=3D"#checkout">Checkout</a></li>
+        <li><a href=3D"#detached">Detached HEAD(=E5=8C=BF=E5=90=8D=E5=88=86=
+=E6=94=AF=E6=8F=90=E4=BA=A4)</a></li>
+        <li><a href=3D"#reset">Reset</a></li>
+        <li><a href=3D"#merge">Merge</a></li>
+        <li><a href=3D"#cherry-pick">Cherry Pick</a></li>
+        <li><a href=3D"#rebase">Rebase</a></li>
+      </ol>
+    </li>
+    <li><a href=3D"#technical-notes">=E6=8A=80=E6=9C=AF=E8=AF=B4=E6=98=8E</=
+a></li>
+  </ol>
+
+  <h2 id=3D"basic-usage">=E5=9F=BA=E6=9C=AC=E7=94=A8=E6=B3=95</h2>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/basic-usage.svg" type=3D"image/svg+xml" height=3D"312" width=3D"7=
+28"></object></div>
+
+  <p>=E4=B8=8A=E9=9D=A2=E7=9A=84=E5=9B=9B=E6=9D=A1=E5=91=BD=E4=BB=A4=E5=9C=
+=A8=E5=B7=A5=E4=BD=9C=E7=9B=AE=E5=BD=95=E3=80=81=E6=9A=82=E5=AD=98=E7=9B=AE=
+=E5=BD=95(=E4=B9=9F=E5=8F=AB=E5=81=9A=E7=B4=A2=E5=BC=95)=E5=92=8C=E4=BB=93=
+=E5=BA=93=E4=B9=8B=E9=97=B4=E5=A4=8D=E5=88=B6=E6=96=87=E4=BB=B6=E3=80=82</p>
+
+  <ul>
+
+    <li><code>git add <em>files</em></code> =E6=8A=8A=E5=BD=93=E5=89=8D=E6=
+=96=87=E4=BB=B6=E6=94=BE=E5=85=A5=E6=9A=82=E5=AD=98=E5=8C=BA=E5=9F=9F=E3=80=
+=82</li>
+
+    <li><code>git commit</code> =E7=BB=99=E6=9A=82=E5=AD=98=E5=8C=BA=E5=9F=
+=9F=E7=94=9F=E6=88=90=E5=BF=AB=E7=85=A7=E5=B9=B6=E6=8F=90=E4=BA=A4=E3=80=82=
+</li>
+
+    <li><code>git reset -- <em>files</em></code> =E7=94=A8=E6=9D=A5=E6=92=
+=A4=E9=94=80=E6=9C=80=E5=90=8E=E4=B8=80=E6=AC=A1<code>git add <em>files</em=
+></code>=EF=BC=8C=E4=BD=A0=E4=B9=9F=E5=8F=AF=E4=BB=A5=E7=94=A8<code>git res=
+et</code>
+    =E6=92=A4=E9=94=80=E6=89=80=E6=9C=89=E6=9A=82=E5=AD=98=E5=8C=BA=E5=9F=
+=9F=E6=96=87=E4=BB=B6=E3=80=82</li>
+
+    <li><code>git checkout -- <em>files</em></code> =E6=8A=8A=E6=96=87=E4=
+=BB=B6=E4=BB=8E=E6=9A=82=E5=AD=98=E5=8C=BA=E5=9F=9F=E5=A4=8D=E5=88=B6=E5=88=
+=B0=E5=B7=A5=E4=BD=9C=E7=9B=AE=E5=BD=95=EF=BC=8C=E7=94=A8=E6=9D=A5=E4=B8=A2=
+=E5=BC=83=E6=9C=AC=E5=9C=B0=E4=BF=AE=E6=94=B9=E3=80=82</li>
+
+  </ul>
+
+  <p>=E4=BD=A0=E5=8F=AF=E4=BB=A5=E7=94=A8 <code>git reset -p</code>, <code>=
+git checkout -p</code>, or
+  <code>git add -p</code>=E8=BF=9B=E5=85=A5=E4=BA=A4=E4=BA=92=E6=A8=A1=E5=
+=BC=8F=E3=80=82</p>
+
+  <p>=E4=B9=9F=E5=8F=AF=E4=BB=A5=E8=B7=B3=E8=BF=87=E6=9A=82=E5=AD=98=E5=8C=
+=BA=E5=9F=9F=E7=9B=B4=E6=8E=A5=E4=BB=8E=E4=BB=93=E5=BA=93=E5=8F=96=E5=87=BA=
+=E6=96=87=E4=BB=B6=E6=88=96=E8=80=85=E7=9B=B4=E6=8E=A5=E6=8F=90=E4=BA=A4=E4=
+=BB=A3=E7=A0=81=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/basic-usage-2.svg" type=3D"image/svg+xml" height=3D"312" width=3D=
+"866"></object></div>
+
+  <ul>
+
+    <li><code>git commit -a </code> =E7=9B=B8=E5=BD=93=E4=BA=8E=E8=BF=90=E8=
+=A1=8C <tt>git add</tt>
+    =E6=8A=8A=E6=89=80=E6=9C=89=E5=BD=93=E5=89=8D=E7=9B=AE=E5=BD=95=E4=B8=
+=8B=E7=9A=84=E6=96=87=E4=BB=B6=E5=8A=A0=E5=85=A5=E6=9A=82=E5=AD=98=E5=8C=BA=
+=E5=9F=9F=E5=86=8D=E8=BF=90=E8=A1=8C=E3=80=82<tt>git commit</tt>.</li>
+
+    <li><code>git commit <em>files</em></code> =E8=BF=9B=E8=A1=8C=E4=B8=80=
+=E6=AC=A1=E5=8C=85=E5=90=AB=E6=9C=80=E5=90=8E=E4=B8=80=E6=AC=A1=E6=8F=90=E4=
+=BA=A4=E5=8A=A0=E4=B8=8A=E5=B7=A5=E4=BD=9C=E7=9B=AE=E5=BD=95=E4=B8=AD=E6=96=
+=87=E4=BB=B6=E5=BF=AB=E7=85=A7=E7=9A=84=E6=8F=90=E4=BA=A4=E3=80=82=E5=B9=B6=
+=E4=B8=94=E6=96=87=E4=BB=B6=E8=A2=AB=E6=B7=BB=E5=8A=A0=E5=88=B0=E6=9A=82=E5=
+=AD=98=E5=8C=BA=E5=9F=9F=E3=80=82</li>
+
+    <li><code>git checkout HEAD -- <em>files</em></code> =E5=9B=9E=E6=BB=9A=
+=E5=88=B0=E5=A4=8D=E5=88=B6=E6=9C=80=E5=90=8E=E4=B8=80=E6=AC=A1=E6=8F=90=E4=
+=BA=A4=E3=80=82</li>
+
+  </ul>
+
+  <h2 id=3D"conventions">=E7=BA=A6=E5=AE=9A</h2>
+
+  <p>=E5=90=8E=E6=96=87=E4=B8=AD=E4=BB=A5=E4=B8=8B=E9=9D=A2=E7=9A=84=E5=BD=
+=A2=E5=BC=8F=E4=BD=BF=E7=94=A8=E5=9B=BE=E7=89=87=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/conventions.svg" type=3D"image/svg+xml" height=3D"485" width=3D"8=
+31"></object></div>
+
+  <p>=E7=BB=BF=E8=89=B2=E7=9A=845=E4=BD=8D=E5=AD=97=E7=AC=A6=E8=A1=A8=E7=A4=
+=BA=E6=8F=90=E4=BA=A4=E7=9A=84ID=EF=BC=8C=E5=88=86=E5=88=AB=E6=8C=87=E5=90=
+=91=E7=88=B6=E8=8A=82=E7=82=B9=E3=80=82=E5=88=86=E6=94=AF=E7=94=A8=E6=A9=98=
+=E8=89=B2=E6=98=BE=E7=A4=BA=EF=BC=8C=E5=88=86=E5=88=AB=E6=8C=87=E5=90=91=E7=
+=89=B9=E5=AE=9A=E7=9A=84=E6=8F=90=E4=BA=A4=E3=80=82=E5=BD=93=E5=89=8D=E5=88=
+=86=E6=94=AF=E7=94=B1=E9=99=84=E5=9C=A8=E5=85=B6=E4=B8=8A=E7=9A=84<em>HEAD<=
+/em>=E6=A0=87=E8=AF=86=E3=80=82
+=E8=BF=99=E5=BC=A0=E5=9B=BE=E7=89=87=E9=87=8C=E6=98=BE=E7=A4=BA=E6=9C=80=E5=
+=90=8E5=E6=AC=A1=E6=8F=90=E4=BA=A4=EF=BC=8C<em>ed489</em>=E6=98=AF=E6=9C=80=
+=E6=96=B0=E6=8F=90=E4=BA=A4=E3=80=82 <em>master</em>=E5=88=86=E6=94=AF=E6=
+=8C=87=E5=90=91=E6=AD=A4=E6=AC=A1=E6=8F=90=E4=BA=A4=EF=BC=8C=E5=8F=A6=E4=B8=
+=80=E4=B8=AA<em>maint</em>=E5=88=86=E6=94=AF=E6=8C=87=E5=90=91=E7=A5=96=E7=
+=88=B6=E6=8F=90=E4=BA=A4=E8=8A=82=E7=82=B9=E3=80=82</p>
+
+  <h2 id=3D"commands-in-detail">=E5=91=BD=E4=BB=A4=E8=AF=A6=E8=A7=A3</h2>
+
+  <h3 id=3D"diff">Diff</h3>
+
+  <p>=E6=9C=89=E8=AE=B8=E5=A4=9A=E7=A7=8D=E6=96=B9=E6=B3=95=E6=9F=A5=E7=9C=
+=8B=E4=B8=A4=E6=AC=A1=E6=8F=90=E4=BA=A4=E4=B9=8B=E9=97=B4=E7=9A=84=E5=8F=98=
+=E5=8A=A8=E3=80=82=E4=B8=8B=E9=9D=A2=E6=98=AF=E4=B8=80=E4=BA=9B=E7=A4=BA=E4=
+=BE=8B=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/diff.svg" type=3D"image/svg+xml" height=3D"485" width=3D"831"></o=
+bject></div>
+
+  <h3 id=3D"commit">Commit</h3>
+
+  <p>=E6=8F=90=E4=BA=A4=E6=97=B6=EF=BC=8Cgit=E7=94=A8=E6=9A=82=E5=AD=98=E5=
+=8C=BA=E5=9F=9F=E7=9A=84=E6=96=87=E4=BB=B6=E5=88=9B=E5=BB=BA=E4=B8=80=E4=B8=
+=AA=E6=96=B0=E7=9A=84=E6=8F=90=E4=BA=A4=EF=BC=8C=E5=B9=B6=E6=8A=8A=E6=AD=A4=
+=E6=97=B6=E7=9A=84=E8=8A=82=E7=82=B9=E8=AE=BE=E4=B8=BA=E7=88=B6=E8=8A=82=E7=
+=82=B9=E3=80=82=E7=84=B6=E5=90=8E=E6=8A=8A=E5=BD=93=E5=89=8D=E5=88=86=E6=94=
+=AF=E6=8C=87=E5=90=91=E6=96=B0=E7=9A=84=E6=8F=90=E4=BA=A4=E8=8A=82=E7=82=B9=
+=E3=80=82=E4=B8=8B=E5=9B=BE=E4=B8=AD=EF=BC=8C=E5=BD=93=E5=89=8D=E5=88=86=E6=
+=94=AF=E6=98=AF<em>master</em>=E3=80=82
+=E5=9C=A8=E8=BF=90=E8=A1=8C=E5=91=BD=E4=BB=A4=E4=B9=8B=E5=89=8D=EF=BC=8C<em=
+>master</em>=E6=8C=87=E5=90=91<em>ed489</em>=EF=BC=8C=E6=8F=90=E4=BA=A4=E5=
+=90=8E=EF=BC=8C<em>master</em>=E6=8C=87=E5=90=91=E6=96=B0=E7=9A=84=E8=8A=82=
+=E7=82=B9<em>f0cec</em>=E5=B9=B6=E4=BB=A5<em>ed489</em>=E4=BD=9C=E4=B8=BA=
+=E7=88=B6=E8=8A=82=E7=82=B9=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/commit-master.svg" type=3D"image/svg+xml" height=3D"485" width=3D=
+"831"></object></div>
+
+  <p>=E5=8D=B3=E4=BE=BF=E5=BD=93=E5=89=8D=E5=88=86=E6=94=AF=E6=98=AF=E6=9F=
+=90=E6=AC=A1=E6=8F=90=E4=BA=A4=E7=9A=84=E7=A5=96=E7=88=B6=E8=8A=82=E7=82=B9=
+=EF=BC=8Cgit=E4=BC=9A=E5=90=8C=E6=A0=B7=E6=93=8D=E4=BD=9C=E3=80=82=E4=B8=8B=
+=E5=9B=BE=E4=B8=AD=EF=BC=8C=E5=9C=A8<em>master</em>=E5=88=86=E6=94=AF=E7=9A=
+=84=E7=A5=96=E7=88=B6=E8=8A=82=E7=82=B9<em>maint</em>=E5=88=86=E6=94=AF=E8=
+=BF=9B=E8=A1=8C=E4=B8=80=E6=AC=A1=E6=8F=90=E4=BA=A4=EF=BC=8C=E7=94=9F=E6=88=
+=90=E4=BA=86<em>1800b</em>=E3=80=82
+=E8=BF=99=E6=A0=B7=EF=BC=8C<em>maint</em>=E5=88=86=E6=94=AF=E5=B0=B1=E4=B8=
+=8D=E5=86=8D=E6=98=AF<em>master</em>=E5=88=86=E6=94=AF=E7=9A=84=E7=A5=96=E7=
+=88=B6=E8=8A=82=E7=82=B9=E3=80=82=E6=AD=A4=E6=97=B6=EF=BC=8C<a href=3D"#mer=
+ge">=E5=90=88=E5=B9=B6</a> (=E6=88=96=E8=80=85 <a href=3D"#rebase">=E8=A1=
+=8D=E5=90=88</a>) =E6=98=AF=E5=BF=85=E9=A1=BB=E7=9A=84=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/commit-maint.svg" type=3D"image/svg+xml" height=3D"485" width=3D"=
+831"></object></div>
+
+  <p>=E5=A6=82=E6=9E=9C=E6=83=B3=E6=9B=B4=E6=94=B9=E4=B8=80=E6=AC=A1=E6=8F=
+=90=E4=BA=A4=EF=BC=8C=E4=BD=BF=E7=94=A8  <code>git commit --amend</code>=E3=
+=80=82git=E4=BC=9A=E4=BD=BF=E7=94=A8=E4=B8=8E=E5=BD=93=E5=89=8D=E6=8F=90=E4=
+=BA=A4=E7=9B=B8=E5=90=8C=E7=9A=84=E7=88=B6=E8=8A=82=E7=82=B9=E8=BF=9B=E8=A1=
+=8C=E4=B8=80=E6=AC=A1=E6=96=B0=E6=8F=90=E4=BA=A4=EF=BC=8C=E6=97=A7=E7=9A=84=
+=E6=8F=90=E4=BA=A4=E4=BC=9A=E8=A2=AB=E5=8F=96=E6=B6=88=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/commit-amend.svg" type=3D"image/svg+xml" height=3D"485" width=3D"=
+831"></object></div>
+
+  <p>=E5=8F=A6=E4=B8=80=E4=B8=AA=E4=BE=8B=E5=AD=90=E6=98=AF<a href=3D"#deta=
+ched">=E5=88=86=E7=A6=BBHEAD=E6=8F=90=E4=BA=A4</a>,=E5=90=8E=E6=96=87=E8=AE=
+=B2=E3=80=82</p>
+
+  <h3 id=3D"checkout">Checkout</h3>
+
+  <p>checkout=E5=91=BD=E4=BB=A4=E7=94=A8=E4=BA=8E=E4=BB=8E=E5=8E=86=E5=8F=
+=B2=E6=8F=90=E4=BA=A4=EF=BC=88=E6=88=96=E8=80=85=E6=9A=82=E5=AD=98=E5=8C=BA=
+=E5=9F=9F=EF=BC=89=E4=B8=AD=E6=8B=B7=E8=B4=9D=E6=96=87=E4=BB=B6=E5=88=B0=E5=
+=B7=A5=E4=BD=9C=E7=9B=AE=E5=BD=95=EF=BC=8C=E4=B9=9F=E5=8F=AF=E7=94=A8=E4=BA=
+=8E=E5=88=87=E6=8D=A2=E5=88=86=E6=94=AF=E3=80=82</p>
+
+  <p>=E5=BD=93=E7=BB=99=E5=AE=9A=E6=9F=90=E4=B8=AA=E6=96=87=E4=BB=B6=E5=90=
+=8D=EF=BC=88=E6=88=96=E8=80=85=E6=89=93=E5=BC=80-p=E9=80=89=E9=A1=B9=EF=BC=
+=8C=E6=88=96=E8=80=85=E6=96=87=E4=BB=B6=E5=90=8D=E5=92=8C-p=E9=80=89=E9=A1=
+=B9=E5=90=8C=E6=97=B6=E6=89=93=E5=BC=80=EF=BC=89=E6=97=B6=EF=BC=8Cgit=E4=BC=
+=9A=E4=BB=8E=E6=8C=87=E5=AE=9A=E7=9A=84=E6=8F=90=E4=BA=A4=E4=B8=AD=E6=8B=B7=
+=E8=B4=9D=E6=96=87=E4=BB=B6=E5=88=B0=E6=9A=82=E5=AD=98=E5=8C=BA=E5=9F=9F=E5=
+=92=8C=E5=B7=A5=E4=BD=9C=E7=9B=AE=E5=BD=95=E3=80=82=E6=AF=94=E5=A6=82=EF=BC=
+=8C<code>git checkout HEAD~ foo.c</code>=E4=BC=9A=E5=B0=86=E6=8F=90=E4=BA=
+=A4=E8=8A=82=E7=82=B9<em>HEAD~</em>(=E5=8D=B3=E5=BD=93=E5=89=8D=E6=8F=90=E4=
+=BA=A4=E8=8A=82=E7=82=B9=E7=9A=84=E7=88=B6=E8=8A=82=E7=82=B9)=E4=B8=AD=E7=
+=9A=84<code>foo.c</code>=E5=A4=8D=E5=88=B6=E5=88=B0=E5=B7=A5=E4=BD=9C=E7=9B=
+=AE=E5=BD=95=E5=B9=B6=E4=B8=94=E5=8A=A0=E5=88=B0=E6=9A=82=E5=AD=98=E5=8C=BA=
+=E5=9F=9F=E4=B8=AD=E3=80=82=EF=BC=88=E5=A6=82=E6=9E=9C=E5=91=BD=E4=BB=A4=E4=
+=B8=AD=E6=B2=A1=E6=9C=89=E6=8C=87=E5=AE=9A=E6=8F=90=E4=BA=A4=E8=8A=82=E7=82=
+=B9=EF=BC=8C=E5=88=99=E4=BC=9A=E4=BB=8E=E6=9A=82=E5=AD=98=E5=8C=BA=E5=9F=9F=
+=E4=B8=AD=E6=8B=B7=E8=B4=9D=E5=86=85=E5=AE=B9=E3=80=82=EF=BC=89=E6=B3=A8=E6=
+=84=8F=E5=BD=93=E5=89=8D=E5=88=86=E6=94=AF=E4=B8=8D=E4=BC=9A=E5=8F=91=E7=94=
+=9F=E5=8F=98=E5=8C=96=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/checkout-files.svg" type=3D"image/svg+xml" height=3D"485" width=
+=3D"831"></object></div>
+
+  <p>=E5=BD=93=E4=B8=8D=E6=8C=87=E5=AE=9A=E6=96=87=E4=BB=B6=E5=90=8D=EF=BC=
+=8C=E8=80=8C=E6=98=AF=E7=BB=99=E5=87=BA=E4=B8=80=E4=B8=AA=EF=BC=88=E6=9C=AC=
+=E5=9C=B0=EF=BC=89=E5=88=86=E6=94=AF=E6=97=B6=EF=BC=8C=E9=82=A3=E4=B9=88<em=
+>HEAD</em>=E6=A0=87=E8=AF=86=E4=BC=9A=E7=A7=BB=E5=8A=A8=E5=88=B0=E9=82=A3=
+=E4=B8=AA=E5=88=86=E6=94=AF=EF=BC=88=E4=B9=9F=E5=B0=B1=E6=98=AF=E8=AF=B4=EF=
+=BC=8C=E6=88=91=E4=BB=AC=E2=80=9C=E5=88=87=E6=8D=A2=E2=80=9D=E5=88=B0=E9=82=
+=A3=E4=B8=AA=E5=88=86=E6=94=AF=E4=BA=86=EF=BC=89=EF=BC=8C=E7=84=B6=E5=90=8E=
+=E6=9A=82=E5=AD=98=E5=8C=BA=E5=9F=9F=E5=92=8C=E5=B7=A5=E4=BD=9C=E7=9B=AE=E5=
+=BD=95=E4=B8=AD=E7=9A=84=E5=86=85=E5=AE=B9=E4=BC=9A=E5=92=8C<em>HEAD</em>=
+=E5=AF=B9=E5=BA=94=E7=9A=84=E6=8F=90=E4=BA=A4=E8=8A=82=E7=82=B9=E4=B8=80=E8=
+=87=B4=E3=80=82=E6=96=B0=E6=8F=90=E4=BA=A4=E8=8A=82=E7=82=B9=EF=BC=88=E4=B8=
+=8B=E5=9B=BE=E4=B8=AD=E7=9A=84a47c3=EF=BC=89=E4=B8=AD=E7=9A=84=E6=89=80=E6=
+=9C=89=E6=96=87=E4=BB=B6=E9=83=BD=E4=BC=9A=E8=A2=AB=E5=A4=8D=E5=88=B6=EF=BC=
+=88=E5=88=B0=E6=9A=82=E5=AD=98=E5=8C=BA=E5=9F=9F=E5=92=8C=E5=B7=A5=E4=BD=9C=
+=E7=9B=AE=E5=BD=95=E4=B8=AD=EF=BC=89=EF=BC=9B=E5=8F=AA=E5=AD=98=E5=9C=A8=E4=
+=BA=8E=E8=80=81=E7=9A=84=E6=8F=90=E4=BA=A4=E8=8A=82=E7=82=B9=EF=BC=88ed489=
+=EF=BC=89=E4=B8=AD=E7=9A=84=E6=96=87=E4=BB=B6=E4=BC=9A=E8=A2=AB=E5=88=A0=E9=
+=99=A4=EF=BC=9B=E4=B8=8D=E5=B1=9E=E4=BA=8E=E4=B8=8A=E8=BF=B0=E4=B8=A4=E8=80=
+=85=E7=9A=84=E6=96=87=E4=BB=B6=E4=BC=9A=E8=A2=AB=E5=BF=BD=E7=95=A5=EF=BC=8C=
+=E4=B8=8D=E5=8F=97=E5=BD=B1=E5=93=8D=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/checkout-branch.svg" type=3D"image/svg+xml" height=3D"485" width=
+=3D"831"></object></div>
+
+  <p>=E5=A6=82=E6=9E=9C=E6=97=A2=E6=B2=A1=E6=9C=89=E6=8C=87=E5=AE=9A=E6=96=
+=87=E4=BB=B6=E5=90=8D=EF=BC=8C=E4=B9=9F=E6=B2=A1=E6=9C=89=E6=8C=87=E5=AE=9A=
+=E5=88=86=E6=94=AF=E5=90=8D=EF=BC=8C=E8=80=8C=E6=98=AF=E4=B8=80=E4=B8=AA=E6=
+=A0=87=E7=AD=BE=E3=80=81=E8=BF=9C=E7=A8=8B=E5=88=86=E6=94=AF=E3=80=81SHA-1=
+=E5=80=BC=E6=88=96=E8=80=85=E6=98=AF=E5=83=8F<em>master~3</em>=E7=B1=BB=E4=
+=BC=BC=E7=9A=84=E4=B8=9C=E8=A5=BF=EF=BC=8C=E5=B0=B1=E5=BE=97=E5=88=B0=E4=B8=
+=80=E4=B8=AA=E5=8C=BF=E5=90=8D=E5=88=86=E6=94=AF=EF=BC=8C=E7=A7=B0=E4=BD=9C=
+<em>detached HEAD</em>=EF=BC=88=E8=A2=AB=E5=88=86=E7=A6=BB=E7=9A=84<em>HEAD=
+</em>=E6=A0=87=E8=AF=86=EF=BC=89=E3=80=82=E8=BF=99=E6=A0=B7=E5=8F=AF=E4=BB=
+=A5=E5=BE=88=E6=96=B9=E4=BE=BF=E5=9C=B0=E5=9C=A8=E5=8E=86=E5=8F=B2=E7=89=88=
+=E6=9C=AC=E4=B9=8B=E9=97=B4=E4=BA=92=E7=9B=B8=E5=88=87=E6=8D=A2=E3=80=82=E6=
+=AF=94=E5=A6=82=E8=AF=B4=E4=BD=A0=E6=83=B3=E8=A6=81=E7=BC=96=E8=AF=911.6.6.=
+1=E7=89=88=E6=9C=AC=E7=9A=84git=EF=BC=8C=E4=BD=A0=E5=8F=AF=E4=BB=A5=E8=BF=
+=90=E8=A1=8C<code>git checkout v1.6.6.1</code>=EF=BC=88=E8=BF=99=E6=98=AF=
+=E4=B8=80=E4=B8=AA=E6=A0=87=E7=AD=BE=EF=BC=8C=E8=80=8C=E9=9D=9E=E5=88=86=E6=
+=94=AF=E5=90=8D=EF=BC=89=EF=BC=8C=E7=BC=96=E8=AF=91=EF=BC=8C=E5=AE=89=E8=A3=
+=85=EF=BC=8C=E7=84=B6=E5=90=8E=E5=88=87=E6=8D=A2=E5=9B=9E=E5=8F=A6=E4=B8=80=
+=E4=B8=AA=E5=88=86=E6=94=AF=EF=BC=8C=E6=AF=94=E5=A6=82=E8=AF=B4<code>git ch=
+eckout master</code>=E3=80=82=E7=84=B6=E8=80=8C=EF=BC=8C=E5=BD=93=E6=8F=90=
+=E4=BA=A4=E6=93=8D=E4=BD=9C=E6=B6=89=E5=8F=8A=E5=88=B0=E2=80=9C=E5=88=86=E7=
+=A6=BB=E7=9A=84HEAD=E2=80=9D=E6=97=B6=EF=BC=8C=E5=85=B6=E8=A1=8C=E4=B8=BA=
+=E4=BC=9A=E7=95=A5=E6=9C=89=E4=B8=8D=E5=90=8C=EF=BC=8C=E8=AF=A6=E6=83=85=E8=
+=A7=81=E5=9C=A8<a href=3D"#detached">=E4=B8=8B=E9=9D=A2</a>=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/checkout-detached.svg" type=3D"image/svg+xml" height=3D"485" widt=
+h=3D"831"></object></div>
+
+  <h3 id=3D"detached">HEAD=E6=A0=87=E8=AF=86=E5=A4=84=E4=BA=8E=E5=88=86=E7=
+=A6=BB=E7=8A=B6=E6=80=81=E6=97=B6=E7=9A=84=E6=8F=90=E4=BA=A4=E6=93=8D=E4=BD=
+=9C</h3>
+
+  <p>=E5=BD=93<em>HEAD</em>=E5=A4=84=E4=BA=8E=E5=88=86=E7=A6=BB=E7=8A=B6=E6=
+=80=81=EF=BC=88=E4=B8=8D=E4=BE=9D=E9=99=84=E4=BA=8E=E4=BB=BB=E4=B8=80=E5=88=
+=86=E6=94=AF=EF=BC=89=E6=97=B6=EF=BC=8C=E6=8F=90=E4=BA=A4=E6=93=8D=E4=BD=9C=
+=E5=8F=AF=E4=BB=A5=E6=AD=A3=E5=B8=B8=E8=BF=9B=E8=A1=8C=EF=BC=8C=E4=BD=86=E6=
+=98=AF=E4=B8=8D=E4=BC=9A=E6=9B=B4=E6=96=B0=E4=BB=BB=E4=BD=95=E5=B7=B2=E5=91=
+=BD=E5=90=8D=E7=9A=84=E5=88=86=E6=94=AF=E3=80=82(=E4=BD=A0=E5=8F=AF=E4=BB=
+=A5=E8=AE=A4=E4=B8=BA=E8=BF=99=E6=98=AF=E5=9C=A8=E6=9B=B4=E6=96=B0=E4=B8=80=
+=E4=B8=AA=E5=8C=BF=E5=90=8D=E5=88=86=E6=94=AF=E3=80=82)</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/commit-detached.svg" type=3D"image/svg+xml" height=3D"485" width=
+=3D"831"></object></div>
+
+  <p>=E4=B8=80=E6=97=A6=E6=AD=A4=E5=90=8E=E4=BD=A0=E5=88=87=E6=8D=A2=E5=88=
+=B0=E5=88=AB=E7=9A=84=E5=88=86=E6=94=AF=EF=BC=8C=E6=AF=94=E5=A6=82=E8=AF=B4=
+<em>master</em>=EF=BC=8C=E9=82=A3=E4=B9=88=E8=BF=99=E4=B8=AA=E6=8F=90=E4=BA=
+=A4=E8=8A=82=E7=82=B9=EF=BC=88=E5=8F=AF=E8=83=BD=EF=BC=89=E5=86=8D=E4=B9=9F=
+=E4=B8=8D=E4=BC=9A=E8=A2=AB=E5=BC=95=E7=94=A8=E5=88=B0=EF=BC=8C=E7=84=B6=E5=
+=90=8E=E5=B0=B1=E4=BC=9A=E8=A2=AB=E4=B8=A2=E5=BC=83=E6=8E=89=E4=BA=86=E3=80=
+=82=E6=B3=A8=E6=84=8F=E8=BF=99=E4=B8=AA=E5=91=BD=E4=BB=A4=E4=B9=8B=E5=90=8E=
+=E5=B0=B1=E4=B8=8D=E4=BC=9A=E6=9C=89=E4=B8=9C=E8=A5=BF=E5=BC=95=E7=94=A8<em=
+>2eecb</em>=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/checkout-after-detached.svg" type=3D"image/svg+xml" height=3D"485=
+" width=3D"831"></object></div>
+
+  <p>=E4=BD=86=E6=98=AF=EF=BC=8C=E5=A6=82=E6=9E=9C=E4=BD=A0=E6=83=B3=E4=BF=
+=9D=E5=AD=98=E8=BF=99=E4=B8=AA=E7=8A=B6=E6=80=81=EF=BC=8C=E5=8F=AF=E4=BB=A5=
+=E7=94=A8=E5=91=BD=E4=BB=A4<code>git checkout -b <em>name</em></code>=E6=9D=
+=A5=E5=88=9B=E5=BB=BA=E4=B8=80=E4=B8=AA=E6=96=B0=E7=9A=84=E5=88=86=E6=94=AF=
+=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/checkout-b-detached.svg" type=3D"image/svg+xml" height=3D"485" wi=
+dth=3D"831"></object></div>
+
+  <h3 id=3D"reset">Reset</h3>
+
+  <p>reset=E5=91=BD=E4=BB=A4=E6=8A=8A=E5=BD=93=E5=89=8D=E5=88=86=E6=94=AF=
+=E6=8C=87=E5=90=91=E5=8F=A6=E4=B8=80=E4=B8=AA=E4=BD=8D=E7=BD=AE=EF=BC=8C=E5=
+=B9=B6=E4=B8=94=E6=9C=89=E9=80=89=E6=8B=A9=E7=9A=84=E5=8F=98=E5=8A=A8=E5=B7=
+=A5=E4=BD=9C=E7=9B=AE=E5=BD=95=E5=92=8C=E7=B4=A2=E5=BC=95=E3=80=82=E4=B9=9F=
+=E7=94=A8=E6=9D=A5=E5=9C=A8=E4=BB=8E=E5=8E=86=E5=8F=B2=E4=BB=93=E5=BA=93=E4=
+=B8=AD=E5=A4=8D=E5=88=B6=E6=96=87=E4=BB=B6=E5=88=B0=E7=B4=A2=E5=BC=95=EF=BC=
+=8C=E8=80=8C=E4=B8=8D=E5=8A=A8=E5=B7=A5=E4=BD=9C=E7=9B=AE=E5=BD=95=E3=80=82=
+</p>
+
+  <p>=E5=A6=82=E6=9E=9C=E4=B8=8D=E7=BB=99=E9=80=89=E9=A1=B9=EF=BC=8C=E9=82=
+=A3=E4=B9=88=E5=BD=93=E5=89=8D=E5=88=86=E6=94=AF=E6=8C=87=E5=90=91=E5=88=B0=
+=E9=82=A3=E4=B8=AA=E6=8F=90=E4=BA=A4=E3=80=82=E5=A6=82=E6=9E=9C=E7=94=A8<co=
+de>--hard</code>=E9=80=89=E9=A1=B9=EF=BC=8C=E9=82=A3=E4=B9=88=E5=B7=A5=E4=
+=BD=9C=E7=9B=AE=E5=BD=95=E4=B9=9F=E6=9B=B4=E6=96=B0=EF=BC=8C=E5=A6=82=E6=9E=
+=9C=E7=94=A8<code>--soft</code>=E9=80=89=E9=A1=B9=EF=BC=8C=E9=82=A3=E4=B9=
+=88=E9=83=BD=E4=B8=8D=E5=8F=98=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/reset-commit.svg" type=3D"image/svg+xml" height=3D"485" width=3D"=
+831"></object></div>
+
+  <p>=E5=A6=82=E6=9E=9C=E6=B2=A1=E6=9C=89=E7=BB=99=E5=87=BA=E6=8F=90=E4=BA=
+=A4=E7=82=B9=E7=9A=84=E7=89=88=E6=9C=AC=E5=8F=B7=EF=BC=8C=E9=82=A3=E4=B9=88=
+=E9=BB=98=E8=AE=A4=E7=94=A8<em>HEAD</em>=E3=80=82=E8=BF=99=E6=A0=B7=EF=BC=
+=8C=E5=88=86=E6=94=AF=E6=8C=87=E5=90=91=E4=B8=8D=E5=8F=98=EF=BC=8C=E4=BD=86=
+=E6=98=AF=E7=B4=A2=E5=BC=95=E4=BC=9A=E5=9B=9E=E6=BB=9A=E5=88=B0=E6=9C=80=E5=
+=90=8E=E4=B8=80=E6=AC=A1=E6=8F=90=E4=BA=A4=EF=BC=8C=E5=A6=82=E6=9E=9C=E7=94=
+=A8<code>--hard</code>=E9=80=89=E9=A1=B9=EF=BC=8C=E5=B7=A5=E4=BD=9C=E7=9B=
+=AE=E5=BD=95=E4=B9=9F=E5=90=8C=E6=A0=B7=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/reset.svg" type=3D"image/svg+xml" height=3D"485" width=3D"831"></=
+object></div>
+
+  <p>=E5=A6=82=E6=9E=9C=E7=BB=99=E4=BA=86=E6=96=87=E4=BB=B6=E5=90=8D(=E6=88=
+=96=E8=80=85 <code>-p</code>=E9=80=89=E9=A1=B9), =E9=82=A3=E4=B9=88=E5=B7=
+=A5=E4=BD=9C=E6=95=88=E6=9E=9C=E5=92=8C=E5=B8=A6=E6=96=87=E4=BB=B6=E5=90=8D=
+=E7=9A=84<a href=3D"#checkout">checkout</a>=E5=B7=AE=E4=B8=8D=E5=A4=9A=EF=
+=BC=8C=E9=99=A4=E4=BA=86=E7=B4=A2=E5=BC=95=E8=A2=AB=E6=9B=B4=E6=96=B0=E3=80=
+=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/reset-files.svg" type=3D"image/svg+xml" height=3D"485" width=3D"8=
+31"></object></div>
+
+  <h3 id=3D"merge">Merge</h3>
+
+  <p>merge =E5=91=BD=E4=BB=A4=E6=8A=8A=E4=B8=8D=E5=90=8C=E5=88=86=E6=94=AF=
+=E5=90=88=E5=B9=B6=E8=B5=B7=E6=9D=A5=E3=80=82=E5=90=88=E5=B9=B6=E5=89=8D=EF=
+=BC=8C=E7=B4=A2=E5=BC=95=E5=BF=85=E9=A1=BB=E5=92=8C=E5=BD=93=E5=89=8D=E6=8F=
+=90=E4=BA=A4=E7=9B=B8=E5=90=8C=E3=80=82=E5=A6=82=E6=9E=9C=E5=8F=A6=E4=B8=80=
+=E4=B8=AA=E5=88=86=E6=94=AF=E6=98=AF=E5=BD=93=E5=89=8D=E6=8F=90=E4=BA=A4=E7=
+=9A=84=E7=A5=96=E7=88=B6=E8=8A=82=E7=82=B9=EF=BC=8C=E9=82=A3=E4=B9=88=E5=90=
+=88=E5=B9=B6=E5=91=BD=E4=BB=A4=E5=B0=86=E4=BB=80=E4=B9=88=E4=B9=9F=E4=B8=8D=
+=E5=81=9A=E3=80=82
+  =E5=8F=A6=E4=B8=80=E7=A7=8D=E6=83=85=E5=86=B5=E6=98=AF=E5=A6=82=E6=9E=9C=
+=E5=BD=93=E5=89=8D=E6=8F=90=E4=BA=A4=E6=98=AF=E5=8F=A6=E4=B8=80=E4=B8=AA=E5=
+=88=86=E6=94=AF=E7=9A=84=E7=A5=96=E7=88=B6=E8=8A=82=E7=82=B9=EF=BC=8C=E5=B0=
+=B1=E5=AF=BC=E8=87=B4<em>fast-forward</em>=E5=90=88=E5=B9=B6=E3=80=82=E6=8C=
+=87=E5=90=91=E5=8F=AA=E6=98=AF=E7=AE=80=E5=8D=95=E7=9A=84=E7=A7=BB=E5=8A=A8=
+=EF=BC=8C=E5=B9=B6=E7=94=9F=E6=88=90=E4=B8=80=E4=B8=AA=E6=96=B0=E7=9A=84=E6=
+=8F=90=E4=BA=A4=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/merge-ff.svg" type=3D"image/svg+xml" height=3D"485" width=3D"831"=
+></object></div>
+
+  <p>=E5=90=A6=E5=88=99=E5=B0=B1=E6=98=AF=E4=B8=80=E6=AC=A1=E7=9C=9F=E6=AD=
+=A3=E7=9A=84=E5=90=88=E5=B9=B6=E3=80=82=E9=BB=98=E8=AE=A4=E6=8A=8A=E5=BD=93=
+=E5=89=8D=E6=8F=90=E4=BA=A4(<em>ed489</em> =E5=A6=82=E4=B8=8B=E6=89=80=E7=
+=A4=BA)=E5=92=8C=E5=8F=A6=E4=B8=80=E4=B8=AA=E6=8F=90=E4=BA=A4(<em>33104</em=
+>)=E4=BB=A5=E5=8F=8A=E4=BB=96=E4=BB=AC=E7=9A=84=E5=85=B1=E5=90=8C=E7=A5=96=
+=E7=88=B6=E8=8A=82=E7=82=B9(<em>b325c</em>)=E8=BF=9B=E8=A1=8C=E4=B8=80=E6=
+=AC=A1<a href=3D"http://en.wikipedia.org/wiki/Three-way_merge">=E4=B8=89=E6=
+=96=B9=E5=90=88=E5=B9=B6</a>=E3=80=82=E7=BB=93=E6=9E=9C=E6=98=AF=E5=85=88=
+=E4=BF=9D=E5=AD=98=E5=BD=93=E5=89=8D=E7=9B=AE=E5=BD=95=E5=92=8C=E7=B4=A2=E5=
+=BC=95=EF=BC=8C=E7=84=B6=E5=90=8E=E5=92=8C=E7=88=B6=E8=8A=82=E7=82=B9<em>33=
+104</em>=E4=B8=80=E8=B5=B7=E5=81=9A=E4=B8=80=E6=AC=A1=E6=96=B0=E6=8F=90=E4=
+=BA=A4=E3=80=82
+  </p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/merge.svg" type=3D"image/svg+xml" height=3D"485" width=3D"831"></=
+object></div>
+
+  <h3 id=3D"cherry-pick">Cherry Pick</h3>
+
+  <p>cherry-pick=E5=91=BD=E4=BB=A4"=E5=A4=8D=E5=88=B6"=E4=B8=80=E4=B8=AA=E6=
+=8F=90=E4=BA=A4=E8=8A=82=E7=82=B9=E5=B9=B6=E5=9C=A8=E5=BD=93=E5=89=8D=E5=88=
+=86=E6=94=AF=E5=81=9A=E4=B8=80=E6=AC=A1=E5=AE=8C=E5=85=A8=E4=B8=80=E6=A0=B7=
+=E7=9A=84=E6=96=B0=E6=8F=90=E4=BA=A4=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/cherry-pick.svg" type=3D"image/svg+xml" height=3D"485" width=3D"8=
+31"></object></div>
+
+  <h3 id=3D"rebase">Rebase</h3>
+
+  <p>=E8=A1=8D=E5=90=88=E6=98=AF=E5=90=88=E5=B9=B6=E5=91=BD=E4=BB=A4=E7=9A=
+=84=E5=8F=A6=E4=B8=80=E7=A7=8D=E9=80=89=E6=8B=A9=E3=80=82=E5=90=88=E5=B9=B6=
+=E6=8A=8A=E4=B8=A4=E4=B8=AA=E7=88=B6=E5=88=86=E6=94=AF=E5=90=88=E5=B9=B6=E8=
+=BF=9B=E8=A1=8C=E4=B8=80=E6=AC=A1=E6=8F=90=E4=BA=A4=EF=BC=8C=E6=8F=90=E4=BA=
+=A4=E5=8E=86=E5=8F=B2=E4=B8=8D=E6=98=AF=E7=BA=BF=E6=80=A7=E7=9A=84=E3=80=82=
+=E8=A1=8D=E5=90=88=E5=9C=A8=E5=BD=93=E5=89=8D=E5=88=86=E6=94=AF=E4=B8=8A=E9=
+=87=8D=E6=BC=94=E5=8F=A6=E4=B8=80=E4=B8=AA=E5=88=86=E6=94=AF=E7=9A=84=E5=8E=
+=86=E5=8F=B2=EF=BC=8C=E6=8F=90=E4=BA=A4=E5=8E=86=E5=8F=B2=E6=98=AF=E7=BA=BF=
+=E6=80=A7=E7=9A=84=E3=80=82
+  =E6=9C=AC=E8=B4=A8=E4=B8=8A=EF=BC=8C=E8=BF=99=E6=98=AF=E7=BA=BF=E6=80=A7=
+=E5=8C=96=E7=9A=84=E8=87=AA=E5=8A=A8=E7=9A=84 <a href=3D"#cherry-pick">cher=
+ry-pick</a></p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/rebase.svg" type=3D"image/svg+xml" height=3D"485" width=3D"831"><=
+/object></div>
+
+  <p>=E4=B8=8A=E9=9D=A2=E7=9A=84=E5=91=BD=E4=BB=A4=E9=83=BD=E5=9C=A8<em>top=
+ic</em>=E5=88=86=E6=94=AF=E4=B8=AD=E8=BF=9B=E8=A1=8C=EF=BC=8C=E8=80=8C=E4=
+=B8=8D=E6=98=AF<em>master</em>=E5=88=86=E6=94=AF=EF=BC=8C=E5=9C=A8<em>maste=
+r</em>=E5=88=86=E6=94=AF=E4=B8=8A=E9=87=8D=E6=BC=94=EF=BC=8C=E5=B9=B6=E4=B8=
+=94=E6=8A=8A=E5=88=86=E6=94=AF=E6=8C=87=E5=90=91=E6=96=B0=E7=9A=84=E8=8A=82=
+=E7=82=B9=E3=80=82=E6=B3=A8=E6=84=8F=E6=97=A7=E6=8F=90=E4=BA=A4=E6=B2=A1=E6=
+=9C=89=E8=A2=AB=E5=BC=95=E7=94=A8=EF=BC=8C=E5=B0=86=E8=A2=AB=E5=9B=9E=E6=94=
+=B6=E3=80=82</p>
+
+  <p>=E8=A6=81=E9=99=90=E5=88=B6=E5=9B=9E=E6=BB=9A=E8=8C=83=E5=9B=B4=EF=BC=
+=8C=E4=BD=BF=E7=94=A8<code>--onto</code>=E9=80=89=E9=A1=B9=E3=80=82=E4=B8=
+=8B=E9=9D=A2=E7=9A=84=E5=91=BD=E4=BB=A4=E5=9C=A8<em>master</em>=E5=88=86=E6=
+=94=AF=E4=B8=8A=E9=87=8D=E6=BC=94=E5=BD=93=E5=89=8D=E5=88=86=E6=94=AF=E4=BB=
+=8E<em>169a6</em>=E4=BB=A5=E6=9D=A5=E7=9A=84=E6=9C=80=E8=BF=91=E5=87=A0=E4=
+=B8=AA=E6=8F=90=E4=BA=A4=EF=BC=8C=E5=8D=B3<em>2c33a</em>=E3=80=82</p>
+
+  <div class=3D"center"><object data=3D"http://marklodato.github.io/visual-=
+git-guide/rebase-onto.svg" type=3D"image/svg+xml" height=3D"485" width=3D"8=
+31"></object></div>
+
+  <p>=E5=90=8C=E6=A0=B7=E6=9C=89<code>git rebase --interactive</code>=E8=AE=
+=A9=E4=BD=A0=E6=9B=B4=E6=96=B9=E4=BE=BF=E7=9A=84=E5=AE=8C=E6=88=90=E4=B8=80=
+=E4=BA=9B=E5=A4=8D=E6=9D=82=E6=93=8D=E4=BD=9C=EF=BC=8C=E6=AF=94=E5=A6=82=E4=
+=B8=A2=E5=BC=83=E3=80=81=E9=87=8D=E6=8E=92=E3=80=81=E4=BF=AE=E6=94=B9=E3=80=
+=81=E5=90=88=E5=B9=B6=E6=8F=90=E4=BA=A4=E3=80=82=E6=B2=A1=E6=9C=89=E5=9B=BE=
+=E7=89=87=E4=BD=93=E7=8E=B0=E8=BF=99=E4=BA=9B=EF=BC=8C=E7=BB=86=E8=8A=82=E7=
+=9C=8B=E8=BF=99=E9=87=8C:<a href=3D"http://www.kernel.org/pub/software/scm/=
+git/docs/git-rebase.html#_interactive_mode">git-rebase(1)</a></p>
+
+  <h2 id=3D"technical-notes">=E6=8A=80=E6=9C=AF=E8=AF=B4=E6=98=8E</h2>
+
+  <p>=E6=96=87=E4=BB=B6=E5=86=85=E5=AE=B9=E5=B9=B6=E6=B2=A1=E6=9C=89=E7=9C=
+=9F=E6=AD=A3=E5=AD=98=E5=82=A8=E5=9C=A8=E7=B4=A2=E5=BC=95(<em>.git/index</e=
+m>)=E6=88=96=E8=80=85=E6=8F=90=E4=BA=A4=E5=AF=B9=E8=B1=A1=E4=B8=AD=EF=BC=8C=
+=E8=80=8C=E6=98=AF=E4=BB=A5blob=E7=9A=84=E5=BD=A2=E5=BC=8F=E5=88=86=E5=88=
+=AB=E5=AD=98=E5=82=A8=E5=9C=A8=E6=95=B0=E6=8D=AE=E5=BA=93=E4=B8=AD(<em>.git=
+/objects</em>)=EF=BC=8C=E5=B9=B6=E7=94=A8SHA-1=E5=80=BC=E6=9D=A5=E6=A0=A1=
+=E9=AA=8C=E3=80=82
+=E7=B4=A2=E5=BC=95=E6=96=87=E4=BB=B6=E7=94=A8=E8=AF=86=E5=88=AB=E7=A0=81=E5=
+=88=97=E5=87=BA=E7=9B=B8=E5=85=B3=E7=9A=84blob=E6=96=87=E4=BB=B6=E4=BB=A5=
+=E5=8F=8A=E5=88=AB=E7=9A=84=E6=95=B0=E6=8D=AE=E3=80=82=E5=AF=B9=E4=BA=8E=E6=
+=8F=90=E4=BA=A4=E6=9D=A5=E8=AF=B4=EF=BC=8C=E4=BB=A5=E6=A0=91(<em>tree</em>)=
+=E7=9A=84=E5=BD=A2=E5=BC=8F=E5=AD=98=E5=82=A8=EF=BC=8C=E5=90=8C=E6=A0=B7=E7=
+=94=A8=E5=AF=B9=E4=BA=8E=E7=9A=84=E5=93=88=E5=B8=8C=E5=80=BC=E8=AF=86=E5=88=
+=AB=E3=80=82=E6=A0=91=E5=AF=B9=E5=BA=94=E7=9D=80=E5=B7=A5=E4=BD=9C=E7=9B=AE=
+=E5=BD=95=E4=B8=AD=E7=9A=84=E6=96=87=E4=BB=B6=E5=A4=B9=EF=BC=8C=E6=A0=91=E4=
+=B8=AD=E5=8C=85=E5=90=AB=E7=9A=84
+=E6=A0=91=E6=88=96=E8=80=85blob=E5=AF=B9=E8=B1=A1=E5=AF=B9=E5=BA=94=E7=9D=
+=80=E7=9B=B8=E5=BA=94=E7=9A=84=E5=AD=90=E7=9B=AE=E5=BD=95=E5=92=8C=E6=96=87=
+=E4=BB=B6=E3=80=82=E6=AF=8F=E6=AC=A1=E6=8F=90=E4=BA=A4=E9=83=BD=E5=AD=98=E5=
+=82=A8=E4=B8=8B=E5=AE=83=E7=9A=84=E4=B8=8A=E4=B8=80=E7=BA=A7=E6=A0=91=E7=9A=
+=84=E8=AF=86=E5=88=AB=E7=A0=81=E3=80=82</p>
+
+  <p>=E5=A6=82=E6=9E=9C=E7=94=A8detached HEAD=E6=8F=90=E4=BA=A4=EF=BC=8C=E9=
+=82=A3=E4=B9=88=E6=9C=80=E5=90=8E=E4=B8=80=E6=AC=A1=E6=8F=90=E4=BA=A4=E4=BC=
+=9A=E8=A2=ABthe reflog for HEAD=E5=BC=95=E7=94=A8=E3=80=82=E4=BD=86=E6=98=
+=AF=E8=BF=87=E4=B8=80=E6=AE=B5=E6=97=B6=E9=97=B4=E5=B0=B1=E5=A4=B1=E6=95=88=
+=EF=BC=8C=E6=9C=80=E7=BB=88=E8=A2=AB=E5=9B=9E=E6=94=B6=EF=BC=8C=E4=B8=8E<co=
+de>git commit --amend</code>=E6=88=96=E8=80=85<code>git
+    rebase</code>=E5=BE=88=E5=83=8F=E3=80=82</p>
+
+  <hr>
+
+  <p>Copyright =C2=A9 2010,
+    <a href=3D"mailto:lodatom@gmail.com">Mark Lodato</a>.
+  Chinese translation =C2=A9 2012,
+    <a href=3D"mailto:ellrywych@gmail.com">wych</a>.
+  </p>
+
+  <p><a rel=3D"license" href=3D"https://creativecommons.org/licenses/by-nc-=
+sa/3.0/us/"><img alt=3D"" src=3D"https://i.creativecommons.org/l/by-nc-sa/3=
+.0/us/80x15.png"></a> =E6=9C=AC=E8=91=97=E4=BD=9C=E7=B3=BB=E9=87=87=E7=94=
+=A8<a rel=3D"license" href=3D"https://creativecommons.org/licenses/by-nc-sa=
+/3.0/us/">=E5=88=9B=E7=94=A8CC =E5=A7=93=E5=90=8D=E6=A0=87=E7=A4=BA-=E9=9D=
+=9E=E5=95=86=E4=B8=9A=E6=80=A7-=E7=9B=B8=E5=90=8C=E6=96=B9=E5=BC=8F=E5=88=
+=86=E4=BA=AB3.0 =E7=BE=8E=E5=9B=BD=E6=8E=88=E6=9D=83=E6=9D=A1=E6=AC=BE</a>=
+=E6=8E=88=E6=9D=83=E3=80=82</p>
+
+
+
+</body></html>
+------=_NextPart_000_0000_009F6D2A.D9384C32
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: https://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png
+
+iVBORw0KGgoAAAANSUhEUgAAAFAAAAAPCAMAAABEF7i9AAAAllBMVEUAAAD///+rsapERER3d3eI
+iIjMzMzu7u4iIiKUmZO6v7rKzsoODg4RERFVVVUNDQ0NDg0PEA8zMzNLTEtbXltmZmZydnF9gn2A
+gICPkI+ZmZmqqqq7u7vFxsXIzMgNDQwZGRkgICAhISEkJSMnKCcuMC4xMzE5Ozk7PTtBQkFCQkJD
+Q0Nna2eGhoaHh4ezuLLGysbd3d1wVGpAAAAA4UlEQVR42q2T1xqCMAyFk7QsBQeKA9x7j/d/OSm2
+2CpX0nzcpA1/T05aAOuBVkMAScQFHLnEwoCo2f1TnQIGoVMewjZEjVFN4GH1Ue1Cn2jWqwfsOOj6
+wDwGvotsl/c8lv7KIq1eLOsT0HMFHMIE/RZyHnlphryT9zyV+8WH5e8yQw3wnQvgAFxPTKUVi555
+SHR/lOfLMgVTeDlSfN+TaoUsiTyeIm+bCkHvCA2FUKG48LDtYBZBknsYP/G8NTw0gaaHyuQf4H5p
+ecrB/FYCT2sL9zAfy1Xyjou6L8X2W7YcLyBZCRtnq/zfAAAAAElFTkSuQmCC
+------=_NextPart_000_0000_009F6D2A.D9384C32
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-503239F6:http://marklodato.github.io/visual-git-guide/visual-git-guide.css
+
+/* Effective stylesheet produced by snapshot save */
+.center { text-align: center; }
+#link-to-png, #link-to-svg { font-style: italic; display: none; }
+ol ol { list-style-type: lower-alpha; }
+#language-box { position: absolute; top: 5px; right: 10px; font-family: san=
+s-serif; list-style: outside none none; margin: 0px; padding: 0px; text-ali=
+gn: right; }
+#language-box ul { display: inline; list-style: outside none none; margin:=
+ 0px 0px 0px -0.5em; padding: 0.5em; width: 100%; }
+#language-box ul li { padding: 0.2ex 0px; display: inline; }
+#language-box ul li.selected { display: none; }
+@media print {
+  #language-box { display: none; }
+}
+
+------=_NextPart_000_0000_009F6D2A.D9384C32
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-715E5DB0:http://www.google-analytics.com/ga.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_009F6D2A.D9384C32
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-23F247D7:http://marklodato.github.io/visual-git-guide/visual-git-guide.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_009F6D2A.D9384C32--

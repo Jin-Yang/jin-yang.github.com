@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL 主备数据校验|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,主备复制,一致性校验">
+  <meta name="description" content="由于各种原因，MySQL 主从架构可能会出现数据不一致的情况出现，为此需要对主备复制的数据进行校验。在此，简单介绍 Percona-Toolkits 提供的数据校验方式。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL 主备数据校验</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-02-19 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>由于各种原因，MySQL 主从架构可能会出现数据不一致的情况出现，为此需要对主备复制的数据进行校验。</p>
+
+<p>在此，简单介绍 Percona-Toolkits 提供的数据校验方式。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>由于各种原因，MySQL 主从架构可能会出现数据不一致的情况出现，大致归结为如下几类：</p>
+
+<ul>
+  <li>主备方式，且在备库写数据；</li>
+  <li>执行了 non-deterministic query，如用户自定义函数、rand() 等；</li>
+  <li>回滚掺杂事务表和非事务表的事务；</li>
+  <li>binlog 或者 relaylog 数据损坏。</li>
+</ul>
+
+<p>在主库执行基于 statement 的 SQL 语句生成主库数据块的 checksum，把相同的 SQL 语句传递到从库，并在从库上计算相同数据块的 checksum，最后，比较主从库上相同数据块的 checksum 值，由此判断主从数据是否一致。</p>
+
+<p>这种校验是分表进行的，在每个表内部又是分块进行的，而且提供了非常多的限流选项，因此对线上服务的冲击较小。</p>
+
+<h3 id="环境搭建">环境搭建</h3>
+
+<p>在 CentOS 中可以通过如下方式安装依赖 RPM 包。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># rpm -ivh perl-DBD-MySQL perl-TermReadKey
+# rpm -ivh percona-toolkit-x.x.x.el7.x86_64.rpm</code></pre></figure>
+
+<p>三个包分别为 MySQL 驱动、交互密码输入、主备数据校验工具。如果是双主配置，只需要在一个节点部署即可。如果要测试，可以通过 <code>PTDEBUG=1 pt-table-checksum &gt; /tmp/checksum.log 2&gt;&amp;1</code> 测试。</p>
+
+<p>可以通过 <code>pt-table-checksum --help</code> 查看帮助信息，或者 <code>perldoc /usr/local/bin/pt-table-checksum</code> 查看详细帮助。</p>
+
+<h3 id="新建校验结果保存表">新建校验结果保存表</h3>
+
+<p>分别在主备新建数据校验表。</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">zabbix</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="n">checksums</span><span class="o">`</span> <span class="p">(</span>
+  <span class="o">`</span><span class="n">db</span><span class="o">`</span> <span class="nb">char</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">tbl</span><span class="o">`</span> <span class="nb">char</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">chunk</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">chunk_time</span><span class="o">`</span> <span class="nb">float</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">chunk_index</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">lower_boundary</span><span class="o">`</span> <span class="nb">text</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">upper_boundary</span><span class="o">`</span> <span class="nb">text</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">this_crc</span><span class="o">`</span> <span class="nb">char</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">this_cnt</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">master_crc</span><span class="o">`</span> <span class="nb">char</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">master_cnt</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">ts</span><span class="o">`</span> <span class="k">timestamp</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CURRENT_TIMESTAMP</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">db</span><span class="o">`</span><span class="p">,</span><span class="o">`</span><span class="n">tbl</span><span class="o">`</span><span class="p">,</span><span class="o">`</span><span class="n">chunk</span><span class="o">`</span><span class="p">),</span>
+  <span class="k">KEY</span> <span class="o">`</span><span class="n">ts_db_tbl</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">ts</span><span class="o">`</span><span class="p">,</span><span class="o">`</span><span class="n">db</span><span class="o">`</span><span class="p">,</span><span class="o">`</span><span class="n">tbl</span><span class="o">`</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8</span><span class="p">;</span></code></pre></figure>
+
+<h3 id="主机用户创建">主机用户创建</h3>
+
+<p>首先需要创建如下用户。</p>
+
+<h4 id="脚本部署主机">脚本部署主机</h4>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">USER</span> <span class="s1">&#39;checker&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;password&#39;</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="n">SUPER</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">,</span> <span class="k">SHOW</span> <span class="n">DATABASES</span> <span class="k">ON</span> <span class="o">*</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;checker&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="k">DELETE</span><span class="p">,</span> <span class="k">INSERT</span><span class="p">,</span> <span class="k">UPDATE</span> <span class="k">ON</span> <span class="n">zabbix</span><span class="p">.</span><span class="n">checksums</span> <span class="k">TO</span> <span class="s1">&#39;checker&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="p">;</span></code></pre></figure>
+
+<p>权限配置解析：</p>
+
+<ul>
+  <li>SUPER: SET @@binlog_format:=”STATEMENT” 设置会话级的 binlog 格式；</li>
+  <li>PROCESS: SHOW GRANTS FOR 查看当前用户的权限信息；</li>
+  <li>SHOW DATABASES: 查看是否存在数据库；</li>
+  <li>DELETE,INSERT,UPDATE: 用于清理、REPLACE INTO、UPDATE checksums 的历史数据；</li>
+</ul>
+
+<h4 id="另外一台主机">另外一台主机</h4>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">USER</span> <span class="s1">&#39;checker&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;password&#39;</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="n">PROCESS</span><span class="p">,</span> <span class="n">SUPER</span><span class="p">,</span> <span class="n">REPLICATION</span> <span class="n">CLIENT</span> <span class="k">ON</span> <span class="o">*</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;checker&#39;</span><span class="o">@</span><span class="s1">&#39;IP-MASTER&#39;</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="k">SELECT</span> <span class="k">ON</span> <span class="n">zabbix</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;checker&#39;</span><span class="o">@</span><span class="s1">&#39;IP-MASTER&#39;</span><span class="p">;</span></code></pre></figure>
+
+<p>权限配置解析：</p>
+
+<ul>
+  <li>SUPER, REPLICATION CLIENT: SHOW SLAVE STATUS 查看是否已经同步完成；</li>
+  <li>SELECT: EXPLAIN 评估备库数据量；</li>
+</ul>
+
+<h3 id="数据校验命令">数据校验命令</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ pt-table-checksum --nocheck-replication-filters --check-slave-tables --chunk-size-limit=1.5 \
+  --check-interval=3 --max-lag=1s --nocheck-binlog-format \
+  --empty-replicate-table --progress=time,30 \
+  --nocreate-replicate-table --replicate=zabbix.checksums \
+  --replicate-check --check-plan --replicate-database=zabbix \
+  --float-precision=2 --chunk-time=0.5 \
+  --user=checker --password=password --port=3306 --host=localhost \
+  --databases=somedb --tables=table1,table2,table3</code></pre></figure>
+
+<h3 id="数据不一致检查">数据不一致检查</h3>
+
+<p>可以直接通过如下命令查看数据不一致的表，需要在备库执行。</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">db</span><span class="p">,</span> <span class="n">tbl</span><span class="p">,</span> <span class="k">SUM</span><span class="p">(</span><span class="n">this_cnt</span><span class="p">)</span> <span class="k">AS</span> <span class="n">total_rows</span><span class="p">,</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">AS</span> <span class="n">chunks</span>
+  <span class="k">FROM</span> <span class="n">checksums</span>
+  <span class="k">WHERE</span> <span class="p">(</span>
+    <span class="n">master_cnt</span> <span class="o">&lt;&gt;</span> <span class="n">this_cnt</span>
+    <span class="k">OR</span> <span class="n">master_crc</span> <span class="o">&lt;&gt;</span> <span class="n">this_crc</span>
+    <span class="k">OR</span> <span class="k">ISNULL</span><span class="p">(</span><span class="n">master_crc</span><span class="p">)</span> <span class="o">&lt;&gt;</span> <span class="k">ISNULL</span><span class="p">(</span><span class="n">this_crc</span><span class="p">))</span>
+  <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">db</span><span class="p">,</span> <span class="n">tbl</span><span class="p">;</span></code></pre></figure>
+
+<h2 id="执行流程">执行流程</h2>
+
+<p>该工具每次只检测一个表，对于表中的数据会分割成 chunk，一般是 1000 条左右数据(默认会动态调整)；这个系统的调用流程可以阐述如下：</p>
+
+<h4 id="设置超时时间">设置超时时间</h4>
+
+<p>为了减小对线上事务的影响，在主库建立链接后，会先设置会话变量 <code>innodb_lock_wait_timeout=1</code> 和 <code>wait_timeout=10000</code>，也可以通过 <code>--set-vars wait_timeout=500</code> 参数覆盖默认值。</p>
+
+<h4 id="检查-sql_mode">检查 sql_mode</h4>
+
+<p>通过 <code>SELECT @@SQL_MODE</code> 命令，确认该变量中不包含 <code>ONLY_FULL_GROUP_BY</code>，因为对于一些正常的函数，该模式仍可能会出错，因此需要通过 <code>SET SQL_MODE</code> 命令重新设置。</p>
+
+<h4 id="设置-binlog_mode">设置 binlog_mode</h4>
+
+<p>查看当前 <code>SELECT @@binlog_mode</code> 模式，如果不是 STATEMENT，默认会报错直接退出；当然，可以通过 <code>--[no]check-binlog-format</code> 参数不检查该参数。</p>
+
+<p>然后，仍会设置会话变量 <code>/*!50108 SET @@binlog_format := 'STATEMENT'*/</code> 。</p>
+
+<h4 id="设置隔离级别">设置隔离级别</h4>
+
+<p>设置会话的隔离级别为 <code>SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ</code>，主要因为在将 binog_format 设置为 STATEMENT 后，且隔离级别为 RR，那么会报如下的错误 <code>Transaction level 'READ-COMMITTED' in InnoDB is not safe for binlog mode 'STATEMENT'</code>，当然，这正是我们需要的，所以直接忽略该报错信息。</p>
+
+<h4 id="查找备库">查找备库</h4>
+
+<p>通过 <code>get_slaves()</code> 函数查找备库，当然可以在启动时设置不同的备库查找方式，详见 <code>find_slave_hosts()</code> 函数。</p>
+
+<h4 id="拼接-sql">拼接 SQL</h4>
+
+<p>接下来就是拼接主库执行的 SQL 语句，主要的格式如下：</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">REPLACE</span> <span class="k">INTO</span> <span class="n">checksum_table</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">tbl</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="p">...)</span>
+  <span class="k">SELECT</span> <span class="p">...,</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">AS</span> <span class="n">cnt</span><span class="p">,</span> <span class="n">COALESCE</span><span class="p">(</span><span class="k">LOWER</span><span class="p">(</span><span class="n">CONV</span><span class="p">(</span><span class="n">BIT_XOR</span><span class="p">(</span>
+    <span class="k">CAST</span><span class="p">(</span><span class="n">CRC32</span><span class="p">(</span><span class="n">CONCAT_WS</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,...))</span> <span class="k">AS</span> <span class="n">UNSIGNED</span><span class="p">)),</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">16</span><span class="p">)),</span> <span class="mi">0</span><span class="p">)</span> <span class="k">AS</span> <span class="n">crc</span>
+<span class="k">FROM</span> <span class="n">tables</span> <span class="k">FORCE</span> <span class="k">INDEX</span><span class="p">(</span><span class="o">`</span><span class="k">PRIMARY</span><span class="o">`</span><span class="p">)</span>
+<span class="k">WHERE</span> <span class="p">((</span><span class="n">col</span> <span class="o">&gt;=</span> <span class="o">?</span><span class="p">))</span> <span class="k">AND</span> <span class="p">((</span><span class="n">col</span> <span class="o">&lt;=</span> <span class="o">?</span><span class="p">));</span></code></pre></figure>
+
+<p>简单介绍下拼接上述 SQL 时的注意内容：</p>
+
+<ul>
+  <li>拼接各个列时，会根据不同的数据类型进行处理，例如以 <code>TIMESTAMP</code> 类型使用 <code>UNIX_TIMESTAMP()</code> 函数；可能为 <code>NULL</code> 时，使用 <code>CONCAT(ISNULL())</code> 等等；</li>
+  <li>每次执行查询前会通过 <code>EXPLAIN</code> 生成执行计划，主要关注评估数据量、索引使用情况，执行时会强制使用索引；</li>
+  <li>通过 <code>WHERE</code> 进行分区，也就是 chunk 块，默认会使执行结果尽量接近 <code>--chunk-time</code> 参数指定的时间，所以每次 chunk 的大小会动态调整。</li>
+</ul>
+
+<h4 id="等待备库执行完成">等待备库执行完成</h4>
+
+<p>在执行完上述的 SQL 后，需要等待备库执行完成上述的 SQL 语句，也即是计算备库的 CRC 值。</p>
+
+<h4 id="更新主库校验值">更新主库校验值</h4>
+
+<p>校验完成后在主库更新校验值，SQL 如下，该语句会将主库校验值同步到备库：</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">UPDATE</span> <span class="n">checksum_table</span> <span class="k">SET</span> <span class="n">chunk_time</span> <span class="o">=</span> <span class="o">?</span><span class="p">,</span> <span class="n">master_crc</span> <span class="o">=</span> <span class="o">?</span><span class="p">,</span> <span class="n">master_cnt</span> <span class="o">=</span> <span class="o">?</span>
+  <span class="k">WHERE</span> <span class="n">db</span> <span class="o">=</span> <span class="o">?</span> <span class="k">AND</span> <span class="n">tbl</span> <span class="o">=</span> <span class="o">?</span> <span class="k">AND</span> <span class="n">chunk</span> <span class="o">=</span> <span class="o">?</span><span class="p">;</span></code></pre></figure>
+
+<h4 id="等待同步完成">等待同步完成</h4>
+
+<p>接下来就是等待备库执行完成上述的 SQL 语句，也即将主库的校验值同步到备库。在按照 chunk 执行完成之后，接下来只需要去备库的 checksums 表中找 <code>master_cnt &lt;&gt; this_cnt or OR master_crc &lt;&gt; this_crc</code> 的记录即可。</p>
+
+<h3 id="校验函数">校验函数</h3>
+
+<p>简单介绍下上述校验命令中的函数。</p>
+
+<h4 id="coalesce">COALESCE()</h4>
+
+<p>类似于 Oracle 中的 NVL() 函数，语义略有区别，会返回参数中第一个非 NULL 表达式的值，从左到右：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 如下函数返回 1
+mysql&gt; SELECT COALESCE(NULL, NULL, 1);</code></pre></figure>
+
+<p>通常使用场景为，如果某个字段默认是 NULL，如果不想返回 NULL，而是 0 或其它值，可以使用该函数：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SELECT COALESCE(field_name, 0) AS value FROM table;</code></pre></figure>
+
+<h4 id="bit_xor">BIT_XOR()</h4>
+
+<p>用于 Binary String 的检测，会字段的值逐位进行检测，如果 bit 相同则返回 0，否则返回 1；比较时会按照行逐行进行检测，示例如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; CREATE TABLE foobar (id INT);
+mysql&gt; INSERT INTO foobar VALUES(100), (100), (120);
+mysql&gt; SELECT BIT_XOR(id) FROM foobar;</code></pre></figure>
+
+<p>首先是第一行与第二行比较，结果是 0；然后结果 0 与第三行比较，结果是 120。</p>
+
+<h4 id="castconvert">CAST()/CONVERT()</h4>
+
+<p>CAST() 和 CONVERT() 用来进行类型转换，只是语法不同，可用类型包括了 BINARY、CHAR(N)、DATE、TIME、DATETIME、DECIMAL、SIGNED、UNSIGNED 等：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">CAST(value AS type);
+CONVERT(value, type);</code></pre></figure>
+
+<h4 id="conv">CONV()</h4>
+
+<p>语法为 <code>CONV(N,from_base,to_base)</code>，该函数用于数字的基数转换，最小基数值是2，最大值为36，如果任一参数为NULL，则该函数返回NULL。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 将数字5从基数16转为基数2
+SELECT CONV(5,16,2);</code></pre></figure>
+
+<h2 id="配置选项">配置选项</h2>
+
+<p>接下来，看下执行命令时的常用参数。</p>
+
+<h3 id="安全选项">安全选项</h3>
+
+<ul>
+  <li>--[no]check-replication-filters (可选)</li>
+</ul>
+
+<p>是否检查复制过滤规则，默认会检查，如果检查到有设置过滤规则会直接退出，主要防治检查的表在主库存在，而备库不存在导致 SQL 异常，主备复制出错；</p>
+
+<ul>
+  <li>--[no]check-slave-tables (设置)</li>
+</ul>
+
+<p>默认检查，查看是否所有从库都有被检查的表和列，防止由于改程序导致主备复制异常；每次同时会通过 EXPLAIN 检查备库的执行计划，评估行数；</p>
+
+<ul>
+  <li>--chunk-size-limit=2.0 (设置，尽量确保有主键或者唯一索引)</li>
+</ul>
+
+<p>每次执行校验 SQL 前，会通过 EXPLAIN 检查本次执行SQL的数据量，对于没有唯一索引的表，通过 EXPLAIN 查看的行数差异会比较大，该参数就用于设置最大可以超过 chunk-size 几倍；如果超过 chunk-size*chunk-size-limit，那么就不会对本次的 chunk 做校验。</p>
+
+<p>如果是 1.0，就以 chunk-size 为准；是 0.0 则表示不对 chunk 大小做校验。</p>
+
+<h3 id="限速选项">限速选项</h3>
+
+<ul>
+  <li>--check-interval=1 (可选)</li>
+</ul>
+
+<p>需要睡眠多久，再检查一次主从延迟是否超过 max-lag，默认是 1 秒；</p>
+
+<ul>
+  <li>--max-load=Threads_running=25 (建议设置)</li>
+</ul>
+
+<p>设置最大负载，当超过这个值时就等待，防止由于工具导致过载，默认是 <code>Threads_running=25</code> 等价于 <code>Threads_running:25</code>，可以逗号分隔设置多个值；如果不指定值则会在开始检查变量对应的值，并将上限设置为 120%；</p>
+
+<p>每次执行完一个 chunk 之后，会通过 <code>SHOW GLOBAL STATUS</code> 查看当前服务器的状态，如果超过了上述值，就会等待；如果校验 SQL 导致锁等待，则会导致队列增加，进而 Threads_running 增加，通过该参数可以减小系统负载。</p>
+
+<ul>
+  <li>--check-slave-lag=”h=slave1” (可选)</li>
+</ul>
+
+<p>是否只检查这个从库的复制延迟，如果有些场景通过 pt-slave-delay 特意设置了延迟复制，那么可以通过该参数指定需要关注哪些复制延迟。</p>
+
+<ul>
+  <li>--max-lag=1s (设置)</li>
+</ul>
+
+<p>检查备库的最大延迟，也就是 <code>Seconds_Behind_Master</code> 参数，当超过这个就等待，而且如果备库复制线程异常，同样会等待；默认会检查所有库，也可以通过 check-slave-lag 指定需要检查哪些库。</p>
+
+<h3 id="过滤选项">过滤选项</h3>
+
+<p>可以指定只检查哪些数据库、表、列、存储引擎等，也可以使用 Perl 正则表达式；除此之外，也可以指定忽略哪些。</p>
+
+<ul>
+  <li>--ignore-databases</li>
+  <li>--ignore-databases-regex</li>
+  <li>--ignore-tables</li>
+  <li>--ignore-tables-regex</li>
+  <li>--ignore-columns</li>
+  <li>--ignore-engines</li>
+  <li>--databases</li>
+  <li>--databases-regex</li>
+  <li>--tables</li>
+  <li>--tables-regex</li>
+  <li>--columns</li>
+  <li>--engines</li>
+</ul>
+
+<h3 id="主库登陆选项">主库登陆选项</h3>
+
+<ul>
+  <li>--host</li>
+  <li>--user</li>
+  <li>--password</li>
+  <li>--port</li>
+  <li>--ask-pass</li>
+  <li>--socket</li>
+</ul>
+
+<h3 id="其它参数">其它参数：</h3>
+
+<ul>
+  <li>--[no]empty-replicate-table</li>
+</ul>
+
+<p>默认yes，会在每次执行校验前清理要校验表对应的记录，注意该操作不会TRUNCATE TABLE，如果需要，则要手动执行；</p>
+
+<ul>
+  <li>--progress=time,30</li>
+</ul>
+
+<p>输出当前的进展，有三种输出方式，包括了两个参数值，默认是 time,30，还可以设置为 percentage,time,iterations；</p>
+
+<ul>
+  <li>--explain</li>
+</ul>
+
+<p>打印要执行的命令，但是不执行 (dry run)；</p>
+
+<ul>
+  <li>--[no]create-replicate-table</li>
+</ul>
+
+<p>检查 replicate 参数指定的表，如果不存在是否创建；</p>
+
+<ul>
+  <li>--replicate=percona.checksums</li>
+</ul>
+
+<p>将校验结果写入到那个表中，默认是 percona.checksums，可以通过该参数指定；</p>
+
+<ul>
+  <li>--binary-index (默认不开启测试)</li>
+</ul>
+
+<p>默认通过 replicate 指定的表的 lower_boundary、upper_boundary 字段格式为 text，有些情况下可能会存在不兼容，通过该参数将定义上述字段为 blob 格式；</p>
+
+<ul>
+  <li>--[no]replicate-check</li>
+</ul>
+
+<p>默认 yes，也就是每次校验完一个表之后，会等待各个备库同步完成，从而进行数据校验，如果关闭则需要通过 replicate-check-only 参数再检查一遍；</p>
+
+<ul>
+  <li>--replicate-check-only</li>
+</ul>
+
+<p>不执行数据校验的 SQL，只查询保存的结果；</p>
+
+<ul>
+  <li>--run-time=NUM</li>
+</ul>
+
+<p>要执行多长时间，每个循环会检测是否达到该参数设置值，可以指定单位，默认是秒，可以指定参数 s=seconds,m=minutes,h=hours,d=days；如果使用 <code>--resume</code> 那么之前的时间也会计算在内；</p>
+
+<ul>
+  <li>--recurse=NUM</li>
+</ul>
+
+<p>在查找复制库时指定递归层次，可以查看 <code>recurse_to_slaves()</code> 函数；</p>
+
+<ul>
+  <li>--recursion-method=processlist</li>
+</ul>
+
+<p>递归查找时的方法，包括了 processlist(<code>SHOW PROCESSLIST</code>)、hosts(<code>SHOW SLAVE HOSTS</code>)、none，详细查看 <code>recurse_to_slaves()</code> 函数；默认在启动时会检查所有的级联备库，可以通过该参数确认递归方法，通过 recurse 设置检查级联数；</p>
+
+<ul>
+  <li>--[no]check-binlog-format</li>
+</ul>
+
+<p>检查各个节点的格式是否相同，一般需要保证 binlog 格式为 STATEMENT 。</p>
+
+<ul>
+  <li>--[no]check-plan</li>
+</ul>
+
+<p>每次在执行正式查询前，默认会通过 EXPLAIN 查看执行计划，然后判断执行计划是否有问题，有可能会跳过本 chunk；</p>
+
+<ul>
+  <li>--replicate-check-retries</li>
+</ul>
+
+<p>当出现校验异常时，会尝试多少次；</p>
+
+<ul>
+  <li>--replicate-database</li>
+</ul>
+
+<p>默认会在执行过程中通过 USE 切换数据库，如果设置了 <code>binlog_ignore_db</code>、<code>replicate_ignore_db</code> 类型的参数，那么可能会导致错误，通过该参数可以防止切换数据库；</p>
+
+<ul>
+  <li>--chunk-index</li>
+</ul>
+
+<p>优先选择使用的索引，如果索引不存在则自动选择合适的索引，然后在执行 SQL 时会通过 <code>FORCE INDEX</code> 指定索引，当然如果指定错的话可能会有问题，建议只针对单表设置；</p>
+
+<ul>
+  <li>--chunk-index-columns</li>
+</ul>
+
+<p>只使用索引最左匹配的几个列，通常可以在 MySQL 优化器有问题时进行设置；</p>
+
+<ul>
+  <li>--chunk-size</li>
+</ul>
+
+<p>每次校验查询时的查询数据行数，可以使用 k,M,G 后缀，不建议直接使用，最好设置 chunk-time；默认会在每次查询时动态调整尽量接近 chunk-time 值，不指定时采用默认值作为起始值，后续的查询则动态调整，如果指定则严格按照该参数进行查询；</p>
+
+<ul>
+  <li>--chunk-time</li>
+</ul>
+
+<p>如上，每次查询会动态调整 checksum 查询的记录数，使执行时间尽量接近该值，单位是秒；</p>
+
+<ul>
+  <li>--config</li>
+</ul>
+
+<p>指定配置文件，如果指定则需要设置为命令行的第一项；</p>
+
+<ul>
+  <li>--defaults-file</li>
+</ul>
+
+<p>指定 MySQL 配置文件，需要使用绝对路径；</p>
+
+<ul>
+  <li>--float-precision</li>
+</ul>
+
+<p>用于浮点数四舍五入，会通过 ROUND() 函数处理，防止在不同平台上由于精度不同导致校验失败，例如为2时对于 1.008 和 1.009 会四舍五入为 1.01；</p>
+
+<ul>
+  <li>--function</li>
+</ul>
+
+<p>指定数据校验的函数，如果采用 CRC32 可能会有 hash 冲突，而 SHA1+MD5 对 CPU 消耗比较大，也可以使用 FNV1A_64()、MURMUR_HASH() 自定义函数进行处理；</p>
+
+<ul>
+  <li>--pid</li>
+</ul>
+
+<p>指定 PID 文件，一般只允许一个实例部署；</p>
+
+<ul>
+  <li>--plugin</li>
+</ul>
+
+<p>指定 Perl 插件；</p>
+
+<ul>
+  <li>--quiet</li>
+</ul>
+
+<p>使用一次时只打印 Errors、Warnings、数据不一致；使用两次则只输出错误信息；</p>
+
+<ul>
+  <li>--resume</li>
+</ul>
+
+<p>继续上次中断；</p>
+
+<ul>
+  <li>--retries</li>
+</ul>
+
+<p>发生非致命问题时(锁等待超时、查询被 kill 等)，每个 chunk 的重试执行次数；</p>
+
+<ul>
+  <li>--separator</li>
+</ul>
+
+<p>执行 CONCAT_WS() 函数时指定的分隔符，默认是 #；</p>
+
+<ul>
+  <li>--set-vars</li>
+</ul>
+
+<p>设置会话变量，默认会设置 <code>wait_timeout=10000</code>、<code>innodb_lock_wait_timeout=1</code> 两个参数；</p>
+
+<ul>
+  <li>--version</li>
+</ul>
+
+<p>查看当前版本；</p>
+
+<ul>
+  <li>--[no]version-check</li>
+</ul>
+
+<p>自动检查版本，用于更新，除了检查 Percona-toolkit 版本之外，还会检查 Perl 以及 MySQL 的版本，并打印已知问题；</p>
+
+<ul>
+  <li>--chunk-size=1000</li>
+</ul>
+
+<p>每次 checksum 校验时查询的记录数，如果指定了该参数，则将 chunk-time 设置为 0；</p>
+
+<ul>
+  <li>--chunk-time=0.5</li>
+</ul>
+
+<p>每次动态调整 checksum 记录数，使执行时间尽量接近该值，单位是秒；</p>
+
+<ul>
+  <li>--slave-skip-tolerance</li>
+</ul>
+
+<p>如果设置主库一个 chunk 校验完，而备库可能超过限制大小，那么就会跳过备库的查询；</p>
+
+<ul>
+  <li>--trim</li>
+</ul>
+
+<p>主要是针对 VARCHAR 类型的数据列，主要用于 4.1 和 &gt;=5.0 的数据对比，5.0 之后会保存 VARCHAR 类型开始与结尾的空格，而 4.1 则会自动去除；</p>
+
+<ul>
+  <li>--where</li>
+</ul>
+
+<p>用于过滤部分数据，与 mysqldump 的 -w 选项类似；</p>
+
+<h2 id="faqs">FAQs</h2>
+
+<h5 id="1-binlog在row模式下是否支持">1. binlog在row模式下是否支持？</h5>
+<p>工具在执行时会将会话变量binlog格式设置为statement；如果级联开启了–log-slave-updates选项，而binlog_format=ROW，那么此时仍有可能在会导致下一层的级联校验失败。</p>
+
+<h5 id="2-如何做到流量控制">2. 如何做到流量控制？</h5>
+<p>提供了多个参数进行流量控制，每次执行完一个chunk之后，会检查参数是否满足限流要求，如果超过限制则睡眠等待，直到满足要求。详见参数配置中的 “限速选项” 。</p>
+
+<!--
+### 校验数据表确认
+
+导出当前表结构，过滤表数量：
+
+```
+mysqldump --no-data -S /var/lib/mysql/mysql.sock -u omadmin -p'Opsmonitordb@2015' zabbix > opsmonitor.sql
+cat opsmonitor.sql | grep "CREATE TABLE" | wc -l
+cat opsmonitor.sql | grep "PRIMARY KEY" | wc -l
+```
+
+总计114个表，109有Primary Key，监控表包含了除dbversion、history、history_str、history_uint、tmp_cpustat、history_text、history_log外所有表，包括了
+
+
+pt-table-checksum --nocheck-binlog-format \
+  --user=root --password=new-password --port=3307 --host=127.1 --databases=sakila --tables=payment \
+  --replicate=sakila.checksums
+
+
+get_replication_filters() 如果设置check-replication-filters参数，则检查是否设置了过滤选项
+
+check_slave_tables() 默认check-slave-tables
+
+
+|-make_chunk_checksum() 生成需要进行校验的列，只有在没有索引或者chunk过大时才会报错
+| |-get_crc_args() 获取CRC参数，测试各种HASH函数测试是否可用
+| |-make_row_checksum()
+|-OobNibbleIterator() 新建一个循环
+  |-
+
+can_nibble()
+ |-get_row_estimate() 评估当前数据量，主要通过EXPLAIN测试
+ |-_find_best_index() 查找最优的索引
+
+get_connected_slaves()
+wait_for_master()
+start_slave()
+catchup_to_master()
+has_slave_updates()
+
+get_replication_filters()
+make_chunk_checksum()
+make_row_checksum()
+get_checksum_columns()
+find_replication_differences()
+
+https://github.com/KredytyChwilowki/MySQLReplicaIntegrityCheck
+
+log-slave-updates
+
+http://www.jet-almost-lover.cn/Article/Detail/45703
+http://blog.csdn.net/melody_mr/article/details/45224249
+http://www.cnblogs.com/zhoujinyi/archive/2013/05/09/3067045.html
+http://keithlan.github.io/2016/05/25/pt_table_checksum/
+http://www.cnblogs.com/xuanzhi201111/p/4180638.html
+-->
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://www.percona.com/doc/percona-toolkit/2.1/dsn_data_source_name_specifications.html">DSN (DATA SOURCE NAME) SPECIFICATIONS</a></p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/python-profile_init.html" title="Python Profilers 性能分析器">&larr; Older</a></li> 
+         <li class="next"><a href="/post/kernel-modules.html" title="Linux 内核模块">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1455811200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-replication-pt-table-checksum.html" data-title="MySQL 主备数据校验" data-url="/post/mysql-replication-pt-table-checksum.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

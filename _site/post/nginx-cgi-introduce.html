@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Nginx 通用网关|JinYang's Blog</title>
+  <meta name="keywords" content="nginx,网关,cgi,fastcgi">
+  <meta name="description" content="CGI (Common Gateway Interface，通用网关接口) 描述了客户端和服务器程序之间传输数据的一种标准，可以让一个客户端，从网页浏览器向执行在网络服务器上的程序请求数据。在此我们看下具体的实现以及应用。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Nginx 通用网关</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-04-18 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  network ,  webserver  
+      
+    </div>
+  </div>
+  <hr>
+  <p>CGI (Common Gateway Interface，通用网关接口) 描述了客户端和服务器程序之间传输数据的一种标准，可以让一个客户端，从网页浏览器向执行在网络服务器上的程序请求数据。</p>
+
+<p>在此我们看下具体的实现以及应用。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>CGI 定义了一种标准，实际是独立于任何语言的，CGI 程序可以用任何语言实现。最初，CGI 是 1993 年由美国国家超级电脑应用中心（NCSA）为 NCSA HTTPd Web 服务器开发的。</p>
+
+<p>这个 Web 服务器使用了 UNIX shell 环境变量来保存从 Web 服务器传递出去的参数，然后生成一个运行 CGI 的独立的进程。</p>
+
+<p>如下为 CGI 请求流程图。</p>
+
+<p><img src="/images/network/cgi-fork-and-execute.png" alt="cgi fork and execute" title="cgi fork and execute" class="pull-center" /></p>
+
+<p>执行过程如下：</p>
+
+<ol>
+  <li>
+    <p>web 服务器收到客户端（浏览器）的请求 Http Request，启动 CGI 程序，并通过环境变量、标准输入传递数据。</p>
+  </li>
+  <li>
+    <p>CGI 进程启动解析器、加载配置（如业务相关配置）、连接其它服务器（如数据库服务器）、逻辑处理等。</p>
+  </li>
+  <li>
+    <p>CGI 程将处理结果通过标准输出、标准错误，传递给 web 服务器。</p>
+  </li>
+  <li>
+    <p>web 服务器收到 CGI 返回的结果，构建 Http Response 返回给客户端，并杀死 CGI 进程。</p>
+  </li>
+</ol>
+
+<p>在遇到请求时，一般先要创建 CGI 的子进程，然后 CGI 子进程处理请求，处理完之后结束这个子进程，这也就是 fork-and-execute 模式。</p>
+
+<p>对于这种方式的服务器，有多少连接请求就会有多少 CGI 子进程，每个子进程都需要重起 CGI 解析器、加载配置、连接其它服务器等初始化工作，从而导致 CGI 性能低下。</p>
+
+<h3 id="fastcgi快速通用网关接口">FastCGI，快速通用网关接口</h3>
+
+<p>FastCGI 是通用 CGI 的改进，减少了 Web 服务器与 CGI 程式之间互动的开销。与为每个请求创建一个新的进程不同，FastCGI 使用持续的进程来处理一连串的请求，这些进程由 FastCGI 进程管理器管理，而不是 web 服务器。</p>
+
+<p><img src="/images/network/fastcgi-process-ex1.png" alt="FastCGI process examples" title="FastCGI process examples" class="pull-center" /></p>
+
+<p>当进来一个请求时，Web 服务器把环境变量和这个页面请求通过一个 unix domain socket (都位于同一物理服务器) 或者一个 IP Socket (FastCGI 部署在其它物理服务器) 传递给 FastCGI 进程。</p>
+
+<p><img src="/images/network/fastcgi-process-ex2.png" alt="FastCGI process examples" title="FastCGI process examples" class="pull-center" /></p>
+
+<p>FastCGI 执行的主要流程如下：</p>
+
+<ol>
+  <li>
+    <p>Web 服务器启动时载入初始化 FastCGI 执行环境，例如 IIS ISAPI、apache mod_fastcgi、nginx ngx_http_fastcgi_module、lighttpd mod_fastcgi。</p>
+  </li>
+  <li>
+    <p>FastCGI 进程管理器自身初始化，启动多个 CGI 解释器进程并等待来自 Web 服务器的连接。</p>
+  </li>
+  <li>
+    <p>当客户端请求到达 Web 服务器时，Web 服务器将请求采用 socket 方式转发到 FastCGI 主进程，FastCGI 主进程选择并连接到一个 CGI 解释器。Web 服务器将 CGI 环境变量和标准输入发送到 FastCGI 子进程。</p>
+  </li>
+  <li>
+    <p>FastCGI 子进程完成处理后将标准输出和错误信息从同一 socket 连接返回 Web 服务器，当 FastCGI 子进程关闭连接时，请求便处理完成。</p>
+  </li>
+  <li>
+    <p>FastCGI 子进程接着等待并处理来自 Web 服务器的下一个连接。</p>
+  </li>
+</ol>
+
+<p>由于 FastCGI 程序并不需要不断的产生新进程，可以大大降低服务器的压力并且产生较高的应用效率，它的速度效率最少要比 CGI 技术提高 5 倍以上，它还支持分布式的部署， 即 FastCGI 程序可以在 web 服务器以外的主机上执行。</p>
+
+<p>总结：CGI 就是所谓的短生存期应用程序，FastCGI 就是所谓的长生存期应用程序。FastCGI 像是一个常驻 (long-live) 型的 CGI，它可以一直执行着，不会每次都要花费时间去 fork 一次 (这是 CGI 最为人诟病的 fork-and-execute 模式)。</p>
+
+<h2 id="nginx">Nginx</h2>
+
+<p>nginx 不像 apache 那样可以直接执行外部可执行程序，但 nginx 可以作为代理服务器，将请求转发给后端服务器。其中 nginx 就支持 FastCGI 代理，接收客户端的请求，然后将请求转发给后端 fastcgi 进程。</p>
+
+<h3 id="nginxfastcgi">Nginx+FastCGI</h3>
+
+<p>fastcgi 进程由 FastCGI 进程管理器管理，而不是 nginx，这样就需要一个程序管理我们编写的 fastcgi 程序，在此使用 spawn-fcgi。</p>
+
+<p><a href="http://redmine.lighttpd.net/projects/spawn-fcgi">spawn-fcgi</a> 是一个通用的 FastCGI 进程管理器，简单小巧，原属于 <a href="http://redmine.lighttpd.net/">lighttpd</a> 的一部分，后来由于使用比较广泛，所以就迁移出来作为独立项目了。</p>
+
+<p>spawn-fcgi 使用 pre-fork 模型，功能主要是打开监听端口，绑定地址，然后 fork-and-exec 创建我们编写的 fastcgi 应用程序进程，退出完成工作。可以通过如下方法测试 C 的 FastCGI 程序。</p>
+
+<p>在 CentOS 中可以通过如下命令直接安装 (依赖 EPEL 源)，当然也可以通过源码安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum install spawn-fcgi fcgi fcgi-devel</code></pre></figure>
+
+<p>新建 FastCGI 应用程序。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cat examples/foobar.c                                               # 查看源码
+#include &amp;lt;fcgi_stdio.h&amp;gt;
+int main( int argc, char *argv[] )
+{
+    int count = 0;
+    while( FCGI_Accept() &amp;gt;= 0 )
+        FCGI_printf( &quot;Status: 200 OK\r\n&quot; );
+        FCGI_printf( &quot;Content-Type: text/html\r\n\r\n&quot; );
+        FCGI_printf( &quot;Hello world in C, #%d running on host %s\n&quot;,
+                    ++count, getenv(&quot;SERVER_NAME&quot;));
+    }
+    return 0;
+}
+$ gcc -o foobar.cgi foobar.c -L /usr/local/lib/ -lfcgi                # 直接编译</code></pre></figure>
+
+<p>启动 spawn-fcgi 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ spawn-fcgi -a 127.0.0.1 -p 7000 -u nginx -f /tmp/examples/foobar/foobar.cgi</code></pre></figure>
+
+<p>修改 nginx 配置文件，添加如下内容，然后通过 kill -HUP PID 重新加载配置文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">... ...
+        location = /hello.cgi {
+            fastcgi_pass 127.0.0.1:7000;
+            fastcgi_index index.cgi;
+            fastcgi_param SCRIPT_FILENAME fcgi$fastcgi_script_name;
+            include fastcgi_params;
+        }
+... ...</code></pre></figure>
+
+<p>然后可以通过 <a href="http://localhost/hello.cgi">http://localhost/hello.cgi</a> 查看。</p>
+
+<p>如果报错可以查看日志，最好通过 setenforce 0 将 selinux 关闭，否则可能会有 502 Bad Gateway 报错。</p>
+
+<h3 id="nginxcgi">Nginx+CGI</h3>
+
+<p>nginx 不能直接执行外部可执行程序，并且 cgi 是接收到请求时才会启动 cgi 进程，不像 fastcgi 会在一开就启动好，这样 nginx 天生是不支持 cgi 的。</p>
+
+<p>而 naginx 支持 FastCGI，我们可以考虑使用 fastcgi 包装来支持 cgi，原理大致如下图所示：pre-fork 几个通用的代理 fastcgi 程序 fastcgi-wrapper，fastcgi-wrapper 启动执行 cgi 然后将 cgi 的执行结果返回给 nginx（fork-and-exec）。</p>
+
+<p><img src="/images/network/cgi-process-ex.png" alt="Nginx FastCGI process examples" title="Nginx FastCGI process examples" class="pull-center" /></p>
+
+<p>明白原理之后，编写一个 fastcgi-warpper 也比较简单，网上流传比较多的一个解决方案是，来自 <a href="http://wiki.nginx.org/SimpleCGI">nginx wiki</a> 上的使用 perl 的 fastcgi 包装脚本 cgiwrap-fcgi.pl。</p>
+
+<p>其实编写 C 的 fastcgi-wrapper 就类似 C 的 fastcgi 程序，可以参考 <a href="https://github.com/gnosek/fcgiwrap">fastcgi-wrapper</a> 。</p>
+
+<p>下载源码之后通过如下命令安装，默认安装在 /usr/local/sbin/fcgiwrap 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ autoreconf -i
+$ ./configure &amp;&amp; make
+# make install</code></pre></figure>
+
+<p>仍以上述的示例为例，通过如下命令启动。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># spawn-fcgi -a 127.0.0.1 -p 7001 -u nginx -f /usr/local/sbin/fcgiwrap</code></pre></figure>
+
+<p>配置文件中添加如下内容。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">        ... ...
+        location ~ .*\.cgi$ {
+            root /path/to/modules
+            fastcgi_pass 127.0.0.1:7001;
+            fastcgi_index index.cgi;
+            include fastcgi.conf;
+        }
+        ... ...</code></pre></figure>
+
+<!-- http://www.cnblogs.com/skynet/p/4173450.html -->
+
+<h2 id="php">PHP</h2>
+
+<p>简单介绍下如何在 PHP 中使用。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum install php php-fpm                   # 安装PHP以及PHP-FPM
+# systemctl start php-fpm                   # 启动服务，默认使用9000</code></pre></figure>
+
+<p>在 Nginx 中添加配置内容。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">server {
+    location ~ \.php$ {
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        #fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        fastcgi_param  SCRIPT_FILENAME   $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+}</code></pre></figure>
+
+<h3 id="web-server-gateway-interface-wsgi">Web Server Gateway Interface, WSGI</h3>
+
+<p>WSGI 是 Python 中的一个规范协议，定义了一套接口，用来实现服务器端与应用端通信的规范化，定义为：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">WSGI is the Web Server Gateway Interface. It is a specification for web servers and
+application servers to communicate with web applications (though it can also be used
+for more than that).</code></pre></figure>
+
+<p>Python 中的 SimpleHTTPServer 模块提供了简单创建 http 服务的示例，不过 WEB 领域中却很少这么做，而是使用了另外一个 WSGI (Web Server Gateway Interface) 协议。</p>
+
+<p>如下是一个简单的示例，可以直接启动并访问 http://127.1:8000：</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
+
+<span class="c"># 可以做为单独的模块，通过 from hello import foobar 导入</span>
+<span class="k">def</span> <span class="nf">foobar</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="s">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s">&#39;text/html&#39;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="s">&#39;&amp;lt;h1&amp;gt;Hello, web!&amp;lt;/h1&amp;gt;&#39;</span>
+
+<span class="c"># 创建一个服务器，IP地址为空，端口是8000，处理函数是foobar:</span>
+<span class="n">httpd</span> <span class="o">=</span> <span class="n">make_server</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">foobar</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Serving HTTP on port 8000...&quot;</span>
+<span class="c"># 开始监听HTTP请求</span>
+<span class="n">httpd</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span></code></pre></figure>
+
+<p>WSGI 接口定义非常简单，如上所示，只需要实现一个函数，就可以响应 HTTP 请求；对于上述的 WSGI 标准处理函数，接收两个参数：</p>
+
+<ul>
+  <li>
+    <p>environ：一个包含所有 HTTP 请求信息的 dict 对象；</p>
+  </li>
+  <li>
+    <p>start_response：一个发送 HTTP 响应的函数。</p>
+  </li>
+</ul>
+
+<p>在 foobar() 中，通过调用 start_response() 发送 HTTP 响应的 Header，注意 Header 只能发送一次；包括了两个参数：A) HTTP 响应码，B) 一组 list 表示的 HTTP Header。</p>
+
+<p>然后，函数的返回值将作为 HTTP 响应的 Body 发送给浏览器。</p>
+
+<p>也就是说，通过 WSGI 定义的标准接口，只需要关心如何从 environ 这个字典中拿到 HTTP 请求信息，然后动态构造 HTML，通过 start_response() 发送 Header，最后返回 Body。</p>
+
+<p>Python 内置了一个 WSGI 服务器，这个模块为 wsgiref，是一个用 Python 编写的 WSGI 服务器的参考实现。这也就意味这该实现完全符合 WSGI 标准，但是不考虑任何运行效率，仅供开发和测试使用。</p>
+
+<h3 id="uwsgi">uwsgi</h3>
+
+<p>目前生产环境下最受推崇的方式是 uwsgi 服务器，其作用类似于 java 里的 Tomcat 服务器，可参考官方网站 <a href="http://uwsgi-docs.readthedocs.org/">The uWSGI project</a> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># pip install uwsgi                                         # 安装uwsgi服务器
+# yum --enablerepo=epel install uwsgi uwsgi-plugin-python   # 作用同上
+
+# cat foobar.py                                             # 实现一个简单的应用
+def application(env, start_response):
+    start_response(&#39;200 OK&#39;, [(&#39;Content-Type&#39;,&#39;text/html&#39;)])
+    return &quot;Hello World&quot;
+
+/usr/bin/uwsgi_python -s 127.0.0.1:9090 --file hello.py --daemonize uwsgi.log
+
+# uwsgi --http :8001 --wsgi-file foobar.py    # 简单启动</code></pre></figure>
+
+<p>此时可以通过 <a href="http://127.1:8001/">http://127.1:8001</a> 访问，此时会在网页上显示 Hello World 。</p>
+
+<!-- server {
+  location / {
+    #使用动态端口
+    uwsgi_pass unix:///tmp/uwsgi_vhosts.sock;
+    #uwsgi_pass 127.0.0.1:9031;
+
+    include uwsgi_params;
+    uwsgi_param UWSGI_SCRIPT uwsgi;
+    uwsgi_param UWSGI_PYHOME $document_root;
+    uwsgi_param UWSGI_CHDIR  $document_root;
+  }
+} -->
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://fastcgi-archives.github.io/">FastCGI.com Archives</a>，包括了 FastCGI 标准，以及 C 的实现 fcgi library。</p>
+
+<!--
+http://www.cnblogs.com/skynet/p/4173450.html
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/mysql-innodb-adaptive-hash-index_init.html" title="InnoDB AHI">&larr; Older</a></li> 
+         <li class="next"><a href="/post/nginx-press_init.html" title="webserver 压测工具">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1460908800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/nginx-cgi-introduce.html" data-title="Nginx 通用网关" data-url="/post/nginx-cgi-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

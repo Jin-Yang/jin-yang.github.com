@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Bash 重定向|JinYang's Blog</title>
+  <meta name="keywords" content="bash,redirect,重定向">
+  <meta name="description" content="所谓 IO 重定向简单来说就是一个过程，这个过程捕捉一个文件、命令、程序、脚本、甚至脚本中的代码块的输出，然后把捕捉到的输出，作为输入发送给另外一个文件、命令、程序、或者脚本。这里简单介绍常用命令及其实现。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Bash 重定向</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-09-23 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>所谓 IO 重定向简单来说就是一个过程，这个过程捕捉一个文件、命令、程序、脚本、甚至脚本中的代码块的输出，然后把捕捉到的输出，作为输入发送给另外一个文件、命令、程序、或者脚本。</p>
+
+<p>这里简单介绍常用命令及其实现。</p>
+
+<!-- more -->
+
+<h2 id="重定向">重定向</h2>
+
+<p>文件描述符 (File Descriptor) 是进程对其所打开文件的索引，形式上是个非负整数。在 Linux 系统中，系统为每一个打开的文件指定一个文件标识符以便系统对文件进行跟踪。</p>
+
+<p>和 C 语言编程里的文件句柄相似，文件标识符是一个数字，不同数字代表不同的含义，默认情况下，系统占用了 3 个，分别是 0 标准输入 (stdin) ， 1 标准输出 (stdout) ， 2 标准错误 (stderr) ，另外 3-9 是保留的标识符，可以把这些标识符指定成标准输入，输出或者错误作为临时连接。通常这样可以解决很多复杂的重定向请求。</p>
+
+<h3 id="使用方法">使用方法</h3>
+
+<p>可以简单地用 <code>&lt;</code> 或 <code>&gt;</code> ，默认相当于使用 <code>0&lt;</code> 或 <code>1&gt;</code>；管道 (<code>|</code> pipe line)，把上一个命令的 stdout 接到下一个命令的 stdin；<code>tee</code> 命令的作用是在不影响原本 IO 的情况下，将 stdout 复制一份到文件中去，例如 <code>cat file.txt | tee backup</code> 。</p>
+
+<p>重新定义文件标识符可以用 <code>i&gt;&amp;j</code> 命令，表示把文件标识符 i 重新定向到 j ，你可以把 <code>"&amp;"</code> 理解为 “取地址” 。</p>
+
+<h3 id="常见用例">常见用例</h3>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">cmd &gt; file</code></pre></figure>
+
+<p>把 cmd 命令的输出重定向到文件 file 中。如果 file 已经存在，则清空原有文件，使用 bash 的 <code>noclobber</code> 选项可以防止覆盖原有文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 阻止文件重定向操作对一个文件的覆盖，或者使用 set -C
+set -o noclobber
+----- 恢复文件重定向操作对一个文件的覆盖
+set +o noclobber</code></pre></figure>
+
+<hr />
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">cmd &gt;| file</code></pre></figure>
+
+<p>功能同 <code>&gt;</code> ，但即便在设置了 <code>noclobber</code> 时也会覆盖 file 文件，注意用的是 <code>|</code> 而非一些资料中说的 <code>!</code> ，目前仅在 csh 中仍沿用 <code>&gt;!</code> 实现这一功能。</p>
+
+<!--
+		cmd >> file<br>
+        把 cmd 命令的输出重定向到文件 file 中，如果 file 已经存在，则把信息加在原有文件后面。</li><br><li>
+
+		cmd &lt; file<br>
+        使 cmd 命令从 file 读入。</li><br><li>
+
+		cmd &lt;&lt; text<br>
+        从命令行读取输入，直到一个与 text 相同的行结束。除非使用引号把输入括起来，此模式将对输入内容进行 shell 变量替换。如果使用 &lt;&lt;- ，则会忽略接下来输入行首的 tab ，结束行也可以是一堆 tab 再加上一个与 text 相同的内容。</li><br><li>
+
+		cmd &lt;&lt;&lt; word ???????????????<br>
+        把 word（而不是文件 word ）和后面的换行作为输入提供给 cmd 。</li><br><li>
+
+    cmd &lt;&gt; file<br>
+        以读写模式把文件 file 重定向到输入，文件 file 不会被破坏。仅当应用程序利用了这一特性时，它才是有意义的。</li><br><li>
+
+
+		使用文件描述符的重定向 (都使用了 & 符号)<br>
+<pre>
+cmd &>file      标准输入输出重定向到 file
+cmd >&file
+cmd >file 2>&1
+
+&>>word         标准输入输出追加到 file ，没有 >>&word 的表达方法
+>>word 2>&1
+
+cmd >&n         把输出送到文件描述符 n ，复制文件描述符
+cmd m>&n        把输出到文件符 m 的信息重定向到文件描述符 n
+cmd >&-         关闭标准输出
+
+cmd <&n         输入来自文件描述符 n ，复制文件描述符
+cmd m<&n        m 来自文件描述符 n
+cmd <&-         关闭标准输入
+
+cmd <&n-        移动输入文件描述符 n 而非复制它
+cmd >&n-        移动输出文件描述符 n 而非复制它</pre></li><br><li>
+
+		关闭文件标识符的操作<br>
+	"j&lt;&gt;filename" 命令表示把文件打开，并指明文件标识符为 j ； "&-" 表示关闭文件标识符。
+<pre>
+n<&- 关闭输入文件标识符 n
+0<&- 或 <&- 关闭标准输入 stdin
+n>&- 关闭输出文件标识符 n
+1>&- 或 >&- 关闭标准输出 stdout
+</pre></li><br><li>
+
+		重定向的组合应用<br>
+<pre>
+cmd 2>file         把文件描述符 2 重定向到 file，即把错误输出存到 file 中。
+cmd > file 2>&1    把标准错误重定向到标准输出，再重定向到file，即stderr和stdout都被输出到file中
+cmd >> file 2>&1   追加把标准错误重定向到标准输出，再重定向到file，即stderr和stdout都被输出到file中
+cmd &> file        功能与上一个相同，更为简便的写法。
+cmd >& file        功能仍与上一个相同。
+cmd >>& file       追加。
+cmd > f1 2>f2      把stdout重定向到f1，而把stderr重定向到f2
+tee files          把stdout原样输出的同时，复制一份到files中。
+tee files          把stderr和stdout都输出到files中，同时输出到屏幕。</pre>
+	</li></ol><br><br><br>
+
+
+	如果要深刻理解重定向，先要明白以下 2 点。
+	<ol type="A"><li>
+		shell ( bash 或者 csh 等) 负责重定向，对于程序或者函数，这一切都是透明的，它只管输入输出，至于从哪输入哪输出，是 shell 解释器负责。</li><br><li>
+
+		shell 命令解析过程中，在实际执行命令前， IO 重定向先设置好。
+	</li></ol>
+
+-->
+
+<blockquote>
+  <p>exec 是 Shell 的内建命令，通常用于替换 Shell 执行命令。在重定向中，exec 用来操作文件描述符，当不指定命令时，会修改当前 shell 的文件描述符。</p>
+</blockquote>
+
+<h3 id="示例">示例</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># ls /dev 1&gt;filename               # 将标准输出重定向到文件中， &quot;1&quot; 和 &quot;&gt;&quot; 中间没有空格
+# ls /dev  &gt;filename               # 与上等价，系统默认是 1 ，因此 1 可以省略
+# ls /dev &gt;&gt;filename               # 追加到文件，而非创建
+# ls -qw /dev 2&gt;filename           # 将标准错误重定向到文件
+# ls /dev &amp;&gt;filename               # 将 stdio/stderr 都输入到文件，&quot;&amp;&quot; 在这里代表 stdio/stderr
+# ls /dev &gt;&amp;filename               # 与上同
+# ls /dev &gt;filename 2&gt;&amp;1           # 与上同
+# ls 2&gt;&amp;1 &gt; filename               # 只有标准输出重定向到 filename
+
+# exec 5&gt;&amp;1                        # 把文件标识符 5 定向到标准输出，通常用来临时保存标准输入
+# grep word &lt;filename              # 重定向标准输入，与下面相同
+# grep word 0&lt;filename             # 把文件 filename 作为 grep 命令的标准输入，而不是从键盘输入
+
+# echo 123456789 &gt;file             # 把字符串写到文件 file 中
+# exec 3&lt;&gt;file                     # 把文件 file 打开，并指定文件标识符为 3 ，默认为 0
+# read -n 4 &lt;&amp;3                    # 从文件中读 4 个字符，句柄已经指到第四个字符末尾
+# echo -n . &gt;&amp;3                    # 在第 5 个字符处写一个点，覆盖第 5 个字符， -n 表示不换行
+# exec 3&gt;&amp;-                        # 关闭文件标识符 3
+# cat file                         # file 文件的结果就成了 1234.6789
+
+# touch filename
+# cat filename
+# set -o noclobber
+# echo 2 &gt;filename
+bash: filename: cannot overwrite existing file
+# echo 2 &gt;| filename
+# cat filename
+2
+# set +o noclobber</code></pre></figure>
+
+<!--
+	<br><br>
+	<h2>tee 命令</h2>
+	<p>
+		tee 指令会从标准输入设备读取数据，将其内容输出到标准输出设备，同时保存成文件。如果指定的文件不存在，则创建；有则覆盖，除非使用 -a 参数。常用的参数为
+		<ul><li>
+		-a 或 --append<br>
+		附加到既有文件的后面，而非覆盖它。</li><li>
+		-i 或 --ignore-interrupts<br>
+		忽略中断信号。
+		</li></ul>
+
+		最简单的是
+		<pre># cat file | tee copy1 copy2 copy3</pre>
+
+
+		tee 命令当想要转移数据，并不想下次再通过 read 读取数据时非常有用。如通过 wget 下载文件，并通过 sha1sum 进行校验，通常使用如下命令。
+		<pre>$ wget http://example.com/some.iso && sha1sum some.iso</pre>
+
+		上述方法的问题时，需要一直等到下载完成才能进行校验，而且通常校验比较费时。另外，当从网络下载完后，需要再读取一次。通常可以下载和计算并行运行。
+		<pre>$ wget -O - http://example.com/dvd.iso | tee >(sha1sum > dvd.sha1) > dvd.iso</pre>
+
+		此时可以将文件下载到 dvd.iso 并将校验的结果保存到 dvd.sha1 中。这里使用了一个现代的 Shell 常用的一个特性，被称为进程替换，通常在 zsh、bash、ksh 有效，但是在 /bin/sh 无效，因此对于脚本应该使用 #!/bin/bash 开头。<br><br>
+
+		上述的命令重定向到一个文件和进程中，另一种比较常用的方法是。
+		<pre># wget -O - http://example.com/dvd.iso | tee dvd.iso | sha1sum > dvd.sha1</pre>
+
+		当然可以重定向到两个进程中去，如分别计算 MD5 和 SHA1 。
+		<pre># wget -O - http://example.com/dvd.iso \<br>   | tee >(sha1sum > dvd.sha1) \<br>         >(md5sum > dvd.md5) \<br>         > dvd.iso</pre><br><br>
+
+		这种方法另一个比较有效的应用是：将管道的内容压缩。如希望通过 GUI 工具分析硬盘的使用情况，在调用 ‘du -ak’ 命令时，会消耗很长时间，且产生的文件比较大，因此不希望保存为压缩的文件。通常在执行命令时不能打开 GUI 工具，比较低效的方法是
+		<pre># du -ak | gzip -9 > /tmp/du.gz<br># gzip -d /tmp/du.gz | xdiskusage -a</pre>
+
+		利用 tee 和进程替换，可以立即打开 GUI 工具，并忽略解压过程。
+		<pre># du -ak | tee >(gzip -9 > /tmp/du.gz) | xdiskusage -a</pre><br><br>
+
+		另外，如果需要使用不同的压缩方法时，也可以使用该方法。如在发布一个源码包时，需要使用不同的压缩方法。最简单的方法如下。
+		<pre># tardir=your-pkg-M.N<br># tar chof - "$tardir" | gzip  -9 -c > your-pkg-M.N.tar.gz<br># tar chof - "$tardir" | bzip2 -9 -c > your-pkg-M.N.tar.bz2</pre>
+
+		当源码包很大时，打包和压缩会很浪费时间，尤其是当使用多核大内存的电脑。最好的方法是并行运行。
+		<pre># tardir=your-pkg-M.N<br># tar chof - "$tardir" \<br>    | tee >(gzip -9 -c > your-pkg-M.N.tar.gz) \<br>    | bzip2 -9 -c > your-pkg-M.N.tar.bz2</pre>
+
+		返回 0 ，表示成功；非 0 表示失败。<br><br><br>
+
+		另一个比较有意思的命令为
+		<pre>$ ps -ef | tee >(grep tom >toms-procs.txt) \<br>    >(grep root >roots-procs.txt) \<br>    >(grep -v httpd >not-apache-procs.txt) \<br>    >(sed 1d | awk '{print $1}' >pids-only.txt)</pre>
+	</p>
+
+-->
+
+<h2 id="dup">DUP</h2>
+
+<p>如下的两个函数均为复制一个现存的文件的描述，通常使用这两个系统调用来重定向一个打开的文件描述符。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;unistd.h&gt;</span>
+<span class="kt">int</span> <span class="nf">dup</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">dup2</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd2</span><span class="p">);</span></code></pre></figure>
+
+<p>由 <code>dup</code> 返回的新文件描述符是当前最小的可用文件描述，用 <code>dup2()</code> 则可以用 <code>fd2</code> 参数指定新的描述符数值，如果 <code>fd2</code> 已经打开，则先关闭，若 <code>fd1=fd2</code>，则 <code>dup2</code> 返回 <code>fd2</code>，而不关闭它。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;string.h&gt;</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+
+<span class="kt">void</span> <span class="nf">flush</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="n">stream</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">duphandle</span><span class="p">;</span>
+
+        <span class="cm">/* flush TC&#39;s internal buffer */</span>
+        <span class="n">fflush</span><span class="p">(</span><span class="n">stream</span><span class="p">);</span>
+
+        <span class="cm">/* make a duplicate file handle */</span>
+        <span class="n">duphandle</span> <span class="o">=</span> <span class="n">dup</span><span class="p">(</span><span class="n">fileno</span><span class="p">(</span><span class="n">stream</span><span class="p">));</span>
+
+        <span class="cm">/* close the duplicate handle to flush the buffer */</span>
+        <span class="n">close</span><span class="p">(</span><span class="n">duphandle</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">FILE</span>    <span class="o">*</span><span class="n">fp</span><span class="p">;</span>
+        <span class="kt">char</span>    <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;This is a test&quot;</span><span class="p">;</span>
+
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">&quot;DUMMY.FIL&quot;</span><span class="p">,</span><span class="s">&quot;w&quot;</span><span class="p">);</span> <span class="cm">/*create a file*/</span>
+
+        <span class="cm">/*write some date to the file*/</span>
+        <span class="n">fwrite</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">msg</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fp</span><span class="p">);</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Press any key to flush DUMMY.FIL&quot;</span><span class="p">);</span>
+        <span class="n">getchar</span><span class="p">();</span>
+
+        <span class="cm">/*flush the data to DUMMY.FIL without closing it*/</span>
+        <span class="n">flush</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s"> File was flushed, Press any key to quit:&quot;</span><span class="p">);</span>
+        <span class="n">getchar</span><span class="p">();</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="使用示例">使用示例</h3>
+
+<p>这里简单列举一些常见的方法，将 stdout 定向到文件有 3 种方法：</p>
+
+<h4 id="1-close-open">1. close open</h4>
+
+<p>在 open 时操作系统会选择最小的一个文件描述符，所以可以使用类似如下的方法，不过只适用于单个的重定向。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">close</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>       <span class="c1">// stdout/1 成为最小的空闲文件描述符</span>
+<span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/tmp/stdout&quot;</span><span class="p">,</span> <span class="n">O_WRONLY</span> <span class="o">|</span> <span class="n">O_CREAT</span><span class="p">);</span></code></pre></figure>
+
+<h4 id="2-open-close-dup-close">2. open close dup close</h4>
+
+<p>简单来说操作步骤如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/tmp/stdout&quot;</span><span class="p">,</span> <span class="n">O_WRONLY</span> <span class="o">|</span> <span class="n">O_CREAT</span><span class="p">);</span> <span class="c1">// 打开需要重定向的文件</span>
+<span class="n">close</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>   <span class="c1">// 关闭标准输出，1成为最小描述符</span>
+<span class="n">dup</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>    <span class="c1">// 复制文件描述符fd，复制时会使用最小的文件描述符也就是1</span>
+<span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>  <span class="c1">// 将原有的文件描述符关闭</span></code></pre></figure>
+
+<p>第一次打开文件获取的描述符非 1 ，因为 1 还在打开着。</p>
+
+<h4 id="3-open-dup2-close">3. open dup2 close</h4>
+
+<p>这里使用到了 <code>dup2()</code> 函数，可以指定复制的目标文件描述符，如下是其声明。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;unistd.h&gt;</span>
+<span class="kt">int</span> <span class="nf">dup2</span><span class="p">(</span><span class="n">oldfd</span><span class="p">,</span> <span class="n">newfd</span><span class="p">);</span></code></pre></figure>
+
+<p>oldfd 需要复制的文件描述符，newfd 为期望复制 oldfd 后得到的文件描述符，成功则返回 newfd，否则返回 -1 。</p>
+
+<p>如下是简单将 stdout 重定向到 stdout 文件。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;fcntl.h&gt;</span>
+<span class="cp">#include &lt;errno.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>
+
+        <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;stdout&quot;</span><span class="p">,</span> <span class="n">O_RDWR</span> <span class="o">|</span> <span class="n">O_CREAT</span><span class="p">,</span> <span class="mo">0644</span><span class="p">);</span>
+        <span class="n">close</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">dup2</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Failed to dup2(%d, 1), %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                        <span class="n">fd</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+                <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Print sth</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Done running</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<!--
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
+
+int main(void)
+{
+        pid_t pid;
+        int fd;
+
+        printf("About to run the who.\n");
+
+        pid = fork();
+        if (pid < 0) {
+                perror("fork");
+                exit(1);
+        } else if (pid == 0) { /* child */
+                fd = open("userlist", O_RDWR | O_CREAT, 0644);
+                close(1);
+                if (dup2(fd, 1) != 1) {
+                        fprintf(stderr, "Failed to dup2(%d, 1), %s\n",
+                                fd, strerror(errno));
+                        exit(1);
+                }
+                execlp("who", "who", NULL);
+                perror("execlp"); /* NOT reach */
+        }
+
+        wait(0);
+        printf("Done running who. results in userlist.\n");
+
+        return 0;
+}
+-->
+
+<p>如下是通过命名管道 FIFO 将子进程的输出重定向到父进程，也可以使用匿名管道 PIPE 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;fcntl.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+<span class="cp">#include &lt;sys/stat.h&gt;</span>
+<span class="cp">#include &lt;sys/wait.h&gt;</span>
+
+<span class="cp">#define FIFO &quot;stdout_fifo&quot;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="cm">/* Make a fifo that redirect the data from stdout of child */</span>
+        <span class="n">unlink</span><span class="p">(</span><span class="n">FIFO</span><span class="p">);</span>
+        <span class="n">mkfifo</span><span class="p">(</span><span class="n">FIFO</span><span class="p">,</span> <span class="mo">0777</span><span class="p">);</span>
+
+        <span class="cm">/* child process */</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">fork</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">FIFO</span><span class="p">,</span> <span class="n">O_WRONLY</span><span class="p">);</span>
+                <span class="n">dup2</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="cm">/* readirect the stdout */</span>
+                <span class="n">execl</span><span class="p">(</span><span class="s">&quot;/bin/ls&quot;</span><span class="p">,</span> <span class="s">&quot;-a&quot;</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="cm">/* parent process */</span>
+                <span class="kt">char</span> <span class="n">child_stdout</span><span class="p">[</span><span class="mi">1024</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+
+                <span class="cm">/* Read and print the data from stdout of child */</span>
+                <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">FIFO</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">),</span> <span class="n">rc</span><span class="p">;</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">child_stdout</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">child_stdout</span><span class="p">));</span>
+                <span class="n">child_stdout</span><span class="p">[</span><span class="n">rc</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+                <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Parent: %s</span><span class="se">\n</span><span class="s">Finished</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">child_stdout</span><span class="p">);</span>
+
+                <span class="cm">/* Wait for child process */</span>
+                <span class="n">wait</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<!--
+子进程将输出重定向到同一个PIPE中
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main(void)
+{
+        int fdpipe[2];
+        pipe(fdpipe); /* 1: write, 0: read */
+
+        /* child process */
+        if(fork() == 0) {
+                close(0);
+                open("/dev/null", O_RDONLY);
+                close(fdpipe[0]);
+                dup2(fdpipe[1], 1); /* readirect the stdout */
+                dup2(fdpipe[1], 2); /* readirect the stderr */
+                close(fdpipe[1]);
+                fprintf(stderr, "Write to STDERR\n");
+                execl("/bin/ls", "-a", NULL);
+        } else { /* parent process */
+                char child_stdout[1024] = {0};
+                int rc;
+
+                close(fdpipe[1]);
+                /* Read and print the data from stdout of child */
+                while ((rc = read(fdpipe[0], child_stdout, sizeof(child_stdout) - 1)) > 0) {
+                        child_stdout[rc] = 0;
+                        puts(child_stdout);
+                };
+
+                /* Wait for child process */
+                wait(NULL);
+        }
+
+        return 0;
+}
+-->
+
+<h3 id="单进程">单进程</h3>
+
+<p>假设进程 A 拥有一个已打开的文件描述符 fd3，它的状态如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">------------
+fd0 0   | p0
+------------
+fd1 1   | p1 -------&gt; 文件表1 ---------&gt; vnode1
+------------
+fd2 2   | p2
+------------
+fd3 3   | p3 -------&gt; 文件表2 ---------&gt; vnode2
+------------
+... ...
+... ...
+------------</code></pre></figure>
+
+<p>经调用 <code>nfd = dup2(fd3, STDOUT_FILENO);</code> 后进程状态如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">------------
+fd0 0   | p0
+------------
+nfd 1   | p1 ------------+
+------------             |
+fd2 2   | p2             |
+------------             V
+fd3 3   | p3 -------&gt; 文件表2 ---------&gt; vnode2
+------------
+... ...
+... ...
+------------</code></pre></figure>
+
+<p>如上的函数表示，<code>nfd</code> 与 <code>fd3</code> 共享一个文件表项，它们的文件表指针指向同一个文件表项，<code>nfd</code> 在文件描述符表中的位置为 <code>STDOUT_FILENO</code> 的位置，而原先的 <code>STDOUT_FILENO</code> 所指向的文件表项被关闭，所以会有如下的特点：</p>
+
+<ol>
+  <li>第一个参数必须为已打开的合法 filedes 。</li>
+  <li>第二个参数可以是任意合法范围的 filedes 值。<!-- 在Unix其取值区间为[0,255] --></li>
+</ol>
+
+<h3 id="内核结构">内核结构</h3>
+
+<p>每个进程都对应一个结构体 <code>struct task_struct</code>，里面包含一个数据成员：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">task_struct</span> <span class="p">{</span>
+	<span class="cm">/* open file information */</span>
+	<span class="k">struct</span> <span class="n">files_struct</span> <span class="o">*</span><span class="n">files</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>其中，<code>struct files_struct</code> 结构体定义如下：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cm">/* Open file table structure */</span>
+<span class="k">struct</span> <span class="n">files_struct</span> <span class="p">{</span>
+	<span class="cm">/* read mostly part */</span>
+	<span class="kt">atomic_t</span> <span class="n">count</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">fdtable</span> <span class="n">__rcu</span> <span class="o">*</span><span class="n">fdt</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">fdtable</span> <span class="n">fdtab</span><span class="p">;</span>
+
+	<span class="cm">/* written part on a separate cache line in SMP */</span>
+        <span class="kt">spinlock_t</span> <span class="n">file_lock</span> <span class="n">____cacheline_aligned_in_smp</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">next_fd</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">embedded_fd_set</span> <span class="n">close_on_exec_init</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">embedded_fd_set</span> <span class="n">open_fds_init</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">file</span> <span class="n">__rcu</span> <span class="o">*</span> <span class="n">fd_array</span><span class="p">[</span><span class="n">NR_OPEN_DEFAULT</span><span class="p">];</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>对于上面的两个句柄 <code>nfd</code> <code>fd3</code> 他们在 <code>files_struct</code> 里面的数组 <code>fd_array</code> 里面对应的数值是相等的。</p>
+
+<!--
+二、重定向后恢复
+CU上有这样一个帖子，就是如何在重定向后再恢复原来的状态？首先大家都能想到要保存重定向前的文件描述符。那么如何来保存呢，象下面这样行么？
+int s_fd = STDOUT_FILENO;
+int n_fd = dup2(fd3, STDOUT_FILENO);
+还是这样可以呢？
+int s_fd = dup(STDOUT_FILENO);
+int n_fd = dup2(fd3, STDOUT_FILENO);
+这两种方法的区别到底在哪呢？答案是第二种方案才是正确的，分析如下：按照第一种方法，我们仅仅在"表面上"保存了相当于fd_t（按照我前面说的理解方法）中的index，
+
+而在调用dup2之后，ptr所指向的文件表项由于计数值已为零而被关闭了，我们如果再调用dup2(s_fd, fd3)  （注意此时s_fd对应的文件表项已经关闭）就会出错。而第二种方法我们首先做一下复制（这样对应的文件表项不会被关闭），复制后的状态如下图所示:
+进程A的文件描述符表(after dup)
+[plain] view plain copy
+print?
+
+       ------------
+    fd0 0   | p0
+       ------------
+    fd1 1   | p1 ------------- 文件表1 --------- vnode1
+       ------------                 /|
+    fd2 2   | p2                /
+       ------------             /
+    fd3 3   | p3 ------------- 文件表2 --------- vnode2
+       ------------          /
+    s_fd 4   | p4 ------/
+       ------------
+    ... ...
+    ... ...
+       ------------
+
+调用dup2后状态为：
+进程A的文件描述符表(after dup2)
+[plain] view plain copy
+print?
+
+       ------------
+    fd0 0   | p0
+       ------------
+    n_fd 1   | p1 ------------
+       ------------               \
+    fd2 2   | p2                 \
+       ------------                _\|
+    fd3 3   | p3 ------------- 文件表2 --------- vnode2
+       ------------
+    s_fd 4   | p4 -------------文件表1 --------- vnode1
+       ------------
+    ... ...
+    ... ...
+       ------------
+
+
+dup(fd)的语意是返回的新的文件描述符与fd共享一个文件表项。就如after dup图中的s_fd和fd1共享文件表1一样。
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-xwindows-introduce.html" title="XWindow 简介">&larr; Older</a></li> 
+         <li class="next"><a href="/post/influxdata-influxdb-introduce.html" title="InfluxDB">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1474560000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-bash-redirect-details.html" data-title="Bash 重定向" data-url="/post/linux-bash-redirect-details.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

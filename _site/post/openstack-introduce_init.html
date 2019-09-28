@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>OpenStack 安装|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>OpenStack 安装</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-07-14 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  network  
+      
+    </div>
+  </div>
+  <hr>
+  <!-- more -->
+
+<h2 id="准备环境">准备环境</h2>
+
+<h3 id="安装-openstack-包">安装 OpenStack 包</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 启用OpenStack数据源
+# yum install centos-release-openstack-liberty
+
+----- 更新软件包，部分依赖上述软件源的包会更新
+# yum upgrade
+
+----- 安装OpenStack客户端
+# yum install python-openstackclient
+
+----- CentOS默认启用SELinux，安装如下包实现对OpenStack服务的安全策略进行自动管理
+# yum install openstack-selinux</code></pre></figure>
+
+<h3 id="安装-sql-数据库">安装 SQL 数据库</h3>
+
+<p>大多数 OpenStack 服务使用 SQL 数据库来存储信息，安装 SQL 数据库。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 安装MySQL数据库
+# yum install mariadb mariadb-server MySQL-python
+
+----- 设置为开机启动，并启动MySQL服务
+# systemctl enable mariadb.service
+# systemctl start mariadb.service</code></pre></figure>
+
+<h3 id="安装-mq">安装 MQ</h3>
+
+<p>OpenStack 使用 Message Queue 协调操作和各服务的状态信息，MQ 一般运行在控制节点上，支持 ZeroMQ、RabbitMQ、Qpid 等。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 安装RabbitMQ
+# yum install rabbitmq-server
+
+----- 设置为开机启动，并启动RabbitMQ服务
+# systemctl enable rabbitmq-server.service
+# systemctl start rabbitmq-server.service
+
+----- 添加openstack用户
+# rabbitmqctl add_user openstack RABBIT_PASS
+Creating user &quot;openstack&quot; ...
+
+----- 给openstack用户配置写和读权限
+# rabbitmqctl set_permissions openstack &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;
+Setting permissions for user &quot;openstack&quot; in vhost &quot;/&quot; ...</code></pre></figure>
+
+<p>如果出现 ERROR: epmd error for host XXXXX: timeout (time out)，主要是由于主机名和 IP 不匹配导致，直接在 /etc/hosts 中添加 127.0.0.1 XXXXX 即可。</p>
+
+<h2 id="keystone身份认证服务">Keystone，身份认证服务</h2>
+
+<p>这一章描述如何在控制节点上安装和配置 OpenStack 身份认证服务，代码名称 keystone。出于性能原因，这个配置部署 Apache HTTP 服务处理查询并使用 Memcached 存储 tokens 而不用 SQL 数据库。</p>
+
+<p>配置 OpenStack 身份认证服务前，必须创建一个数据库和管理员令牌。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ mysql -u root -p
+CREATE DATABASE keystone;
+GRANT ALL PRIVILEGES ON keystone.* TO &#39;keystone&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;KEYSTONE_DBPASS&#39;;
+GRANT ALL PRIVILEGES ON keystone.* TO &#39;keystone&#39;@&#39;%&#39; IDENTIFIED BY &#39;KEYSTONE_DBPASS&#39;;</code></pre></figure>
+
+<p>生成一个随机值在初始的配置中作为管理员的令牌。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ openssl rand -hex 10
+42813d8157799f6b892d</code></pre></figure>
+
+<p>安装 Keystone 服务，使用 Nginx 提供服务。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum install openstack-keystone httpd mod_wsgi</code></pre></figure>
+
+<p>编辑文件 /etc/keystone/keystone.conf 并设置如下的值。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">[DEFAULT]
+# 定义管理员token初始值，也就是上述设置的随机值
+admin_token = 42813d8157799f6b892d
+# 启用详细日志
+verbose = true
+[database]
+# 设置数据库的连接方式
+connection = mysql://keystone:KEYSTONE_DBPASS@127.1/keystone
+[memcache]
+# 配置Memcached服务，暂时没有使用，直接访问数据库
+#servers = localhost:11211
+[token]
+# 配置UUID token provider，驱动暂时使用sql，如果是Memcached驱动则为(memcache)
+provider = uuid
+driver = sql
+[revoke]
+# 配置SQL回滚驱动
+driver = sql</code></pre></figure>
+
+<p>初始化身份认证服务的数据库，在此使用的是 MySQL 数据库，可以通过如下两个命令执行，其功能相同，是否执行成功可以查看 /var/log/keystone/keystone.log 中的内容。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># keystone-manage db_sync
+# su -s /bin/sh -c &quot;keystone-manage db_sync&quot; keystone</code></pre></figure>
+
+<p>此时，在 MySQL 中的 keystone 库中，会创建一堆的表。</p>
+
+<p>其中需要 admin_token 来访问 keystone 的服务，后面也可以通过 keystone-client 来注册新的 token，默认是 ADMIN，可以把它添加到系统环境里去，如下，分别配置 TOKEN、端点 URL、认证 API 版本。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">export OS_TOKEN=42813d8157799f6b892d
+export OS_URL=http://127.0.0.1:35357/v3
+export OS_IDENTITY_API_VERSION=3</code></pre></figure>
+
+<p>配置 Apache HTTP 服务器，<!--
+编辑 /etc/httpd/conf/httpd.conf 文件，配置 ServerName 选项为控制节点：
+ServerName controller
+-->用下面的内容创建文件 /etc/httpd/conf.d/wsgi-keystone.conf。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Listen 5000
+Listen 35357
+
+&lt;VirtualHost *:5000&gt;
+    WSGIDaemonProcess keystone-public processes=5 threads=1 user=keystone group=keystone display-name=%{GROUP}
+    WSGIProcessGroup keystone-public
+    WSGIScriptAlias / /usr/bin/keystone-wsgi-public
+    WSGIApplicationGroup %{GLOBAL}
+    WSGIPassAuthorization On
+    &lt;IfVersion &gt;= 2.4&gt;
+      ErrorLogFormat &quot;%{cu}t %M&quot;
+    &lt;/IfVersion&gt;
+    ErrorLog /var/log/httpd/keystone-error.log
+    CustomLog /var/log/httpd/keystone-access.log combined
+
+    &lt;Directory /usr/bin&gt;
+        &lt;IfVersion &gt;= 2.4&gt;
+            Require all granted
+        &lt;/IfVersion&gt;
+        &lt;IfVersion &lt; 2.4&gt;
+            Order allow,deny
+            Allow from all
+        &lt;/IfVersion&gt;
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+
+&lt;VirtualHost *:35357&gt;
+    WSGIDaemonProcess keystone-admin processes=5 threads=1 user=keystone group=keystone display-name=%{GROUP}
+    WSGIProcessGroup keystone-admin
+    WSGIScriptAlias / /usr/bin/keystone-wsgi-admin
+    WSGIApplicationGroup %{GLOBAL}
+    WSGIPassAuthorization On
+    &lt;IfVersion &gt;= 2.4&gt;
+      ErrorLogFormat &quot;%{cu}t %M&quot;
+    &lt;/IfVersion&gt;
+    ErrorLog /var/log/httpd/keystone-error.log
+    CustomLog /var/log/httpd/keystone-access.log combined
+
+    &lt;Directory /usr/bin&gt;
+        &lt;IfVersion &gt;= 2.4&gt;
+            Require all granted
+        &lt;/IfVersion&gt;
+        &lt;IfVersion &lt; 2.4&gt;
+            Order allow,deny
+            Allow from all
+        &lt;/IfVersion&gt;
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;</code></pre></figure>
+
+<p>启动 Apache HTTP 服务并配置其随系统启动：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># systemctl enable httpd.service
+# systemctl start httpd.service</code></pre></figure>
+
+<h3 id="创建服务实体和api端点">创建服务实体和API端点</h3>
+
+<p>为身份认证服务创建服务实体。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># openstack service create --name keystone --description &quot;OpenStack Identity&quot; identity
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | OpenStack Identity               |
+| enabled     | True                             |
+| id          | e81ff0c213864ad19509f7fa3c711595 |
+| name        | keystone                         |
+| type        | identity                         |
++-------------+----------------------------------+</code></pre></figure>
+
+<p>创建认证服务的 API 端点。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># openstack endpoint create --region RegionOne identity public http://127.0.0.1:5000/v2.0
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | c6d75d31a7354c0e8f37e4b764a1d960 |
+| interface    | public                           |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | e81ff0c213864ad19509f7fa3c711595 |
+| service_name | keystone                         |
+| service_type | identity                         |
+| url          | http://127.0.0.1:5000/v2.0       |
++--------------+----------------------------------+
+
+# openstack endpoint create --region RegionOne identity internal http://127.0.0.1:5000/v2.0
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | 23a675ff529e4d38a7ea73e487adaea5 |
+| interface    | internal                         |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | e81ff0c213864ad19509f7fa3c711595 |
+| service_name | keystone                         |
+| service_type | identity                         |
+| url          | http://controller:5000/v2.0      |
++--------------+----------------------------------+
+
+# openstack endpoint create --region RegionOne identity admin http://127.0.0.1:35357/v2.0
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | 5fb0ad9d3c014c35bebcc937dd24889f |
+| interface    | admin                            |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | e81ff0c213864ad19509f7fa3c711595 |
+| service_name | keystone                         |
+| service_type | identity                         |
+| url          | http://127.0.0.1:35357/v2.0      |
++--------------+----------------------------------+</code></pre></figure>
+
+<h3 id="创建项目用户和角色">创建项目、用户和角色</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 创建 admin 项目
+# openstack project create --domain default --description &quot;Admin Project&quot; admin
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | Admin Project                    |
+| domain_id   | default                          |
+| enabled     | True                             |
+| id          | f3f0c9353afc4a1ab74d143f85dfabe4 |
+| is_domain   | False                            |
+| name        | admin                            |
+| parent_id   | None                             |
++-------------+----------------------------------+
+
+----- 创建 admin 用户
+# openstack user create --domain default --password-prompt admin
+User Password: 123
+Repeat User Password: 123
++-----------+----------------------------------+
+| Field     | Value                            |
++-----------+----------------------------------+
+| domain_id | default                          |
+| enabled   | True                             |
+| id        | 7022c60d8e8848e0bd48f3f2e420ffb7 |
+| name      | admin                            |
++-----------+----------------------------------+
+
+----- 创建 admin 角色
+# openstack role create admin
++-------+----------------------------------+
+| Field | Value                            |
++-------+----------------------------------+
+| id    | cb647e95f1694bb283f33cb55d1f5201 |
+| name  | admin                            |
++-------+----------------------------------+
+
+----- 添加admin角色到admin项目和用户上
+# openstack role add --project admin --user admin admin
+
+----- 创建service项目
+# openstack project create --domain default --description &quot;Service Project&quot; service
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | Service Project                  |
+| domain_id   | default                          |
+| enabled     | True                             |
+| id          | b810f722e8f340229c90e79f93254a02 |
+| is_domain   | False                            |
+| name        | service                          |
+| parent_id   | None                             |
++-------------+----------------------------------+
+
+----- 创建demo项目
+# openstack project create --domain default --description &quot;Demo Project&quot; demo
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | Demo Project                     |
+| domain_id   | default                          |
+| enabled     | True                             |
+| id          | 6423234435ee427aae04053ce1973418 |
+| is_domain   | False                            |
+| name        | demo                             |
+| parent_id   | None                             |
++-------------+----------------------------------+
+
+----- 创建demo用户
+# openstack user create --domain default --password-prompt demo
+User Password: 123
+Repeat User Password: 123
++-----------+----------------------------------+
+| Field     | Value                            |
++-----------+----------------------------------+
+| domain_id | default                          |
+| enabled   | True                             |
+| id        | 761444e971da4510990c13259c7ee4e3 |
+| name      | demo                             |
++-----------+----------------------------------+
+
+----- 创建user角色
+# openstack role create user
++-------+----------------------------------+
+| Field | Value                            |
++-------+----------------------------------+
+| id    | 4bfb5605bbfa4545a2027e9b3e346b3a |
+| name  | user                             |
++-------+----------------------------------+
+
+----- 添加user角色到demo项目和用户
+# openstack role add --project demo --user demo user</code></pre></figure>
+
+<h3 id="验证操作">验证操作</h3>
+
+<p>在安装其他服务之前确认身份认证服务正常，首先关闭临时认证令牌机制。编辑 /usr/share/keystone/keystone-dist-paste.ini 文件，从 [pipeline:public_api]，[pipeline:admin_api]，[pipeline:api_v3] 部分删除 admin_token_auth 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 重置OS_TOKEN和OS_URL环境变量
+$ unset OS_TOKEN OS_URL
+
+----- 使用admin用户，请求认证令牌
+$ openstack --os-auth-url http://127.1:35357/v3 --os-project-domain-id default --os-user-domain-id default \
+  --os-project-name admin --os-username admin --os-auth-type password token issue
+Password:
++------------+----------------------------------+
+| Field      | Value                            |
++------------+----------------------------------+
+| expires    | 2016-08-03T15:40:27.899436Z      |
+| id         | 558836819dbc40369d91157b0c286832 |
+| project_id | f3f0c9353afc4a1ab74d143f85dfabe4 |
+| user_id    | 7022c60d8e8848e0bd48f3f2e420ffb7 |
++------------+----------------------------------+
+
+----- 使用demo用户，请求认证令牌
+$ openstack --os-auth-url http://127.1:5000/v3 --os-project-domain-id default --os-user-domain-id default \
+  --os-project-name demo --os-username demo --os-auth-type password token issue
+Password:
++------------+----------------------------------+
+| Field      | Value                            |
++------------+----------------------------------+
+| expires    | 2016-08-03T15:43:19.799498Z      |
+| id         | 39292a170d6b449c918e86590f84e985 |
+| project_id | 6423234435ee427aae04053ce1973418 |
+| user_id    | 761444e971da4510990c13259c7ee4e3 |
++------------+----------------------------------+</code></pre></figure>
+
+<h3 id="创建openstack客户端环境脚本">创建OpenStack客户端环境脚本</h3>
+
+<p>创建 admin 和 demo 项目和用户创建客户端环境变量脚本，后面会经常使用。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cat admin-openrc.sh
+export OS_PROJECT_DOMAIN_ID=default
+export OS_USER_DOMAIN_ID=default
+export OS_PROJECT_NAME=admin
+export OS_TENANT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=123
+export OS_AUTH_URL=http://127.1:35357/v3
+export OS_IDENTITY_API_VERSION=3
+
+$ cat demo-openrc.sh
+export OS_PROJECT_DOMAIN_ID=default
+export OS_USER_DOMAIN_ID=default
+export OS_PROJECT_NAME=demo
+export OS_TENANT_NAME=demo
+export OS_USERNAME=demo
+export OS_PASSWORD=123
+export OS_AUTH_URL=http://127.1:5000/v3
+export OS_IDENTITY_API_VERSION=3</code></pre></figure>
+
+<p>使用特定租户和用户运行客户端，你可以在运行之前简单地加载相关客户端脚本，例如：加载 admin-openrc.sh 文件来身份认证服务的环境变量位置和 admin 项目和用户证书：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ source admin-openrc.sh
+
+----- 请求认证令牌
+$ openstack token issue
++------------+----------------------------------+
+| Field      | Value                            |
++------------+----------------------------------+
+| expires    | 2016-08-03T15:51:53.828491Z      |
+| id         | 00813a839de04313a5e1004c8131c869 |
+| project_id | f3f0c9353afc4a1ab74d143f85dfabe4 |
+| user_id    | 7022c60d8e8848e0bd48f3f2e420ffb7 |
++------------+----------------------------------+</code></pre></figure>
+
+<h2 id="glance镜像服务">Glance，镜像服务</h2>
+
+<p>允许用户发现、注册和恢复虚拟机镜像，提供了一个 REST API，允许查询虚拟机镜像的 metadata 并恢复一个实际的镜像。可以存储虚拟机镜像通过不同位置的镜像服务使其可用，就像 OpenStack 对象存储那样从简单的文件系统到对象存储系统。</p>
+
+<p>在此使用 file 作为后端配置镜像服务，能够上传并存储在一个托管镜像服务的控制节点目录中，默认保存在 /var/lib/glance/images/ 目录下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 创建一个数据库
+$ mysql -u root -p
+CREATE DATABASE glance;
+GRANT ALL PRIVILEGES ON glance.* TO &#39;glance&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;GLANCE_DBPASS&#39;;
+GRANT ALL PRIVILEGES ON glance.* TO &#39;glance&#39;@&#39;%&#39; IDENTIFIED BY &#39;GLANCE_DBPASS&#39;;
+
+----- 创建glance用户
+$ openstack user create --domain default --password-prompt glance
+User Password: 123
+Repeat User Password: 123
++-----------+----------------------------------+
+| Field     | Value                            |
++-----------+----------------------------------+
+| domain_id | default                          |
+| enabled   | True                             |
+| id        | 403537aa9450454d824d6c1c6f8460ea |
+| name      | glance                           |
++-----------+----------------------------------+
+
+----- 添加admin角色到glance用户和service项目上
+$ openstack role add --project service --user glance admin
+
+----- 创建glance服务实体
+$ openstack service create --name glance --description &quot;OpenStack Image service&quot; image
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | OpenStack Image service          |
+| enabled     | True                             |
+| id          | 9f36d1a4d41b42c892ee7fb86e11561a |
+| name        | glance                           |
+| type        | image                            |
++-------------+----------------------------------+
+
+----- 创建镜像服务的API端点
+$ openstack endpoint create --region RegionOne image public http://127.1:9292
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | 63b4ee31dd7b4055a59f81ac2b1f5160 |
+| interface    | public                           |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | 9f36d1a4d41b42c892ee7fb86e11561a |
+| service_name | glance                           |
+| service_type | image                            |
+| url          | http://127.1:9292                |
++--------------+----------------------------------+
+
+$ openstack endpoint create --region RegionOne image internal http://127.1:9292
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | 93925120486e451a9c1b413b4866cd94 |
+| interface    | internal                         |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | 9f36d1a4d41b42c892ee7fb86e11561a |
+| service_name | glance                           |
+| service_type | image                            |
+| url          | http://127.1:9292                |
++--------------+----------------------------------+
+
+$ openstack endpoint create --region RegionOne image admin http://127.1:9292
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | 3b56485471e645c3b3613530015983c0 |
+| interface    | admin                            |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | 9f36d1a4d41b42c892ee7fb86e11561a |
+| service_name | glance                           |
+| service_type | image                            |
+| url          | http://127.1:9292                |
++--------------+----------------------------------+</code></pre></figure>
+
+<h3 id="配置组件">配置组件</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 安装软件包
+# yum install openstack-glance python-glance python-glanceclient</code></pre></figure>
+
+<p>编辑文件 /etc/glance/glance-api.conf 并完成如下动作。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">[DEFAULT]
+# 禁止通知
+notification_driver = noop
+verbose = True
+
+[database]
+connection=mysql://glance:GLANCE_DBPASS@127.1/glance
+
+[keystone_authtoken]
+auth_uri = http://127.1:5000
+
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = glance
+admin_password = 123
+
+#auth_url = http://127.1:35357
+#auth_plugin = password
+#project_domain_id = default
+#user_domain_id = default
+#project_name = service
+#username = glance
+#password = 123
+
+[paste_deploy]
+flavor = keystone
+
+[glance_store]
+default_store = file
+filesystem_store_datadir = /var/lib/glance/images/</code></pre></figure>
+
+<p>编辑文件 /etc/glance/glance-registry.conf 并完成如下动作。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">[DEFAULT]
+notification_driver = noop
+verbose = True
+
+[database]
+connection = mysql://glance:GLANCE_DBPASS@127.1/glance
+
+[keystone_authtoken]
+auth_uri = http://127.1:5000/v2.0
+
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = glance
+admin_password = 123
+
+#auth_url = http://127.1:35357
+#auth_plugin = password
+#project_domain_id = default
+#user_domain_id = default
+#project_name = service
+#username = glance
+#password = 123
+
+[paste_deploy]
+flavor = keystone</code></pre></figure>
+
+<p>写入镜像服务数据库。</p>
+
+<!--# su -s /bin/sh -c "glance-manage db_sync" glance-->
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># glance-manage db_sync</code></pre></figure>
+
+<p>完成安装，启动镜像服务、配置他们随机启动：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># systemctl enable openstack-glance-api.service openstack-glance-registry.service
+# systemctl start openstack-glance-api.service openstack-glance-registry.service</code></pre></figure>
+
+<p>在每个客户端脚本中，配置镜像服务客户端使用 2.0 的 API ：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ echo &quot;export OS_IMAGE_API_VERSION=2&quot; | tee -a admin-openrc.sh demo-openrc.sh</code></pre></figure>
+
+<p>获得 admin 凭证来获取只有管理员能执行命令的访问权限：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ source admin-openrc.sh</code></pre></figure>
+
+<p>下载源镜像，一个很小的镜像，然后添加到 Glance 中：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ wget http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+$ glance image-create --name &quot;cirros&quot; \
+  --file cirros-0.3.4-x86_64-disk.img \
+  --disk-format qcow2 --container-format bare \
+  --visibility public --progress</code></pre></figure>
+
+<!--http://docs.openstack.org/mitaka/install-guide-rdo/
+http://docs.openstack.org/liberty/install-guide-rdo/
+http://docs.openstack.org/liberty/zh_CN/install-guide-rdo/ -->
+
+<h2 id="参考">参考</h2>
+
+<p>http://docs.openstack.org/</p>
+
+<p>http://docs.openstack.org/developer/python-openstackclient/command-list.html</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/openstack-glance_init.html" title="OpenStack Keystone 服务">&larr; Older</a></li> 
+         <li class="next"><a href="/post/the-boxers-movement.html" title="【转】民族英雄还是爱国贼：起底义和团">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1468425600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/openstack-introduce_init.html" data-title="OpenStack 安装" data-url="/post/openstack-introduce_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

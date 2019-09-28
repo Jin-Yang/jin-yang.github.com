@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Precise Time with the chrony Program</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Managing Accurate Date and Time"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Accurate Global Time Synchronization"
+HREF="ntp.html"><LINK
+REL="NEXT"
+TITLE="About this Document"
+HREF="about.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Managing Accurate Date and Time</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ntp.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="about.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="ntp.chrony"
+></A
+>6. Precise Time with the <B
+CLASS="command"
+>chrony</B
+> Program</H1
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="ntp.chrony.diff"
+></A
+>6.1. How <B
+CLASS="command"
+>chrony</B
+> Differs from the <B
+CLASS="command"
+>ntp</B
+> Suite?</H2
+><P
+><B
+CLASS="command"
+>chrony</B
+> also uses the <SPAN
+CLASS="acronym"
+>NTP</SPAN
+> protocol, and is also designed to make Linux clock more accurate. It is also suitable for systems that do not have an Internet connection. Then the source of the exact time can be any accurate clock, from which we can read the time and type it to the program. In addition, it is also capable of calculating the inaccuracy of the hardware clock, and based on that, adjust the hardware clock at boot time.</P
+><P
+><B
+CLASS="command"
+>chrony</B
+> 1.20 does not support built-in hardware clocks like GPS and DCF receivers, but the structure of the program makes such development possible.</P
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="ntp.chrony.how"
+></A
+>6.2. How to Use <B
+CLASS="command"
+>chrony</B
+>?</H2
+><P
+><B
+CLASS="command"
+>chrony</B
+> consists of two parts: <B
+CLASS="command"
+>chronyd</B
+> daemon and a user interface <B
+CLASS="command"
+>chronyc</B
+>.</P
+><P
+>You can find <B
+CLASS="command"
+>chrony</B
+> at <A
+HREF="http://chrony.sunsite.dk/index.php/"
+TARGET="_top"
+>chrony.sunsite.dk/index.php</A
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ntp.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="about.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Accurate Global Time Synchronization</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>About this Document</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20summary%20tool_files/default.css" media="screen">
+<title>Aspersa User's Manual - The summary tool</title>
+</head>
+<body>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The summary tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The summary tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+The <em>summary</em> tool is a convenient way to summarize the status 
+and configuration of a server, so that you can learn about it at a 
+glance.  It is not a tuning tool or diagnosis tool; expert humans are 
+better at that.  It produces a report that is easy to 'diff,' and can be
+ pasted into emails without losing the formatting. This tool works well 
+on Linux at this time; other Unix-like operating systems might be 
+supported later.<p></p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>There are no command-line options.  The tool uses environment 
+variables instead of command-line options, because it supports a 
+one-step method of execution that prevents command-line options from 
+working. The ASPERSA_SKIP environment variable can be used to disable 
+specific sections of the tool.  This environment variable is a 
+comma-separated list of any or all of the following values: 
+MOUNT,NETWORK,PROCESS.  See below for how these affect the output.
+
+</p><h2>How it Works</h2>
+
+<p>This tool runs a large variety of commands to inspect system status 
+and configuration, saves the output into files in /tmp, and then runs 
+Unix commands on these results to format them nicely.  It works best 
+when executed as a privileged user, but will also work without 
+privileges, although some output might not be possible to generate 
+without root.</p>
+
+<h2>Example Usage</h2>
+
+<p>This tool can be run one of two different ways:
+
+<code>
+# Download and run:
+wget http://aspersa.googlecode.com/svn/trunk/summary
+bash summary
+
+# Or, download and run in a single step:
+wget -O- http://aspersa.googlecode.com/svn/trunk/summary | bash
+</code>
+
+</p><p>The following is a sample report from the <em>summary</em> tool.  Each section is followed by explanatory text.</p>
+
+<code>
+# Aspersa System Summary Report ##############################
+        Date | 2010-09-22 18:11:34 UTC (local TZ: PDT -0700)
+    Hostname | server1
+      Uptime | 14 days, 22:08,  1 user,  load average: 0.00, 0.00, 0.00
+      System | Dell Inc.; PowerEdge R610; vNot Specified ()
+ Service Tag | B0ZNVH8
+     Release | CentOS release 5.2 (Final)
+      Kernel | 2.6.18-92.1.22.el5
+Architecture | CPU = 64-bit, OS = 64-bit
+   Threading | NPTL 2.5
+    Compiler | GNU CC version 4.1.2 20071124 (Red Hat 4.1.2-42).
+     SELinux | Disabled
+ Virtualized | No virtualization detected
+</code>
+
+<p>The first section shows the current date and time, and a synopsis of the server and operating system.</p>
+
+<code>
+# Processor ##################################################
+  Processors | physical = 2, cores = 8, virtual = 16, hyperthreading = yes
+      Speeds | 16x2261.089
+      Models | 16xIntel(R) Xeon(R) CPU E5520 @ 2.27GHz
+      Caches | 16x8192 KB
+</code>
+
+<p>This section is derived from /proc/cpuinfo.</p>
+
+<code>
+# Memory #####################################################
+       Total | 31.42G
+        Free | 447.26M
+        Used | physical = 30.99G, swap = 288.00k, virtual = 30.99G
+     Buffers | 141.09M
+      Caches | 23.52G
+       Dirty | 4280 kB
+        Used | 6.82G
+  Swappiness | vm.swappiness = 0
+ DirtyPolicy | vm.dirty_ratio = 40, vm.dirty_background_ratio = 10
+  Locator   Size     Speed             Form Factor   Type          Type Detail
+  ========= ======== ================= ============= ============= ===========
+  DIMM_A2   4096 MB  1066 MHz (0.9 ns) DIMM          {OUT OF SPEC} Synchronous
+  DIMM_A3   4096 MB  1066 MHz (0.9 ns) DIMM          {OUT OF SPEC} Synchronous
+  DIMM_A5   4096 MB  1066 MHz (0.9 ns) DIMM          {OUT OF SPEC} Synchronous
+  DIMM_A6   4096 MB  1066 MHz (0.9 ns) DIMM          {OUT OF SPEC} Synchronous
+  DIMM_B2   4096 MB  1066 MHz (0.9 ns) DIMM          {OUT OF SPEC} Synchronous
+  DIMM_B3   4096 MB  1066 MHz (0.9 ns) DIMM          {OUT OF SPEC} Synchronous
+  DIMM_B5   4096 MB  1066 MHz (0.9 ns) DIMM          {OUT OF SPEC} Synchronous
+  DIMM_B6   4096 MB  1066 MHz (0.9 ns) DIMM          {OUT OF SPEC} Synchronous
+  DIMM_A1   {EMPTY}  Unknown           DIMM          {OUT OF SPEC} Synchronous
+  DIMM_A4   {EMPTY}  Unknown           DIMM          {OUT OF SPEC} Synchronous
+  DIMM_B1   {EMPTY}  Unknown           DIMM          {OUT OF SPEC} Synchronous
+  DIMM_B4   {EMPTY}  Unknown           DIMM          {OUT OF SPEC} Synchronous
+</code>
+
+<p>Information about memory is gathered from <em>free</em>.  The <u>Used</u> statistic is the total of the rss sizes displayed by <em>ps</em>.  The Dirty statistic for the cached value comes from /proc/meminfo.  On Linux, the swappiness settings are gathered from <em>sysctl</em>.  The final portion of this section is a table of the DIMMs, which comes from <em>dmidecode</em>.</p>
+
+<code>
+# Mounted Filesystems ########################################
+  Filesystem                          Size Used Type  Opts Mountpoint
+  /dev/mapper/VolGroup00-LogVol00      62G  56% ext3  (rw) /
+  /dev/mapper/VolGroup01-MySQLData00   67G  20% ext3  (rw) /var/lib/mysql
+  /dev/sda2                           190M  11% ext3  (rw) /boot
+  tmpfs                               7.9G   0% tmpfs (rw) /dev/shm
+</code>
+
+<p>The mounted filesystem section is a combination of information from <em>mount</em> and <em>df</em>.  If the ASPERSA_SKIP environment variable includes "MOUNT", then this section is skipped.</p>
+
+<code>
+# Disk Schedulers And Queue Size #############################
+         sda | [cfq] 128
+         sdb | [cfq] 128
+         sr0 | [cfq] 128
+</code>
+
+<p>The disk scheduler information is extracted from the /sys filesystem in Linux.</p>
+
+<code>
+# Disk Partioning ############################################
+Device       Type      Start        End               Size
+============ ==== ========== ========== ==================
+/dev/sda     Disk                             299439751168
+/dev/sda1    Part          1         13           98703360
+/dev/sda2    Part         14      36404       299317939200
+/dev/sdb     Disk                             429523992576
+/dev/sdb1    Part          1      52219       429507671040
+</code>
+
+<p>Information about disk partitioning comes from <em>fdisk -l</em>.</p>
+
+<code>
+# Kernel Inode State #########################################
+dentry-state | 52867 47869 45 0  0  0
+     file-nr | 3570  0  3211611
+    inode-nr | 42968 59
+</code>
+
+<p>These lines are from the files of the same name in the /proc/sys/fs directory on Linux.  Read <em>man proc</em> to learn about the meaning of these files on your system.</p>
+
+<code>
+# LVM Volumes ################################################
+  LV       VG         Attr   LSize   Origin Snap%  Move Log Copy%  Convert
+  LogVol00 VolGroup00 -wi-ao 269.00G                                      
+  LogVol01 VolGroup00 -wi-ao   9.75G                                      
+</code>
+
+<p>This section shows the output of <em>lvs</em>.</p>
+
+<code>
+# RAID Controller ############################################
+  Controller | Fusion-MPT SAS
+</code>
+
+<p>The <em>summary</em> tool can detect a variety of RAID controllers by examining <em>lspci</em> and <em>dmesg</em>
+ information.  If the controller software is installed on the system, in
+ many cases it is able to execute status commands and show a summary of 
+the RAID controller's status and configuration:</p>
+
+<table>
+<thead>
+  <tr><th>Controller</th><th>Detected?</th><th>Status/Config?</th></tr>
+</thead>
+<tbody>
+  <tr><td>LSI Logic MegaRAID SAS</td><td style="text-align:right">Y</td><td style="text-align:right">Y</td></tr>
+  <tr><td>Fusion-MPT SAS        </td><td style="text-align:right">Y</td><td style="text-align:right"> </td></tr>
+  <tr><td>AACRAID               </td><td style="text-align:right">Y</td><td style="text-align:right">Y</td></tr>
+  <tr><td>HP Smart Array        </td><td style="text-align:right">Y</td><td style="text-align:right">Y</td></tr>
+  <tr><td>3Ware                 </td><td style="text-align:right">Y</td><td style="text-align:right"> </td></tr>
+</tbody>
+</table>
+
+<p>If your RAID controller is not supported, please contribute information about it so we can add support for it to this tool.</p>
+
+<code>
+# Network Config #############################################
+  Controller | Broadcom Corporation NetXtreme II BCM5709 Gigabit Ethernet (rev 20)
+  Controller | Broadcom Corporation NetXtreme II BCM5709 Gigabit Ethernet (rev 20)
+  Controller | Broadcom Corporation NetXtreme II BCM5709 Gigabit Ethernet (rev 20)
+  Controller | Broadcom Corporation NetXtreme II BCM5709 Gigabit Ethernet (rev 20)
+ FIN Timeout | net.ipv4.tcp_fin_timeout = 60
+  Port Range | net.ipv4.ip_local_port_range = 32768   61000
+</code>
+
+<p>The network controllers attached to the system are detected from
+<em>lspci</em>.  The TCP/IP protocol configuration parameters are extracted
+from <em>sysctl</em>.  If the ASPERSA_SKIP environment variable includes
+"NETWORK", then this section is skipped.</p>
+
+<code>
+# Interface Statistics #######################################
+  interface  rx_bytes rx_packets  rx_errors   tx_bytes tx_packets  tx_errors
+  ========= ========= ========== ========== ========== ========== ==========
+  lo       1608579960   14405424          0 1608579960   14405424          0
+  eth0      148784272  307574175          0 2642073200  343143727          0
+  eth1              0          0          0          0          0          0
+  eth2              0          0          0          0          0          0
+  eth3              0          0          0          0          0          0
+</code>
+
+<p>Interface statistics are gathered from <em>ip -s link</em>. The columns are
+received and transmitted bytes, packets, and errors.  If the ASPERSA_SKIP
+environment variable includes "NETWORK", then this section is skipped.</p>
+
+<code>
+# Network Connections ########################################
+  Connections from remote IP addresses
+    10.1.12.30          1
+    10.1.202.243        6
+    74.125.127.82       1
+  Connections to local IP addresses
+    10.1.251.31         8
+  Connections to top 10 local ports
+    22                  1
+    32832               1
+    38709               1
+    40537               1
+    52169               1
+    58109               1
+    807                 1
+    976                 1
+  States of connections
+    ESTABLISHED         2
+    LISTEN             10
+    TIME_WAIT           6
+</code>
+
+<p>This section shows a summary of network connections, retrieved from
+<em>netstat</em> and <a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html#fuzzy">fuzzy-rounded</a>. There are two sub-sections showing how many connections there
+are per origin and destination IP address, and a sub-section showing the count
+of ports in use.  In this case, none of the ports has a count greater than 1,
+but in examples such as MySQL or web servers, you will see many incoming
+connections to a single port.  Finally, the section ends with the count of the
+network connetions' states.  If the ASPERSA_SKIP environment variable includes
+"NETWORK", then this section is skipped.</p>
+
+<code>
+# Top Processes ##############################################
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+    1 root      15   0 10332  700  588 S    0  0.0   0:03.05 init
+    2 root      RT  -5     0    0    0 S    0  0.0   0:00.03 migration/0
+    3 root      34  19     0    0    0 S    0  0.0   0:00.00 ksoftirqd/0
+    4 root      RT  -5     0    0    0 S    0  0.0   0:00.00 watchdog/0
+    5 root      RT  -5     0    0    0 S    0  0.0   0:00.27 migration/1
+    6 root      34  19     0    0    0 S    0  0.0   0:00.00 ksoftirqd/1
+    7 root      RT  -5     0    0    0 S    0  0.0   0:00.00 watchdog/1
+    8 root      RT  -5     0    0    0 S    0  0.0   0:00.01 migration/2
+    9 root      34  19     0    0    0 S    0  0.0   0:00.00 ksoftirqd/2
+</code>
+
+<p>This section is just the top few lines of <em>top</em> so that you can see
+what processes are actively using CPU time.   If the ASPERSA_SKIP environment
+variable includes "PROCESS", then this section is skipped.</p>
+
+<code>
+# Simplified and fuzzy rounded vmstat (wait please) ##########
+  procs  ---swap-- -----io---- ---system---- --------cpu--------
+   r  b    si   so    bi    bo     ir     cs  us  sy  il  wa  st
+   0  0     0    0     8    10    125    175   2   1 100   1   0
+   1  0     0    0     0     0     90    100   0   0 100   0   0
+   1  0     0    0     0    50    225    250   1   1 100   3   0
+   0  0     0    0     0     0     60    100   0   0 100   0   0
+   1  0     0    0     0     0    225    250   1   1 100   0   0
+# The End ####################################################
+</code>
+
+<p>This section is a trimmed-down sample of <em>vmstat 1 5</em>, so you can see
+the general status of the system at present.  The values in the table are <a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html#fuzzy">fuzzy-rounded</a>, except for the CPU columns.  If the ASPERSA_SKIP
+environment variable includes "PROCESS", then this section is skipped.</p>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

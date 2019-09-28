@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20align%20tool_files/default.css" media="screen">
+<title>Aspersa User's Manual - The align tool</title>
+</head>
+<body>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The align tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The align tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+<p>The <em>align</em> tool is a simple way to ensure that data is 
+aligned in columns.  It is written in Perl.  It reads input from files 
+specified on the command line, or from standard input.</p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>This tool has no options or environment variables.</p>
+
+<h2>How it Works</h2>
+
+<p>This tool works by reading the entire input into memory, and dividing
+ each line into words.  It then inspects the lines to derive the 
+following information:</p>
+
+<ul>
+<li>The maximum width of each column</li>
+<li>The most frequent number of words in any line</li>
+</ul>
+
+<p>It uses these to create a formatting specification based on the most 
+frequent number of words, and then prints each conforming line with that
+ format.  Lines that don't have the right number of words are discarded.</p>
+
+<p>The tool assumes that the first conforming line is a header line, and
+ the second is the first line of "real" content.  It formats columns as 
+right-aligned if the value in the second row looks numeric, and 
+left-aligned otherwise.  Therefore, there must be at least two lines of 
+input for the tool to produce any output.</p>
+
+<p>The tool's behavior has some important consequences.  Reading the 
+entire input before formatting means that you can't use it for aligning 
+data as it is generated incrementally, and you probably don't want to 
+use this tool on very large files.  Discarding lines with the wrong 
+number of words means that some lines won't be printed.</p>
+
+<h2>Example Usage</h2>
+
+<p>An example of what this tool is useful for is aligning <em>vmstat</em>
+ output, which tends to be printed in column widths that make it very 
+hard to read by default.  Here's an example of raw vmstat output.  
+Notice how the CPU usage columns are misaligned, and the cache column is
+ so wide that 'si' appears under the 'so' heading:</p>
+
+<code>
+procs -----------memory---------- ---swap-- -----io---- --system-- -----cpu------
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ 3  0    288 12096016  84132 13156504    0    0    13    29    1    2  1  0 98  0  0
+ 2  0    288 12095628  84132 13156504    0    0     0     0  104  600  0  0 100  0  0
+ 2  0    288 12095740  84132 13156508    0    0     0     0  123  685  0  0 100  0  0
+ 2  0    288 12095724  84132 13156508    0    0     0     0  101  585  0  0 100  0  0
+ 2  0    288 12095716  84132 13156520    0    0     0     0  123  687  0  0 100  0  0
+28 12    288 11961288  84192 13200020    0    0 44104   416  599 93820 55  8 36  1  0
+ 8  1    288 11939828  84208 13209392    0    0  8856   157  211 79596 67  7 26  0  0
+31  0    288 11920332  84232 13229696    0    0 19996     5  258 62769 65  7 29  0  0
+25  1    288 11907768  84248 13246424    0    0 16156     5  254 45958 54  5 41  0  0
+</code>
+
+<p>After processing with <em>align</em>, the output is much easier to read:</p>
+
+<code>
+ r  b swpd     free  buff    cache si so    bi  bo  in    cs us sy  id wa st
+ 3  0  288 12096016 84132 13156504  0  0    13  29   1     2  1  0  98  0  0
+ 2  0  288 12095628 84132 13156504  0  0     0   0 104   600  0  0 100  0  0
+ 2  0  288 12095740 84132 13156508  0  0     0   0 123   685  0  0 100  0  0
+ 2  0  288 12095724 84132 13156508  0  0     0   0 101   585  0  0 100  0  0
+ 2  0  288 12095716 84132 13156520  0  0     0   0 123   687  0  0 100  0  0
+28 12  288 11961288 84192 13200020  0  0 44104 416 599 93820 55  8  36  1  0
+ 8  1  288 11939828 84208 13209392  0  0  8856 157 211 79596 67  7  26  0  0
+31  0  288 11920332 84232 13229696  0  0 19996   5 258 62769 65  7  29  0  0
+25  1  288 11907768 84248 13246424  0  0 16156   5 254 45958 54  5  41  0  0
+</code>
+
+<p>Note that the first line, which had the wrong number of words, has been deleted after processing.</p>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

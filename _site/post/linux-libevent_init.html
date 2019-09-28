@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>libevent|JinYang's Blog</title>
+  <meta name="keywords" content="mysql">
+  <meta name="description" content="保存一下经常使用的经典 MySQL 资源。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>libevent</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-03-01 Tuesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>libevent 是一个轻量级的开源的高性能的事件库，适用于 windows、linux、bsd 等多种平台，根据不同的平台，会选择使用 select、epoll、kqueue 等系统调用管理事件机制。</p>
+
+<p>下面简单介绍下。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>很多程序在使用 <a href="http://libevent.org/">libevent</a> 库，包括了 memcached、tmux、tor 等，主要有如下的特点：</p>
+
+<ul>
+  <li>事件驱动，高性能，轻量级；</li>
+  <li>开源，代码相当精炼、易读;</li>
+  <li>跨平台，支持 Windows、Linux、BSD 和 Mac OS；</li>
+  <li>支持多种 IO 多路复用技术，如 epoll、poll、select、kqueue 等，不同平台会选择不同函数；</li>
+  <li>支持 IO、定时器和信号等事件；</li>
+  <li>采用 Reactor 模式。</li>
+</ul>
+
+<p>接下来，看看如何安装。</p>
+
+<h3 id="安装">安装</h3>
+
+<p>在 CentOS 中，可以直接通过 yum 安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 直接通过yum安装
+# yum install libevent
+
+----- 查看安装的库
+$ rpm -ql libevent
+/usr/lib64/libevent-2.0.so.5
+/usr/lib64/libevent-2.0.so.5.1.9
+/usr/lib64/libevent_core-2.0.so.5
+/usr/lib64/libevent_core-2.0.so.5.1.9
+/usr/lib64/libevent_extra-2.0.so.5
+/usr/lib64/libevent_extra-2.0.so.5.1.9
+/usr/lib64/libevent_openssl-2.0.so.5
+/usr/lib64/libevent_openssl-2.0.so.5.1.9
+/usr/lib64/libevent_pthreads-2.0.so.5
+/usr/lib64/libevent_pthreads-2.0.so.5.1.9</code></pre></figure>
+
+<p>可以看到，libevent 会安装如下的库：</p>
+
+<ul>
+  <li>libevent_core<br />所有核心的事件和缓冲功能，包含了 event_base、evbuffer、bufferevent 以及工具函数；</li>
+  <li>libevent_extra<br />包括了程序可能需要的协议特定功能，包括 HTTP、DNS 和 RPC；</li>
+  <li>libevent<br />因为历史原因而存在，包含 libevent_core 和 libevent_extra 的内容，以后可能会去掉；</li>
+  <li>libevent_pthreads<br />添加基于 pthread 可移植线程库的线程和锁定实现，独立于 core，这样使用 libevent 时就不需要链接到 pthread，除非是以多线程方式使用 libevent。</li>
+</ul>
+
+<!--
+下载之后解压，然后进入目录就可以安装了。
+
+[mjf@localhost libevent-2.0.22-stable]$ ./configure --prefix=/home/mjf/lib  (prefix是我配置目录，默认可以不加)
+[mjf@localhost libevent-2.0.22-stable]$ make
+[mjf@localhost libevent-2.0.22-stable]$ sudo make install
+
+注：./configure --prefix=/home/mjf/lib 因为如果我不加prefix，后面执行示例程序的时候会如下错误：error while loading shared libraries: libevent-2.0.so.5: cannot open shared object file: No such file or directory， 所以我自己定制了路径，就没问题了，当然你的可能没问题，那就不用加，install之后直接在/usr/lib或者/usr/local/lib里面就能看到了libevent*.so了。
+
+
+三、libevent的功能。
+Libevent提供了事件通知，io缓存事件，定时器，超时，异步解析dns，事件驱动的http server以及一个rpc框架。
+
+事件通知：当文件描述符可读可写时将执行回调函数。
+
+Io缓存：缓存事件提供了输入输出缓存，能自动的读入和写入，用户不必直接操作io。
+
+定时器：libevent提供了定时器的机制，能够在一定的时间间隔之后调用回调函数。
+
+信号：触发信号，执行回调。
+
+异步的dns解析：libevent提供了异步解析dns服务器的dns解析函数集。
+
+事件驱动的http服务器：libevent提供了一个简单的，可集成到应用程序中的HTTP服务器。
+
+RPC客户端服务器框架：libevent为创建RPC服务器和客户端创建了一个RPC框架，能自动的封装和解封数据结构。
+
+四、Reactor(反应器)模式
+libevent是一个典型的reactor模式的实现。这里做一下简单介绍：
+我们知道，普通的函数调用机制如下：程序调用某个函数，函数执行，程序等待，函数将结果返回给调用程序（如果含有函数返回值的话），也就是顺序执行的。
+而Reactor模式的基本流程如下：应用程序需要提供相应的接口并且注册到reactor反应器上，如果相应的事件发生的话，那么reactor将自动调用相应的注册的接口函数（类似于回调函数）通知你，所以libevent是事件触发的网络库。
+-->
+
+<h3 id="示例程序">示例程序</h3>
+
+<p>如下是一个简单的程序，每隔 1 秒输出 <code>"Hello World!"</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;sys/time.h&gt;</span>
+<span class="cp">#include &lt;event.h&gt;</span>
+
+<span class="kt">void</span> <span class="nf">on_time</span><span class="p">(</span><span class="kt">int</span> <span class="n">sock</span><span class="p">,</span> <span class="kt">short</span> <span class="n">event</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">timeval</span> <span class="n">tv</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+    <span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">event_add</span><span class="p">((</span><span class="k">struct</span> <span class="n">event</span><span class="o">*</span><span class="p">)</span><span class="n">arg</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tv</span><span class="p">);</span>  <span class="c1">// 重新添加定时事件，默认会自动删除</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">event</span> <span class="n">ev_time</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">timeval</span> <span class="n">tv</span><span class="p">;</span>
+
+    <span class="n">event_init</span><span class="p">();</span>                             <span class="c1">// 初始化</span>
+    <span class="n">evtimer_set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev_time</span><span class="p">,</span> <span class="n">on_time</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ev_time</span><span class="p">);</span> <span class="c1">// 设置定时事件</span>
+
+    <span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">event_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev_time</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tv</span><span class="p">);</span>                 <span class="c1">// 添加定时事件</span>
+
+    <span class="n">event_dispatch</span><span class="p">();</span>                         <span class="c1">// 事件循环</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>然后通过如下方式编译。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ gcc -levent example.c -o example</code></pre></figure>
+
+<p>然后执行即可。</p>
+
+<h3 id="使用流程">使用流程</h3>
+
+<p>如上，</p>
+
+<p>基本应用场景也是使用
+libevnet
+的基本流程，下面来考虑一个最简单的场景，使用
+livevent
+设置定时器，应用程序只需要执行下面几个简单的步骤即可。
+1
+）首先初始化
+libevent
+库，并保存返回的指针
+struct event_base * base = event_init();
+实际上这一步相当于初始化一个
+Reactor
+实例；在初始化
+libevent
+后，就可以注册事件了。
+2
+）初始化事件
+event
+，设置回调函数和关注的事件
+evtimer_set(&amp;ev, timer_cb, NULL);
+事实上这等价于调用
+event_set(&amp;ev, -1, 0, timer_cb, NULL);
+event_set
+的函数原型是：
+void event_set(struct
+event <em>ev,
+int fd,
+short event,
+void (</em>cb)(int,
+short, void *), void *arg)
+ev
+：执行要初始化的
+event
+对象；
+fd
+：该
+event
+绑定的“句柄”，对于信号事件，它就是关注的信号；
+event
+：在该
+fd
+上关注的事件类型，它可以是
+EV_READ, EV_WRITE, EV_SIGNAL
+；
+cb
+：这是一个函数指针，当
+fd
+上的事件
+event
+发生时，调用该函数执行处理，它有三个参数，
+调用时由
+event_base
+负责传入，按顺序，实际上就是
+event_set
+时的
+fd, event
+和
+arg
+；
+arg
+：传递给
+cb
+函数指针的参数；
+由于定时事件不需要
+fd
+，并且定时事件是根据添加时（
+event_add
+）的超时值设定的，因此
+这里
+event
+也不需要设置。
+这一步相当于初始化一个
+event handler
+，在
+libevent
+中事件类型保存在
+event
+结构体中。
+注意：
+libevent
+并不会管理
+event
+事件集合，这需要应用程序自行管理；
+3
+）设置
+event
+从属的
+event_base
+event_base_set(base, &amp;ev);
+这一步相当于指明
+event
+要注册到哪个
+event_base
+实例上；
+4
+）是正式的添加事件的时候了
+event_add(&amp;ev, timeout);
+基本信息都已设置完成，只要简单的调用
+event_add()
+函数即可完成，其中
+timeout
+是定时值；
+10
+这一步相当于调用
+Reactor::register_handler()
+函数注册事件。
+5
+）程序进入无限循环，等待就绪事件并执行事件处理
+event_base_dispatch(base)</p>
+
+<h2 id="参考">参考</h2>
+
+<p>可以参考官方网站 <a href="http://libevent.org/">libevent – an event notification library</a>，以及 <a href="https://github.com/libevent/libevent">github libevent</a>，以及 <a href="/reference/linux/libevent.pdf">libevent 源码深度剖析</a> 。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/mysql-group-commit.html" title="MySQL 组提交">&larr; Older</a></li> 
+         <li class="next"><a href="/post/mysql-innodb-checkpoint.html" title="InnoDB Checkpoint">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1456761600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-libevent_init.html" data-title="libevent" data-url="/post/linux-libevent_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

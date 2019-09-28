@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>libev 时间处理|JinYang's Blog</title>
+  <meta name="keywords" content="linux,program,libev,event loop">
+  <meta name="description" content="在之前的文章中介绍了 libev 库的基本概念以及常见的使用方法，其中与时间相关的内容只是简单介绍，不过这一部分涉及到的内容会比较多，而且杂，所以单独摘出来介绍下。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>libev 时间处理</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2017-03-30 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  program  
+      
+    </div>
+  </div>
+  <hr>
+  <p>在之前的文章中介绍了 libev 库的基本概念以及常见的使用方法，其中与时间相关的内容只是简单介绍，不过这一部分涉及到的内容会比较多，而且杂，所以单独摘出来介绍下。</p>
+
+<!-- more -->
+
+<h2 id="堆">堆</h2>
+
+<p>堆 (heap) 又被为优先队列 (priority queue)，通过堆可以按照元素的优先级取出元素，而不是按照元素进入队列的先后顺序取出元素。</p>
+
+<p>堆的一个经典的实现是完全二叉树 (complete binary tree)，这样实现的堆成为二叉堆 (binary heap)，二叉树要求前 n-1 层必须填满，第 n 层也必须按照从左到右的顺序被填满，比下图:</p>
+
+<p><img src="/images/structure/complete_binary_tree.jpg" alt="complete binary tree" title="complete binary tree" class="pull-center" /></p>
+
+<p>为了实现优先级，还需要要求任意节点的优先级不小于 (或不大于) 它的子节点。</p>
+
+<h4 id="删除操作">删除操作</h4>
+
+<p>当删除节点的数值时，原来的位置就会出现一个孔，填充这个孔的方法是把最后的叶子的值赋给该孔，并下调到合适位置，最后把该叶子删除。</p>
+
+<h3 id="定时器管理">定时器管理</h3>
+
+<p>在管理定时器时，使用了堆这种数据结构，而且除了常见的最小 2 叉堆之外，它还实现了更高效的 4 叉堆，其主要目的是为了提高 CPU 的缓存利用率。</p>
+
+<p>说白了，就是违背了局部性原理，因为在 2 叉堆中，对元素的操作通常在 <code>N</code> 和 <code>N/2</code> 之间进行，所以对于含有大量元素的堆来说，两个操作数之间间隔比较远，对 CPU 缓存利用不太好。</p>
+
+<p>libev 中的注释说明，对于元素个数为 50000+ 的堆来说，4 叉堆的效率要提高 5% 左右。</p>
+
+<p>这个 heap 结构存储在数组中，可以参看静态二叉树、最小堆等概念，可以查看 <a href="http://www.cs.cmu.edu/~adamchik/15-121/lectures/Binary%20Heaps/heaps.html">Binary Heaps</a> 或者 <a href="/reference/programs/libev_Binary_Heaps.maff">本地文档</a> 。</p>
+
+<h3 id="基本原理">基本原理</h3>
+
+<p>先看一个基本定理：对于 n 叉堆来说，使用数组进行存储时，下标为 x 的元素，其孩子节点的下标范围是 <code>[nx+1, nx+n]</code>，比如 2 叉堆，下标为 x 的元素，其孩子节点的下标为 <code>2x+1</code> 和 <code>2x+2</code> 。</p>
+
+<p>对于二叉堆来说，有如下的特点：</p>
+
+<ul>
+  <li>堆的根节点存放在数组位置 <code>array[1] (0)</code> 的地方；</li>
+  <li>父节点 <code>i</code> 的左子节点在位置 <code>array[2*i] (2*i+1)</code>；</li>
+  <li>父节点 <code>i</code> 的右子节点在位置 <code>array[2*i+1] (2*i+2)</code>；</li>
+  <li>子节点 <code>i</code> 的父节点在位置 <code>array[floor(i/2)] (floor((i-1)/2))</code>，<code>floor()</code> 为取整，如 <code>5/2=2</code>。</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">                  0                                       1
+          /               \                        /              \
+         1                 2                      2                3
+      /     \           /     \               /      \          /      \
+     3       4        5        6             4        5        6         7
+   /   \   /   \    /   \    /   \         /   \    /   \    /    \    /    \
+  7    8   9   10  11   12  13   14       8    9   10   11  12    13  14    15
+ 
+             C 语言格式                                正常格式</code></pre></figure>
+
+<p>默认 2-heap ，只有定义了 <code>EV_USE_4HEAP</code> 宏之后才会使用 4-heap ，后者通常用于数据量大时；具体来说，对于前者，任一节点，其父节点的位置为 <code>floor(k/2)</code>，子节点位置为 <code>2*k</code> 和 <code>2*k+1</code> 。</p>
+
+<p>根据定理，对于 4 叉堆而言，下标为 x 的元素，其孩子节点的下标范围是 <code>[4x+1, 4x+4]</code>，父节点的下标是 <code>(x-1)/4</code>，而在 libev 的代码中，使用数组存储堆时，4 叉堆的第一个元素存放在 <code>a[3]</code>，2 叉堆的第一个元素存放在 <code>a[1]</code>。</p>
+
+<!--
+所以，对于Libev中的4叉堆实现而言，下标为k的元素（对应在正常实现中的下标是k-3），其孩子节点的下标范围是[4(k-3)+1+3, 4(k-3)+4+3]；其父节点的下标是((k-3-1)/4)+3。
+
+对于Libev中的2叉堆实现而言，下标为k的元素（对应在正常实现中，其下标是k-1），其孩子节点的下标范围是[2(k-1)+1+1,  2(k-1)+2+1]，也就是[2k, 2k+1]；其父节点的下标是((k-1-1)/2)+1，也就是k/2。
+-->
+
+<h3 id="代码实现">代码实现</h3>
+
+<p>接下来看看 libev 中的实现。</p>
+
+<h4 id="堆元素">堆元素</h4>
+
+<p><code>ANHE</code> 就是堆元素，它要么就是一个指向时间监视器结构 <code>ev_watcher_time</code> 的指针 <code>WT</code>，要么除了包含该指针之外，还缓存了 <code>ev_watcher_time</code> 中的成员 <code>at</code>，堆中元素就是根据 <code>at</code> 的值进行组织的，具有最小 <code>at</code> 值得节点就是根节点。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">//----- 宏EV_HEAP_CACHE_AT是为了提高在堆中的缓存利用率，主要是为了对at进行缓存</span>
+<span class="cp">#if EV_HEAP_CACHE_AT</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">ev_tstamp</span> <span class="n">at</span><span class="p">;</span>
+    <span class="n">WT</span> <span class="n">w</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">ANHE</span><span class="p">;</span>
+<span class="cp">#else</span>
+<span class="k">typedef</span> <span class="n">WT</span> <span class="n">ANHE</span><span class="p">;</span>
+<span class="cp">#endif</span></code></pre></figure>
+
+<p>在 libev 中，为了提高缓存命中率，在堆中可以选择缓存元素 <code>at</code>，文档中的原文是：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Heaps are not very cache-efficient. To improve the cache-efficiency of the timer and
+periodics heaps, libev can cache the timestamp (at) within the heap structure(selected
+by defining EV_HEAP_CACHE_AT to 1), which uses 8-12 bytes more per watcher and a few
+hundred bytes more code, but avoids random read accesses on heap changes. This improves
+performance noticeably with many (hundreds) ofwatchers.</code></pre></figure>
+
+<h4 id="宏定义">宏定义</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">#if EV_USE_4HEAP
+
+#define DHEAP 4
+#define HEAP0 (DHEAP - 1) /* index of first element in heap */
+#define HPARENT(k) ((((k) - HEAP0 - 1) / DHEAP) + HEAP0)
+#define UPHEAP_DONE(p,k) ((p) == (k))
+...
+#else
+
+#define HEAP0 1
+#define HPARENT(k) ((k) &gt;&gt; 1)
+#define UPHEAP_DONE(p,k) (!(p))
+...</code></pre></figure>
+
+<p>其中的宏 <code>HEAP0</code> 表示堆中第一个元素的下标；<code>HPARENT(k)</code> 是求下标为 <code>k</code> 的节点的父节点下标；<code>UPHEAP_DONE</code> 宏用于向上调整堆时，判断是否已经到达了根节点，对于4叉堆而言，根节点下标为3，其父节点的下标根据公式得出，也是3，所以结束的条件 <code>((p) == (k))</code>，对于2叉堆而言，根节点下标为1，其父节点根据公式得出下标为0，所以结束的条件是 <code>(!(p))</code> 。</p>
+
+<p>实现时它是一个最小堆，权值为 “即将触发的时刻”，所以其根节点总是最近要触发的 timer；对此堆有两个基本操作，<code>upheap()</code> 和 <code>downheap()</code> 。</p>
+
+<h4 id="downheap">downheap()</h4>
+
+<p><code>downheap()</code> 操作会与子节点比较，如果子节点中有小于当前节点的权，则选择最小的节点进行交换，并一直重复。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define HEAP0                   1</span>
+<span class="cp">#define HPARENT(k)              ((k) &gt;&gt; 1)</span>
+<span class="cp">#define UPHEAP_DONE(p,k)        (!(p))</span>
+
+<span class="cm">/* away from the root */</span>
+<span class="n">inline_speed</span> <span class="kt">void</span> <span class="nf">downheap</span><span class="p">(</span><span class="n">ANHE</span> <span class="o">*</span><span class="n">heap</span><span class="p">,</span> <span class="kt">int</span> <span class="n">N</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">ANHE</span> <span class="n">he</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
+
+        <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">k</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">;</span>          <span class="c1">// 获取左子节点</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">&gt;=</span> <span class="n">N</span> <span class="o">+</span> <span class="n">HEAP0</span><span class="p">)</span>      <span class="c1">// 超过了范围</span>
+                        <span class="k">break</span><span class="p">;</span>
+
+                <span class="c1">//c += c + 1 &lt; N + HEAP0 &amp;&amp; ANHE_at (heap [c]) &gt; ANHE_at(heap[c + 1]) ? 1 : 0;</span>
+                <span class="c1">// 找到子结点中较小的值</span>
+                <span class="n">c</span> <span class="o">+=</span> <span class="p">((</span><span class="n">c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="n">HEAP0</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="n">ANHE_at</span><span class="p">(</span><span class="n">heap</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">ANHE_at</span><span class="p">(</span><span class="n">heap</span><span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">ANHE_at</span><span class="p">(</span><span class="n">he</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">ANHE_at</span><span class="p">(</span><span class="n">heap</span><span class="p">[</span><span class="n">c</span><span class="p">]))</span> <span class="c1">// 满足最小栈的条件，则直接退出</span>
+                        <span class="k">break</span><span class="p">;</span>
+
+                <span class="n">heap</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">c</span><span class="p">];</span> <span class="c1">// 子结点中的较小值C，赋值给K</span>
+                <span class="n">ev_active</span><span class="p">(</span><span class="n">ANHE_w</span><span class="p">(</span><span class="n">heap</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span> <span class="o">=</span> <span class="n">k</span><span class="p">;</span>  <span class="c1">// 并更新原C在heap中的序号，也就是active字段</span>
+
+                <span class="n">k</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span> <span class="c1">// 继续准备下一轮的迭代</span>
+        <span class="p">}</span>
+
+        <span class="n">heap</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">he</span><span class="p">;</span>
+        <span class="n">ev_active</span><span class="p">(</span><span class="n">ANHE_w</span><span class="p">(</span><span class="n">he</span><span class="p">))</span> <span class="o">=</span> <span class="n">k</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>对于 4 叉堆的实现如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// 从根向下调整，N为堆的元素个数，k表示要调整元素的索引</span>
+<span class="n">inline_speed</span> <span class="kt">void</span> <span class="nf">downheap</span> <span class="p">(</span><span class="n">ANHE</span> <span class="o">*</span><span class="n">heap</span><span class="p">,</span> <span class="kt">int</span> <span class="n">N</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">ANHE</span> <span class="n">he</span> <span class="o">=</span> <span class="n">heap</span> <span class="p">[</span><span class="n">k</span><span class="p">];</span><span class="c1">//先获得调整</span>
+	<span class="n">ANHE</span> <span class="o">*</span><span class="n">E</span> <span class="o">=</span> <span class="n">heap</span> <span class="o">+</span> <span class="n">N</span> <span class="o">+</span> <span class="n">HEAP0</span><span class="p">;</span><span class="c1">//结束的指针</span>
+	<span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+		<span class="n">ev_tstamp</span> <span class="n">minat</span><span class="p">;</span> <span class="c1">//最小的元素</span>
+		<span class="n">ANHE</span> <span class="o">*</span><span class="n">minpos</span><span class="p">;</span> <span class="c1">//最小元素的指针</span>
+		<span class="n">ANHE</span> <span class="o">*</span><span class="n">pos</span> <span class="o">=</span> <span class="n">heap</span> <span class="o">+</span> <span class="n">DHEAP</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">HEAP0</span><span class="p">)</span> <span class="o">+</span> <span class="n">HEAP0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span><span class="c1">//k的第一个孩子的指针</span>
+		<span class="c1">//查找k的最小孩子</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">expect_true</span> <span class="p">(</span><span class="n">pos</span> <span class="o">+</span> <span class="n">DHEAP</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">E</span><span class="p">))</span> <span class="p">{</span> <span class="c1">//最后一个孩子没有越界，有四个孩子</span>
+			<span class="c1">//在四个孩子中找最小的</span>
+			<span class="p">(</span><span class="n">minpos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">minat</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="o">*</span><span class="n">minpos</span><span class="p">));</span><span class="c1">//设置初值</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">ANHE_at</span> <span class="p">(</span><span class="n">pos</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">minat</span><span class="p">)</span>
+				<span class="p">(</span><span class="n">minpos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">minat</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="o">*</span><span class="n">minpos</span><span class="p">));</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">ANHE_at</span> <span class="p">(</span><span class="n">pos</span> <span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">minat</span><span class="p">)</span>
+				<span class="p">(</span><span class="n">minpos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="n">minat</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="o">*</span><span class="n">minpos</span><span class="p">));</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">ANHE_at</span> <span class="p">(</span><span class="n">pos</span> <span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">minat</span><span class="p">)</span>
+				<span class="p">(</span><span class="n">minpos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="n">minat</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="o">*</span><span class="n">minpos</span><span class="p">));</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">pos</span> <span class="o">&lt;</span> <span class="n">E</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//有孩子，但是不是4个孩子</span>
+			<span class="p">(</span><span class="n">minpos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">minat</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="o">*</span><span class="n">minpos</span><span class="p">));</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">E</span> <span class="o">&amp;&amp;</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="n">pos</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">minat</span><span class="p">)</span>
+				<span class="p">(</span><span class="n">minpos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">minat</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="o">*</span><span class="n">minpos</span><span class="p">));</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">&lt;</span> <span class="n">E</span> <span class="o">&amp;&amp;</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="n">pos</span> <span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">minat</span><span class="p">)</span>
+				<span class="p">(</span><span class="n">minpos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="n">minat</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="o">*</span><span class="n">minpos</span><span class="p">));</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">&lt;</span> <span class="n">E</span> <span class="o">&amp;&amp;</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="n">pos</span> <span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">minat</span><span class="p">)</span>
+				<span class="p">(</span><span class="n">minpos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="n">minat</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="o">*</span><span class="n">minpos</span><span class="p">));</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">//其他情况，没孩子，不用调整退出循环</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="c1">//当前节点小于最小孩子，已经是最小堆，不用调整退出</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">ANHE_at</span> <span class="p">(</span><span class="n">he</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">minat</span><span class="p">)</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="c1">//否则将最小元素调到k的位置</span>
+		<span class="n">heap</span> <span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="o">*</span><span class="n">minpos</span><span class="p">;</span>
+		<span class="n">ev_active</span> <span class="p">(</span><span class="n">ANHE_w</span> <span class="p">(</span><span class="o">*</span><span class="n">minpos</span><span class="p">))</span> <span class="o">=</span> <span class="n">k</span><span class="p">;</span><span class="c1">//将时间监测器设置为索引k</span>
+		<span class="n">k</span> <span class="o">=</span> <span class="n">minpos</span> <span class="o">-</span> <span class="n">heap</span><span class="p">;</span><span class="c1">//设置下一次调整的根节点</span>
+	<span class="p">}</span>
+	<span class="n">heap</span> <span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">he</span><span class="p">;</span><span class="c1">//将元素填充到k中</span>
+	<span class="n">ev_active</span> <span class="p">(</span><span class="n">ANHE_w</span> <span class="p">(</span><span class="n">he</span><span class="p">))</span> <span class="o">=</span> <span class="n">k</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="upheap">upheap</h4>
+
+<p>当对某一节点执行 <code>upheap()</code> 时，就是与其父节点进行比较，如果其值比父节点小，则交换，然后在对这个父节点重复 <code>upheap()</code> ，直到顶层。</p>
+
+<p><img src="/images/programs/libev_timer_watcher.png" alt="libev timer watcher" title="libev timer watcher" class="pull-center" /></p>
+
+<p>在 <code>ev_timer_start()</code> 函数中，会将定时器监控器注册到事件驱动器上。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">inline_speed</span> <span class="kt">void</span> <span class="nf">upheap</span><span class="p">(</span><span class="n">ANHE</span> <span class="o">*</span><span class="n">heap</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">ANHE</span> <span class="n">he</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">k</span><span class="p">];</span> <span class="c1">// 保存需要调整的结点</span>
+
+	<span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+		<span class="kt">int</span> <span class="n">p</span> <span class="o">=</span> <span class="n">HPARENT</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>  <span class="c1">// 找到父结点所在的下标</span>
+
+		<span class="c1">// 已经到了头或者满足最小栈的条件(子结点大于父结点)，则直接退出</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">UPHEAP_DONE</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">||</span> <span class="n">ANHE_at</span><span class="p">(</span><span class="n">heap</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">ANHE_at</span><span class="p">(</span><span class="n">he</span><span class="p">))</span>
+			<span class="k">break</span><span class="p">;</span>
+
+		<span class="n">heap</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">p</span><span class="p">];</span> <span class="c1">// 与上述类似，进行交换</span>
+		<span class="n">ev_active</span><span class="p">(</span><span class="n">ANHE_w</span><span class="p">(</span><span class="n">heap</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span> <span class="o">=</span> <span class="n">k</span><span class="p">;</span>
+
+		<span class="n">k</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">heap</span> <span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">he</span><span class="p">;</span>
+	<span class="n">ev_active</span> <span class="p">(</span><span class="n">ANHE_w</span> <span class="p">(</span><span class="n">he</span><span class="p">))</span> <span class="o">=</span> <span class="n">k</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="timer-watcher">Timer Watcher</h2>
+
+<p>在 <code>ev_timer_init()</code> 中，分别设置 <code>after</code> 和 <code>repeat</code> 参数，表示 <code>after</code> 秒后执行一次回调函数，之后每隔 <code>repeat</code> 秒执行一次。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">//----- 结构体定义，对于时间主要是at+repeat参数</span>
+<span class="cp">#define EV_WATCHER_TIME(type)      \</span>
+<span class="cp">  EV_WATCHER (type)                \</span>
+<span class="cp">  ev_tstamp at;     </span><span class="cm">/* private, 函数初始化对应的after参数 */</span><span class="cp"></span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">ev_timer</span> <span class="p">{</span>
+  <span class="n">EV_WATCHER_TIME</span> <span class="p">(</span><span class="n">ev_timer</span><span class="p">)</span>       <span class="c1">// 通用</span>
+  <span class="n">ev_tstamp</span> <span class="n">repeat</span><span class="p">;</span>  <span class="cm">/* rw, 函数初始化对应的repeat参数 */</span>
+<span class="p">}</span> <span class="n">ev_timer</span><span class="p">;</span>
+
+<span class="c1">//----- 扩展后如下，其中前五个成员是监视器的公共成员</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">ev_timer</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">active</span><span class="p">;</span>        <span class="c1">// 标明该监视器在堆数组timers中的下标</span>
+    <span class="kt">int</span> <span class="n">pending</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">priority</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">cb</span><span class="p">)(</span><span class="k">struct</span> <span class="n">ev_loop</span> <span class="o">*</span><span class="n">loop</span><span class="p">,</span> <span class="k">struct</span> <span class="n">ev_timer</span> <span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">revents</span><span class="p">);</span>
+
+    <span class="n">ev_tstamp</span> <span class="n">at</span><span class="p">;</span>      <span class="c1">// 定时器第一次触发的时间点，根据mn_now设置</span>
+    <span class="n">ev_tstamp</span> <span class="n">repeat</span><span class="p">;</span>  <span class="c1">// 必须&gt;=0，当大于0时表示每隔repeat秒该定时器再次触发；0表示只触发一次</span>
+<span class="p">}</span> <span class="n">ev_timer</span><span class="p">;</span>
+
+<span class="c1">//----- 初始化，意味着在after秒后执行，设置为0则会立即执行一次；然后每隔repeat秒执行一次</span>
+<span class="cp">#define ev_timer_init(ev,cb,after,repeat)        \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_timer_set ((ev),(after),(repeat)); } while (0)</span>
+
+<span class="c1">//----- 如下为一个示例程序</span>
+<span class="kt">void</span> <span class="nf">cb</span> <span class="p">(</span><span class="n">EV_P_</span> <span class="n">ev_timer</span> <span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">revents</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ev_break</span><span class="p">(</span><span class="n">EV_P_</span> <span class="n">EVBREAK_ONE</span><span class="p">);</span>         <span class="c1">// 实际是设置loop_done的值，也即退出主循环</span>
+<span class="p">}</span>
+<span class="n">ev_timer</span> <span class="n">watcher</span><span class="p">;</span>
+<span class="n">ev_timer_init</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">watcher</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>  <span class="c1">// 初始化，分别表示多长时间开始执行第一次，后面为时间间隔</span>
+<span class="n">ev_timer_start</span> <span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">watcher</span><span class="p">);</span></code></pre></figure>
+
+<h3 id="示例程序">示例程序</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;ev.h&gt;       </span><span class="c1">// a single header file is required</span>
+<span class="cp">#include &lt;time.h&gt;     </span><span class="c1">// for time()</span>
+<span class="cp">#include &lt;stdio.h&gt;    </span><span class="c1">// for printf()</span>
+<span class="cp">#include &lt;stdint.h&gt;   </span><span class="c1">// for uintmax_t</span>
+
+<span class="c1">// every watcher type has its own typedef&#39;d struct with the name ev_TYPE</span>
+<span class="n">ev_timer</span> <span class="n">timeout_watcher</span><span class="p">;</span>
+<span class="n">ev_timer</span> <span class="n">repeate_watcher</span><span class="p">;</span>
+<span class="n">ev_timer</span> <span class="n">oneshot_watcher</span><span class="p">;</span>
+
+<span class="c1">// another callback, this time for a time-out</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">timeout_cb</span> <span class="p">(</span><span class="n">EV_P_</span> <span class="n">ev_timer</span> <span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">revents</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">w</span><span class="p">;</span>
+        <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">revents</span><span class="p">;</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;timeout at %ju</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">uintmax_t</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span>
+        <span class="c1">// this causes the innermost ev_run to stop iterating</span>
+        <span class="n">ev_break</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="n">EVBREAK_ONE</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">repeate_cb</span> <span class="p">(</span><span class="n">EV_P_</span> <span class="n">ev_timer</span> <span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">revents</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">w</span><span class="p">;</span>
+        <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">revents</span><span class="p">;</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;repeate at %ju</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">uintmax_t</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">oneshot_cb</span> <span class="p">(</span><span class="n">EV_P_</span> <span class="n">ev_timer</span> <span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">revents</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">w</span><span class="p">;</span>
+        <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">revents</span><span class="p">;</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;oneshot at %ju</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">uintmax_t</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span>
+        <span class="n">ev_timer_stop</span><span class="p">(</span><span class="n">EV_A_</span> <span class="n">w</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">time_t</span> <span class="n">result</span><span class="p">;</span>
+        <span class="n">EV_P</span> <span class="n">EV_DEFAULT</span><span class="p">;</span> <span class="cm">/* OR ev_default_loop(0) */</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;  start at %ju</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">uintmax_t</span><span class="p">)</span><span class="n">result</span><span class="p">);</span>
+
+        <span class="c1">// 2秒后执行函数</span>
+        <span class="c1">//ev_timer_init (&amp;oneshot_watcher, oneshot_cb, 2.0, 0.);</span>
+        <span class="n">ev_timer_init</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">oneshot_watcher</span><span class="p">,</span> <span class="n">oneshot_cb</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">);</span>
+        <span class="n">ev_timer_start</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="o">&amp;</span><span class="n">oneshot_watcher</span><span class="p">);</span>
+
+        <span class="c1">// 5秒后开始循环，每次间隔1秒，如果最后一个参数为0，则只执行一次</span>
+        <span class="n">ev_timer_init</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">repeate_watcher</span><span class="p">,</span> <span class="n">repeate_cb</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">);</span>
+        <span class="n">ev_timer_start</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="o">&amp;</span><span class="n">repeate_watcher</span><span class="p">);</span>
+
+        <span class="c1">// 10秒后执行超时，设置为-1表示不退出</span>
+        <span class="n">ev_timer_init</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">timeout_watcher</span><span class="p">,</span> <span class="n">timeout_cb</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">);</span>
+        <span class="n">ev_timer_start</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="o">&amp;</span><span class="n">timeout_watcher</span><span class="p">);</span>
+
+        <span class="c1">// now wait for events to arrive</span>
+        <span class="n">ev_run</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="mi">0</span><span class="p">);</span>
+
+        <span class="c1">// break was called, so exit</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="函数执行流程">函数执行流程</h3>
+
+<p>函数的初始化过程就不再做过多的介绍了，实际上就是对各个成员变量设置初始值，一般都是设置为 0 ，详细内容可以直接查看下源码。</p>
+
+<p>另外，对于 timer 来说，需要注意的是，其中的 active 成员有特殊的含义，实际上就是该对象在 heap 数组中的序号，而其序号是从 1 开始。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="n">noinline</span> <span class="n">ev_timer_start</span> <span class="p">(</span><span class="n">EV_P_</span> <span class="n">ev_timer</span> <span class="o">*</span><span class="n">w</span><span class="p">)</span> <span class="n">EV_THROW</span>
+<span class="p">{</span>
+	<span class="c1">// 通过init()初始化后active为0，也就是说还没有初始化过，如果已经初始化则不会重新设置</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">ev_is_active</span> <span class="p">(</span><span class="n">w</span><span class="p">)))</span>
+		<span class="k">return</span><span class="p">;</span>
+
+   <span class="c1">// 设置距离当前多久之后触发，注意，这里设置的是距离当前时间，该值会作为栈的权重</span>
+	<span class="n">ev_at</span> <span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">+=</span> <span class="n">mn_now</span><span class="p">;</span>
+
+	<span class="n">EV_FREQUENT_CHECK</span><span class="p">;</span>
+
+	<span class="o">++</span><span class="n">timercnt</span><span class="p">;</span>
+	<span class="c1">// 启动定时器，如上所述，active作为栈的序号，也就是(timercnt+HEAP0-1)</span>
+	<span class="n">ev_start</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="p">(</span><span class="n">W</span><span class="p">)</span><span class="n">w</span><span class="p">,</span> <span class="n">timercnt</span> <span class="o">+</span> <span class="n">HEAP0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="c1">// 调整timers内存的大小</span>
+	<span class="n">array_needsize</span> <span class="p">(</span><span class="n">ANHE</span><span class="p">,</span> <span class="n">timers</span><span class="p">,</span> <span class="n">timermax</span><span class="p">,</span> <span class="n">ev_active</span> <span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">EMPTY2</span><span class="p">);</span>
+	<span class="c1">// 将上述设置的timer保存，如上ev_active()返回的是序号</span>
+	<span class="n">ANHE_w</span> <span class="p">(</span><span class="n">timers</span> <span class="p">[</span><span class="n">ev_active</span> <span class="p">(</span><span class="n">w</span><span class="p">)])</span> <span class="o">=</span> <span class="p">(</span><span class="n">WT</span><span class="p">)</span><span class="n">w</span><span class="p">;</span>
+	<span class="c1">// 从watcher中的at值更新到缓存中，注意这里可以通过宏进行配置</span>
+	<span class="n">ANHE_at_cache</span> <span class="p">(</span><span class="n">timers</span> <span class="p">[</span><span class="n">ev_active</span> <span class="p">(</span><span class="n">w</span><span class="p">)]);</span>
+	<span class="c1">// 因为是从最后插入的值，所以一定是向上更新栈</span>
+	<span class="n">upheap</span> <span class="p">(</span><span class="n">timers</span><span class="p">,</span> <span class="n">ev_active</span> <span class="p">(</span><span class="n">w</span><span class="p">));</span>
+
+	<span class="n">EV_FREQUENT_CHECK</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>代码比较简单，首先设置监视器的 <code>at</code> 成员，表明在 <code>at</code> 时间点超时事件会触发，注意 <code>at</code> 是根据 <code>mn_now</code> 设置的，也就是相对于系统启动时间而言的（或者是日历时间）。</p>
+
+<p>之后，就是将该监视器加入到堆 <code>timers</code> 中，首先将该监视器加到堆中的最后一个元素，然后调用 <code>upheap</code> 调整堆。注意监视器的 <code>active</code> 成员，表明该监视器在堆数组中的下标。</p>
+
+<h4 id="定时器触发">定时器触发</h4>
+
+<p>接着，看下在一个事件驱动器循环中是如何处理定时器监控器的，这里我们依然抛开其他的部分，只找定时器相关的看。</p>
+
+<p>在 <code>/* calculate blocking time */</code> 块里面，可以看到计算 blocking time 的时候会先：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">(</span><span class="n">timercnt</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">ev_tstamp</span> <span class="n">to</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="n">timers</span> <span class="p">[</span><span class="n">HEAP0</span><span class="p">])</span> <span class="o">-</span> <span class="n">mn_now</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">waittime</span> <span class="o">&gt;</span> <span class="n">to</span><span class="p">)</span> <span class="n">waittime</span> <span class="o">=</span> <span class="n">to</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如果有定时器，那么就从定时器堆 <code>timers</code> 中取得堆顶上最小的一个时间，这样就保证了在这个时间前可以从 <code>backend_poll()</code> 中超时出来；跳出 <code>poll()</code> 等待后执行 <code>timers_reify()</code> 处理 <code>pengding</code> 的定时器。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">inline_size void timers_reify (EV_P)
+{
+	// 依次取最小堆的堆顶，如果ANHE.at小于当前时间，表示该定时器watcher超时
+	if (timercnt &amp;&amp; ANHE_at(timers[HEAP0]) &lt; mn_now) {
+		do {
+			ev_timer *w = (ev_timer *)ANHE_w(timers[HEAP0]);
+
+			if (w-&gt;repeat) { /* first reschedule or stop timer */
+				ev_at(w) += w-&gt;repeat;
+				if (ev_at(w) &lt; mn_now)
+					ev_at(w) = mn_now;
+
+				ANHE_at_cache(timers[HEAP0]);
+				downheap(timers, timercnt, HEAP0);
+			} else {
+				ev_timer_stop(EV_A_ w); /* nonrepeating: stop timer */
+			}
+
+			EV_FREQUENT_CHECK;
+			feed_reverse(EV_A_ (W)w);
+		} while (timercnt &amp;&amp; ANHE_at(timers[HEAP0]) &lt; mn_now);
+
+		feed_reverse_done(EV_A_ EV_TIMER);
+	}
+}</code></pre></figure>
+
+<p>了，那么将其压入一个数组中，由于在实际执行pendings二维数组上对应优先级上的watcher是从尾往头方向的，因此这里先用一个数组依时间先后次存下到一个中间数组loop-&gt;rfeeds中。然后将其逆序调用ev_invoke_pending插入到pendings二维数组中。这样在执行pending事件的触发动作的时候就可以保证，时间靠前的定时器优先执行。函数 feed_reverse和 feed_reverse_done就是将超时的定时器加入到loop-&gt;rfeeds暂存数组以及将暂存数组中的pending的watcher插入到pengdings数组的操作。把pending的watcher加入到pendings数组，后续的操作就和之前的一样了。回依次执行相应的回调函数。</p>
+
+<p>这个过程中还判断定时器的 w-&gt;repeat 的值，如果不为0，那么会重置该定时器的时间，并将其压入堆中正确的位置，这样在指定的时间过后又会被执行。如果其为0，那么调用ev_timer_stop关闭该定时器。 其首先通过clear_pending置pendings数组中记录的该watcher上的回调函数为一个不执行任何动作的哑动作。</p>
+
+<p>总结一下定时器就是在backend_poll之前通过定时器堆顶的超时时间，保证blocking的时间不超过最近的定时器时间，在backend_poll返回后，从定时器堆中取得超时的watcher放入到pendings二维数组中，从而在后续处理中可以执行其上注册的触发动作。然后从定时器管理堆上删除该定时器。最后调用和ev_start呼应的ev_stop修改驱动器loop的状态，即loop-&gt;activecnt减少一。并将该watcher的active置零。</p>
+
+<p>对于周期性的事件监控器是同样的处理过程。只是将timers_reify换成了periodics_reify。其内部会对周期性事件监控器派生类的做类似定时器里面是否repeat的判断操作。判断是否重新调整时间，或者是否重复等逻辑，这些看下代码比较容易理解，这里不再赘述。·</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;ev.h&gt;       </span><span class="c1">// a single header file is required</span>
+<span class="cp">#include &lt;time.h&gt;     </span><span class="c1">// a single header file is required</span>
+<span class="cp">#include &lt;stdio.h&gt;    </span><span class="c1">// for puts</span>
+
+<span class="n">ev_periodic</span> <span class="n">periodic_timer</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">periodic_action</span><span class="p">(</span><span class="n">EV_P_</span> <span class="n">ev_periodic</span> <span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">revents</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">w</span><span class="p">;</span>
+	<span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">revents</span><span class="p">;</span>
+	<span class="kt">time_t</span> <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;current time is %s&quot;</span><span class="p">,</span> <span class="n">ctime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">now</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="n">ev_tstamp</span> <span class="nf">rescheduler</span><span class="p">(</span><span class="n">ev_periodic</span> <span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="n">ev_tstamp</span> <span class="n">now</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">w</span><span class="p">;</span>
+	<span class="k">return</span> <span class="n">now</span> <span class="o">+</span> <span class="mi">60</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">time_t</span> <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+	<span class="n">EV_P</span> <span class="n">EV_DEFAULT</span><span class="p">;</span> <span class="cm">/* OR ev_default_loop(0) */</span>
+
+	<span class="c1">// 调用rescheduler()返回下次执行的时间，如果存在回调函数，则会忽略其它参数</span>
+	<span class="c1">// 包括offset+interval，其输出示例如下：</span>
+	<span class="c1">//     begin time is Fri Apr 14 21:51:47 2016</span>
+	<span class="c1">//   current time is Fri Apr 14 21:52:47 2016</span>
+	<span class="c1">//   current time is Fri Apr 14 21:53:47 2016</span>
+	<span class="c1">//   current time is Fri Apr 14 21:54:47 2016</span>
+	<span class="n">ev_periodic_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">periodic_timer</span><span class="p">,</span> <span class="n">periodic_action</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">rescheduler</span><span class="p">);</span>
+
+	<span class="c1">// 一般offset在[0, insterval]范围内，如下，也就是在最近的一个5秒整触发第一</span>
+	<span class="c1">// 次回调函数，其输出示例如下：</span>
+	<span class="c1">//     begin time is Fri Apr 21 23:24:18 2016</span>
+	<span class="c1">//   current time is Fri Apr 21 23:24:25 2016</span>
+	<span class="c1">//   current time is Fri Apr 21 23:24:35 2016</span>
+	<span class="c1">//   current time is Fri Apr 21 23:24:45 2016</span>
+	<span class="c1">//ev_periodic_init(&amp;periodic_timer, periodic_action, 5, 10, NULL);</span>
+
+	<span class="c1">// 如下只执行一次，也就是在20秒后触发</span>
+	<span class="c1">//     begin time is Fri Apr 21 23:27:04 2016</span>
+	<span class="c1">//   current time is Fri Apr 21 23:27:24 2016</span>
+	<span class="c1">//ev_periodic_init(&amp;periodic_timer, periodic_action, now+20, 0, NULL);      //3</span>
+
+	<span class="n">ev_periodic_start</span><span class="p">(</span><span class="n">EV_A_</span> <span class="o">&amp;</span><span class="n">periodic_timer</span><span class="p">);</span>
+
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;  begin time is %s&quot;</span><span class="p">,</span> <span class="n">ctime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">now</span><span class="p">));</span>
+
+	<span class="n">ev_run</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="mi">0</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="periodic-wather">Periodic Wather</h3>
+
+<p>这是绝对时间定时器，不同于 <code>ev_timer</code>，它是基于日历时间的；例如，指定一个 <code>ev_periodic</code> 在 10 秒之后触发 <code>(ev_now()+10)</code>，然后在 10 秒内将系统时间调整为去年，则该定时器会在一年后才触发超时事件，而 <code>ev_timer</code> 依然会在 10 秒之后触发。</p>
+
+<p>首先看下 libev 中定义的结构体。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define EV_WATCHER(type)              \</span>
+<span class="cp">  int active; </span><span class="cm">/* private */</span><span class="cp">           \</span>
+<span class="cp">  int pending; </span><span class="cm">/* private */</span><span class="cp">          \</span>
+<span class="cp">  EV_DECL_PRIORITY </span><span class="cm">/* private */</span><span class="cp">      \</span>
+<span class="cp">  EV_COMMON </span><span class="cm">/* rw */</span><span class="cp">                  \</span>
+<span class="cp">  EV_CB_DECLARE (type) </span><span class="cm">/* private */</span><span class="cp"></span>
+
+<span class="cp">#define EV_WATCHER_TIME(type)         \</span>
+<span class="cp">  EV_WATCHER (type)                   \</span>
+<span class="cp">  ev_tstamp at;     </span><span class="cm">/* private */</span><span class="cp"></span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">ev_periodic</span>
+<span class="p">{</span>
+  <span class="n">EV_WATCHER_TIME</span> <span class="p">(</span><span class="n">ev_periodic</span><span class="p">)</span>
+
+  <span class="n">ev_tstamp</span> <span class="n">offset</span><span class="p">;</span> <span class="cm">/* rw */</span>
+  <span class="n">ev_tstamp</span> <span class="n">interval</span><span class="p">;</span> <span class="cm">/* rw */</span>
+  <span class="n">ev_tstamp</span> <span class="p">(</span><span class="o">*</span><span class="n">reschedule_cb</span><span class="p">)(</span><span class="k">struct</span> <span class="n">ev_periodic</span> <span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="n">ev_tstamp</span> <span class="n">now</span><span class="p">)</span> <span class="n">EV_THROW</span><span class="p">;</span> <span class="cm">/* rw */</span>
+<span class="p">}</span> <span class="n">ev_periodic</span><span class="p">;</span>
+
+<span class="c1">// 上述结构体实际上等价于如下</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">ev_periodic</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">active</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">pending</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">priority</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">cb</span><span class="p">)(</span><span class="k">struct</span> <span class="n">ev_loop</span> <span class="o">*</span><span class="n">loop</span><span class="p">,</span> <span class="k">struct</span> <span class="n">ev_periodic</span> <span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">revents</span><span class="p">);</span>
+    <span class="n">ev_tstamp</span> <span class="n">at</span><span class="p">;</span>
+
+    <span class="n">ev_tstamp</span> <span class="n">offset</span><span class="p">;</span> <span class="cm">/* rw */</span>
+    <span class="n">ev_tstamp</span> <span class="n">interval</span><span class="p">;</span> <span class="cm">/* rw */</span>
+    <span class="n">ev_tstamp</span> <span class="p">(</span><span class="o">*</span><span class="n">reschedule_cb</span><span class="p">)(</span><span class="k">struct</span> <span class="n">ev_periodic</span> <span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="n">ev_tstamp</span> <span class="n">now</span><span class="p">)</span> <span class="n">EV_THROW</span><span class="p">;</span> <span class="cm">/* rw */</span>
+<span class="p">}</span> <span class="n">ev_periodic</span><span class="p">;</span></code></pre></figure>
+
+<p>如上结构体，其中前六个成员与 ev_timer 一样，而且offset、interval和reschedule_cb都是用来设置触发时间的，这个会在下面说明。</p>
+
+<h4 id="初始化">初始化</h4>
+
+<p>与其它 Watcher 相似，初始化可通过 ev_init()+ev_periodic_set() 或直接通过 ev_periodic_init() 初始化，可以查看如下内容。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define ev_init(ev,cb_) do {                      \</span>
+<span class="cp">  ((ev_watcher *)(void *)(ev))-&gt;active  =         \</span>
+<span class="cp">  ((ev_watcher *)(void *)(ev))-&gt;pending = 0;      \</span>
+<span class="cp">  ev_set_priority ((ev), 0);                      \</span>
+<span class="cp">  ev_set_cb ((ev), cb_);                          \</span>
+<span class="cp">} while (0)</span>
+
+<span class="cp">#define ev_periodic_set(ev,ofs_,ival_,rcb_)  do { \</span>
+<span class="cp">  (ev)-&gt;offset = (ofs_);                          \</span>
+<span class="cp">  (ev)-&gt;interval = (ival_);                       \</span>
+<span class="cp">  (ev)-&gt;reschedule_cb = (rcb_);                   \</span>
+<span class="cp">} while (0)</span>
+
+<span class="cp">#define ev_periodic_init(ev,cb,ofs,ival,rcb) do { \</span>
+<span class="cp">  ev_init ((ev), (cb));                           \</span>
+<span class="cp">  ev_periodic_set ((ev),(ofs),(ival),(rcb));      \</span>
+<span class="cp">} while (0)</span></code></pre></figure>
+
+<h4 id="启动定时器">启动定时器</h4>
+
+<p>其中启动函数如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="n">noinline</span> <span class="n">ev_periodic_start</span> <span class="p">(</span><span class="n">EV_P_</span> <span class="n">ev_periodic</span> <span class="o">*</span><span class="n">w</span><span class="p">)</span> <span class="n">EV_THROW</span>
+<span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">ev_is_active</span> <span class="p">(</span><span class="n">w</span><span class="p">)))</span>
+    <span class="k">return</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">w</span><span class="o">-&gt;</span><span class="n">reschedule_cb</span><span class="p">)</span>
+    <span class="n">ev_at</span> <span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">=</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">reschedule_cb</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">ev_rt_now</span><span class="p">);</span>
+  <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">w</span><span class="o">-&gt;</span><span class="n">interval</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">assert</span> <span class="p">((</span><span class="s">&quot;libev: ev_periodic_start called with negative interval value&quot;</span><span class="p">,</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">interval</span> <span class="o">&gt;=</span> <span class="mf">0.</span><span class="p">));</span>
+      <span class="n">periodic_recalc</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="n">w</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="k">else</span>
+    <span class="n">ev_at</span> <span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">=</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">offset</span><span class="p">;</span>
+
+  <span class="n">EV_FREQUENT_CHECK</span><span class="p">;</span>
+
+  <span class="o">++</span><span class="n">periodiccnt</span><span class="p">;</span>
+  <span class="n">ev_start</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="p">(</span><span class="n">W</span><span class="p">)</span><span class="n">w</span><span class="p">,</span> <span class="n">periodiccnt</span> <span class="o">+</span> <span class="n">HEAP0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="n">array_needsize</span> <span class="p">(</span><span class="n">ANHE</span><span class="p">,</span> <span class="n">periodics</span><span class="p">,</span> <span class="n">periodicmax</span><span class="p">,</span> <span class="n">ev_active</span> <span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">EMPTY2</span><span class="p">);</span>
+  <span class="n">ANHE_w</span> <span class="p">(</span><span class="n">periodics</span> <span class="p">[</span><span class="n">ev_active</span> <span class="p">(</span><span class="n">w</span><span class="p">)])</span> <span class="o">=</span> <span class="p">(</span><span class="n">WT</span><span class="p">)</span><span class="n">w</span><span class="p">;</span>
+  <span class="n">ANHE_at_cache</span> <span class="p">(</span><span class="n">periodics</span> <span class="p">[</span><span class="n">ev_active</span> <span class="p">(</span><span class="n">w</span><span class="p">)]);</span>
+  <span class="n">upheap</span> <span class="p">(</span><span class="n">periodics</span><span class="p">,</span> <span class="n">ev_active</span> <span class="p">(</span><span class="n">w</span><span class="p">));</span>
+
+  <span class="n">EV_FREQUENT_CHECK</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>共有三种设置超时时间 at 的方法，也就是：</p>
+
+<ol><li>
+
+如果 reschedule_cb() 不为空，则忽略 interval 和 offset，而使用该函数设置超时时间 at，该函数以 ev_rt_now 为参数，设置下次超时事件触发的时间，示例程序如下。
+
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">static ev_tstamp my_rescheduler (ev_periodic *w, ev_tstamp now)
+{
+    return now + 60.;
+}</code></pre></figure>
+
+
+这也就是将 at 设置为 1 分钟之后的时间点开始。</li><br /><li>
+
+当 reschedule_cb() 为空且 interval&gt;0 时，调用 periodic_recalc() 函数设置 at，也就是将 at 设置为下一个的 offset+N*interval 时间点，其中的 offset 一般处于 [0, interval] 范围内。<br />
+
+比如置 offset 为 0，interval 为 3600，意味着当系统时间是完整的 1 小时的时候，也就是系统时间可以被 3600 整除的时候，比如 8:00、9:00 等，就会触发超时事件。</li><br /><li>
+
+如果 reschedule_cb 为空且 interval 为 0，则直接将 at 置为 offset，此时不会重复触发，触发一次之后就会停止；而且该监视器也会无视时间调整，比如置 at 为 20110101000000，则只要系统日历时间超过了改时间，就会触发超时事件。
+</li></ol>
+
+<p>设置好 at 后，就将该监视器加入到堆 periodics 中，这与 ev_timer 的代码是一样的，不再赘述。</p>
+
+<h4 id="计算触发点时间">计算触发点时间</h4>
+
+<p>如下的 periodic_recalc() 函数会重新计算下一个触发时间点。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="n">noinline</span> <span class="nf">periodic_recalc</span> <span class="p">(</span><span class="n">EV_P_</span> <span class="n">ev_periodic</span> <span class="o">*</span><span class="n">w</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">ev_tstamp</span> <span class="n">interval</span> <span class="o">=</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">interval</span> <span class="o">&gt;</span> <span class="n">MIN_INTERVAL</span> <span class="o">?</span> <span class="n">w</span><span class="o">-&gt;</span><span class="nl">interval</span> <span class="p">:</span> <span class="n">MIN_INTERVAL</span><span class="p">;</span>
+  <span class="n">ev_tstamp</span> <span class="n">at</span> <span class="o">=</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">offset</span> <span class="o">+</span> <span class="n">interval</span> <span class="o">*</span> <span class="n">ev_floor</span> <span class="p">((</span><span class="n">ev_rt_now</span> <span class="o">-</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">offset</span><span class="p">)</span> <span class="o">/</span> <span class="n">interval</span><span class="p">);</span>
+
+  <span class="cm">/* the above almost always errs on the low side */</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">at</span> <span class="o">&lt;=</span> <span class="n">ev_rt_now</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">ev_tstamp</span> <span class="n">nat</span> <span class="o">=</span> <span class="n">at</span> <span class="o">+</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">interval</span><span class="p">;</span>
+
+      <span class="cm">/* when resolution fails us, we use ev_rt_now */</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">nat</span> <span class="o">==</span> <span class="n">at</span><span class="p">))</span> <span class="p">{</span>
+          <span class="n">at</span> <span class="o">=</span> <span class="n">ev_rt_now</span><span class="p">;</span>
+          <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="n">at</span> <span class="o">=</span> <span class="n">nat</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">ev_at</span> <span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">=</span> <span class="n">at</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>该函数的作用就是将 at 置为下一个的 offset+N*interval 时间点，其中 <code>ev_floor(x)</code> 返回小于 x，且最接近 x 的整数。</p>
+
+<!--
+举个例子可能会容易明白该代码：interval为10分钟（600），offset为2分钟（120），表示将at置为下一个分钟数为2的时间点。
+
+假设当前为8:01:23，则最终会使得at为8:02:00。计算过程是 ：interval * ev_floor ((ev_rt_now - w->offset) / interval)就表示7:50:00，然后再加上offset就是7:52:00，进入循环，最终调整得at=8:02:00。
+
+假设当前为8:03:56，则最终会使得at为8:12:00。计算过程是：interval * ev_floor ((ev_rt_now -w->offset) / interval)就表示8:00:00，然后再加上offset就是8:02:00，进入循环，最终调整得at=8:12:00。
+-->
+
+<h4 id="超时时间调整">超时时间调整</h4>
+
+<p>通过 periodics_reschedule() 函数，用于重新调整超时时间。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="n">noinline</span> <span class="n">ecb_cold</span> <span class="nf">periodics_reschedule</span> <span class="p">(</span><span class="n">EV_P</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="cm">/* adjust periodics after time jump */</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="n">HEAP0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">periodiccnt</span> <span class="o">+</span> <span class="n">HEAP0</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">ev_periodic</span> <span class="o">*</span><span class="n">w</span> <span class="o">=</span> <span class="p">(</span><span class="n">ev_periodic</span> <span class="o">*</span><span class="p">)</span><span class="n">ANHE_w</span> <span class="p">(</span><span class="n">periodics</span> <span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="n">w</span><span class="o">-&gt;</span><span class="n">reschedule_cb</span><span class="p">)</span>
+        <span class="n">ev_at</span> <span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">=</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">reschedule_cb</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">ev_rt_now</span><span class="p">);</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">w</span><span class="o">-&gt;</span><span class="n">interval</span><span class="p">)</span>
+        <span class="n">periodic_recalc</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="n">w</span><span class="p">);</span>
+
+      <span class="n">ANHE_at_cache</span> <span class="p">(</span><span class="n">periodics</span> <span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+
+  <span class="n">reheap</span> <span class="p">(</span><span class="n">periodics</span><span class="p">,</span> <span class="n">periodiccnt</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在 time_update() 函数中，如果发现日历时间被调整了，则会通过调用 periodics_reschedule() 调整 ev_periodic 的超时时间点 at；调整的方法与启动函数中一样，要么使用 reschedule_cb() 调整，要么调用 periodic_recalc() 重新计算 at。</p>
+
+<p>最后，将 periodics 堆中所有元素都调整完毕后，调用 reheap() 使 periodics 恢复堆结构。</p>
+
+<!--
+http://blog.csdn.net/gqtcgq/article/details/49531625
+####
+
+将激活的超时事件排队periodics_reify
+
+主要流程跟timers_reify一样，只不过在重新计算下次触发时间点at的时候，计算方法跟ev_periodic_start中的一样。
+
+
+时间包括了 monotonic realtime 两种方式，分别称为相对时间和墙上时间，其中前者不会受系统时间调整的影响；而后者，在用户调整时间时会同时受到影响。注意，两者都可能会受到 NTP 时间调整的影响。
+
+在 libev 中，通过 `have_monotonic` `have_realtime` 来判断系统是否支持，会在系统初始化函数 `loop_init()` 中执行，实际调用的是 `clock_gettime()` 函数。
+
+在 Linux 系统中，相对时间一般是系统启动以来的时间，而墙上时间就是所谓的 epoch 时间，两者之间必然会有个差值。
+
+#### 相关函数
+
+其中包含了两个通用的函数：A) `get_clock()` 获取相对时间，如果不支持可能会获取墙上时间；B) `get_time()` 获取墙上时间。
+
+#### 相关变量
+
+主要是用于记录一些与时间相关的变量，并在某些场景下 (时间跳变) 进行判断以及调整。
+
+VARx(ev_tstamp, now_floor) /* last time we refreshed rt_time, monotonic clock */
+VARx(ev_tstamp, mn_now)    /* monotonic clock "now" */
+VARx(ev_tstamp, rtmn_diff) /* difference realtime - monotonic time */
+EV_API_DECL ev_tstamp ev_rt_now; /* realtime clock "now" */
+
+### time_update
+
+这是 libev 中最为关键的函数，主要用来更新时间，也就是全局变量 `mn_now`
+
+其中比较关键的函数是 `time_update()` ，会检测是否发生了时间跳变，并同时做相应的调整。
+
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-monitor-process-introduce.html" title="Linux 进程监控">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-signal-safe-introduce.html" title="Linux 信号安全">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1490803200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-libev-timers.html" data-title="libev 时间处理" data-url="/post/linux-libev-timers.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+  <h2>Related Posts</h2>
+  <div class="list-group">
+    
+      
+        <a class="list-group-item" href="/post/linux-libev-source-code-signal-process-details.html">libev 信号处理</a>
+      
+    
+      
+    
+      
+        <a class="list-group-item" href="/post/linux-libev.html">libev 使用简介</a>
+      
+    
+      
+        <a class="list-group-item" href="/post/linux-libev-source-code-details-introduce.html">libev 源码详解</a>
+      
+    
+  </div>
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

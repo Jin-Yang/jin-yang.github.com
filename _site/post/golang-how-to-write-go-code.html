@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Golang 如何编码？|JinYang's Blog</title>
+  <meta name="keywords" content="golang,go">
+  <meta name="description" content="这篇文章实际上是 golang 官网 [How to Write Go Code](https://golang.org/doc/code.html) 的大致翻译，主要介绍了在 golang 环境中，如何进行编写代码，其中包括了搭建一个简单 go 包，以及如何使用 go tool 等等。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Golang 如何编码？</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-08-25 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  program ,  golang ,  linux  
+      --- Quoted From: <a href="https://golang.org/doc/code.html" rel="external">Source</a>
+    </div>
+  </div>
+  <hr>
+  <p>这篇文章实际上是 golang 官网 <a href="https://golang.org/doc/code.html">How to Write Go Code</a> 的大致翻译，主要介绍了在 golang 环境中，如何进行编写代码，其中包括了搭建一个简单 go 包，以及如何使用 go tool 等等。</p>
+
+<!-- more -->
+
+<p><img src="/images/go/code-logo.jpg" alt="a logo" title="a logo" class="pull-center" width="70%" /></p>
+
+<h2 id="简介">简介</h2>
+
+<p>这篇文章中，将介绍如何构建一个简单的 go 包，以及如何使用 go tool，其中包含了典型的使用场景，也就是获取包、编译、安装 go 包以及命令。</p>
+
+<p>使用 go tool 时，对于代码在那些目录下存放都有特定的要求，本文中，将会简单介绍。</p>
+
+<h2 id="代码组织">代码组织</h2>
+
+<h3 id="概述">概述</h3>
+
+<ul>
+  <li>使用 go 语言编程时，通常将所有的 go 代码保存在一个工作目录 (workspace) 中；</li>
+  <li>一个工作目录中包含了多个版本管理库 (repositories)，例如通过 git、svn 管理的；</li>
+  <li>每个版本库中可以包含一个或者多个包 (packages)；</li>
+  <li>每个包在同一个目录下包含了一个或者多个源码文件；</li>
+  <li>指向包的目录路径为通过 import 导入时的路径。</li>
+</ul>
+
+<p>注意，很多语言都是每个工程 (project) 都有特定的工作目录，而工作目录中又通常是和版本管理库相关的。显然，go 语言与之是有明显区别的。</p>
+
+<h3 id="workspace">Workspace</h3>
+
+<p>在工作目录下，包括了如下的三个子目录：</p>
+
+<ul>
+  <li><em>src</em> 包括了 go 的源码文件；</li>
+  <li><em>pkg</em> 包括了包对象；</li>
+  <li><em>bin</em> 包含了可执行二进制命令。</li>
+</ul>
+
+<p>通过 go tool 可以将 src 目录下的源码编译安装到 pkg 以及 bin 目录下。</p>
+
+<p>src 子目录下通常包含了多个版本控制库，如 git 和 mercurial 。如下是一个简单的示例：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">bin/
+    hello                           # 二进制可执行文件
+    outyet
+pkg/
+    linux_amd64/                    # 当前OS类型及其架构
+        github.com/golang/example/
+            stringutil.a            # 包对象
+src/
+    github.com/golang/example/
+        .git/                       # git仓库元数据
+        hello/
+            hello.go                # 源码
+        outyet/
+            main.go                 # 源码
+            main_test.go            # 测试源码
+        stringutil/
+            reverse.go
+            reverse_test.go
+    golang.org/x/image/
+        .git/
+        bmp/
+            reader.go
+            writer.go
+    ...                             # 其它包仓库</code></pre></figure>
+
+<p>如上的示例中，在工作目录中包含了两个版本库 example 以及 image 。其中 example 版本库中包含了两个命令 (hello 和 outyet) 以及一个库 (stringutl.a)。而 image 版本库中则包含了 bmp 包。</p>
+
+<p>通常，每个工作目录下包含了多个源码库，而且每个源码库通常包含了多个包以及命令。而且，大多数 go 程序员会将所有的源码及其依赖保存在同一个工作目录下。</p>
+
+<p>命令以及库是从不同类型的源码包中编译的，这个后面详述。</p>
+
+<h3 id="gopath-环境变量">GOPATH 环境变量</h3>
+
+<p>GOPATH 环境变量指定了工作目录的位置，大概这是通过 go 编码时需要唯一设置的环境变量。</p>
+
+<p>开始，需要设置一个工作目录，并相应的设置 GOPATH 环境变量。目录可以在任何目录，在此以 $HOME/work 为例。注意，工作目录不一定与 go 安装目录相同。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ make $HOME/work
+$ export GOPATH=$HOME/work</code></pre></figure>
+
+<p>为了方便，通常要将工作目录下的 <em>bin</em> 子目录添加到 PATH 环境变量中。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ export PATH=$PATH:$GOPATH/bin</code></pre></figure>
+
+<p>更多与 GOPATH 环境变量相关的内容可以查看 go help gopath 。</p>
+
+<h3 id="导入目录">导入目录</h3>
+
+<p>导入目录 (<em>import path</em>) 字符串唯一定义了一个包 (package)。而导入目录对应了工作目录中的路径或者是远端的版本库 (后面详述) 。</p>
+
+<p>标准库中的包，路径都比较短比如 “fmt” 和 “net/http” 。对于自己的库，必须要选择一个现在甚至将来，都不会与标准库或者三方库冲突的路径。</p>
+
+<p>如果将代码保存在某个版本库中，那么就需要将版本库作为根路径。例如代码保存在 Github 中，相应的帐号为 github.com/user ，这将作为基目录 (base path)。</p>
+
+<p>注意，在你编译之前，你不需要将你的代码推送到远端，通常这么部署是一个很好的习惯，方便后面发布到远端。实际上，你可以选择任意的目录，只要对标准库以及三方库唯一即可。</p>
+
+<p>假设使用 github.com/user 作为基目录，可以通过如下的目录保存你的源码。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ mkdir -p $GOPATH/src/github.com/user</code></pre></figure>
+
+<h3 id="你的第一个程序">你的第一个程序</h3>
+
+<p>为了编译并运行一个简单程序，首选选择一个包路径 (假设使用 github.com/user/hello) 并在工作目录中创建相应的目录。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ mkdir -p $GOPATH/src/github.com/user/hello</code></pre></figure>
+
+<p>结下来，在上面的目录下创建一个 hello.go 文件，包含如下的内容。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<span class="kn">import</span> <span class="s">&quot;fmt&quot;</span>
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Hello World. \n&quot;</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>接下来，可以通过如下方式安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ go install github.com/user/hello</code></pre></figure>
+
+<p>上述的命令可以在任何目录下执行，go tool 会通过 GOPATH 环境变量自动找到工作目录下的包。</p>
+
+<p>当然，如果在相应的包目录下，可以直接忽略包的路径。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd $GOPATH/src/github.com/user/hello
+$ go install</code></pre></figure>
+
+<p>上述的命令将编译生成 hello 命令，然后将其添加到工作目录的 bin 子目录下，在我们的示例中就是 $GOPATH/bin/hello，也就是 $HOME/work/bin/hello 。</p>
+
+<p>go tool 只有在有异常的时候才会输出相应的内容，如若没有任何内容输出，也就意味着已经执行成功。</p>
+
+<p>然后，可以通过如下命令执行。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ $GOPATH/bin/hello
+Hello World</code></pre></figure>
+
+<p>如果已经将 $GOPATH/bin 目录添加到了 PATH 环境变量中，那可以直接输入二进制文件名即可。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ hello
+Hello World</code></pre></figure>
+
+<p>如果在使用版本控制系统，现在就可以初始化一个版本库，添加文件，然后提交第一次的修改。当然，这一步是可选的，编写 go 代码时是非必须的。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd $GOPATH/src/github.com/user/hello
+$ git init
+Initialized empty Git repository in /home/user/work/src/github.com/user/hello/.git/
+$ git add hello.go
+$ git commit -m &quot;initial commit&quot;
+[master (root-commit) 0b4507d] initial commit
+ 1 file changed, 1 insertion(+_
+   create mode 100644 hello.go</code></pre></figure>
+
+<p>接下来也可以将其推送到远端的仓库。</p>
+
+<h3 id="第一个库">第一个库</h3>
+
+<p>接下来，我们编写一个库，然后在 hello 程序中使用它。</p>
+
+<p>同上面一样，首先选择一个包的路径 (在此使用 github.com/user/stringutil) 并创建之。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ mkdir -p $GOPATH/src/github.com/user/stringutil</code></pre></figure>
+
+<p>接下来在上述的目录下新建一个 reverse.go 文件，内容如下。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="c1">// Package stringutil contains utility functions for working with strings.</span>
+<span class="kn">package</span> <span class="nx">stringutil</span>
+
+<span class="c1">// Reverse returns its argument string reversed rune-wise left to right.</span>
+<span class="kd">func</span> <span class="nx">Reverse</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="nx">r</span> <span class="o">:=</span> <span class="p">[]</span><span class="nb">rune</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="p">=</span> <span class="nx">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nx">j</span><span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
+        <span class="nx">r</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">r</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">=</span> <span class="nx">r</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">r</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">string</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>然后通过 go build 命令进行编译。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ go build github.com/user/stringutil</code></pre></figure>
+
+<p>如果在包的源码目录下，可以直接执行如下命令。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ go build</code></pre></figure>
+
+<p>上述的命令并不会生成文件。为了生成文件，必须要执行 go install 才可以，此时会将包对象保存在工作目录下的 pkg 目录下。</p>
+
+<p>假设，已经生成了 stringutil 包，修改上面的 hello.go 文件。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<span class="kn">import</span> <span class="p">(</span>
+     <span class="s">&quot;fmt&quot;</span>
+     <span class="s">&quot;github.com/user/stringutil&quot;</span>
+     <span class="p">)</span>
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="nx">stringutil</span><span class="p">.</span><span class="nx">Reverse</span><span class="p">(</span><span class="s">&quot;!oG ,olleH&quot;</span><span class="p">))</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>无论 go tool 安装一个包还是命令，它将会自动安装其所依赖的包。所以，当你安装 hello 程序时。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ go install github.com/user/hello</code></pre></figure>
+
+<p>其中的 stringutil 包会自动安装。</p>
+
+<p>执行新的命令，你将会看到一个反向的信息。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ hello
+Hello, Go!</code></pre></figure>
+
+<p>执行完上述命令之后，其工作目录类似如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">bin/
+    hello                           # 二进制可执行文件
+pkg/
+    linux_amd64/                    # 当前OS类型及其架构
+        github.com/user/
+            stringutil.a            # 包对象
+src/
+    github.com/user/
+        .git/                       # git仓库元数据
+        hello/
+            hello.go                # 源码
+        stringutil/
+            reverse.go</code></pre></figure>
+
+<p>注意，go install 命令会将 stringutil.a 存放到 pkg/linux_amd64 与源码目录相同的镜像路径中。在使用其它的 go tool 工具时，可以直接查看相应的目录，从而避免重复编译。其中 linux_amd64 用于交叉编译，包括了当前环境的 OS 以及架构信息。</p>
+
+<p>go 语言采用静态编译，当执行 go 程序的时候，不再需要包对象。</p>
+
+<h3 id="包名称">包名称</h3>
+
+<p>在 go 源码中的第一条语句必须如下：</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">name</span></code></pre></figure>
+
+<p>其中 <em>name</em> 是用于包导入时的默认名称，一个包中的文件必须要使用相同的 <em>name</em> 。</p>
+
+<p>go 语言中的约定是，import 路径的最后一个名称作为包的名称，例如，假设包的 import 路径为 “crypto/rot13”，那么包名称为 rot13 。</p>
+
+<p>可执行的命令必须使用 package.main 。</p>
+
+<p>当然，没有必要要求所有的包名称唯一，只要保证其导入的路径唯一即可。</p>
+
+<h2 id="测试">测试</h2>
+
+<p>go 包含了一个轻量级的测试框架，需要使用 go test 命令以及 testing 包。</p>
+
+<p>其中文件名以 <em>_test.go</em> 方式命名，其中包含了测试函数 TestXXX，函数格式为 func (t *testing. T)。测试框架将会执行每个函数，如果测试函数调用了 t.Error 或者 t.Fail，则认为测试用例失败。</p>
+
+<p>对于上面的 stringutil 包创建一个文件 $GOPATH/src/github.com/user/stringutil/reverse_test.go，其内容如下。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">stringutil</span>
+<span class="kn">import</span> <span class="s">&quot;testing&quot;</span>
+<span class="kd">func</span> <span class="nx">TestReverse</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span> <span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">cases</span> <span class="o">:=</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+        <span class="nx">in</span><span class="p">,</span> <span class="nx">want</span> <span class="kt">string</span>
+    <span class="p">}{</span>
+        <span class="p">{</span><span class="s">&quot;Hello, world&quot;</span><span class="p">,</span> <span class="s">&quot;dlrow ,olleH&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s">&quot;Hello, 世界&quot;</span><span class="p">,</span> <span class="s">&quot;界世 ,olleH&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">cases</span> <span class="p">{</span>
+        <span class="nx">got</span> <span class="o">:=</span> <span class="nx">Reverse</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">in</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">got</span> <span class="o">!=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">want</span> <span class="p">{</span>
+            <span class="nx">t</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;Reverse(%q) == %q, want %q&quot;</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">in</span><span class="p">,</span> <span class="nx">got</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">want</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span></code></pre></figure>
+
+<p>然后，通过 go test 执行测试。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ go test github.com/user/stringutil
+ok       github.com/user/stringutil 0.165s</code></pre></figure>
+
+<p>与往常一样，如果在包路径下，可以直接忽略包路径，直接执行如下命令即可。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd $GOPATH/src/github.com/user/stringutil
+$ go test
+ok       github.com/user/stringutil 0.165s</code></pre></figure>
+
+<p>可以通过 go help test 命令查看相关的帮助。</p>
+
+<h2 id="远程包">远程包</h2>
+
+<p>导入路径 (import path) 可以用于通过版本管理软件 (如 git 或者Mercurial) 获取源码包。而 go tool 可以通过该特性直接获取远端仓库。例如，上述的示例保存在 Github 中的 <a href="https://github.com/golang/example">github.com/golang/example</a> 仓库中。如果在导入路径中包含了上述的仓库，则 go get 将会自动 fetch、build、install 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ go get github.com/golang/example/hello
+$ $GOPATH/bin/hello
+Hello, Go examples!</code></pre></figure>
+
+<p>如果包在工作路径中不存在，那么 go get 将会将其存放在 GOPATH 指定的第一个工作空间中。当已经存在时，go get 将忽略下载，而与 go install 操作相同。</p>
+
+<p>执行了上述的 go get 命令之后，工作目录的内容如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">bin/
+    hello                           # 二进制可执行文件
+pkg/
+    linux_amd64/                    # 当前OS类型及其架构
+        github.com/golang/example/
+            stringutil.a            # 包对象
+        github.com/user/
+            stringutil.a            # 包对象
+src/
+    github.com/golang/example/
+        .git/                       # git仓库元数据
+        hello/
+            hello.go                # 源码
+        stringutil/
+            reverse.go
+            reverse_test.go
+    github.com/user/
+        hello/
+            hello.go                # 源码
+        stringutil/
+            reverse.go
+            reverse_test.go</code></pre></figure>
+
+<p>其中保存在 Github 中的 hello 命令，依赖于相同目录下的 stringutil 包，所以，go get 命令会自动定位到相关的包，并下载。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="s">&quot;github.com/golang/example/stringutil&quot;</span></code></pre></figure>
+
+<p>这种方式可以很方便的提供给其他用户使用，相关帮助可以查看 go help importpath 。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/postgresql-source-code-introduce.html" title="PostgreSQL 源码分析">&larr; Older</a></li> 
+         <li class="next"><a href="/post/collectd-source-code.html" title="Collectd 源码解析">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1472054400',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/golang-how-to-write-go-code.html" data-title="Golang 如何编码？" data-url="/post/golang-how-to-write-go-code.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

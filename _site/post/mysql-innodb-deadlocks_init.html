@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>InnoDB 死锁处理|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,innodb,deadlock,死锁">
+  <meta name="description" content="当两个或以上的事务相互持有并请求锁，当形成一个循环的依赖关系时，就会产生死锁；InnoDB 会自动检测事务死锁，立即回滚其中代价最小的某个事务，并且返回一个错误。通常，在一个事务系统中，死锁是确切存在并且是不能完全避免的，偶然发生的死锁不必担心，但死锁频繁出现的时候就要引起注意了。接下来，我们看看 InnoDB 对死锁的处理，以及诊断方式。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>InnoDB 死锁处理</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-12-03 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>当两个或以上的事务相互持有并请求锁，当形成一个循环的依赖关系时，就会产生死锁；InnoDB 会自动检测事务死锁，立即回滚其中代价最小的某个事务，并且返回一个错误。</p>
+
+<p>通常，在一个事务系统中，死锁是确切存在并且是不能完全避免的，偶然发生的死锁不必担心，但死锁频繁出现的时候就要引起注意了。</p>
+
+<p>接下来，我们看看 InnoDB 对死锁的处理，以及诊断方式。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>InnoDB 引擎采用两种方法处理死锁：A) 被动等待超时，通过参数 innodb_lock_wait_timeout 控制；B) 主动通过 Wait for Graph 算法检测，每当加锁请求无法立即满足需要并进入等待时，该算法就会被触发。</p>
+
+<p>Wait for Graph 就是当事务 A 需要等待事务 B 的资源时，就会生成一条有向边指向 B，依次类推，最后形成一个有向图；然后检测这个有向图是否出现环路即可，如果出现环路则发生了死锁！</p>
+
+<p>简单来说，产生死锁的必要条件：</p>
+
+<ol>
+  <li>两个及以上的多个并发事务；</li>
+  <li>每个事务都持有了锁，或者是在等待锁；</li>
+  <li>每个事务为了完成业务逻辑都需要再继续持有锁；</li>
+  <li>事务之间产生加锁的循环等待，形成死锁。</li>
+</ol>
+
+<p>InnoDB 有一个后台的锁监控线程，该线程负责查看可能的死锁问题，并自动告知用户。</p>
+
+<p>另外，死锁与事务隔离级别、是否为二级索引相关。</p>
+
+<h3 id="死锁诊断">死锁诊断</h3>
+
+<p>在 MySQL 5.6 之前，只有最新的死锁信息可以使用 <code>show engine innodb status</code> 命令查看；也可以使用 Percona Toolkit 工具包中的 <a href="https://www.percona.com/doc/percona-toolkit/2.2/pt-deadlock-logger.html">pt-deadlock-logger</a> 保存死锁信息，可以写入文件或者表中，该工具也是通过上述的命令查看。</p>
+
+<p>对于 MySQL 5.6 及以上版本，可以通过参数 innodb_print_all_deadlocks 把 InnoDB 中发生的所有死锁信息都记录在错误日志里面。</p>
+
+<p>死锁发生以后，只有部分或者完全回滚其中一个事务，才能打破死锁；InnoDB 目前处理死锁的方法就是将持有最少行级排他锁的事务进行回滚，这也是相对比较简单的死锁回滚方式。</p>
+
+<h3 id="死锁处理">死锁处理</h3>
+
+<p>首先死锁是正常的，不必过于担心；当然，有如下的方法，可以处理死锁。</p>
+
+<h4 id="避免死锁">避免死锁</h4>
+
+<p>最好的方式是在业务逻辑层做调整，也就是修改 SQL 的操作顺序；另外，尽量缩短长事务。</p>
+
+<h4 id="死锁检测">死锁检测</h4>
+
+<p>InnoDB 会记录事务所维持以及等待的锁，然后通过 Wait for Graph 算法进行检测。</p>
+
+<h4 id="等锁超时">等锁超时</h4>
+
+<p>也就是锁的持有时间，如果说一个事务持有锁超过设置时间的话，就直接抛出一个错误，InnoDB 不会回滚该事务。如果业务逻辑中有超长的事务，就需要把锁超时时间设置为大于事务执行时间。</p>
+
+<h3 id="常用命令">常用命令</h3>
+
+<p>与锁相关的环境变量，可以通过如下命令查看。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 加锁的超时时间，单位为秒
+mysql&gt; SHOW VARIABLES LIKE &#39;innodb_lock_wait_timeout&#39;;
+
+----- 对于MySQL5.6之后可以进行设置，将死锁打印到错误日志
+mysql&gt; SHOW VARIABLES LIKE &#39;innodb_print_all_deadlocks&#39;;
+----- 开启死锁日志，如果有死锁，则可以查看如下日志
+mysql&gt; SET GLOBAL innodb_print_all_deadlocks = 1;
+... ...
+2016-02-16 22:10:52 InnoDB: transactions deadlock detected, dumping detailed information.
+... ...
+
+----- 查看当前连接的事务ID
+mysql&gt; SELECT trx_id FROM information_schema.innodb_trx WHERE trx_mysql_thread_id = connection_id();</code></pre></figure>
+
+<p>注意，对于上述的事务 ID 查看命令，如果是只读的，启动时不会分配事务 ID 。</p>
+
+<h3 id="测试">测试</h3>
+
+<p>创建环境。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; CREATE TABLE account(id INT PRIMARY KEY, money INT NOT NULL);
+mysql&gt; INSERT INTO account values(1,1000), (2, 1000);</code></pre></figure>
+
+<p>接下来，分别在两个终端各启动一个事务。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- TRANS A -----------------------------+----- TRANS B -----------------------------
+### ID=9249                                |  ### ID=9250
+START TRANSACTION;                         |  START TRANSACTION;
+UPDATE account SET money=2000 WHERE id=1;  |
+                                           |  UPDATE account SET money=2000 WHERE id=2;
+### 由于id=2记录加了X锁，此时会被卡住          |
+UPDATE account SET money=3000 WHERE id=2;  |
+                                           |  ### 监测到发生死锁，直接回滚该事务
+                                           |  UPDATE account SET money=3000 WHERE id=1;</code></pre></figure>
+
+<p>对于事务 A ，当尝试更新 id=2 时，如果此时加锁超时，会返回客户端报错信息，不过 <strong>该事务不会被回滚</strong>；而事务 B 尝试更新 id=1 时，此时会回滚该事务。</p>
+
+<p>上述事务 B 当检测到死锁后，会抛出如下的报错信息，即发生了死锁。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction</code></pre></figure>
+
+<p>然后，通过 <code>show engine innodb status</code> 命令查看死锁信息，内容如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"><span class="lineno"> 1</span> ------------------------
+<span class="lineno"> 2</span> LATEST DETECTED DEADLOCK
+<span class="lineno"> 3</span> ------------------------
+<span class="lineno"> 4</span> 2016-02-05 12:39:02 0x7f398fe72700
+<span class="lineno"> 5</span> *** (1) TRANSACTION:
+<span class="lineno"> 6</span> TRANSACTION 9249, ACTIVE 255 sec starting index read
+<span class="lineno"> 7</span> mysql tables in use 1, locked 1
+<span class="lineno"> 8</span> LOCK WAIT 3 lock struct(s), heap size 1160, 3 row lock(s), undo log entries 1
+<span class="lineno"> 9</span> MySQL thread id 2, OS thread handle 139885204420352, query id 60 localhost root updating
+<span class="lineno">10</span> UPDATE account SET money=3000 WHERE id=2
+<span class="lineno">11</span> *** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+<span class="lineno">12</span> RECORD LOCKS space id 54 page no 3 n bits 72 index PRIMARY of table `test`.`account` trx id 9249 lock_mode X locks rec but not gap waiting
+<span class="lineno">13</span> Record lock, heap no 3 PHYSICAL RECORD: n_fields 4; compact format; info bits 0
+<span class="lineno">14</span>  0: len 4; hex 80000002; asc     ;;
+<span class="lineno">15</span>  1: len 6; hex 000000002422; asc     $&quot;;;
+<span class="lineno">16</span>  2: len 7; hex 37000001840b6a; asc 7     j;;
+<span class="lineno">17</span>  3: len 4; hex 800007d0; asc     ;;
+<span class="lineno">18</span> 
+<span class="lineno">19</span> *** (2) TRANSACTION:
+<span class="lineno">20</span> TRANSACTION 9250, ACTIVE 155 sec starting index read
+<span class="lineno">21</span> mysql tables in use 1, locked 1
+<span class="lineno">22</span> 3 lock struct(s), heap size 1160, 2 row lock(s), undo log entries 1
+<span class="lineno">23</span> MySQL thread id 3, OS thread handle 139885204154112, query id 61 localhost root updating
+<span class="lineno">24</span> UPDATE account SET money=3000 WHERE id=1
+<span class="lineno">25</span> *** (2) HOLDS THE LOCK(S):
+<span class="lineno">26</span> RECORD LOCKS space id 54 page no 3 n bits 72 index PRIMARY of table `test`.`account` trx id 9250 lock_mode X locks rec but not gap
+<span class="lineno">27</span> Record lock, heap no 3 PHYSICAL RECORD: n_fields 4; compact format; info bits 0
+<span class="lineno">28</span>  0: len 4; hex 80000002; asc     ;;
+<span class="lineno">29</span>  1: len 6; hex 000000002422; asc     $&quot;;;
+<span class="lineno">30</span>  2: len 7; hex 37000001840b6a; asc 7     j;;
+<span class="lineno">31</span>  3: len 4; hex 800007d0; asc     ;;
+<span class="lineno">32</span> 
+<span class="lineno">33</span> *** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+<span class="lineno">34</span> RECORD LOCKS space id 54 page no 3 n bits 72 index PRIMARY of table `test`.`account` trx id 9250 lock_mode X locks rec but not gap waiting
+<span class="lineno">35</span> Record lock, heap no 2 PHYSICAL RECORD: n_fields 4; compact format; info bits 0
+<span class="lineno">36</span>  0: len 4; hex 80000001; asc     ;;
+<span class="lineno">37</span>  1: len 6; hex 000000002421; asc     $!;;
+<span class="lineno">38</span>  2: len 7; hex 3600000183026d; asc 6     m;;
+<span class="lineno">39</span>  3: len 4; hex 800007d0; asc     ;;
+<span class="lineno">40</span> 
+<span class="lineno">41</span> *** WE ROLL BACK TRANSACTION (2)</code></pre></figure>
+
+<p>第 4 行是死锁发生的时间，可以通过该时间戳与应用程序的日志报错时间匹配，这样可以找到事务中对应的语句。</p>
+
+<!--
+第 3 和 12 行，注意事务的序号和活跃时间。如果你定期地把 show engine innodb status 的输出信息记录到日志文件(这是一个很好的做法)，那么你就可以使用事务编号在之前的输出日志中查到同一个事务中所希望看到的更多的语句。活跃时间提供了一个线索来判断这个事务是单个语句的事务，还是包含多个语句的事务。
+
+第 4 和 13行，使用到的表和锁只是针对于当前的语句。因此，使用到一张表，并不意味着事务仅仅涉及到一张表。
+
+第 5 和 14 行，这里的信息需要重点关注，因为它告诉我们事务做了多少的改变，也就是 “undo log entries”；”row lock(s)” 则告诉我们持有多少行锁。这些信息都会提示我们这个事务的复杂程度。
+
+第 6 和 15 行，留意线程 ID、连接主机和用户。如果你在不同的应用程序中使用不同的 MySQL 用户，这将是另外一个好的习惯，这样你就可以根据连接主机和用户来定位到事务来自于哪个应用程序。
+
+第 9 行，对于第一个事务，它只是显示了处于锁等待状态，在这个例子中，是表 t3 的 X 锁。其他的可能：共享锁(S)，有间隙锁(gap lock)的排他锁(X)，及没有间隙锁(gap lock)的排他锁(X)，及AUTO_INC 。
+
+第 9 和 10 行：”space id” 是表空间ID，”page no” 指出了这个表空间里面记录锁所在的数据页，”n bits” 不是数据页偏移量，而是锁位图里面的 bits 数。在第 10 行记录的 “heap no” 是数据页偏移量。然后第 10 行下面的数据显示了记录数据的十六进制编码。字段 0 表示聚集索引（即主键），忽略最高位，值为 5。字段 1 表示最后修改这条记录的事务的ID号，上面实例中的十进制值是 25205268，即是 TRANSACTION (2)。字段 2 表示回滚指针。从字段 3 开始，表示的是余下的行数据。通过阅读这些信息，我们可以准确知道哪一行被锁了，哪些是当前值。
+
+第 17 和 18 行，对于第二个事务，显示了它持有的锁，在本示例中，是事务1 (TRANSACTION (1)) 所请求并等待中的 X 锁。
+
+第 20 和 21 行，显示了事务2 (TRANSACTION (2)) 所等待的锁的信息。在本例中，是t3表产生的 X 锁。
+-->
+
+<h2 id="死锁案例">死锁案例</h2>
+
+<!--
+事务1与事务2第一条语句都是查询A，然后事务1对A进行更新操作，但是由于事务2的读锁对A还没有释放，所以事务1要等待；如果此时事务2也要对A进行更新操作，由于事务1对A的读锁还没有释放，所以事务2要等待。此时发生了什么？就是死锁。
+
+那么为什么我们数据库里面不会出现这种情况呢？其实原因就是我们使用了U锁，U锁很简单就是会提前判断你这个事务中有没有针对一个事务的写操作，如果检查到有写锁，那么它会提前在你申请锁的时候把原来的读锁变成写锁。当锁变成写锁之后其他的读写操作都无进来这个事务内了，也就避免了死锁。
+
+
+
+
+
+另外，在InnoDB中有几种少数情况会产生共享记录锁：
+
+1) 使用了 SELECT … LOCK IN SHARE MODE 的语句
+
+2) 外键引用记录
+
+3) 源表上的共享锁，使用了 INSERT INTO… SELECT 的语句
+
+这些信息结合着其他数据可以帮助开发人员定位到那个事务。
+
+我们还可以从哪里找到事务之前的语句？
+
+除了应用程序日志和之前的 show engine innodb status 的输出信息外，还可以利用 binlog、low log，甚至是general log。
+
+通过 binlog，如果 binlog_format = statement，binlog 中的每个 event 都会拥有一个 thread_id。只有已提交的事务会被记录到 binlog 中，
+
+
+类似于上述示例中的死锁
+Example 1: Two Transactions Updating Two Records In Two Tables
+Example 2: Two Transactions Updating Two Records In One Table
+
+
+
+
+
+锁跟索引的关系
+
+这时我们要注意到，money表虽然没有添加索引，但是InnoDB存储引擎会使用隐式的主键来进行锁定。对于没有索引或主键的表来说，那么MySQL会给整张表的所有数据行的加行锁。这里听起来有点不可思议，但是当sql运行的过程中，MySQL并不知道哪些数据行是id=1（没有索引嘛），如果一个条件无法通过索引快速过滤，存储引擎层面就会将所有记录加锁后返回，再由MySQL Server层进行过滤。但在实际使用过程当中，MySQL做了一些改进，在MySQL Server过滤条件，发现不满足后，会调用unlock_row方法，把不满足条件的记录释放锁 (违背了二段锁协议的约束)。这样做，保证了最后只会持有满足条件记录上的锁，但是每条记录的加锁操作还是不能省略的。可见即使是MySQL，为了效率也是会违反规范的。这种情况同样适用于MySQL的默认隔离级别RC。所以对一个数据量很大的表做批量修改的时候，如果无法使用相应的索引，MySQL过滤数据的的时候特别慢，就会出现虽然没有修改某些行的数据，但是它们还是被锁住了的现象。
+
+
+http://www.ywnds.com/?p=4949
+http://www.gpfeng.com/?p=426
+http://www.cnblogs.com/LBSer/p/5183300.html
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-autotools-auto-compile-introduce.html" title="Linux 自动编译 AutoTools">&larr; Older</a></li> 
+         <li class="next"><a href="/post/mysql-innodb-locks_init.html" title="InnoDB 锁管理">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1449072000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-innodb-deadlocks_init.html" data-title="InnoDB 死锁处理" data-url="/post/mysql-innodb-deadlocks_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

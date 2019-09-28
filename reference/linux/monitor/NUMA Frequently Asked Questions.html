@@ -1,0 +1,223 @@
+<HTML>
+<HEAD>
+<TITLE>NUMA Frequently Asked Questions</TITLE>
+<BASE HREF="http://lse.sf.net/numa/faq/index.html">
+</HEAD>
+<!-- Stop reading the source!  We have web browsers for a reason!!  :P -->
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#840084" ALINK="#0000FF">
+
+<A NAME="TOP"><H1>Purpose:</H1></A>
+This is a document designed to (hopefully) answer some frequently asked 
+questions about the NUMA architecture.
+
+<H1>Frequently Asked Questions:</H1>
+<OL>
+<LI><A HREF="#what_does_numa_stand_for">
+    What does NUMA stand for?</A>
+
+<LI><A HREF="#what_does_numa_really_mean">
+    OK, So what does Non-Uniform Memory Access really mean?</A>
+
+<LI><A HREF="#numa_v_smp">
+    What is the difference between NUMA and SMP?</A>
+
+<LI><A HREF="#numa_v_ccnuma">
+    What is the difference between NUMA and ccNUMA?</A>
+
+<LI><A HREF="#what_is_a_node">
+    What is a <I>node</I>?</A>
+
+<LI><A HREF="#local_and_remote_mem">
+    What is meant by <I>local</I> and <I>remote</I> memory?</A>
+
+<LI><A HREF="#what_is_distance">
+    What do you mean by <I>distance</I>?</A>
+
+<LI><A HREF="#real_world_analogy">
+    Could you give a real-world analogy of the NUMA architecture to help 
+    understand all these terms?</A>
+
+<LI><A HREF="#benefits">Why should I use NUMA?  What are the benefits of NUMA?</A>
+
+<LI><A HREF="#peculiarities">What are the peculiarities of NUMA?</A>
+
+<LI><A HREF="#alternatives">What are some alternatives to  NUMA?</A>
+
+<LI><A HREF="#architectures">
+    Could you give a brief description of the main NUMA architecture 
+    implementations?</A>
+</OL>
+
+<H1>Frequently Given Answers:</H1>
+<OL>
+
+<LI><A NAME="what_does_numa_stand_for"><B>What does NUMA stand for?</B></A><BR>
+
+NUMA stands for <U>N</U>on-<U>U</U>niform <U>M</U>emory <U>A</U>ccess.<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="what_does_numa_really_mean"><B>OK, So what does Non-Uniform Memory 
+Access really mean to me?</B></A><BR>
+
+Non-Uniform Memory Access means that it will take longer to access some regions 
+of memory than others. This is due to the fact that some regions of memory are 
+on physically different busses from other regions.  For a more visual 
+description, please refer to the section on <A HREF="#architectures">
+NUMA architeture implementations</A>.  Also, see the <A HREF="#real_world_analogy">
+real-world analogy</A> for the NUMA architecture.  This can result in some 
+programs that are not <I>NUMA-aware</I> performing poorly.  It also introduces 
+the concept of <A HREF="#local_and_remote_mem"><I>local</I> and <I>remote</I></A> 
+memory.<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="numa_v_smp"><B>What is the difference between NUMA and SMP?</B></A><BR>
+
+The NUMA architecture was designed to surpass the scalability limits of the SMP 
+architecture.  With SMP, which stands for <U>S</U>ymmetric 
+<U>M</U>ulti-<U>P</U>rocessing, all memory access are posted to the same shared 
+memory bus.  This works fine for a relatively small number of CPUs, but the 
+problem with the shared bus appears when you have dozens, even hundreds, of 
+CPUs competing for access to the shared memory bus.  NUMA alleviates these 
+bottlenecks by limiting the number of CPUs on any one memory bus, and 
+connecting the various <I>nodes</I> by means of a high speed interconnect.<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="numa_v_ccnuma"><B>What is the difference between NUMA and ccNUMA?</B></A><BR>
+The difference is almost nonexistent at this point.  ccNUMA stands for 
+<U>C</U>ache-<U>C</U>oherent NUMA, but NUMA and ccNUMA have really come to be 
+synonymous.  The applications for non-cache coherent NUMA machines are almost 
+non-existent, and they are a real pain to program for, so unless specifically 
+stated otherwise, NUMA actually means ccNUMA.<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="what_is_a_node"><B>What is a <I>node</I>?</B></A><BR>
+
+One of the problems with describing NUMA is that there are many different ways 
+to implement this technology.  This has led to a plethora of "definintions" 
+for <I>node</I>.  A fairly technically correct and also fairly ugly  definition 
+of a <I>node</I> is: a region of memory in which every byte has the same 
+distance from each CPU.  A more common definition is: a block of memory and the 
+CPUs, I/O, etc. physically on the same bus as the memory.  Some architectures 
+do not have memory, CPUs, and I/O all on the same physical bus, so the second 
+definition does not truly hold.  In many cases, the less technical definition 
+should be sufficient, but often the technical definition is more correct.<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="local_and_remote_mem"><B>What is meant by <I>local</I> and 
+<I>remote</I> memory?</B></A><BR>
+
+The terms <I>local</I> memory and <I>remote</I> memory are typically used in 
+reference to a currently running process.  That said, <I>local</I> memory is 
+typically defined to be the memory that is on the same <I>node</I> as the CPU 
+currently running the process.  Any memory that does not belong to the 
+<I>node</I> on which the process is currently running is then, by that 
+definition, <I>remote</I>.<BR>
+<I>Local</I> and <I>remote</I> memory can also be used in reference to things 
+other than the currently running process.  When in interrupt context, there 
+technically is no currently executing process, but memory on the node containing 
+the CPU handling the interrupt is still called <I>local</I> memory.  Also, you 
+could use <I>local</I> and <I>remote</I> memory in terms of a disk.  For example 
+if there was a disk (attatched to node 1) doing a DMA, the memory it is reading 
+or writing would be called <I>remote</I> if it were located on another node 
+(ie: node 0).<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="what_is_distance"><B>What do you mean by <I>distance</I>?</B></A><BR>
+
+NUMA-based architectures necessarily introduce a notion of <I>distance</I> 
+between system components (ie: CPUs, memory, I/O busses, etc).  The metric used 
+to determine a <I>distance</I> varies, but hops is a popular metric, along with 
+latency and bandwidth.  These terms all mean essentially the same thing that 
+they do when used in a networking context (mostly because a NUMA machine is not 
+all that different from a very tightly coupled cluster).  So when used to 
+describe a <I>node</I>, we could say that a particular range of memory is 2 
+hops (busses) from CPUs 0..3 and SCSI Controller 0.  Thus, CPUs 0..3 and the 
+SCSI Controller are a part of the same <I>node</I>.<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="real_world_analogy"><B>Could you give a real-world analogy of the 
+NUMA architecture to help understand all these terms?</B></A><BR>
+
+Imagine that you are baking a cake.  You have a group of ingredients
+(=memory pages) that you need to complete the recipe(=process).  Some of the 
+ingredients you may have in your cabinet(=local memory), but some of the 
+ingredients you might not have, and have to ask a neighbor for(=remote memory).  
+The general idea is to try and have as many of the ingredients in your own 
+cabinet as possible, since this reduces your time and effort in making the cake.<BR>
+You also have to remember that your cabinets can only hold a fixed amount of 
+ingredients(=physical nodal memory).  If you try and buy more, but you have no 
+room to store it, you may have to ask your neighbor to keep it in his/her 
+cabinet until you need it(=local memory full, so allocate pages remotely).<BR>
+A bit of a strange example, I'll admit, but I think it works.  If you have a 
+better analogy, I'm all ears! ;)<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="benefits"><B>Why should I use NUMA?  What are the benefits of 
+NUMA?</B></A><BR>
+
+The main benefit of NUMA is, as mentioned above, scalability.  It is extremely 
+difficult to scale SMP past 8-12 CPUs.  At that number of CPUs, the memory bus 
+is under heavy contention.  NUMA is one way of reducing the number of CPUs 
+competing for access to a shared memory bus.  This is accomplished by having 
+several memory busses and only having a small number of CPUs on each of those 
+busses.  There are other ways of building massively multiprocessor machines, 
+but this is a NUMA FAQ, so we'll leave the discussion of other methods to other 
+FAQs.<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="peculiarities"><B>What are the peculiarities of NUMA?</B></A><BR>
+
+CPU and/or node caches can result in NUMA effects.  For example, the CPUs on a 
+particular node will have a higher bandwidth and/or a lower latency to access 
+the memory and CPUs on that same node.  Due to this, you can see things like 
+lock starvation under high contention.  This is because if CPU x in the node 
+requests a lock already held by another CPU y in the node, it's request will 
+tend to beat out a request from a <I>remote</I> CPU z.<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="alternatives"><B>What are some alternatives to  NUMA?</B></A><BR>
+Also, splitting memory up and (possibly arbitrarily) assigning it to groups of 
+CPUs can give some performance benefits similar to actual NUMA.  A setup like 
+this would be like a regular NUMA machine where the line between <I>local</I> 
+and <I>remote</I> memory is blurred, since all the memory is actually on the 
+same bus.  The PowerPC Regatta system is an example of this.<BR>
+You can achieve some NUMA-like performance by using clusters as well.  A cluster 
+is very similar to a NUMA machine, where each individual machine in the cluster 
+becomes a <I>node</I> in our virtual NUMA machine.  The only real difference is 
+the nodal latency.  In a clustered environment, the latency and bandwidth on the 
+internodal links are likely to be much worse.<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+<LI><A NAME="architectures"><B>Could you give a brief description of the main 
+NUMA architecture implementations?</B></A><BR>
+
+Sure! The main types are IBM NUMA-Q, Compaq Wildfire, and SGI MIPS64.  Click 
+<A HREF="system_descriptions.html">here</A> for descriptions and diagrams of 
+the above system types, and also a standard SMP system for comparison.<BR>
+<A HREF="#top">[Top]</A><BR>
+<BR>
+
+</OL>
+
+<I><FONT SIZE="3">Last updated: 1/04/02 Any problems, additions, etc., please
+send email to this page's <A HREF="mailto:snoopdobb@users.sourceforge.net">
+	    maintainer</A>.</FONT></I><BR>
+<BR>
+<A HREF="http://sourceforge.net">
+<IMG SRC="http://sourceforge.net/sflogo.php?group_id=8875" WIDTH="88"
+HEIGHT="31" BORDER="0" ALT="SourceForge Logo"></A>
+
+</BODY>
+</HTML>

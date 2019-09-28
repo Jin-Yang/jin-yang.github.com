@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20sift%20tool_files/default.css" media="screen">
+<title>Aspersa User's Manual - The sift tool</title>
+</head>
+<body>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The sift tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The sift tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+<p>The <em>sift</em> tool helps you quickly look through samples of diagnostic data gathered by the <a href="http://aspersa.googlecode.com/svn/html/collect.html">collect</a> tool.  It lets you navigate a directory full of samples quickly, and drill into a particular sample if it is interesting.</p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>This tool accepts no command-line options, but it does accept one 
+argument.  This is inspected to see if it is one of the following:</p>
+
+<dl>
+<dt>A directory</dt><dd>If the argument is a directory, then it is treated as the directory that contains samples from the <em>collect</em> tool.</dd>
+<dt>A filename</dt><dd>If the argument is a file, then its enclosing 
+directory is treated as the sample directory, and its prefix up until 
+the first hyphen is treated as the timestamp of the sample to inspect.</dd>
+<dt>A filename prefix</dt><dd>If the argument is a unique prefix of a filename, then it is expanded to the full filename and treated as above.</dd>
+</dl>
+
+<h2>How it Works</h2>
+
+<p>The tool downloads other tools that it might need, such as <a href="http://aspersa.googlecode.com/svn/html/diskstats.html">diskstats</a>, and then makes a list of the unique timestamp prefixes of all the files in the directory, as written by the <em>collect</em>
+ tool.  If the user specified a timestamp on the command-line, then it 
+begins with that sample of data; otherwise it begins by showing a list 
+of the timestamps and prompting for a selection.  Thereafter, it 
+displays a summary of the selected sample, and the user can navigate and
+ inspect with keystrokes.</p>
+
+<p>The keystroke commands you can use are as follows:</p>
+
+<dl>
+<dt>1</dt><dd>Sets the action for each sample to the default, which is to view a summary of the sample.</dd>
+<dt>0</dt><dd>Sets the action to just list the files in the sample.</dd>
+<dt>*</dt><dd>Sets the action to view all of the samples's files in the <em>less</em> program.</dd>
+<dt>d</dt><dd>Sets the action to start the <em>diskstats</em> tool on the sample's disk performance statistics.</dd>
+<dt>i</dt><dd>Sets the action to view the first INNODB STATUS sample in <em>less</em>.</dd>
+<dt>m</dt><dd>Displays the first 4 samples of SHOW STATUS counters side by side with the <a href="http://aspersa.googlecode.com/svn/html/mext.html">mext</a> tool.</dd>
+<dt>n</dt><dd>Summarizes the first sample of <em>netstat</em> data in two ways: by originating host, and by connection state.</dd>
+<dt>j</dt><dd>Select the next timestamp as the active sample.</dd>
+<dt>k</dt><dd>Select the previous timestamp as the active sample.</dd>
+<dt>q</dt><dd>Quit the program.</dd>
+</dl>
+
+<h2>Example Usage</h2>
+
+<p>To use this tool, simply execute it and specify the directory that contains the samples from <em>collect</em>.  The tool will print out a summary of the sample you select, for example:
+
+<code>
+======== localhost at 2011_02_08_17_18_11 DEFAULT (5 of 5) ========
+--diskstats--
+  #ts device rd_mb_s rd_cnc   rd_rt wr_mb_s wr_cnc   wr_rt busy in_prg
+ {29} sda3      17.2    0.4     0.4     5.0    0.1     0.4  33%      0
+ sda3 35% . . . . . . . . . . . . 40% . 30% . . 35% . . . . . . . . . . .
+--vmstat--
+ r b swpd   free   buff   cache si so    bi   bo    in    cs us sy id wa st
+10 1  176 115728 465564 2106728  0  0   791  220     0     0  3  1 94  1  0
+ 8 0  176 100464 467796 2118020  0  0 17543 4974 16410 24419  9  4 85  2  0
+wa 5% . 0% 5% . . 0% 5% . . . 0% 15% 0% . . . . . . 5% 15% 5% 20% 5% 0% . . 5% .
+--innodb--
+    txns: 1xACTIVE (20s) 45xnot (0s)
+    0 queries inside InnoDB, 0 queries in queue
+    Main thread: sleeping, pending reads 4, writes 0, flush 0
+    Log: lsn = 672935507647, chkp = 672800642845, chkp age = 134864802
+    Threads are waiting at:
+     39 btr/btr0cur.c line 489
+    Threads are waiting on:
+     39 S-lock on RW-latch at 0x3a7954c8 '&amp;new_index-&gt;lock'
+--processlist--
+    State
+     58  
+      2  Sending data
+      2  Reading from net
+      1  NULL
+      1  Has sent all binlog to slave; waiting for binlog to be updated
+    Command
+     58  Sleep
+      3  Query
+      2  Connect
+      1  Binlog Dump
+--stack traces--
+    931 pthread_cond_wait,cache_thread,one_thread_per_connection_end,handle_one_connection,start_thread
+     96 read,my_real_read,my_net_read,do_command,handle_one_connection
+     10 pthread_cond_wait,os_event_wait_low,os_aio_simulated_handle,fil_aio_wait,io_handler_thread
+      1 setsockopt,vio_fastsend,my_net_init,handle_connections_sockets,main
+      1 select,os_thread_sleep,srv_purge_thread,start_thread,clone
+--oprofile--
+    samples  %        symbol name
+    31963    11.0183  buf_calc_page_new_checksum
+    13165     4.5382  rec_get_offsets_func
+    12141     4.1852  MYSQLparse(void*)
+    10387     3.5806  cmp_dtuple_rec_with_match
+    9152      3.1549  buf_page_get_gen
+    6568      2.2641  page_cur_search_with_match
+</code>
+
+</p><p>The report on the sample includes the following items:</p>
+
+<ul>
+<li>A header line showing the host, currently selected timestamp, and 
+the number of the current timestamp relative to the total number of 
+timestamps.</li>
+<li>The diskstats report on the device that read and wrote the most 
+data. The line following shows the busy% for this device for each sample
+ gathered, rounded to the nearest 5% and de-duplicated by replacing 
+repeated values with dots.</li>
+<li>Pretty-printed vmstat output. The line following shows the CPU wa% 
+for each sample gathered, rounded to the nearest 5% and de-duplicated by
+ replacing repeated values with dots.</li>
+<li>Some important information from InnoDB status, including aggregations of mutex waits.</li>
+<li>Counts of the top states and commands from the processlist.</li>
+<li>The top stack traces, as shown by <a href="http://aspersa.googlecode.com/svn/html/pmp.html">pmp</a>.</li>
+<li>The top lines from the OProfile report.</li>
+</ul>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

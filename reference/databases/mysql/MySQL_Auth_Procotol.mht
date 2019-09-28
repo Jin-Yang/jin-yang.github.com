@@ -1,0 +1,2841 @@
+From: <Saved by Mozilla 5.0 (X11)>
+Subject: =?utf-8?Q?MySQL=E8=AE=A4=E8=AF=81=E5=8D=8F=E8=AE=AE?=
+Date: Fri, 11 Sep 2015 14:06:21 +0800
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----=_NextPart_000_0000_B11B3A1F.75438F72"
+X-MAF-Information: Produced By MAF V4.0.2rc
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/html;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE.html
+
+<!DOCTYPE html><html><head>
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3DUTF-8">
+	<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8">
+	<meta charset=3D"UTF-8">
+	<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1=
+.0">
+<link rel=3D"stylesheet" href=3D"urn:snapshot-228DF2B2:file:///media/disk/H=
+tml/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8=
+%AE%AE_files/bootstrap.css">
+<link rel=3D"stylesheet" href=3D"urn:snapshot-27D43092:file:///media/disk/H=
+tml/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8=
+%AE%AE_files/bootstrap-theme.css">
+<script src=3D"urn:snapshot-9787A85C:file:///hm.js?2b0ca1b0a9004eca70110bc7=
+c88cbeb5"></script><script src=3D"urn:snapshot-8D8A81E3:file:///media/disk/=
+Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E=
+8%AE%AE_files/hm.js"></script><script src=3D"urn:snapshot-892EA943:file:///=
+media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81=
+%E5%8D%8F%E8%AE%AE_files/jquery.js"></script>
+<script src=3D"urn:snapshot-00902C77:file:///media/disk/Html/Html/Database/=
+mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/boots=
+trap.js"></script>
+	=09
+	<title>MySQL=E8=AE=A4=E8=AF=81=E5=8D=8F=E8=AE=AE</title>
+	<script type=3D"text/javascript" src=3D"urn:snapshot-8984B840:file:///medi=
+a/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%=
+8D%8F%E8%AE%AE_files/MathJax.js">	=09
+	</script><style type=3D"text/css"><!--
+/* Effective stylesheet produced by snapshot save */
+#MathJax_Message { position: fixed; left: 1px; bottom: 2px; background-colo=
+r: rgb(230, 230, 230); border: 1px solid rgb(149, 149, 149); margin: 0px;=
+ padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto;=
+ white-space: nowrap; }
+--></style>=09
+	<link href=3D"urn:snapshot-AF7BAB00:file:///media/disk/Html/Html/Database/=
+mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/prett=
+ify.css" type=3D"text/css" rel=3D"stylesheet">
+	<script type=3D"text/javascript" src=3D"urn:snapshot-4939E2F9:file:///medi=
+a/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%=
+8D%8F%E8%AE%AE_files/prettify.js"></script>
+=09
+<script><!--
+/* Script removed by snapshot save */
+--></script>
+<script src=3D"urn:snapshot-5627404F:file:///media/disk/Html/Html/Database/=
+mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/embed=
+.js" async=3D"" type=3D"text/javascript"></script><style type=3D"text/css">=
+<!--
+/* Effective stylesheet produced by snapshot save */
+--></style><style type=3D"text/css"><!--
+/* Effective stylesheet produced by snapshot save */
+--></style><style type=3D"text/css"><!--
+/* Effective stylesheet produced by snapshot save */
+--></style><style type=3D"text/css"><!--
+/* Effective stylesheet produced by snapshot save */
+#MathJax_Message { position: fixed; left: 1px; bottom: 2px; background-colo=
+r: rgb(230, 230, 230); border: 1px solid rgb(149, 149, 149); margin: 0px;=
+ padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto;=
+ white-space: nowrap; }
+--></style><script charset=3D"UTF-8" async=3D"" src=3D"urn:snapshot-92A2ED1=
+3:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A=
+4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/alfie.js"></script><script src=3D"urn:sn=
+apshot-FC53B276:file:///embed.js" async=3D"" type=3D"text/javascript"></scr=
+ipt></head>
+<body onload=3D""><div style=3D"display: none;" id=3D"MathJax_Message"></di=
+v><iframe src=3D"urn:snapshot-08FAB461:http://generated.test/generated-cont=
+ent" style=3D"width: 100% ! important; border: medium none ! important; ove=
+rflow: hidden ! important; display: none ! important; height: 0px ! importa=
+nt; min-height: 0px ! important; max-height: 0px ! important;" title=3D"Dis=
+qus" tabindex=3D"0" scrolling=3D"no" allowtransparency=3D"true" data-disqus=
+-uid=3D"1" id=3D"dsq-1" frameborder=3D"0"></iframe><div style=3D"display:=
+ none;" id=3D"MathJax_Message"></div>
+
+	<!-- Wrap all page content here -->
+	<div id=3D"wrap">
+		<div class=3D"container">
+		=09
+
+
+<div class=3D"navbar navbar-default" role=3D"navigation">
+	<div class=3D"navbar-header">
+		<button type=3D"button" class=3D"navbar-toggle" data-toggle=3D"collapse"=
+ data-target=3D".navbar-collapse">
+			<span class=3D"icon-bar"></span> <span class=3D"icon-bar"></span> <span=
+ class=3D"icon-bar"></span>
+		</button>
+		<a class=3D"navbar-brand" href=3D"https://www.sunchangming.com/">changmin=
+g</a>
+	</div>
+	<div class=3D"navbar-collapse collapse">
+		<ul class=3D"nav navbar-nav">
+			<li><a href=3D"https://www.sunchangming.com/;jsessionid=3D1v6mhy3kq248u1=
+83layt53radx"> Home</a></li>
+			<li><a href=3D"https://www.sunchangming.com/blog/;jsessionid=3D1v6mhy3kq=
+248u183layt53radx"> Blog</a></li>
+			<li><a href=3D"https://www.sunchangming.com/l/folder.11ed22cd0a869a1a.11=
+ED22CD0A869A1A%211681;jsessionid=3D1v6mhy3kq248u183layt53radx">
+					Downloads</a></li>
+			<li><a href=3D"https://www.sunchangming.com/contact_information.jsp;jses=
+sionid=3D1v6mhy3kq248u183layt53radx">
+					Contact</a></li>
+		=09
+		</ul>
+		<form class=3D"navbar-form navbar-right" action=3D"file:///search/blogsea=
+rch.do">
+			<div class=3D"form-group">
+				<input placeholder=3D"keywords" class=3D"form-control" name=3D"q" type=
+=3D"text">
+			</div>
+			<button type=3D"submit" class=3D"btn btn-success">search</button>
+		</form>
+	</div>
+</div>
+			<div class=3D"content">
+				<h1 id=3D"title">
+					MySQL=E8=AE=A4=E8=AF=81=E5=8D=8F=E8=AE=AE
+				</h1>
+
+				<div style=3D"margin-left:20px;float:left">
+			Date:2006-01-01 01:01		=09
+				</div>
+
+				<div style=3D"clear: both"></div>
+			=09
+				<hr>
+				<!-- content begin -->
+				<div>
+<ul style=3D"list-style-type: decimal;">
+<li>=E6=9C=AC=E6=96=87=E6=98=AF=E9=92=88=E5=AF=B9MySQL 5.5.9=E5=86=99=E7=9A=
+=84=E3=80=82MySQL=E5=8D=8F=E8=AE=AE=E6=98=AF=E5=90=91=E8=80=81=E7=89=88=E6=
+=9C=AC=E5=85=BC=E5=AE=B9=E7=9A=84=E3=80=82=E8=80=81=E7=89=88=E6=9C=AC=E7=9A=
+=84MySQL Client=E5=8F=AF=E8=83=BD=E4=B8=8D=E7=90=86=E8=A7=A3=E4=B8=8B=E9=9D=
+=A2=E7=9A=84=E6=9F=90=E4=BA=9B=E5=AD=97=E6=AE=B5=E8=80=8C=E5=BF=BD=E7=95=A5=
+=E6=8E=89=E3=80=82</li>
+<li>=E5=AE=9E=E9=99=85=E4=BD=BF=E7=94=A8=E7=9A=84=E6=97=B6=E5=80=99=EF=BC=
+=8C=E6=9C=8D=E5=8A=A1=E5=99=A8=E7=9A=84=E5=8D=8F=E8=AE=AE=E7=89=88=E6=9C=AC=
+=E5=BA=94=E5=BD=93=E5=A4=A7=E4=BA=8E=E7=AD=89=E4=BA=8E=E5=AE=A2=E6=88=B7=E7=
+=AB=AF=E3=80=82=E9=81=97=E6=86=BE=E7=9A=84=E6=98=AF=EF=BC=8CMySQL=E5=B9=B6=
+=E6=B2=A1=E6=9C=89=E5=AF=B9=E6=AF=8F=E4=B8=80=E6=AC=A1=E5=8D=8F=E8=AE=AE=E5=
+=8F=98=E5=8A=A8=E6=A0=87=E4=B8=80=E4=B8=AA=E6=95=B0=E5=AD=97=E3=80=82</li>
+<li>=E6=9C=AC=E6=96=87=E4=B8=AD=E6=89=80=E8=AF=B4=E7=9A=84"=E5=AD=97=E8=8A=
+=82"=E4=B8=80=E8=AF=8D=EF=BC=8C=E8=8B=B1=E6=96=87=E6=98=AFByte=E3=80=82=E9=
+=81=B5=E5=BE=AAC=E8=AF=AD=E8=A8=80=E4=B8=AD=E5=AE=9A=E4=B9=89=EF=BC=8C=E5=
+=8D=B3char=E7=9A=84=E5=A4=A7=E5=B0=8F=E3=80=82=E6=B3=A8=E6=84=8F=EF=BC=9A=
+=E6=B2=A1=E6=9C=89=E8=A7=84=E5=AE=9A1=E5=AD=97=E8=8A=82=E4=B8=80=E5=AE=9A=
+=E7=AD=89=E4=BA=8E8=E4=BD=8D=E3=80=82=E6=89=80=E4=BB=A5=E5=A6=82=E6=9E=9C=
+=E4=BD=A0=E5=87=86=E5=A4=87=E5=9C=A81=E5=AD=97=E8=8A=82=E4=B8=8D=E7=AD=89=
+=E4=BA=8E8=E4=BD=8D=E7=9A=84=E7=8E=AF=E5=A2=83=E4=B8=AD=E4=BD=BF=E7=94=A8my=
+sql=EF=BC=8C=E9=82=A3=E6=98=AF=E7=BB=99=E8=87=AA=E5=B7=B1=E6=89=BE=E4=BA=8B=
+=E3=80=82</li>
+<li>=E6=88=91=E7=A5=88=E7=A5=B7=E4=BD=A0=E7=9A=84char=E6=98=AF=E6=9C=89=E7=
+=AC=A6=E5=8F=B7=E7=9A=84=E3=80=82</li>
+</ul>
+</div>
+<p>=E5=8F=82=E8=80=83<a href=3D"http://forge.mysql.com/wiki/MySQL_Internals=
+_ClientServer_Protocol" target=3D"_blank">http://forge.mysql.com/wiki/MySQL=
+_Internals_ClientServer_Protocol</a>=EF=BC=88=E6=88=91=E4=B9=9F=E5=8F=82=E4=
+=B8=8E=E8=BF=99=E4=B8=AA=E9=A1=B5=E9=9D=A2=E7=9A=84=E7=BC=96=E8=BE=91=EF=BC=
+=89</p>
+<h2>=E4=B8=80=E3=80=81=E5=AE=A2=E6=88=B7=E7=AB=AF=E8=BF=9E=E6=8E=A5=E6=9C=
+=8D=E5=8A=A1=E5=99=A8=E7=9A=84=E6=B5=81=E7=A8=8B</h2>
+<p>=E8=AF=B7=E5=8F=82=E8=A7=81sql-common\client.c=E7=9A=84CLI_MYSQL_REAL_CO=
+NNECT=E5=87=BD=E6=95=B0=E3=80=82</p>
+<ul style=3D"list-style-type: decimal;">
+<li>=E4=BD=BF=E7=94=A8=E7=B3=BB=E7=BB=9F=E7=9A=84socket=E5=87=BD=E6=95=B0=
+=E5=BB=BA=E7=AB=8B=E4=B8=80=E4=B8=AAsocket=EF=BC=8C=E7=84=B6=E5=90=8E=E8=BF=
+=9E=E6=8E=A5=E6=9C=8D=E5=8A=A1=E5=99=A8=E3=80=82</li>
+<li>=E4=BD=BF=E7=94=A8=E8=BF=99=E4=B8=AAsocket=E5=88=9D=E5=A7=8B=E5=8C=96=
+=E4=B8=80=E4=B8=AAvio=E5=AF=B9=E8=B1=A1<br> net-vio=3D vio_new(sock, VIO_TY=
+PE_TCPIP, VIO_BUFFERED_READ);</li>
+<li>=E4=BD=BF=E7=94=A8vio=E5=88=9D=E5=A7=8B=E5=8C=96net=E5=AF=B9=E8=B1=A1<b=
+r>my_net_init(net, net-vio)</li>
+<li>=E5=B9=B6=E5=AF=B9vio=E8=AE=BE=E7=BD=AE=E4=B8=BAkeep alive<br>vio_keepa=
+live(net-vio,TRUE);</li>
+<li>=E7=84=B6=E5=90=8E=E8=AE=BE=E7=BD=AE=E5=90=84=E7=A7=8D=E5=8F=82=E6=95=
+=B0</li>
+</ul>
+<p>=E5=AE=A2=E6=88=B7=E7=AB=AF=E6=8E=A5=E4=B8=8B=E6=9D=A5=E7=9A=84=E6=B5=81=
+=E7=A8=8B=E5=8F=AF=E5=88=86=E4=B8=BA=E4=B8=89=E4=B8=AA=E9=98=B6=E6=AE=B5=EF=
+=BC=9A</p>
+<ul style=3D"list-style-type: decimal;">
+<li>Connection established, read and parse first packet</li>
+<li>invoke the plugin to send the authentication data to the server</li>
+<li>authenticated, finish the initialization of the connection</li>
+</ul>
+<h2>=E4=BA=8C=E3=80=81=E6=9C=8D=E5=8A=A1=E5=99=A8=E5=A4=84=E7=90=86=E8=BF=
+=9E=E6=8E=A5</h2>
+<p>=E6=9C=8D=E5=8A=A1=E5=99=A8=E5=90=AF=E5=8A=A8=E7=9A=84=E6=97=B6=E5=80=99=
+=E6=98=AF=E5=9C=A8sql/mysqld.cc=E7=9A=84network_init=E5=87=BD=E6=95=B0=E5=
+=BB=BA=E7=AB=8Bsocket=EF=BC=8C=E7=84=B6=E5=90=8Ebind=E3=80=82<br>=20
+=E6=9C=8D=E5=8A=A1=E5=99=A8=E4=B8=93=E9=97=A8=E6=9C=89=E4=B8=80=E4=B8=AA=E7=
+=BA=BF=E7=A8=8B=EF=BC=88=E5=8F=AF=E7=A7=B0=E4=B8=BAConnection=20
+Manager=EF=BC=89=E5=A4=84=E7=90=86=E6=96=B0=E6=9D=A5=E7=9A=84=E7=BD=91=E7=
+=BB=9C=E8=BF=9E=E6=8E=A5=E3=80=82=E8=BF=99=E4=B8=AA=E7=BA=BF=E7=A8=8B=E7=9A=
+=84=E4=B8=BB=E5=87=BD=E6=95=B0=E6=98=AFsql/mysqld.cc=E7=9A=84
+handle_connections_sockets_thread=EF=BC=8C=E4=B8=BB=E8=A6=81=E7=9A=84=E9=80=
+=BB=E8=BE=91=E5=9C=A8sql/mysqld.cc=E7=9A=84
+handle_connections_sockets=E3=80=82handle_connections_sockets=E7=9A=84=E9=
+=80=BB=E8=BE=91=E5=B0=B1=E6=98=AF=E5=85=B8=E5=9E=8B=E7=9A=84
+select()/accept()/dispatch=E3=80=82=E6=AF=8F=E4=B8=AA=E5=AE=A2=E6=88=B7=E7=
+=AB=AF=E8=BF=9E=E6=8E=A5=E6=9C=80=E7=BB=88=E4=BC=9A=E5=AF=B9=E5=BA=94=E7=9D=
+=80=E4=B8=80=E4=B8=AA=E7=BA=BF=E7=A8=8B=E4=BB=A5=E5=8F=8A=E4=B8=80=E4=B8=AA=
+THD=E5=AF=B9=E8=B1=A1=E3=80=82THD=E7=B1=BB=E4=B8=8D=E6=98=AF=E4=B8=80=E4=B8=
+=AA=E9=80=9A=E7=94=A8=E7=9A=84=E6=8F=8F=E8=BF=B0=E4=BB=BB=E6=84=8F=E7=BA=BF=
+=E7=A8=8B=E7=9A=84
+=E7=B1=BB=EF=BC=8C=E5=AE=83=E5=B0=B1=E6=98=AF=E4=B8=93=E9=97=A8=E4=B8=BA=E5=
+=A4=84=E7=90=86=E5=AE=A2=E6=88=B7=E7=AB=AF=E7=9A=84=E7=9A=84TCP=E8=BF=9E=E6=
+=8E=A5=E8=80=8C=E8=AE=BE=E8=AE=A1=E7=9A=84=E3=80=82=E8=BF=99=E4=B8=AA=E7=B1=
+=BB=E9=9D=9E=E5=B8=B8=E5=A4=A7=EF=BC=8C=E5=9C=A8sql/sql_class.h=E4=B8=AD=E5=
+=AE=9A=E4=B9=89=E3=80=82</p>
+<p>=E6=AF=8F=E4=B8=AAworker=E7=BA=BF=E7=A8=8B=E7=9A=84=E5=85=A5=E5=8F=A3=E5=
+=87=BD=E6=95=B0=E6=98=AF=E5=9C=A8sql/sql_connect.cc=E4=B8=AD=E7=9A=84handle=
+_one_connection=E3=80=82sql
+/sql_parse.cc=E7=9A=84do_command=E4=BB=8E=E7=BD=91=E7=BB=9C=E8=BF=9E=E6=8E=
+=A5=E4=B8=8A=E8=AF=BB=E4=B8=80=E4=B8=AAcommand=EF=BC=8C=E5=B9=B6=E6=89=A7=
+=E8=A1=8C=E3=80=82handle_one_connection=E5=87=BD=E6=95=B0=E6=98=AF=E4=BB=A5
+while=E5=BE=AA=E7=8E=AF=E7=9A=84=E6=96=B9=E5=BC=8F=E6=89=A7=E8=A1=8Cdo_comm=
+and=E3=80=82</p>
+<h2>=E4=B8=89=E3=80=81=E5=8D=8F=E8=AE=AE</h2>
+<p>=E5=AE=A2=E6=88=B7=E7=AB=AF=E5=8F=91=E7=BB=99=E6=9C=8D=E5=8A=A1=E5=99=A8=
+=E7=9A=84=E5=8C=85=E5=8F=AF=E5=88=86=E4=B8=BA=E4=B8=A4=E7=A7=8D=EF=BC=9A=E7=
+=99=BB=E5=BD=95=E6=97=B6=E7=9A=84=E4=B8=80=E4=B8=AAauth=E5=8C=85=EF=BC=8C=
+=E4=BB=A5=E5=8F=8A=E8=BA=AB=E4=BB=BD=E9=AA=8C=E8=AF=81=E7=BB=93=E6=9D=9F=E5=
+=90=8E=E7=9A=84command=E5=8C=85=E3=80=82<br> =E6=9C=8D=E5=8A=A1=E5=99=A8=E5=
+=8F=91=E7=BB=99=E5=AE=A2=E6=88=B7=E7=AB=AF=E7=9A=84=E5=8C=85=E5=8F=AF=E5=88=
+=86=E4=B8=BA=E5=9B=9B=E7=A7=8D=EF=BC=9A=E7=99=BB=E5=BD=95=E6=97=B6=E7=9A=84=
+=E6=8F=A1=E6=89=8B=E5=8C=85=E3=80=81=E6=95=B0=E6=8D=AE=E5=8C=85=E3=80=81=E6=
+=95=B0=E6=8D=AE=E6=B5=81=E7=BB=93=E6=9D=9F=E5=8C=85=E3=80=81=E6=88=90=E5=8A=
+=9F=E5=8C=85(OK Packet)=E3=80=81=E9=94=99=E8=AF=AF=E4=BF=A1=E6=81=AF=E5=8C=
+=85=E3=80=82<br> =E6=89=80=E6=9C=89=E7=9A=84=E5=8C=85=E9=83=BD=E5=85=B7=E6=
+=9C=89=E7=BB=9F=E4=B8=80=E7=9A=84=E6=A0=BC=E5=BC=8F=EF=BC=8C=E7=94=B1=E7=BB=
+=9F=E4=B8=80=E7=9A=84=E5=87=BD=E6=95=B0(sql/net_serv.cc:my_net_write(...))=
+=E5=86=99=E5=85=A5buffer=E7=AD=89=E5=BE=85=E5=8F=91=E9=80=81=E3=80=82</p>
+<table class=3D"style1">
+<tbody>
+<tr>
+<td>=E9=95=BF=E5=BA=A6</td>
+<td>=E6=8F=8F=E8=BF=B0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>=E5=8C=85=E9=95=BF=E5=BA=A6=EF=BC=88=E5=8D=95=E4=BD=8D=EF=BC=9A=E5=AD=
+=97=E8=8A=82=EF=BC=89=E3=80=82=E6=8C=89=E4=BD=8E=E5=AD=97=E8=8A=82=E4=BD=8E=
+=E5=9D=80=E7=9A=84=E8=A7=84=E5=88=99=E5=AD=98=E6=94=BE=E3=80=82=E5=9B=A0=E4=
+=B8=BA=E4=B8=80=E5=85=B1=E5=B0=B13=E4=B8=AA=E5=AD=97=E8=8A=82=EF=BC=8C=E6=
+=89=80=E4=BB=A5=E5=8D=95=E4=B8=AA=E5=8C=85=E7=9A=84=E6=9C=80=E5=A4=A7=E9=95=
+=BF=E5=BA=A6=E6=98=AF(2=E7=9A=8416=E6=AC=A1=E6=96=B9-1)=E5=AD=97=E8=8A=82=
+=EF=BC=8C=E7=BA=A6=E7=AD=89=E4=BA=8E16MB=E3=80=82=E6=9C=80=E5=B0=8F=E9=95=
+=BF=E5=BA=A6=E6=98=AF0=E3=80=82</td>
+</tr>
+<tr>
+<td>1</td>
+<td>=E5=BA=8F=E5=8F=B7=E3=80=82=E7=AC=AC=E4=B8=80=E4=B8=AA=E6=98=AF0=E3=80=
+=82</td>
+</tr>
+<tr>
+<td>n</td>
+<td>data=E3=80=82</td>
+</tr>
+</tbody>
+</table>
+<p><br> =E5=AE=9E=E9=99=85=E4=B8=8A=EF=BC=8C=E5=8C=85=E9=95=BF=E7=AD=89=E4=
+=BA=8E=20
+2=E7=9A=8416=E6=AC=A1=E6=96=B9-1=E7=9A=84=E5=8C=85=E4=B9=9F=E4=BC=9A=E8=A2=
+=AB=E6=8B=86=E6=88=902=E4=B8=AA=E5=8C=85=E5=8F=91=E9=80=81=E3=80=82=E5=9B=
+=A0=E4=B8=BAMysql=E6=9C=80=E5=88=9D=E6=B2=A1=E6=9C=89=E8=80=83=E8=99=91=E7=
+=AA=81=E7=A0=B416M=EF=BC=8C=E4=B9=9F=E6=B2=A1=E6=9C=89=E9=A2=84=E7=95=99=E4=
+=BB=BB=E4=BD=95=E5=AD=97=E6=AE=B5=E5=81=9A=E6=A0=87=E5=BF=97=E8=BF=99=E4=B8=
+=AA=E5=8C=85=E7=9A=84=E6=95=B0=E6=8D=AE=E4=B8=8D=E5=AE=8C=E6=95=B4=E3=80=82=
+=E6=89=80=E4=BB=A5=E5=8F=AA=E5=A5=BD=E6=8A=8A=E9=95=BF=E5=BA=A6=E4=B8=BA2=
+=E7=9A=84
+16=E6=AC=A1=E6=96=B9-1=E7=9A=84=E5=8C=85=E8=A7=86=E5=81=9A=E4=B8=8D=E5=AE=
+=8C=E6=95=B4=E7=9A=84=E5=8C=85=EF=BC=8C=E7=9B=B4=E5=88=B0=E5=90=8E=E9=9D=A2=
+=E6=94=B6=E5=88=B0=E4=B8=80=E4=B8=AA=E9=95=BF=E5=BA=A6=E5=B0=8F=E4=BA=8E2=
+=E7=9A=8416=E6=AC=A1=E6=96=B9-1=E7=9A=84=E5=8C=85=EF=BC=8C=E7=84=B6=E5=90=
+=8E=E6=8B=BC=E8=B5=B7=E6=9D=A5=E3=80=82=E6=89=80=E4=BB=A5=E6=9C=80=E5=90=8E=
+=E4=B8=80=E4=B8=AA=E5=8C=85=E7=9A=84=E9=95=BF=E5=BA=A6=E6=9C=89=E5=8F=AF=E8=
+=83=BD=E6=98=AF0=E3=80=82</p>
+<h3>=E7=99=BB=E5=BD=95</h3>
+<p>=E6=9C=8D=E5=8A=A1=E5=99=A8=E5=9C=A8=E6=AF=8F=E6=94=B6=E5=88=B0=E4=B8=80=
+=E4=B8=AA=E6=96=B0=E7=9A=84=E8=BF=9E=E6=8E=A5=E7=9A=84=E6=97=B6=E5=80=99=EF=
+=BC=8C=E4=BC=9A=E4=BD=BF=E7=94=A8sql/sql_connect.cc=E7=9A=84login_connectio=
+n=E5=87=BD=E6=95=B0=E4=BD=9C=E8=BA=AB=E4=BB=BD=E9=AA=8C=E8=AF=81=E3=80=82=
+=E5=85=88=E6=A0=B9=E6=8D=AEIP=E5=81=9Aacl=EF=BC=8C=E7=84=B6=E5=90=8E=E6=89=
+=8D=E8=BF=9B=E5=85=A5=E7=94=A8=E6=88=B7=E5=90=8D=E5=AF=86=E7=A0=81=E9=AA=8C=
+=E8=AF=81=E9=98=B6=E6=AE=B5=E3=80=82 <br> mysql=E7=9A=84=E7=99=BB=E5=BD=95=
+=E5=8D=8F=E8=AE=AE=E6=98=AF=E7=BB=8F=E5=85=B8=E7=9A=84CHAP=E5=8D=8F=E8=AE=
+=AE=EF=BC=8Csql/sql_acl.cc=E7=9A=84native_password_authenticate=E5=87=BD=E6=
+=95=B0=E7=9A=84=E6=B3=A8=E9=87=8A=E7=AE=80=E5=8D=95=E4=BA=86=E8=A7=A3=E9=87=
+=8A=E4=BA=86=E8=BF=99=E4=B8=AA=E5=8D=8F=E8=AE=AE=EF=BC=9A</p>
+<ul style=3D"list-style-type: decimal;">
+<li>the server sends the random scramble to the client.</li>
+<li>client sends the encrypted password back to the server.</li>
+<li>the server checks the password.</li>
+</ul>
+<p>random=20
+scramble=E5=9C=A84.1=E4=B9=8B=E5=89=8D=E7=9A=84=E7=89=88=E6=9C=AC=E4=B8=AD=
+=E6=98=AF8=E5=AD=97=E8=8A=82=E6=95=B4=E6=95=B0=EF=BC=8C=E5=9C=A84.1=E4=BB=
+=A5=E5=8F=8A=E5=90=8E=E7=BB=AD=E7=89=88=E6=9C=AC=E6=98=AF20=E5=AD=97=E8=8A=
+=82=E6=95=B4=E6=95=B0=E3=80=82=E5=AE=83=E6=98=AF=E7=94=B1password.c=E7=9A=84
+create_random_string=E5=87=BD=E6=95=B0=E7=94=9F=E7=9A=84=EF=BC=8C=E5=9B=A0=
+=E4=B8=BA=E5=AE=83=E9=87=87=E7=94=A8=E7=9A=84=E6=98=AFrand()%94+33=E8=BF=99=
+=E6=A0=B7=E7=9A=84=E6=96=B9=E5=BC=8F=E7=94=9F=E7=9A=84=EF=BC=8C=E6=89=80=E4=
+=BB=A5scramble=E7=9A=84=E6=AF=8F=E4=B8=AA=E5=AD=97=E8=8A=82=E4=B8=80=E5=AE=
+=9A=E6=98=AF
+[33,127)=E4=B9=8B=E9=97=B4=E7=9A=84ASCII=E5=AD=97=E7=AC=A6=EF=BC=8C=E5=9C=
+=A8=E5=8D=8F=E8=AE=AE=E4=B8=AD=E5=8F=91=E9=80=81=E6=97=B6=EF=BC=8C=E6=98=AF=
+=E5=8A=A0=E4=B8=8A'\0'=E4=B9=8B=E5=90=8E=E5=8F=91=E7=9A=84(=E8=BF=99=E4=B8=
+=AA=E5=90=8E=E9=9D=A2=E4=BC=9A=E8=AF=A6=E7=BB=86=E8=A7=A3=E9=87=8A=EF=BC=89=
+=E3=80=82</p>
+<h3>=E5=91=BD=E4=BB=A4--=E7=AD=94=E5=A4=8D</h3>
+<p>=E5=9C=A8=E8=BA=AB=E4=BB=BD=E9=AA=8C=E8=AF=81=E4=B9=8B=E5=90=8E=EF=BC=8C=
+=E6=9C=8D=E5=8A=A1=E5=99=A8=E5=92=8C=E5=AE=A2=E6=88=B7=E7=AB=AF=E4=B9=8B=E9=
+=97=B4=E5=A4=84=E4=BA=8E=E4=B8=80=E9=97=AE=E4=B8=80=E7=AD=94=E7=9A=84=E6=A8=
+=A1=E5=BC=8F=E3=80=82 =E6=88=AA=E8=87=B3=E5=88=B0Mysql 5.5.9=EF=BC=8Cmysql=
+=20
+server=E4=B8=80=E5=85=B1=E6=94=AF=E6=8C=8130=E7=A7=8Dcommand=EF=BC=8Csql/sq=
+l_parse.cc=E7=9A=84=20
+dispatch_command=E5=87=BD=E6=95=B0=E5=86=99=E4=BA=86=E4=B8=80=E4=B8=AA=E5=
+=A4=A7=E5=A4=A7=E7=9A=84switch...case=E6=9D=A5=E5=A4=84=E7=90=86=E5=AE=83=
+=E4=BB=AC=E3=80=82</p>
+<ul>
+<li>COM_SLEEP</li>
+<li>COM_QUIT</li>
+<li>COM_INIT_DB</li>
+<li>COM_QUERY</li>
+<li>COM_FIELD_LIST</li>
+<li>COM_CREATE_DB</li>
+<li>COM_DROP_DB</li>
+<li>COM_REFRESH</li>
+<li>COM_SHUTDOWN</li>
+<li>COM_STATISTICS</li>
+<li>COM_PROCESS_INFO</li>
+<li>COM_CONNECT</li>
+<li>COM_PROCESS_KILL</li>
+<li>COM_DEBUG</li>
+<li>COM_PING</li>
+<li>COM_TIME</li>
+<li>COM_DELAYED_INSERT</li>
+<li>COM_CHANGE_USER</li>
+<li>COM_BINLOG_DUMP</li>
+<li>COM_TABLE_DUMP</li>
+<li>COM_CONNECT_OUT</li>
+<li>COM_REGISTER_SLAVE</li>
+<li>COM_STMT_PREPARE</li>
+<li>COM_STMT_EXECUTE</li>
+<li>COM_STMT_SEND_LONG_DATA</li>
+<li>COM_STMT_CLOSE</li>
+<li>COM_STMT_RESET</li>
+<li>COM_SET_OPTION</li>
+<li>COM_STMT_FETCH</li>
+<li>COM_DAEMON</li>
+</ul>
+<h2>=E5=9B=9B=E3=80=81=E6=9C=8D=E5=8A=A1=E5=99=A8=E7=9A=84=E6=8F=A1=E6=89=
+=8B=E5=8C=85</h2>
+<p>=E5=AE=A2=E6=88=B7=E7=AB=AF=E6=89=A7=E8=A1=8Crecv=EF=BC=8C=E4=BC=9A=E6=
+=94=B6=E5=88=B0=E4=B8=80=E4=B8=AA=E6=9D=A5=E8=87=AAserver=E7=9A=84=E5=8C=85=
+=EF=BC=8C=E5=85=B6=E4=B8=AD=E7=AC=AC=E4=B8=80=E4=B8=AA=E5=AD=97=E8=8A=82=E6=
+=98=AF=E5=8D=8F=E8=AE=AE=E7=9A=84=E7=89=88=E6=9C=AC=E5=8F=B7=E3=80=82<br>=
+ =E5=85=B6=E5=AE=83=E7=9A=84=E9=87=8D=E8=A6=81=E4=BF=A1=E6=81=AF=E8=BF=98=
+=E6=9C=89connection id=E3=80=81scramble</p>
+<p>41 00 00 00 <br> 0A 35 2E 30 2E 32 30 2D 73 74 61 6E 64 61 72 64 2D=20
+6C 6F 67 00 44 8E 4E 00 5A 66 72 2A 79 43 24 27 00 2C A2 08 02 00 00 00=20
+00 00 00 00 00 00 00 00 00 00 00 36 7B 29 58 5E 50 56 41 21 7C 73 4C 00<br>=
+ <br> =E5=85=B6=E6=A0=BC=E5=BC=8F=E5=A6=82=E4=B8=8B=EF=BC=9A=EF=BC=88=E6=9D=
+=A5=E8=87=AAsql_acl.cc=E7=9A=84send_server_handshake_packet=E5=87=BD=E6=95=
+=B0=E7=9A=84=E6=B3=A8=E9=87=8A=EF=BC=89</p>
+<table class=3D"style1">
+<tbody>
+<tr>
+<td>=E9=95=BF=E5=BA=A6</td>
+<td>=E8=AF=B4=E6=98=8E</td>
+</tr>
+<tr>
+<td>1</td>
+<td>=E5=8D=8F=E8=AE=AE=E7=9A=84=E7=89=88=E6=9C=AC=E5=8F=B7 (0x0A)</td>
+</tr>
+<tr>
+<td>n</td>
+<td>=E4=BB=A50=E7=BB=93=E5=B0=BE=E7=9A=84=E5=AD=97=E7=AC=A6=E4=B8=B2=E3=80=
+=82=E6=8F=8F=E8=BF=B0=E6=9C=8D=E5=8A=A1=E5=99=A8=E7=89=88=E6=9C=AC</td>
+</tr>
+<tr>
+<td>4</td>
+<td>thread id</td>
+</tr>
+<tr>
+<td>8</td>
+<td>scramble=E7=9A=84=E5=89=8D8=E4=B8=AA=E5=AD=97=E8=8A=82</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0x00=E3=80=82=E4=B9=9F=E5=B0=B1=E6=98=AF=E8=AF=B4=E8=AE=A9scramble=E7=
+=9C=8B=E8=B5=B7=E6=9D=A5=E6=98=AF=E4=B8=80=E4=B8=AA=E4=BB=A50=E7=BB=93=E5=
+=B0=BE=E7=9A=84=E5=AD=97=E7=AC=A6=E4=B8=B2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>server capabilities=E7=9A=84=E4=BD=8E=E4=B8=A4=E4=B8=AA=E5=AD=97=E8=8A=
+=82=E3=80=82</td>
+</tr>
+<tr>
+<td>1</td>
+<td>server character set</td>
+</tr>
+<tr>
+<td>2</td>
+<td>server status</td>
+</tr>
+<tr>
+<td>2</td>
+<td>server capabilities=E7=9A=84=E9=AB=98=E4=B8=A4=E4=B8=AA=E5=AD=97=E8=8A=
+=82=E3=80=82</td>
+</tr>
+<tr>
+<td>1</td>
+<td>scramble=E7=9A=84=E6=80=BB=E9=95=BF=E5=BA=A6</td>
+</tr>
+<tr>
+<td>10</td>
+<td>=E4=BF=9D=E7=95=99=E3=80=82=E5=BF=85=E9=A1=BB=E4=BB=A50=E5=A1=AB=E5=85=
+=85=E3=80=82</td>
+</tr>
+<tr>
+<td>n(=E8=87=B3=E5=B0=9112=EF=BC=89</td>
+<td>scramble=E7=9A=84=E5=89=A9=E4=BD=99=E9=83=A8=E5=88=86=E3=80=82=EF=BC=88=
+=E4=B8=8D=E5=8C=85=E5=90=AB'\0'=EF=BC=89</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0x00=E3=80=82=E4=B9=9F=E5=B0=B1=E6=98=AF=E8=AF=B4=E8=AE=A9scramble=E7=
+=9C=8B=E8=B5=B7=E6=9D=A5=E6=98=AF=E4=B8=80=E4=B8=AA=E4=BB=A50=E7=BB=93=E5=
+=B0=BE=E7=9A=84=E5=AD=97=E7=AC=A6=E4=B8=B2</td>
+</tr>
+</tbody>
+</table>
+<p><br> server capabilities=E8=A1=A8=EF=BC=9A</p>
+<table class=3D"style1">
+<tbody>
+<tr>
+<td>=E5=90=8D=E5=AD=97</td>
+<td>=E4=BB=8E=E5=8F=B3=E5=BE=80=E5=B7=A6=E6=95=B0=E7=AC=AC=E5=87=A0=E4=BD=
+=8D</td>
+<td>=E8=AF=B4=E6=98=8E</td>
+</tr>
+<tr>
+<td>CLIENT_LONG_PASSWORD</td>
+<td>1</td>
+<td>new more secure passwords</td>
+</tr>
+<tr>
+<td>CLIENT_FOUND_ROWS</td>
+<td>2</td>
+<td>Found instead of affected rows</td>
+</tr>
+<tr>
+<td>CLIENT_LONG_FLAG</td>
+<td>3</td>
+<td>Get all column flags</td>
+</tr>
+<tr>
+<td>CLIENT_CONNECT_WITH_DB</td>
+<td>4</td>
+<td>One can specify db on connect</td>
+</tr>
+<tr>
+<td>CLIENT_NO_SCHEMA</td>
+<td>5</td>
+<td>Don't allow database.table.column</td>
+</tr>
+<tr>
+<td>CLIENT_COMPRESS</td>
+<td>6</td>
+<td>Can use compression protocol</td>
+</tr>
+<tr>
+<td>CLIENT_ODBC</td>
+<td>7</td>
+<td>Odbc client</td>
+</tr>
+<tr>
+<td>CLIENT_LOCAL_FILES</td>
+<td>8</td>
+<td>Can use LOAD DATA LOCAL</td>
+</tr>
+<tr>
+<td>CLIENT_IGNORE_SPACE</td>
+<td>9</td>
+<td>Ignore spaces before '('</td>
+</tr>
+<tr>
+<td>CLIENT_PROTOCOL_41</td>
+<td>10</td>
+<td>New 4.1 protocol</td>
+</tr>
+<tr>
+<td>CLIENT_INTERACTIVE</td>
+<td>11</td>
+<td>This is an interactive client</td>
+</tr>
+<tr>
+<td>CLIENT_SSL</td>
+<td>12</td>
+<td>Switch to SSL after handshake</td>
+</tr>
+<tr>
+<td>CLIENT_IGNORE_SIGPIPE</td>
+<td>13</td>
+<td>IGNORE sigpipes</td>
+</tr>
+<tr>
+<td>CLIENT_TRANSACTIONS</td>
+<td>14</td>
+<td>Client knows about transactions</td>
+</tr>
+<tr>
+<td>CLIENT_RESERVED</td>
+<td>15</td>
+<td>Old flag for 4.1 protocol</td>
+</tr>
+<tr>
+<td>CLIENT_SECURE_CONNECTION</td>
+<td>16</td>
+<td>New 4.1 authentication</td>
+</tr>
+<tr>
+<td>CLIENT_MULTI_STATEMENTS</td>
+<td>17</td>
+<td>Enable/disable multi-stmt support</td>
+</tr>
+<tr>
+<td>CLIENT_MULTI_RESULTS</td>
+<td>18</td>
+<td>Enable/disable multi-results</td>
+</tr>
+<tr>
+<td>CLIENT_PS_MULTI_RESULTS</td>
+<td>19</td>
+<td>Multi-results in PS-protocol</td>
+</tr>
+<tr>
+<td>CLIENT_PLUGIN_AUTH</td>
+<td>20</td>
+<td>Client supports plugin authentication</td>
+</tr>
+<tr>
+<td>CLIENT_SSL_VERIFY_SERVER_CERT</td>
+<td>31</td>
+<td>=C2=A0</td>
+</tr>
+<tr>
+<td>CLIENT_REMEMBER_OPTIONS</td>
+<td>32</td>
+<td>=C2=A0</td>
+</tr>
+</tbody>
+</table>
+<h2>=E4=BA=94=E3=80=81=E7=84=B6=E5=90=8E=E5=AE=A2=E6=88=B7=E7=AB=AF=E5=B0=
+=86=E5=AF=86=E7=A0=81=E7=AD=89=E5=8F=91=E9=80=81=E8=BF=87=E5=8E=BB</h2>
+<p>=E5=AE=A2=E6=88=B7=E7=AB=AF=E6=A0=B9=E6=8D=AE=E6=9C=8D=E5=8A=A1=E5=99=A8=
+=E5=8F=91=E7=BB=99=E7=9A=84scramble=E5=AF=B9=E5=8E=9F=E5=A7=8B=E5=AF=86=E7=
+=A0=81=E8=BF=9B=E8=A1=8C=E6=95=A3=E5=88=97=EF=BC=8C=E7=84=B6=E5=90=8E=E5=92=
+=8C=E5=85=B6=E5=AE=83=E5=8F=82=E6=95=B0=E4=B8=80=E8=B5=B7=E5=8F=91=E7=BB=99=
+=E6=9C=8D=E5=8A=A1=E5=99=A8<br> =E5=8F=91=E9=80=81=E7=99=BB=E5=BD=95=E6=95=
+=B0=E6=8D=AE:<br> 00000000 3A 00 00 01 85 A6 03 00 00 00 00 01 08 00 00 00<=
+br> 00000010 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00<br> 00000020=
+ 00 00 00 00 72 6F 6F 74 00 14 00 00 00 00 00 00<br> 00000030 00 00 00 00=
+ 00 00 00 00 00 00 00 00 00 00</p>
+<table class=3D"style1">
+<tbody>
+<tr>
+<td>=E9=95=BF=E5=BA=A6</td>
+<td>=E8=AF=B4=E6=98=8E</td>
+</tr>
+<tr>
+<td>4</td>
+<td>client capabilities</td>
+</tr>
+<tr>
+<td>4</td>
+<td>max packet size</td>
+</tr>
+<tr>
+<td>1</td>
+<td>charset number</td>
+</tr>
+<tr>
+<td>23</td>
+<td>=E4=BF=9D=E7=95=99=E3=80=82=E5=BF=85=E9=A1=BB=E4=BB=A50=E5=A1=AB=E5=85=
+=85=E3=80=82</td>
+</tr>
+<tr>
+<td>n</td>
+<td>user name=E3=80=82=E4=BB=A50=E7=BB=93=E5=B0=BE=E7=9A=84=E5=AD=97=E7=AC=
+=A6=E4=B8=B2</td>
+</tr>
+<tr>
+<td>n</td>
+<td>hash=E8=BF=87=E7=9A=84=E5=AF=86=E7=A0=81=E3=80=82length (1 byte) coded<=
+/td>
+</tr>
+<tr>
+<td>n</td>
+<td>database name,=E4=BB=A50=E7=BB=93=E5=B0=BE=E7=9A=84=E5=AD=97=E7=AC=A6=
+=E4=B8=B2=E3=80=82=E5=8F=AA=E6=9C=89client capabilities=E4=B8=AD=E6=9C=89CL=
+IENT_CONNECT_WITH_DB=E6=97=B6=EF=BC=8C=E6=AD=A4=E5=AD=97=E6=AE=B5=E6=89=8D=
+=E6=9C=89=E6=95=88=E3=80=82</td>
+</tr>
+<tr>
+<td>n</td>
+<td>client auth plugin name=E3=80=82=E4=BB=A50=E7=BB=93=E5=B0=BE=E7=9A=84=
+=E5=AD=97=E7=AC=A6=E4=B8=B2=E3=80=82=E5=8F=AA=E6=9C=89client capabilities=
+=E4=B8=AD=E6=9C=89CLIENT_PLUGIN_AUTH=E6=97=B6=EF=BC=8C=E6=AD=A4=E5=AD=97=E6=
+=AE=B5=E6=89=8D=E6=9C=89=E6=95=88=E3=80=82=E5=A6=82=E6=9E=9C=E4=BD=BF=E7=94=
+=A8mysql=E9=BB=98=E8=AE=A4=E7=9A=84auth=E6=9C=BA=E5=88=B6=EF=BC=8C=E6=AD=A4=
+=E5=A4=84=E5=BA=94=E8=AF=A5=E4=B8=BAmysql_native_password</td>
+</tr>
+</tbody>
+</table>
+<p>sql-common/client.c=E7=9A=84send_client_reply_packet=E5=87=BD=E6=95=B0=
+=E6=9E=84=E9=80=A0=E8=BF=99=E4=B8=AA=E7=AD=94=E5=A4=8D=E5=8C=85=E7=84=B6=E5=
+=90=8E=E5=8F=91=E9=80=81=E3=80=82=E6=95=A3=E5=88=97=E7=AE=97=E6=B3=95=E7=9A=
+=84=E5=AE=9E=E7=8E=B0=E5=9C=A8
+password.c=E7=9A=84scramble(char *to, const char *message, const char=20
+*password)=E5=87=BD=E6=95=B0=E3=80=82</p>
+<h2>=E5=9B=9B=E3=80=81=E5=86=8D=E5=BA=A6=E5=8F=91=E9=80=81scrambled passwor=
+d =EF=BC=88=E5=8F=AF=E9=80=89=EF=BC=89</h2>
+<p>=E6=8E=88=E6=9D=83=E4=BF=A1=E6=81=AF=E5=B7=B2=E7=BB=8F=E5=8F=91=E9=80=81=
+=E8=BF=87=E5=8E=BB=E4=BA=86=EF=BC=8C=E6=9C=8D=E5=8A=A1=E5=99=A8=E5=8F=AF=E4=
+=BB=A5=E4=BC=9A=E5=9B=9E=E7=AD=94=E8=AF=B4OK=EF=BC=88=E5=8F=91=E5=9B=9E=E4=
+=B8=80=E4=B8=AAOK_PACKET)=EF=BC=8C=E4=B9=9F=E6=9C=89=E5=8F=AF=E8=83=BD=E4=
+=BC=9A=E8=A6=81=E6=B1=82=E5=86=8D=E5=BA=A6=E5=8F=91=E9=80=81scrambled passw=
+ord=E3=80=82<br> =E5=A6=82=E6=9E=9C=E8=A6=81=E5=86=8D=E5=BA=A6=E5=8F=91=E9=
+=80=81=EF=BC=8C=E6=9C=8D=E5=8A=A1=E5=99=A8=E4=BC=9A=E8=BF=94=E5=9B=9E=E4=B8=
+=80=E4=B8=AA1=E5=AD=97=E8=8A=82=E7=9A=84=E5=8C=85=EF=BC=8C=E5=A6=82=E6=9E=
+=9C=E7=AC=AC=E4=B8=80=E4=B8=AA=E5=AD=97=E8=8A=82=E6=98=AF0xFE=E4=B8=94mysql=
+.server_capabilities=E8=AE=BE=E7=BD=AE=E4=BA=86CLIENT_SECURE_CONNECTION=EF=
+=BC=8C=E9=82=A3=E4=B9=88<br> =E5=B0=B1=E9=9C=80=E8=A6=81=E5=86=8D=E5=BA=A6=
+=E5=8F=91=E9=80=81scrambled password<br> =E8=BF=99=E4=B8=AA=E4=BC=BC=E4=B9=
+=8E=E6=98=AF=E4=B8=BA=E4=BA=86=E5=92=8C=E4=BB=A5=E5=89=8D=E8=80=81=E7=89=88=
+=E6=9C=AC=E5=85=BC=E5=AE=B9=EF=BC=8C=E8=BF=99=E6=AC=A1=E9=9C=80=E8=A6=81=E4=
+=BD=BF=E7=94=A83.23=E7=89=88=E7=9A=84scramble=E5=AF=B9password=E8=BF=9B=E8=
+=A1=8C=E5=8A=A0=E5=AF=86=E7=84=B6=E5=90=8E=E5=8F=91=E9=80=81=E3=80=82<br>=
+ scramble_323(buff, mysql-&gt;scramble, passwd);<br> =E5=A6=82=EF=BC=9A<br>=
+ 0x8059000: 0x09 0x00 0x00 0x03 0x4d 0x45 0x46 0x4c<br> 0x8059008: 0x4f 0x4=
+4 0x4b 0x4b 0x00<br> =E8=BF=99=E4=B8=AA=E5=8C=85=E7=9A=84=E6=A0=BC=E5=BC=8F=
+=E5=BE=88=E7=AE=80=E5=8D=95=EF=BC=8C=E5=8C=85=E5=A4=B4=EF=BC=8C=E7=84=B6=E5=
+=90=8E=E6=98=AF9=E4=B8=AA=E5=AD=97=E8=8A=82=E7=9A=84scramble(=E5=85=B6=E4=
+=B8=AD=E6=9C=80=E5=90=8E=E4=B8=80=E4=B8=AA=E5=AD=97=E8=8A=82=E5=BF=85=E9=A1=
+=BB=E6=98=AF0x00)<br> =E4=B8=8D=E8=BF=87=E8=A6=81=E6=B3=A8=E6=84=8F=EF=BC=
+=8C=E6=AD=A4=E5=A4=84=E5=8C=85=E5=A4=B4=E7=9A=84=E7=AC=AC4=E4=B8=AA=E5=AD=
+=97=E8=8A=82=E6=98=AF0x03,=E5=9B=A0=E4=B8=BA=E8=BF=99=E6=98=AF=E8=AE=A4=E8=
+=AF=81=E8=BF=87=E7=A8=8B=E6=98=AF=E5=8F=8C=E6=96=B9=E6=9D=A5=E5=9B=9E=E5=8F=
+=91=E9=80=81=E7=9A=84=E7=AC=AC=E4=B8=89=E4=B8=AA=E5=8C=85=E4=BA=86=E3=80=82=
+</p>
+<h2>=E4=BA=94=E3=80=81=E5=91=BD=E4=BB=A4</h2>
+<p>0x20,0x00,0x00,0x00, =E5=8C=85=E5=A4=B4<br> 0x03 //=E5=91=BD=E4=BB=A4=E7=
+=9A=84=E7=B1=BB=E5=9E=8B=EF=BC=8CCOM_QUERY<br> select * from xxx where xxx=
+ //arg</p>
+<p>=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D<br> MYSQL=E8=AE=A4=E8=AF=81=E6=BC=8F=E6=B4=9E=EF=BC=
+=9A<br> 1=E3=80=81=E6=9E=84=E9=80=A00=E9=95=BF=E5=BA=A6=E7=9A=84scramble=E7=
+=BB=95=E8=BF=87=E5=AF=86=E7=A0=81=E6=A0=A1=E9=AA=8C<br> =E8=BF=99=E5=87=A0=
+=E4=B9=8E=E5=8F=AF=E4=BB=A5=E7=AE=97=E6=98=AFmysql=E7=9B=AE=E5=89=8D=E5=8F=
+=91=E7=8E=B0=E7=9A=84=E5=8D=B1=E5=AE=B3=E6=80=A7=E6=9C=80=E4=B8=A5=E9=87=8D=
+=E7=9A=84=E5=AE=89=E5=85=A8=E6=BC=8F=E6=B4=9E=E4=BA=86=E3=80=82</p>
+<p>=E5=87=BA=E9=97=AE=E9=A2=98=E7=9A=84=E4=BB=A3=E7=A0=81=EF=BC=9A</p>
+<div style=3D"float: left; white-space: pre; line-height: 1; background: #F=
+FFFFF;"><span class=3D"sc11">my_bool</span><span class=3D"sc11">check_scram=
+ble_323</span><span class=3D"sc10">(</span><span class=3D"sc16">const</span=
+><span class=3D"sc16">char</span><span class=3D"sc10">*</span><span class=
+=3D"sc11">scrambled</span><span class=3D"sc10">,</span><span class=3D"sc16"=
+>const</span><span class=3D"sc16">char</span><span class=3D"sc10">*</span><=
+span class=3D"sc11">message</span><span class=3D"sc10">,</span><span class=
+=3D"sc11">ulong</span><span class=3D"sc10">*</span><span class=3D"sc11">has=
+h_pass</span><span class=3D"sc10">)</span><span class=3D"sc10">{</span><spa=
+n class=3D"sc16">struct</span><span class=3D"sc11">rand_struct</span><span=
+ class=3D"sc11">rand_st</span><span class=3D"sc10">;</span><span class=3D"s=
+c11">ulong</span><span class=3D"sc11">hash_message</span><span class=3D"sc1=
+0">[</span><span class=3D"sc4">2</span><span class=3D"sc10">];</span><span=
+ class=3D"sc16">char</span><span class=3D"sc11">buff</span><span class=3D"s=
+c10">[</span><span class=3D"sc4">16</span><span class=3D"sc10">],*</span><s=
+pan class=3D"sc11">to</span><span class=3D"sc10">,</span><span class=3D"sc1=
+1">extra</span><span class=3D"sc10">;</span><span class=3D"sc1">/* Big enou=
+gh for check */</span><span class=3D"sc16">const</span><span class=3D"sc16"=
+>char</span><span class=3D"sc10">*</span><span class=3D"sc11">pos</span><sp=
+an class=3D"sc10">;</span><span class=3D"sc11">hash_password</span><span cl=
+ass=3D"sc10">(</span><span class=3D"sc11">hash_message</span><span class=3D=
+"sc10">,</span><span class=3D"sc11">message</span><span class=3D"sc10">,</s=
+pan><span class=3D"sc11">SCRAMBLE_LENGTH_323</span><span class=3D"sc10">);<=
+/span><span class=3D"sc11">randominit</span><span class=3D"sc10">(&amp;</sp=
+an><span class=3D"sc11">rand_st</span><span class=3D"sc10">,</span><span cl=
+ass=3D"sc11">hash_pass</span><span class=3D"sc10">[</span><span class=3D"sc=
+4">0</span><span class=3D"sc10">]</span><span class=3D"sc10">^</span><span=
+ class=3D"sc11">hash_message</span><span class=3D"sc10">[</span><span class=
+=3D"sc4">0</span><span class=3D"sc10">],</span><span class=3D"sc11">hash_pa=
+ss</span><span class=3D"sc10">[</span><span class=3D"sc4">1</span><span cla=
+ss=3D"sc10">]</span><span class=3D"sc10">^</span><span class=3D"sc11">hash_=
+message</span><span class=3D"sc10">[</span><span class=3D"sc4">1</span><spa=
+n class=3D"sc10">]);</span><span class=3D"sc11">to</span><span class=3D"sc1=
+0">=3D</span><span class=3D"sc11">buff</span><span class=3D"sc10">;</span><=
+span class=3D"sc5">for</span><span class=3D"sc10">(</span><span class=3D"sc=
+11">pos</span><span class=3D"sc10">=3D</span><span class=3D"sc11">scrambled=
+</span><span class=3D"sc10">;</span><span class=3D"sc10">*</span><span clas=
+s=3D"sc11">pos</span><span class=3D"sc10">;</span><span class=3D"sc11">pos<=
+/span><span class=3D"sc10">++)</span><span class=3D"sc10">*</span><span cla=
+ss=3D"sc11">to</span><span class=3D"sc10">++=3D(</span><span class=3D"sc16"=
+>char</span><span class=3D"sc10">)</span><span class=3D"sc10">(</span><span=
+ class=3D"sc11">floor</span><span class=3D"sc10">(</span><span class=3D"sc1=
+1">my_rnd</span><span class=3D"sc10">(&amp;</span><span class=3D"sc11">rand=
+_st</span><span class=3D"sc10">)*</span><span class=3D"sc4">31</span><span=
+ class=3D"sc10">)+</span><span class=3D"sc4">64</span><span class=3D"sc10">=
+);</span><span class=3D"sc11">extra</span><span class=3D"sc10">=3D(</span><=
+span class=3D"sc16">char</span><span class=3D"sc10">)</span><span class=3D"=
+sc10">(</span><span class=3D"sc11">floor</span><span class=3D"sc10">(</span=
+><span class=3D"sc11">my_rnd</span><span class=3D"sc10">(&amp;</span><span=
+ class=3D"sc11">rand_st</span><span class=3D"sc10">)*</span><span class=3D"=
+sc4">31</span><span class=3D"sc10">));</span><span class=3D"sc11">to</span>=
+<span class=3D"sc10">=3D</span><span class=3D"sc11">buff</span><span class=
+=3D"sc10">;</span><span class=3D"sc5">while</span><span class=3D"sc10">(*</=
+span><span class=3D"sc11">scrambled</span><span class=3D"sc10">)</span><spa=
+n class=3D"sc10">{</span><span class=3D"sc5">if</span><span class=3D"sc10">=
+(*</span><span class=3D"sc11">scrambled</span><span class=3D"sc10">++</span=
+><span class=3D"sc10">!=3D</span><span class=3D"sc10">(</span><span class=
+=3D"sc16">char</span><span class=3D"sc10">)</span><span class=3D"sc10">(*</=
+span><span class=3D"sc11">to</span><span class=3D"sc10">++</span><span clas=
+s=3D"sc10">^</span><span class=3D"sc11">extra</span><span class=3D"sc10">))=
+</span><span class=3D"sc5">return</span><span class=3D"sc4">1</span><span=
+ class=3D"sc10">;</span><span class=3D"sc1">/* Wrong password */</span><spa=
+n class=3D"sc10">}</span><span class=3D"sc5">return</span><span class=3D"sc=
+4">0</span><span class=3D"sc10">;</span><span class=3D"sc10">}</span></div>
+<div style=3D"float: none; clear: both;">=C2=A0</div>
+<p>=E6=94=B9=E6=AD=A3=E5=90=8E=E7=9A=84 =EF=BC=88=E5=A4=9A=E5=8A=A0=E4=BA=
+=86=E4=B8=80=E5=8F=A5 if (pos-scrambled !=3D SCRAMBLE_LENGTH_323) return 1=
+=EF=BC=89</p>
+<div style=3D"float: left; white-space: pre; line-height: 1; background: #F=
+FFFFF;"><span class=3D"sc11">my_bool</span><span class=3D"sc11">check_scram=
+ble_323</span><span class=3D"sc10">(</span><span class=3D"sc16">const</span=
+><span class=3D"sc16">char</span><span class=3D"sc10">*</span><span class=
+=3D"sc11">scrambled</span><span class=3D"sc10">,</span><span class=3D"sc16"=
+>const</span><span class=3D"sc16">char</span><span class=3D"sc10">*</span><=
+span class=3D"sc11">message</span><span class=3D"sc10">,</span><span class=
+=3D"sc11">ulong</span><span class=3D"sc10">*</span><span class=3D"sc11">has=
+h_pass</span><span class=3D"sc10">)</span><span class=3D"sc10">{</span><spa=
+n class=3D"sc16">struct</span><span class=3D"sc11">rand_struct</span><span=
+ class=3D"sc11">rand_st</span><span class=3D"sc10">;</span><span class=3D"s=
+c11">ulong</span><span class=3D"sc11">hash_message</span><span class=3D"sc1=
+0">[</span><span class=3D"sc4">2</span><span class=3D"sc10">];</span><span=
+ class=3D"sc16">char</span><span class=3D"sc11">buff</span><span class=3D"s=
+c10">[</span><span class=3D"sc4">16</span><span class=3D"sc10">],*</span><s=
+pan class=3D"sc11">to</span><span class=3D"sc10">,</span><span class=3D"sc1=
+1">extra</span><span class=3D"sc10">;</span><span class=3D"sc1">/* Big enou=
+gh for check */</span><span class=3D"sc16">const</span><span class=3D"sc16"=
+>char</span><span class=3D"sc10">*</span><span class=3D"sc11">pos</span><sp=
+an class=3D"sc10">;</span><span class=3D"sc11">hash_password</span><span cl=
+ass=3D"sc10">(</span><span class=3D"sc11">hash_message</span><span class=3D=
+"sc10">,</span><span class=3D"sc11">message</span><span class=3D"sc10">,</s=
+pan><span class=3D"sc11">SCRAMBLE_LENGTH_323</span><span class=3D"sc10">);<=
+/span><span class=3D"sc11">randominit</span><span class=3D"sc10">(&amp;</sp=
+an><span class=3D"sc11">rand_st</span><span class=3D"sc10">,</span><span cl=
+ass=3D"sc11">hash_pass</span><span class=3D"sc10">[</span><span class=3D"sc=
+4">0</span><span class=3D"sc10">]</span><span class=3D"sc10">^</span><span=
+ class=3D"sc11">hash_message</span><span class=3D"sc10">[</span><span class=
+=3D"sc4">0</span><span class=3D"sc10">],</span><span class=3D"sc11">hash_pa=
+ss</span><span class=3D"sc10">[</span><span class=3D"sc4">1</span><span cla=
+ss=3D"sc10">]</span><span class=3D"sc10">^</span><span class=3D"sc11">hash_=
+message</span><span class=3D"sc10">[</span><span class=3D"sc4">1</span><spa=
+n class=3D"sc10">]);</span><span class=3D"sc11">to</span><span class=3D"sc1=
+0">=3D</span><span class=3D"sc11">buff</span><span class=3D"sc10">;</span><=
+span class=3D"sc11">DBUG_ASSERT</span><span class=3D"sc10">(</span><span cl=
+ass=3D"sc5">sizeof</span><span class=3D"sc10">(</span><span class=3D"sc11">=
+buff</span><span class=3D"sc10">)</span><span class=3D"sc10">&gt;</span><sp=
+an class=3D"sc11">SCRAMBLE_LENGTH_323</span><span class=3D"sc10">);</span><=
+span class=3D"sc5">for</span><span class=3D"sc10">(</span><span class=3D"sc=
+11">pos</span><span class=3D"sc10">=3D</span><span class=3D"sc11">scrambled=
+</span><span class=3D"sc10">;</span><span class=3D"sc10">*</span><span clas=
+s=3D"sc11">pos</span><span class=3D"sc10">&amp;&amp;</span><span class=3D"s=
+c11">to</span><span class=3D"sc10">&lt;</span><span class=3D"sc11">buff</sp=
+an><span class=3D"sc10">+</span><span class=3D"sc5">sizeof</span><span clas=
+s=3D"sc10">(</span><span class=3D"sc11">buff</span><span class=3D"sc10">)</=
+span><span class=3D"sc10">;</span><span class=3D"sc11">pos</span><span clas=
+s=3D"sc10">++)</span><span class=3D"sc10">*</span><span class=3D"sc11">to</=
+span><span class=3D"sc10">++=3D(</span><span class=3D"sc16">char</span><spa=
+n class=3D"sc10">)</span><span class=3D"sc10">(</span><span class=3D"sc11">=
+floor</span><span class=3D"sc10">(</span><span class=3D"sc11">my_rnd</span>=
+<span class=3D"sc10">(&amp;</span><span class=3D"sc11">rand_st</span><span=
+ class=3D"sc10">)*</span><span class=3D"sc4">31</span><span class=3D"sc10">=
+)+</span><span class=3D"sc4">64</span><span class=3D"sc10">);</span><span=
+ class=3D"sc5">if</span><span class=3D"sc10">(</span><span class=3D"sc11">p=
+os</span><span class=3D"sc10">-</span><span class=3D"sc11">scrambled</span>=
+<span class=3D"sc10">!=3D</span><span class=3D"sc11">SCRAMBLE_LENGTH_323</s=
+pan><span class=3D"sc10">)</span><span class=3D"sc5">return</span><span cla=
+ss=3D"sc4">1</span><span class=3D"sc10">;</span><span class=3D"sc11">extra<=
+/span><span class=3D"sc10">=3D(</span><span class=3D"sc16">char</span><span=
+ class=3D"sc10">)</span><span class=3D"sc10">(</span><span class=3D"sc11">f=
+loor</span><span class=3D"sc10">(</span><span class=3D"sc11">my_rnd</span><=
+span class=3D"sc10">(&amp;</span><span class=3D"sc11">rand_st</span><span=
+ class=3D"sc10">)*</span><span class=3D"sc4">31</span><span class=3D"sc10">=
+));</span><span class=3D"sc11">to</span><span class=3D"sc10">=3D</span><spa=
+n class=3D"sc11">buff</span><span class=3D"sc10">;</span><span class=3D"sc5=
+">while</span><span class=3D"sc10">(*</span><span class=3D"sc11">scrambled<=
+/span><span class=3D"sc10">)</span><span class=3D"sc10">{</span><span class=
+=3D"sc5">if</span><span class=3D"sc10">(*</span><span class=3D"sc11">scramb=
+led</span><span class=3D"sc10">++</span><span class=3D"sc10">!=3D</span><sp=
+an class=3D"sc10">(</span><span class=3D"sc16">char</span><span class=3D"sc=
+10">)</span><span class=3D"sc10">(*</span><span class=3D"sc11">to</span><sp=
+an class=3D"sc10">++</span><span class=3D"sc10">^</span><span class=3D"sc11=
+">extra</span><span class=3D"sc10">))</span><span class=3D"sc5">return</spa=
+n><span class=3D"sc4">1</span><span class=3D"sc10">;</span><span class=3D"s=
+c1">/* Wrong password */</span><span class=3D"sc10">}</span><span class=3D"=
+sc5">return</span><span class=3D"sc4">0</span><span class=3D"sc10">;</span>=
+<span class=3D"sc10">}</span></div>
+<div style=3D"float: none; clear: both;">=C2=A0</div>
+<p>2=E3=80=81=E6=9E=84=E9=80=A0=E4=B8=80=E4=B8=AA=E8=B6=B3=E5=A4=9F=E9=95=
+=BF=E7=9A=84passwd=E8=AE=A9strlen=E6=BA=A2=E5=87=BA=E3=80=82<br> =E5=87=BA=
+=E9=97=AE=E9=A2=98=E7=9A=84=E4=BB=A3=E7=A0=81=EF=BC=9A<br> uint passwd_len=
+=3D thd-&gt;client_capabilities &amp; CLIENT_SECURE_CONNECTION ?<br> *passw=
+d++ : strlen(passwd);<br> db=3D thd-&gt;client_capabilities &amp; CLIENT_CO=
+NNECT_WITH_DB ?<br> db + passwd_len + 1 : 0;<br> uint db_len=3D db ? strlen=
+(db) : 0;<br> <br> =E4=BF=AE=E6=AD=A3=E5=90=8E=EF=BC=9A<br> char *passwd=3D=
+ strend(user)+1;<br> =E3=80=82=E3=80=82=E3=80=82=E3=80=82<br> uint passwd_l=
+en=3D thd-&gt;client_capabilities &amp; CLIENT_SECURE_CONNECTION ?<br> (uch=
+ar)(*passwd++) : strlen(passwd);<br> db=3D thd-&gt;client_capabilities &amp=
+; CLIENT_CONNECT_WITH_DB ?<br> db + passwd_len + 1 : 0;<br> /* strlen() can=
+'t be easily deleted without changing protocol */<br> uint db_len=3D db ?=
+ strlen(db) : 0;<br> =E8=AE=BE=E6=83=B3=EF=BC=8C=E5=AE=A2=E6=88=B7=E7=AB=AF=
+=E5=8F=91=E6=9D=A5=E7=9A=84=E5=8C=85=E4=B8=AD=EF=BC=8C=E5=A6=82=E6=9E=9Ccli=
+ent_capabilities =E6=8C=87=E5=AE=9A CLIENT_SECURE_CONNECTION=E5=92=8C CLIEN=
+T_CONNECT_WITH_DB =E4=B8=A4=E4=B8=AA=E4=BD=8D=E7=9A=84=E5=80=BC<br>
+=20
+=E4=B8=94passwd=E7=9A=84=E7=AC=AC=E4=B8=80=E4=B8=AA=E5=AD=97=E8=8A=82=E5=A4=
+=A7=E4=BA=8E0x80=EF=BC=8C=E9=82=A3=E4=B9=88*passwd=E4=BD=9C=E4=B8=BA=E4=B8=
+=80=E4=B8=AAchar=E5=80=BC=E5=B0=86=E6=98=AF=E8=B4=9F=E7=9A=84=EF=BC=8C=E5=
+=9C=A8=E5=85=B6=E5=86=8D=E8=A2=AB=E8=BD=AC=E4=B8=BAuint=E7=9A=84=E6=97=B6=
+=E5=80=99=EF=BC=8C=E5=B0=86=E4=BC=9A=E6=98=AF=E4=B8=80=E4=B8=AA=E5=BE=88=E5=
+=A4=A7=E7=9A=84uint=E3=80=82=E7=84=B6=E5=90=8E
+db=E8=BF=99=E4=B8=AA=E6=8C=87=E9=92=88=E5=B0=B1=E4=BC=9A=E8=A2=AB=E6=8C=87=
+=E5=90=91=E5=88=AB=E5=A4=84=EF=BC=8C=E4=BB=8E=E8=80=8C=E5=AF=B9=E4=B8=80=E6=
+=AE=B5=E6=84=8F=E5=A4=96=E7=9A=84=E5=86=85=E5=AD=98=E8=BF=9B=E8=A1=8Cstrlen=
+=E3=80=82=E8=BF=99=E6=97=B6=E5=8F=AF=E8=83=BD=E4=BC=9A=E5=BC=95=E5=8F=91=E5=
+=86=85=E5=AD=98=E7=9A=84=E8=AF=BB=E9=94=99=E8=AF=AF=E3=80=82=E4=BB=8E=E8=80=
+=8C=E9=80=A0=E6=88=90=E6=8B=92=E7=BB=9D=E6=9C=8D=E5=8A=A1=E6=94=BB=E5=87=BB=
+=E3=80=82=E4=BD=86=E6=98=AF=E8=BF=99=E4=B8=AA=E4=B8=8D=E5=A4=AA=E5=AE=B9=E6=
+=98=93=EF=BC=8C=E5=9B=A0=E4=B8=BA
+passwd_len=E7=9A=84=E6=9C=89=E6=95=88=E8=8C=83=E5=9B=B4=E5=9C=A8[-128,127]=
+=E4=B9=8B=E9=97=B4=EF=BC=8C=E6=89=80=E4=BB=A5=E6=89=80=E8=83=BD=E9=80=A0=E6=
+=88=90=E7=9A=84=E5=8D=B1=E5=AE=B3=E5=BE=88=E5=B0=8F=E3=80=82<br> =E5=A6=82=
+=E6=9E=9Cpasswd_len=E4=B8=8D=E7=AD=89=E4=BA=8E-1,=E8=80=8C=E6=98=AF=E4=B8=
+=80=E4=B8=AA=E6=9B=B4=E5=A4=A7=E7=9A=84=E8=B4=9F=E6=95=B0=EF=BC=8C=E9=82=A3=
+=E4=B9=88strlen=E5=87=BD=E6=95=B0=E8=87=B3=E5=A4=9A=E4=BC=9A=E8=AF=BB=E5=88=
+=B0username=E5=90=8E=E7=9A=84=E9=82=A3=E4=B9=88'\0'=E5=B0=B1=E4=BC=9A=E7=BB=
+=88=E6=AD=A2=E3=80=82=E8=BF=99=E6=A0=B7=E5=81=9A=E7=9A=84=E5=A5=BD=E5=A4=84=
+=E6=98=AF=E5=8F=AF=E4=BB=A5=E5=80=9F=E5=8A=A9=E5=89=8D=E9=9D=A2=E9=82=A3=E6=
+=AE=B5=E5=A1=AB=E5=85=85=E5=8C=BA=E6=9D=A5=E8=AE=BE=E7=BD=AEdb name=E4=BB=
+=A5=E4=BE=9B=E5=90=8E=E9=9D=A2=E7=94=A8=EF=BC=8C=E7=BC=BA=E7=82=B9=E6=98=AF=
+=E6=AD=A4=E5=A4=84=E6=97=A0=E6=B3=95=E5=BC=95=E5=8F=91=E5=86=85=E5=AD=98=E9=
+=94=99=E8=AF=AF=E3=80=82<br>
+=20
+=E5=A6=82=E6=9E=9Cpasswd_len=E6=81=B0=E5=A5=BD=E8=AE=BE=E7=BD=AE=E4=B8=BA-1=
+,=E4=B8=94passwd_len=E5=90=8E=E9=9D=A2=E7=9A=84=E9=82=A3=E4=BA=9B=E5=AD=97=
+=E8=8A=82=EF=BC=88SCRAMBLE=EF=BC=89=E5=85=A8=E9=83=A8=E7=94=A8=E9=9D=9E0=E5=
+=80=BC=E5=A1=AB=E5=85=85=EF=BC=8C=E9=82=A3=E4=B9=88strlen=E5=B0=B1=E4=BC=9A=
+=E4=B8=80=E7=9B=B4=E6=9C=9D=E5=90=8E=E9=9D=A2
+=E8=AF=BB=E4=B8=8B=E5=8E=BB=E7=9B=B4=E5=88=B0=E6=89=BE=E5=88=B00=E3=80=82=
+=E4=BD=86=E6=98=AF=E7=94=B1=E4=BA=8Edb=E6=8C=87=E9=92=88=E6=8C=87=E5=90=91=
+=E7=9A=84=E6=98=AF=E5=A0=86=E4=B8=8A=EF=BC=8C=E8=80=8C=E4=B8=94=E5=9C=A8=E5=
+=BE=88=E5=A4=9A=E6=93=8D=E4=BD=9C=E7=B3=BB=E7=BB=9F=E4=B8=8B=EF=BC=8C=E5=A6=
+=82Freebsd=EF=BC=8C=E9=83=BD=E4=BC=9A=E6=8A=8A=E5=9C=A8=E5=A0=86=E4=B8=8A=
+=E5=88=86=E9=85=8D=E7=9A=84=E5=86=85=E5=AD=98=E5=9C=A8=E4=BA=A4=E7=BB=99=E7=
+=94=A8=E6=88=B7=E4=BD=BF=E7=94=A8=E5=89=8D=E9=83=BD=E5=88=9D=E5=A7=8B=E5=8C=
+=96=E6=88=900=EF=BC=8C=E6=89=80
+=E4=BB=A5=E2=80=A6=E2=80=A6=E6=83=B3=E8=AE=A9strlen=E8=AF=BB=E8=B6=8A=E7=95=
+=8C=E4=B9=9F=E5=BE=88=E9=9A=BE=E3=80=82</p>
+<p>=E8=80=8C=E6=8E=A5=E4=B8=8B=E6=9D=A5=E7=9A=84=E4=B8=80=E4=B8=AA=E5=85=B3=
+=E4=BA=8E=E8=BE=B9=E7=95=8C=E7=9A=84=E6=A3=80=E6=9F=A5<br> if (passwd + pas=
+swd_len + db_len &gt; (char *)net-&gt;read_pos + pkt_len) ...<br> =E4=B9=9F=
+=E5=9B=A0=E4=B8=BA=E6=95=B4=E6=95=B0=E6=BA=A2=E5=87=BA=E8=80=8C=E5=AF=BC=E8=
+=87=B4=E5=A4=B1=E6=95=88=E3=80=82<br>
+=20
+=E7=84=B6=E5=90=8E=E7=A8=8B=E5=BA=8F=E4=BC=9A=E4=B8=80=E7=9B=B4=E5=90=91=E4=
+=B8=8B=E6=89=A7=E8=A1=8C=E5=88=B0check_user,=E5=A6=82=E6=9E=9C=E7=BC=96=E8=
+=AF=91=E7=9A=84=E6=97=B6=E5=80=99=E5=AE=9A=E4=B9=89=E4=BA=86NO_EMBEDDED_ACC=
+ESS_CHECKS=EF=BC=8C=E9=82=A3=E4=B9=88=E4=B8=87=E4=BA=8B=E5=A4=A7=E5=90=89=
+=EF=BC=8C=E6=AD=A4=E6=97=B6=E7=9A=84db=E6=8C=87
+=E9=92=88=E4=BC=9A=E8=A2=AB=E7=AB=8B=E5=8D=B3=E4=BC=A0=E9=80=92=E7=BB=99mys=
+ql_change_db=E5=87=BD=E6=95=B0=EF=BC=8C=E5=93=A6=E2=80=A6=E2=80=A6=E2=80=A6=
+=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E5=90=A6=E5=88=99=E7=9A=84=E8=
+=AF=9D=EF=BC=8C=E5=B0=86=E4=BC=9A=E6=9C=89=E4=B8=80=E5=A4=84=E5=85=B3=E4=BA=
+=8Epassword_len=E7=9A=84=E6=A3=80=E6=9F=A5<br> if (passwd_len !=3D 0 &amp;&=
+amp;<br> passwd_len !=3D SCRAMBLE_LENGTH &amp;&amp;<br> passwd_len !=3D SCR=
+AMBLE_LENGTH_323)<br> DBUG_RETURN(ER_HANDSHAKE_ERROR);<br> server=E4=BC=9A=
+=E7=AB=8B=E5=88=BB=E7=BB=99=E5=AE=A2=E6=88=B7=E7=AB=AF=E6=8A=A5=E5=91=8A=E4=
+=B8=80=E4=B8=AAhandshare error=E8=80=8C=E7=BB=88=E6=AD=A2=E8=BF=9E=E6=8E=A5=
+=E3=80=82</p>
+<p>=EF=BC=88=E5=AE=8C=EF=BC=89</p>
+				<!-- end .content -->
+				<!-- <div style=3D"margin: 20px">
+					Old link: <a href=3D"http://blog.sunchangming.com/post/90750705102/mys=
+ql">http://blog.sunchangming.com/post/90750705102/mysql</a>				=09
+				</div>  -->
+				<hr>
+				<div style=3D"margin: 20px">
+					<div id=3D"disqus_thread"><iframe verticalscrolling=3D"no" horizontals=
+crolling=3D"no" src=3D"urn:snapshot-381484E2:file:///media/disk/Html/Html/D=
+atabase/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_fil=
+es/a." style=3D"width: 100% ! important; border: medium none ! important;=
+ overflow: hidden ! important; height: 543px ! important;" title=3D"Disqus"=
+ tabindex=3D"0" scrolling=3D"no" allowtransparency=3D"true" data-disqus-uid=
+=3D"2" id=3D"dsq-2" frameborder=3D"0" width=3D"100%"></iframe></div>
+				</div>
+				<script type=3D"text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+				<noscript>
+					Please enable JavaScript to view the <a
+						href=3D"http://disqus.com/?ref_noscript">comments powered by
+						Disqus.</a>
+				</noscript>
+			</div>		=09
+		</div>
+		<!-- end .container -->
+	=09
+<div id=3D"footer">
+	<div class=3D"container">
+		<div style=3D"float: left">
+			<address style=3D"display: inline">
+				<a href=3D"mailto:me@sunchangming.com">Changming Sun</a> copying right
+				(c) 2014 <a href=3D"https://www.sunchangming.com/contact_information.js=
+p">Contact Me</a>
+			</address>
+			<span>Last Update: 2014-10-27 20:29</span>
+		</div>
+		<div style=3D"float: right">
+			<!--  <a href=3D"http://www.twitter.com/changming_sun"><img
+		src=3D"/images/twitter_follow_bird-a.png"
+		alt=3D"Follow changming_sun on Twitter" /></a> -->
+		</div>
+		<div style=3D"clear: both;"></div>
+	</div>
+</div>			=09
+	</div>
+
+</body></html>
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-228DF2B2:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/bootstrap.css
+
+/* Effective stylesheet produced by snapshot save */
+html { font-family: sans-serif; }
+body { margin: 0px; }
+audio:not([controls]) { display: none; height: 0px; }
+a { background: transparent none repeat scroll 0px 0px; }
+a:active, a:hover { outline: 0px none; }
+h1 { font-size: 2em; margin: 0.67em 0px; }
+svg:not(:root) { overflow: hidden; }
+hr { box-sizing: content-box; height: 0px; }
+button, input, optgroup, select, textarea { color: inherit; font: inherit;=
+ margin: 0px; }
+button { overflow: visible; }
+button, select { text-transform: none; }
+button, html input[type=3D"button"], input[type=3D"reset"], input[type=3D"s=
+ubmit"] { cursor: pointer; }
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0px none; paddi=
+ng: 0px; }
+input { line-height: normal; }
+table { border-collapse: collapse; border-spacing: 0px; }
+td, th { padding: 0px; }
+@media print {
+  * { text-shadow: none ! important; color: rgb(0, 0, 0) ! important; backg=
+round: transparent none repeat scroll 0% 0% ! important; box-shadow: none=
+ ! important; }
+  a, a:visited { text-decoration: underline; }
+  a[href]::after { content: " (" attr(href) ")"; }
+  abbr[title]::after { content: " (" attr(title) ")"; }
+  a[href^=3D"javascript:"]::after, a[href^=3D"#"]::after { content: ""; }
+  tr, img { page-break-inside: avoid; }
+  p, h2, h3 {  }
+  h2, h3 { page-break-after: avoid; }
+  .navbar { display: none; }
+}
+* { box-sizing: border-box; }
+*::before, *::after { box-sizing: border-box; }
+html { font-size: 62.5%; }
+body { font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; font-size:=
+ 14px; line-height: 1.42857; color: rgb(51, 51, 51); background-color: rgb(=
+255, 255, 255); }
+input, button, select, textarea { font-family: inherit; font-size: inherit;=
+ line-height: inherit; }
+a { color: rgb(66, 139, 202); text-decoration: none; }
+a:hover, a:focus { color: rgb(42, 100, 150); text-decoration: underline; }
+a:focus { outline: thin dotted; outline-offset: -2px; }
+hr { margin-top: 20px; margin-bottom: 20px; border-width: 1px 0px 0px; bord=
+er-style: solid none none; border-color: rgb(238, 238, 238) -moz-use-text-c=
+olor -moz-use-text-color; -moz-border-top-colors: none; -moz-border-right-c=
+olors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none=
+; border-image: none; }
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 { font-family: inherit=
+; font-weight: 500; line-height: 1.1; color: inherit; }
+h1, .h1, h2, .h2, h3, .h3 { margin-top: 20px; margin-bottom: 10px; }
+h1, .h1 { font-size: 36px; }
+h2, .h2 { font-size: 30px; }
+h3, .h3 { font-size: 24px; }
+p { margin: 0px 0px 10px; }
+ul, ol { margin-top: 0px; margin-bottom: 10px; }
+blockquote footer::before, blockquote small::before, blockquote .small::bef=
+ore { content: "=E2=80=94=C2=A0"; }
+.blockquote-reverse footer::before, blockquote.pull-right footer::before,=
+ .blockquote-reverse small::before, blockquote.pull-right small::before, .b=
+lockquote-reverse .small::before, blockquote.pull-right .small::before { co=
+ntent: ""; }
+.blockquote-reverse footer::after, blockquote.pull-right footer::after, .bl=
+ockquote-reverse small::after, blockquote.pull-right small::after, .blockqu=
+ote-reverse .small::after, blockquote.pull-right .small::after { content:=
+ "=C2=A0=E2=80=94"; }
+blockquote::before, blockquote::after { content: ""; }
+address { margin-bottom: 20px; font-style: normal; line-height: 1.42857; }
+.container { margin-right: auto; margin-left: auto; padding-left: 15px; pad=
+ding-right: 15px; }
+@media (min-width: 768px) {
+  .container { width: 750px; }
+}
+@media (min-width: 992px) {
+  .container { width: 970px; }
+}
+@media (min-width: 1200px) {
+  .container { width: 1170px; }
+}
+table { max-width: 100%; background-color: transparent; }
+.table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody >=
+ tr:nth-child(2n+1) > th { background-color: rgb(249, 249, 249); }
+.form-control { display: block; width: 100%; height: 34px; padding: 6px 12p=
+x; font-size: 14px; line-height: 1.42857; color: rgb(85, 85, 85); backgroun=
+d-color: rgb(255, 255, 255); background-image: none; border: 1px solid rgb(=
+204, 204, 204); border-radius: 4px; box-shadow: 0px 1px 1px rgba(0, 0, 0,=
+ 0.075) inset; transition: border-color 0.15s ease-in-out 0s, box-shadow 0.=
+15s ease-in-out 0s; }
+.form-control:focus { border-color: rgb(102, 175, 233); outline: 0px none;=
+ box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102,=
+ 175, 233, 0.6); }
+.form-control::-moz-placeholder { color: rgb(153, 153, 153); opacity: 1; }
+.form-group { margin-bottom: 15px; }
+.btn { display: inline-block; margin-bottom: 0px; font-weight: 400; text-al=
+ign: center; vertical-align: middle; cursor: pointer; background-image: non=
+e; border: 1px solid transparent; white-space: nowrap; padding: 6px 12px;=
+ font-size: 14px; line-height: 1.42857; border-radius: 4px; -moz-user-selec=
+t: none; }
+.btn:focus, .btn:active:focus, .btn.active:focus { outline: thin dotted; ou=
+tline-offset: -2px; }
+.btn:hover, .btn:focus { color: rgb(51, 51, 51); text-decoration: none; }
+.btn:active, .btn.active { outline: 0px none; background-image: none; box-s=
+hadow: 0px 3px 5px rgba(0, 0, 0, 0.125) inset; }
+.btn-success { color: rgb(255, 255, 255); background-color: rgb(92, 184, 92=
+); border-color: rgb(76, 174, 76); }
+.btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success.a=
+ctive, .open .dropdown-toggle.btn-success { color: rgb(255, 255, 255); back=
+ground-color: rgb(71, 164, 71); border-color: rgb(57, 132, 57); }
+.btn-success:active, .btn-success.active, .open .dropdown-toggle.btn-succes=
+s { background-image: none; }
+.collapse { display: none; }
+@font-face {
+  font-family: "Glyphicons Halflings";
+  src: url("urn:not-loaded:file:///media/disk/Html/Html/Database/mysql/refe=
+rence/mysql/fonts/glyphicons-halflings-regular.eot?#iefix") format("embedde=
+d-opentype"), url("urn:not-loaded:file:///media/disk/Html/Html/Database/mys=
+ql/reference/mysql/fonts/glyphicons-halflings-regular.woff") format("woff")=
+, url("urn:not-loaded:file:///media/disk/Html/Html/Database/mysql/reference=
+/mysql/fonts/glyphicons-halflings-regular.ttf") format("truetype"), url("ur=
+n:not-loaded:file:///media/disk/Html/Html/Database/mysql/reference/mysql/fo=
+nts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("=
+svg");
+}
+.glyphicon-asterisk::before { content: "*"; }
+.glyphicon-plus::before { content: "+"; }
+.glyphicon-euro::before { content: "=E2=82=AC"; }
+.glyphicon-minus::before { content: "=E2=88=92"; }
+.glyphicon-cloud::before { content: "=E2=98=81"; }
+.glyphicon-envelope::before { content: "=E2=9C=89"; }
+.glyphicon-pencil::before { content: "=E2=9C=8F"; }
+.glyphicon-glass::before { content: "=EE=80=81"; }
+.glyphicon-music::before { content: "=EE=80=82"; }
+.glyphicon-search::before { content: "=EE=80=83"; }
+.glyphicon-heart::before { content: "=EE=80=85"; }
+.glyphicon-star::before { content: "=EE=80=86"; }
+.glyphicon-star-empty::before { content: "=EE=80=87"; }
+.glyphicon-user::before { content: "=EE=80=88"; }
+.glyphicon-film::before { content: "=EE=80=89"; }
+.glyphicon-th-large::before { content: "=EE=80=90"; }
+.glyphicon-th::before { content: "=EE=80=91"; }
+.glyphicon-th-list::before { content: "=EE=80=92"; }
+.glyphicon-ok::before { content: "=EE=80=93"; }
+.glyphicon-remove::before { content: "=EE=80=94"; }
+.glyphicon-zoom-in::before { content: "=EE=80=95"; }
+.glyphicon-zoom-out::before { content: "=EE=80=96"; }
+.glyphicon-off::before { content: "=EE=80=97"; }
+.glyphicon-signal::before { content: "=EE=80=98"; }
+.glyphicon-cog::before { content: "=EE=80=99"; }
+.glyphicon-trash::before { content: "=EE=80=A0"; }
+.glyphicon-home::before { content: "=EE=80=A1"; }
+.glyphicon-file::before { content: "=EE=80=A2"; }
+.glyphicon-time::before { content: "=EE=80=A3"; }
+.glyphicon-road::before { content: "=EE=80=A4"; }
+.glyphicon-download-alt::before { content: "=EE=80=A5"; }
+.glyphicon-download::before { content: "=EE=80=A6"; }
+.glyphicon-upload::before { content: "=EE=80=A7"; }
+.glyphicon-inbox::before { content: "=EE=80=A8"; }
+.glyphicon-play-circle::before { content: "=EE=80=A9"; }
+.glyphicon-repeat::before { content: "=EE=80=B0"; }
+.glyphicon-refresh::before { content: "=EE=80=B1"; }
+.glyphicon-list-alt::before { content: "=EE=80=B2"; }
+.glyphicon-lock::before { content: "=EE=80=B3"; }
+.glyphicon-flag::before { content: "=EE=80=B4"; }
+.glyphicon-headphones::before { content: "=EE=80=B5"; }
+.glyphicon-volume-off::before { content: "=EE=80=B6"; }
+.glyphicon-volume-down::before { content: "=EE=80=B7"; }
+.glyphicon-volume-up::before { content: "=EE=80=B8"; }
+.glyphicon-qrcode::before { content: "=EE=80=B9"; }
+.glyphicon-barcode::before { content: "=EE=81=80"; }
+.glyphicon-tag::before { content: "=EE=81=81"; }
+.glyphicon-tags::before { content: "=EE=81=82"; }
+.glyphicon-book::before { content: "=EE=81=83"; }
+.glyphicon-bookmark::before { content: "=EE=81=84"; }
+.glyphicon-print::before { content: "=EE=81=85"; }
+.glyphicon-camera::before { content: "=EE=81=86"; }
+.glyphicon-font::before { content: "=EE=81=87"; }
+.glyphicon-bold::before { content: "=EE=81=88"; }
+.glyphicon-italic::before { content: "=EE=81=89"; }
+.glyphicon-text-height::before { content: "=EE=81=90"; }
+.glyphicon-text-width::before { content: "=EE=81=91"; }
+.glyphicon-align-left::before { content: "=EE=81=92"; }
+.glyphicon-align-center::before { content: "=EE=81=93"; }
+.glyphicon-align-right::before { content: "=EE=81=94"; }
+.glyphicon-align-justify::before { content: "=EE=81=95"; }
+.glyphicon-list::before { content: "=EE=81=96"; }
+.glyphicon-indent-left::before { content: "=EE=81=97"; }
+.glyphicon-indent-right::before { content: "=EE=81=98"; }
+.glyphicon-facetime-video::before { content: "=EE=81=99"; }
+.glyphicon-picture::before { content: "=EE=81=A0"; }
+.glyphicon-map-marker::before { content: "=EE=81=A2"; }
+.glyphicon-adjust::before { content: "=EE=81=A3"; }
+.glyphicon-tint::before { content: "=EE=81=A4"; }
+.glyphicon-edit::before { content: "=EE=81=A5"; }
+.glyphicon-share::before { content: "=EE=81=A6"; }
+.glyphicon-check::before { content: "=EE=81=A7"; }
+.glyphicon-move::before { content: "=EE=81=A8"; }
+.glyphicon-step-backward::before { content: "=EE=81=A9"; }
+.glyphicon-fast-backward::before { content: "=EE=81=B0"; }
+.glyphicon-backward::before { content: "=EE=81=B1"; }
+.glyphicon-play::before { content: "=EE=81=B2"; }
+.glyphicon-pause::before { content: "=EE=81=B3"; }
+.glyphicon-stop::before { content: "=EE=81=B4"; }
+.glyphicon-forward::before { content: "=EE=81=B5"; }
+.glyphicon-fast-forward::before { content: "=EE=81=B6"; }
+.glyphicon-step-forward::before { content: "=EE=81=B7"; }
+.glyphicon-eject::before { content: "=EE=81=B8"; }
+.glyphicon-chevron-left::before { content: "=EE=81=B9"; }
+.glyphicon-chevron-right::before { content: "=EE=82=80"; }
+.glyphicon-plus-sign::before { content: "=EE=82=81"; }
+.glyphicon-minus-sign::before { content: "=EE=82=82"; }
+.glyphicon-remove-sign::before { content: "=EE=82=83"; }
+.glyphicon-ok-sign::before { content: "=EE=82=84"; }
+.glyphicon-question-sign::before { content: "=EE=82=85"; }
+.glyphicon-info-sign::before { content: "=EE=82=86"; }
+.glyphicon-screenshot::before { content: "=EE=82=87"; }
+.glyphicon-remove-circle::before { content: "=EE=82=88"; }
+.glyphicon-ok-circle::before { content: "=EE=82=89"; }
+.glyphicon-ban-circle::before { content: "=EE=82=90"; }
+.glyphicon-arrow-left::before { content: "=EE=82=91"; }
+.glyphicon-arrow-right::before { content: "=EE=82=92"; }
+.glyphicon-arrow-up::before { content: "=EE=82=93"; }
+.glyphicon-arrow-down::before { content: "=EE=82=94"; }
+.glyphicon-share-alt::before { content: "=EE=82=95"; }
+.glyphicon-resize-full::before { content: "=EE=82=96"; }
+.glyphicon-resize-small::before { content: "=EE=82=97"; }
+.glyphicon-exclamation-sign::before { content: "=EE=84=81"; }
+.glyphicon-gift::before { content: "=EE=84=82"; }
+.glyphicon-leaf::before { content: "=EE=84=83"; }
+.glyphicon-fire::before { content: "=EE=84=84"; }
+.glyphicon-eye-open::before { content: "=EE=84=85"; }
+.glyphicon-eye-close::before { content: "=EE=84=86"; }
+.glyphicon-warning-sign::before { content: "=EE=84=87"; }
+.glyphicon-plane::before { content: "=EE=84=88"; }
+.glyphicon-calendar::before { content: "=EE=84=89"; }
+.glyphicon-random::before { content: "=EE=84=90"; }
+.glyphicon-comment::before { content: "=EE=84=91"; }
+.glyphicon-magnet::before { content: "=EE=84=92"; }
+.glyphicon-chevron-up::before { content: "=EE=84=93"; }
+.glyphicon-chevron-down::before { content: "=EE=84=94"; }
+.glyphicon-retweet::before { content: "=EE=84=95"; }
+.glyphicon-shopping-cart::before { content: "=EE=84=96"; }
+.glyphicon-folder-close::before { content: "=EE=84=97"; }
+.glyphicon-folder-open::before { content: "=EE=84=98"; }
+.glyphicon-resize-vertical::before { content: "=EE=84=99"; }
+.glyphicon-resize-horizontal::before { content: "=EE=84=A0"; }
+.glyphicon-hdd::before { content: "=EE=84=A1"; }
+.glyphicon-bullhorn::before { content: "=EE=84=A2"; }
+.glyphicon-bell::before { content: "=EE=84=A3"; }
+.glyphicon-certificate::before { content: "=EE=84=A4"; }
+.glyphicon-thumbs-up::before { content: "=EE=84=A5"; }
+.glyphicon-thumbs-down::before { content: "=EE=84=A6"; }
+.glyphicon-hand-right::before { content: "=EE=84=A7"; }
+.glyphicon-hand-left::before { content: "=EE=84=A8"; }
+.glyphicon-hand-up::before { content: "=EE=84=A9"; }
+.glyphicon-hand-down::before { content: "=EE=84=B0"; }
+.glyphicon-circle-arrow-right::before { content: "=EE=84=B1"; }
+.glyphicon-circle-arrow-left::before { content: "=EE=84=B2"; }
+.glyphicon-circle-arrow-up::before { content: "=EE=84=B3"; }
+.glyphicon-circle-arrow-down::before { content: "=EE=84=B4"; }
+.glyphicon-globe::before { content: "=EE=84=B5"; }
+.glyphicon-wrench::before { content: "=EE=84=B6"; }
+.glyphicon-tasks::before { content: "=EE=84=B7"; }
+.glyphicon-filter::before { content: "=EE=84=B8"; }
+.glyphicon-briefcase::before { content: "=EE=84=B9"; }
+.glyphicon-fullscreen::before { content: "=EE=85=80"; }
+.glyphicon-dashboard::before { content: "=EE=85=81"; }
+.glyphicon-paperclip::before { content: "=EE=85=82"; }
+.glyphicon-heart-empty::before { content: "=EE=85=83"; }
+.glyphicon-link::before { content: "=EE=85=84"; }
+.glyphicon-phone::before { content: "=EE=85=85"; }
+.glyphicon-pushpin::before { content: "=EE=85=86"; }
+.glyphicon-usd::before { content: "=EE=85=88"; }
+.glyphicon-gbp::before { content: "=EE=85=89"; }
+.glyphicon-sort::before { content: "=EE=85=90"; }
+.glyphicon-sort-by-alphabet::before { content: "=EE=85=91"; }
+.glyphicon-sort-by-alphabet-alt::before { content: "=EE=85=92"; }
+.glyphicon-sort-by-order::before { content: "=EE=85=93"; }
+.glyphicon-sort-by-order-alt::before { content: "=EE=85=94"; }
+.glyphicon-sort-by-attributes::before { content: "=EE=85=95"; }
+.glyphicon-sort-by-attributes-alt::before { content: "=EE=85=96"; }
+.glyphicon-unchecked::before { content: "=EE=85=97"; }
+.glyphicon-expand::before { content: "=EE=85=98"; }
+.glyphicon-collapse-down::before { content: "=EE=85=99"; }
+.glyphicon-collapse-up::before { content: "=EE=85=A0"; }
+.glyphicon-log-in::before { content: "=EE=85=A1"; }
+.glyphicon-flash::before { content: "=EE=85=A2"; }
+.glyphicon-log-out::before { content: "=EE=85=A3"; }
+.glyphicon-new-window::before { content: "=EE=85=A4"; }
+.glyphicon-record::before { content: "=EE=85=A5"; }
+.glyphicon-save::before { content: "=EE=85=A6"; }
+.glyphicon-open::before { content: "=EE=85=A7"; }
+.glyphicon-saved::before { content: "=EE=85=A8"; }
+.glyphicon-import::before { content: "=EE=85=A9"; }
+.glyphicon-export::before { content: "=EE=85=B0"; }
+.glyphicon-send::before { content: "=EE=85=B1"; }
+.glyphicon-floppy-disk::before { content: "=EE=85=B2"; }
+.glyphicon-floppy-saved::before { content: "=EE=85=B3"; }
+.glyphicon-floppy-remove::before { content: "=EE=85=B4"; }
+.glyphicon-floppy-save::before { content: "=EE=85=B5"; }
+.glyphicon-floppy-open::before { content: "=EE=85=B6"; }
+.glyphicon-credit-card::before { content: "=EE=85=B7"; }
+.glyphicon-transfer::before { content: "=EE=85=B8"; }
+.glyphicon-cutlery::before { content: "=EE=85=B9"; }
+.glyphicon-header::before { content: "=EE=86=80"; }
+.glyphicon-compressed::before { content: "=EE=86=81"; }
+.glyphicon-earphone::before { content: "=EE=86=82"; }
+.glyphicon-phone-alt::before { content: "=EE=86=83"; }
+.glyphicon-tower::before { content: "=EE=86=84"; }
+.glyphicon-stats::before { content: "=EE=86=85"; }
+.glyphicon-sd-video::before { content: "=EE=86=86"; }
+.glyphicon-hd-video::before { content: "=EE=86=87"; }
+.glyphicon-subtitles::before { content: "=EE=86=88"; }
+.glyphicon-sound-stereo::before { content: "=EE=86=89"; }
+.glyphicon-sound-dolby::before { content: "=EE=86=90"; }
+.glyphicon-sound-5-1::before { content: "=EE=86=91"; }
+.glyphicon-sound-6-1::before { content: "=EE=86=92"; }
+.glyphicon-sound-7-1::before { content: "=EE=86=93"; }
+.glyphicon-copyright-mark::before { content: "=EE=86=94"; }
+.glyphicon-registration-mark::before { content: "=EE=86=95"; }
+.glyphicon-cloud-download::before { content: "=EE=86=97"; }
+.glyphicon-cloud-upload::before { content: "=EE=86=98"; }
+.glyphicon-tree-conifer::before { content: "=EE=86=99"; }
+.glyphicon-tree-deciduous::before { content: "=EE=88=80"; }
+.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle)=
+ { border-radius: 0px; }
+.btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) { bord=
+er-bottom-right-radius: 0px; border-top-right-radius: 0px; }
+.btn-group > .btn:last-child:not(:first-child), .btn-group > .dropdown-togg=
+le:not(:first-child) { border-bottom-left-radius: 0px; border-top-left-radi=
+us: 0px; }
+.btn-group > .btn-group:not(:first-child):not(:last-child) > .btn { border-=
+radius: 0px; }
+.btn-group-vertical > .btn:not(:first-child):not(:last-child) { border-radi=
+us: 0px; }
+.btn-group-vertical > .btn:first-child:not(:last-child) { border-top-right-=
+radius: 4px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0p=
+x; }
+.btn-group-vertical > .btn:last-child:not(:first-child) { border-bottom-lef=
+t-radius: 4px; border-top-right-radius: 0px; border-top-left-radius: 0px;=
+ }
+.btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > .btn=
+ { border-radius: 0px; }
+.btn-group-vertical > .btn-group:first-child:not(:last-child) > .btn:last-c=
+hild, .btn-group-vertical > .btn-group:first-child:not(:last-child) > .drop=
+down-toggle { border-bottom-right-radius: 0px; border-bottom-left-radius:=
+ 0px; }
+.btn-group-vertical > .btn-group:last-child:not(:first-child) > .btn:first-=
+child { border-top-right-radius: 0px; border-top-left-radius: 0px; }
+.input-group-addon:not(:first-child):not(:last-child), .input-group-btn:not=
+(:first-child):not(:last-child), .input-group .form-control:not(:first-chil=
+d):not(:last-child) { border-radius: 0px; }
+.input-group .form-control:first-child, .input-group-addon:first-child, .in=
+put-group-btn:first-child > .btn, .input-group-btn:first-child > .btn-group=
+ > .btn, .input-group-btn:first-child > .dropdown-toggle, .input-group-btn:=
+last-child > .btn:not(:last-child):not(.dropdown-toggle), .input-group-btn:=
+last-child > .btn-group:not(:last-child) > .btn { border-bottom-right-radiu=
+s: 0px; border-top-right-radius: 0px; }
+.input-group .form-control:last-child, .input-group-addon:last-child, .inpu=
+t-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group >=
+ .btn, .input-group-btn:last-child > .dropdown-toggle, .input-group-btn:fir=
+st-child > .btn:not(:first-child), .input-group-btn:first-child > .btn-grou=
+p:not(:first-child) > .btn { border-bottom-left-radius: 0px; border-top-lef=
+t-radius: 0px; }
+.nav { margin-bottom: 0px; padding-left: 0px; list-style: outside none none=
+; }
+.nav > li { position: relative; display: block; }
+.nav > li > a { position: relative; display: block; padding: 10px 15px; }
+.nav > li > a:hover, .nav > li > a:focus { text-decoration: none; backgroun=
+d-color: rgb(238, 238, 238); }
+.navbar { position: relative; min-height: 50px; margin-bottom: 20px; border=
+: 1px solid transparent; }
+@media (min-width: 768px) {
+  .navbar { border-radius: 4px; }
+}
+@media (min-width: 768px) {
+  .navbar-header { float: left; }
+}
+.navbar-collapse { max-height: 340px; overflow-x: visible; padding-right:=
+ 15px; padding-left: 15px; border-top: 1px solid transparent; box-shadow:=
+ 0px 1px 0px rgba(255, 255, 255, 0.1) inset; }
+@media (min-width: 768px) {
+  .navbar-collapse { width: auto; border-top: 0px none; box-shadow: none;=
+ }
+  .navbar-collapse.collapse { display: block ! important; height: auto ! im=
+portant; padding-bottom: 0px; overflow: visible ! important; }
+}
+.navbar-brand { float: left; padding: 15px; font-size: 18px; line-height:=
+ 20px; height: 50px; }
+.navbar-brand:hover, .navbar-brand:focus { text-decoration: none; }
+.navbar-toggle { position: relative; float: right; margin-right: 15px; padd=
+ing: 9px 10px; margin-top: 8px; margin-bottom: 8px; background-color: trans=
+parent; background-image: none; border: 1px solid transparent; border-radiu=
+s: 4px; }
+.navbar-toggle:focus { outline: 0px none; }
+.navbar-toggle .icon-bar { display: block; width: 22px; height: 2px; border=
+-radius: 1px; }
+.navbar-toggle .icon-bar + .icon-bar { margin-top: 4px; }
+@media (min-width: 768px) {
+  .navbar-toggle { display: none; }
+}
+.navbar-nav { margin: 7.5px -15px; }
+.navbar-nav > li > a { padding-top: 10px; padding-bottom: 10px; line-height=
+: 20px; }
+@media (min-width: 768px) {
+  .navbar-nav { float: left; margin: 0px; }
+  .navbar-nav > li { float: left; }
+  .navbar-nav > li > a { padding-top: 15px; padding-bottom: 15px; }
+}
+@media (min-width: 768px) {
+  .navbar-right { float: right ! important; }
+}
+.navbar-form { margin: 8px -15px; padding: 10px 15px; border-top: 1px solid=
+ transparent; border-bottom: 1px solid transparent; box-shadow: 0px 1px 0px=
+ rgba(255, 255, 255, 0.1) inset, 0px 1px 0px rgba(255, 255, 255, 0.1); }
+@media (min-width: 768px) {
+  .navbar-form .form-group { display: inline-block; margin-bottom: 0px; ver=
+tical-align: middle; }
+  .navbar-form .form-control { display: inline-block; width: auto; vertical=
+-align: middle; }
+}
+@media (max-width: 767px) {
+  .navbar-form .form-group { margin-bottom: 5px; }
+}
+@media (min-width: 768px) {
+  .navbar-form { width: auto; border: 0px none; margin-left: 0px; margin-ri=
+ght: 0px; padding-top: 0px; padding-bottom: 0px; box-shadow: none; }
+  .navbar-form.navbar-right:last-child { margin-right: -15px; }
+}
+.navbar-default { background-color: rgb(248, 248, 248); border-color: rgb(2=
+31, 231, 231); }
+.navbar-default .navbar-brand { color: rgb(119, 119, 119); }
+.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {=
+ color: rgb(94, 94, 94); background-color: transparent; }
+.navbar-default .navbar-nav > li > a { color: rgb(119, 119, 119); }
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav >=
+ li > a:focus { color: rgb(51, 51, 51); background-color: transparent; }
+.navbar-default .navbar-toggle { border-color: rgb(221, 221, 221); }
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus=
+ { background-color: rgb(221, 221, 221); }
+.navbar-default .navbar-toggle .icon-bar { background-color: rgb(136, 136,=
+ 136); }
+.navbar-default .navbar-collapse, .navbar-default .navbar-form { border-col=
+or: rgb(231, 231, 231); }
+.breadcrumb > li + li::before { content: "/=C2=A0"; padding: 0px 5px; color=
+: rgb(204, 204, 204); }
+@keyframes progress-bar-stripes {
+  0% { background-position: 40px 0px; }
+  100% { background-position: 0px 0px; }
+}
+.popover > .arrow, .popover > .arrow::after { position: absolute; display:=
+ block; width: 0px; height: 0px; border-color: transparent; border-style:=
+ solid; }
+.popover > .arrow::after { border-width: 10px; content: ""; }
+.popover.top > .arrow::after { content: " "; bottom: 1px; margin-left: -10p=
+x; border-bottom-width: 0px; border-top-color: rgb(255, 255, 255); }
+.popover.right > .arrow::after { content: " "; left: 1px; bottom: -10px; bo=
+rder-left-width: 0px; border-right-color: rgb(255, 255, 255); }
+.popover.bottom > .arrow::after { content: " "; top: 1px; margin-left: -10p=
+x; border-top-width: 0px; border-bottom-color: rgb(255, 255, 255); }
+.popover.left > .arrow::after { content: " "; right: 1px; border-right-widt=
+h: 0px; border-left-color: rgb(255, 255, 255); bottom: -10px; }
+.carousel-control .icon-prev::before { content: "=E2=80=B9"; }
+.carousel-control .icon-next::before { content: "=E2=80=BA"; }
+.clearfix::before, .clearfix::after, .container::before, .container::after,=
+ .container-fluid::before, .container-fluid::after, .row::before, .row::aft=
+er, .form-horizontal .form-group::before, .form-horizontal .form-group::aft=
+er, .btn-toolbar::before, .btn-toolbar::after, .btn-group-vertical > .btn-g=
+roup::before, .btn-group-vertical > .btn-group::after, .nav::before, .nav::=
+after, .navbar::before, .navbar::after, .navbar-header::before, .navbar-hea=
+der::after, .navbar-collapse::before, .navbar-collapse::after, .pager::befo=
+re, .pager::after, .panel-body::before, .panel-body::after, .modal-footer::=
+before, .modal-footer::after { content: " "; display: table; }
+.clearfix::after, .container::after, .container-fluid::after, .row::after,=
+ .form-horizontal .form-group::after, .btn-toolbar::after, .btn-group-verti=
+cal > .btn-group::after, .nav::after, .navbar::after, .navbar-header::after=
+, .navbar-collapse::after, .pager::after, .panel-body::after, .modal-footer=
+::after { clear: both; }
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-27D43092:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/bootstrap-theme.css
+
+/* Effective stylesheet produced by snapshot save */
+.btn-default, .btn-primary, .btn-success, .btn-info, .btn-warning, .btn-dan=
+ger { text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.2); box-shadow: 0px 1px 0px=
+ rgba(255, 255, 255, 0.15) inset, 0px 1px 1px rgba(0, 0, 0, 0.075); }
+.btn-default:active, .btn-primary:active, .btn-success:active, .btn-info:ac=
+tive, .btn-warning:active, .btn-danger:active, .btn-default.active, .btn-pr=
+imary.active, .btn-success.active, .btn-info.active, .btn-warning.active,=
+ .btn-danger.active { box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.125) inset;=
+ }
+.btn:active, .btn.active { background-image: none; }
+.btn-success { background-image: linear-gradient(to bottom, rgb(92, 184, 92=
+) 0px, rgb(65, 150, 65) 100%); background-repeat: repeat-x; border-color:=
+ rgb(62, 143, 62); }
+.btn-success:hover, .btn-success:focus { background-color: rgb(65, 150, 65)=
+; background-position: 0px -15px; }
+.btn-success:active, .btn-success.active { background-color: rgb(65, 150,=
+ 65); border-color: rgb(62, 143, 62); }
+.navbar-default { background-image: linear-gradient(to bottom, rgb(255, 255=
+, 255) 0px, rgb(248, 248, 248) 100%); background-repeat: repeat-x; border-r=
+adius: 4px; box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1p=
+x 5px rgba(0, 0, 0, 0.075); }
+.navbar-brand, .navbar-nav > li > a { text-shadow: 0px 1px 0px rgba(255, 25=
+5, 255, 0.25); }
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-AF7BAB00:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/prettify.css
+
+/* Effective stylesheet produced by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/html;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-08FAB461:http://generated.test/generated-content
+
+<html><head>
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3DUTF-8"></=
+head><body></body></html>
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/html;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-381484E2:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a.
+
+<!DOCTYPE html><!--[if IE 8]><html lang=3D"en" dir=3D"ltr" class=3D"ie8"><!=
+[endif]--><!--[if IE 9]><html lang=3D"en" dir=3D"ltr" class=3D"ie9"><![endi=
+f]--><!--[if gt IE 9]><!--><html class=3D"js no-touch localstorage sessions=
+torage contenteditable use-opacity-transitions" dir=3D"ltr" lang=3D"en"><!-=
+-<![endif]--><head>
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3DUTF-8">
+<meta http-equiv=3D"content-type" content=3D"text/html; charset=3DUTF-8">
+    <title>Disqus Comments</title>
+
+   =20
+    <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=
+=3D1, maximum-scale=3D1, user-scalable=3Dno">
+    <meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
+
+   =20
+    <style><!--
+/* Effective stylesheet produced by snapshot save */
+html { overflow: hidden; }
+--></style>
+
+<link href=3D"urn:snapshot-F26CD9F4:file:///media/disk/Html/Html/Database/m=
+ysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data=
+/lounge.css" rel=3D"stylesheet"><script src=3D"urn:snapshot-9EC06138:file:/=
+//media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%=
+81%E5%8D%8F%E8%AE%AE_files/a_data/common.js" data-requiremodule=3D"common.b=
+undle" data-requirecontext=3D"_" async=3D"" charset=3D"utf-8" type=3D"text/=
+javascript"></script><script src=3D"urn:snapshot-A4796676:file:///media/dis=
+k/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F=
+%E8%AE%AE_files/a_data/lounge_002.js" data-requiremodule=3D"lounge.bundle"=
+ data-requirecontext=3D"_" async=3D"" charset=3D"utf-8" type=3D"text/javasc=
+ript"></script><script src=3D"urn:snapshot-8961890C:file:///media/disk/Html=
+/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE=
+%AE_files/a_data/ga.js" data-requiremodule=3D"https://ssl.google-analytics.=
+com/ga.js" data-requirecontext=3D"_" async=3D"" charset=3D"utf-8" type=3D"t=
+ext/javascript"></script><style id=3D"css_1414453862059"></style><!-- base=
+ href=3D"https://disqus.com/embed/comments/?base=3Ddefault&disqus_version=
+=3Dffbf1a08&f=3Dsunchangming&t_u=3Dhttp%3A%2F%2Fblog.sunchangming.com%2Fpos=
+t%2F90750705102&t_d=3D%0A%09%09%09%09%09MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8=
+%AE%AE%0A%09%09%09%09&t_t=3D%0A%09%09%09%09%09MySQL%E8%AE%A4%E8%AF%81%E5%8D=
+%8F%E8%AE%AE%0A%09%09%09%09&s_o=3Ddefault" --><script charset=3D"UTF-8" asy=
+nc=3D"" src=3D"urn:snapshot-F86F9D58:file:///media/disk/Html/Html/Database/=
+mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_dat=
+a/event.js"></script><link href=3D"urn:snapshot-94EC8425:file:///media/disk=
+/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%=
+E8%AE%AE_files/a_data/discovery.css" rel=3D"stylesheet"><script src=3D"urn:=
+snapshot-D16782CD:file:///media/disk/Html/Html/Database/mysql/reference/mys=
+ql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/discovery.js" dat=
+a-requiremodule=3D"discovery/main" data-requirecontext=3D"_" async=3D"" cha=
+rset=3D"utf-8" type=3D"text/javascript"></script><link href=3D"urn:snapshot=
+-9F9509FD:file:///next/styles/lounge.12077ed830b02c9a41cb8c0a0a202c18.css"=
+ rel=3D"stylesheet"><script src=3D"urn:snapshot-C5FCD649:file:///next/confi=
+g.js" data-requiremodule=3D"remote/config" data-requirecontext=3D"_" async=
+=3D"" charset=3D"utf-8" type=3D"text/javascript"></script><script src=3D"ur=
+n:snapshot-D5E9438E:file:///next/common.e67f4dd82cf8aa46b00bb61786919163.js=
+" data-requiremodule=3D"common.bundle" data-requirecontext=3D"_" async=3D""=
+ charset=3D"utf-8" type=3D"text/javascript"></script></head>
+<body>
+   =20
+    <!--[if lte IE 8]>
+<script src=3D"//a.disquscdn.com/1413230218/build/vendor/ie8.js"></script>
+<![endif]-->
+<!--[if IE 9]>
+<script src=3D"//a.disquscdn.com/1413230218/build/vendor/ie9.js"></script>
+<![endif]-->
+
+   =20
+<script type=3D"text/json" id=3D"disqus-urls"><!--
+--></script>
+
+   =20
+
+    <div id=3D"error" style=3D"display:none; text-align: center">
+        <p>We were unable to load Disqus. If you are a moderator please see=
+ our <a href=3D"http://docs.disqus.com/help/83/"> troubleshooting guide</a>=
+. </p>
+    </div>
+
+   =20
+    <script type=3D"text/json" id=3D"disqus-forumData"><!--
+--></script>
+
+   =20
+    <script type=3D"text/json" id=3D"disqus-threadData"><!--
+--></script>
+
+   =20
+
+    <div id=3D"fixed-content"></div>
+
+    <script src=3D"urn:snapshot-02292A5C:file:///media/disk/Html/Html/Datab=
+ase/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a=
+_data/lounge.js" id=3D"bootstrap-script" data-app=3D"lounge"></script>
+
+
+<div id=3D"layout" data-tracking-area=3D"layout">
+
+<div id=3D"discovery-top" data-tracking-area=3D"discovery-north"></div>
+
+<div id=3D"onboard" data-tracking-area=3D"onboard"></div>
+
+<div style=3D"display: none;" id=3D"highlighted-post" data-tracking-area=3D=
+"highlighted" class=3D"highlighted-post"></div>
+
+<header id=3D"main-nav" data-tracking-area=3D"main-nav">
+<nav class=3D"nav nav-primary">
+<ul>
+<li class=3D"tab-conversation active">
+<a href=3D"#" data-role=3D"post-count" class=3D"publisher-nav-color" data-n=
+av=3D"conversation"><span class=3D"comment-count">
+0 comments
+</span>
+
+<span class=3D"comment-count-placeholder">
+Comments
+</span>
+</a>
+</li>
+<li class=3D"tab-community">
+<a href=3D"#" class=3D"publisher-nav-color" data-nav=3D"community" id=3D"co=
+mmunity-tab">
+
+<span class=3D"community-name">
+<strong>sunchangming</strong>
+
+</span>
+
+<strong class=3D"community-name-placeholder">Community</strong>
+</a>
+</li>
+<li class=3D"dropdown user-menu" data-role=3D"logout"><a href=3D"#" class=
+=3D"dropdown-toggle" data-toggle=3D"dropdown">
+<span class=3D"dropdown-toggle-wrapper">
+
+<span>
+Login
+</span>
+
+</span> <span class=3D"caret"></span>
+</a>
+<ul class=3D"dropdown-menu">
+
+
+<li>
+<a href=3D"#" data-action=3D"auth:disqus">Disqus</a>
+</li>
+<li>
+<a href=3D"#" data-action=3D"auth:facebook">Facebook</a>
+</li>
+<li>
+<a href=3D"#" data-action=3D"auth:twitter">Twitter</a>
+</li>
+<li>
+<a href=3D"#" data-action=3D"auth:google">Google</a>
+</li>
+
+
+
+</ul>
+</li>
+<li class=3D"notification-menu" data-role=3D"notification-menu"><a href=3D"=
+#" class=3D"notification-container" data-nav=3D"dashboard">
+<span class=3D"notification-icon icon-comment"></span>
+<span class=3D"notification-count" data-role=3D"notification-count"></span>
+</a>
+</li>
+</ul>
+</nav>
+</header>
+
+
+
+<section id=3D"conversation" data-role=3D"main" data-tracking-area=3D"main">
+<div class=3D"nav nav-secondary" data-tracking-area=3D"secondary-nav">
+<ul>
+<li data-role=3D"post-sort" class=3D"dropdown sorting">
+<a href=3D"#" class=3D"dropdown-toggle" data-nav=3D"conversation" data-togg=
+le=3D"dropdown">
+Sort by Best
+
+
+<span class=3D"caret"></span>
+</a>
+<ul class=3D"dropdown-menu">
+<li class=3D"selected">
+<a href=3D"#" data-action=3D"sort" data-sort=3D"popular">Best<i aria-hidden=
+=3D"true" class=3D"icon-checkmark"></i></a>
+</li>
+
+<li>
+<a href=3D"#" data-action=3D"sort" data-sort=3D"desc">Newest<i aria-hidden=
+=3D"true" class=3D"icon-checkmark"></i></a>
+</li>
+
+<li>
+<a href=3D"#" data-action=3D"sort" data-sort=3D"asc">Oldest<i aria-hidden=
+=3D"true" class=3D"icon-checkmark"></i></a>
+</li>
+</ul>
+</li>
+
+<li id=3D"thread-votes" class=3D"favorite pull-right">
+<!-- rendered dynamically -->
+<div data-role=3D"vote-button" class=3D"thread-likes"><a href=3D"#" data-ac=
+tion=3D"upvote" title=3D"Favorite this discussion">
+<span class=3D"label">Favorite</span>
+<span class=3D"icon-star"></span>
+<span class=3D"icon-check"></span>
+</a>
+</div></li>
+
+<li id=3D"thread-share-menu" class=3D"dropdown share-menu">
+<a href=3D"#" class=3D"dropdown-toggle" data-toggle=3D"dropdown" title=3D"S=
+hare">
+<span class=3D"label">Share</span> <span class=3D"icon-export"></span>
+</a>
+<ul class=3D"share-menu dropdown-menu pull-right">
+<li class=3D"share">Share this discussion on
+<ul>
+<li class=3D"twitter">
+<a data-action=3D"share:twitter" href=3D"#">Twitter</a>
+</li>
+<li class=3D"facebook">
+<a data-action=3D"share:facebook" href=3D"#">Facebook</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+
+<div id=3D"posts">
+<div id=3D"form"><form class=3D"reply expanded">
+<div class=3D"postbox">
+<div role=3D"alert"></div>
+<div class=3D"avatar">
+<span class=3D"user">
+<img data-role=3D"user-avatar" src=3D"file:///media/disk/Html/Html/Database=
+/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_da=
+ta/noavatar92.png" alt=3D"Avatar">
+</span>
+</div>
+
+<div class=3D"textarea-wrapper" data-role=3D"textarea" dir=3D"auto"><div><s=
+pan class=3D"placeholder">Start the discussion=E2=80=A6</span><div aria-lab=
+el=3D"Start the discussion=E2=80=A6" style=3D"overflow: auto; max-height:=
+ 350px;" data-role=3D"editable" aria-multiline=3D"true" role=3D"textbox" ta=
+bindex=3D"0" class=3D"textarea" contenteditable=3D"true"><p><br></p></div><=
+div style=3D"display: none;"><ul class=3D"suggestions">
+<li class=3D"header">
+<h5>in this conversation</h5>
+</li>
+</ul>
+</div></div>
+<div data-role=3D"drag-drop-placeholder" class=3D"media-drag-hover" style=
+=3D"display: none">
+<div class=3D"drag-text">
+=E2=AC=87 Drag and drop your images here to upload them.
+</div>
+</div>
+<div class=3D"media-preview empty" data-role=3D"media-preview">
+<ul data-role=3D"media-legacy-list"></ul>
+<ul data-role=3D"media-rich-list"></ul>
+<div class=3D"media-expanded empty" data-role=3D"media-preview-expanded">
+<img src=3D"data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAA=
+AICTAEAOw=3D=3D" data-role=3D"media-preview-expanded-image" alt=3D"Media pr=
+eview placeholder">
+</div>
+</div>
+<div class=3D"edit-alert" role=3D"postbox-alert"></div>
+<div class=3D"post-actions">
+<ul class=3D"wysiwyg">
+<li>
+<a href=3D"#" tabindex=3D"-1" data-action=3D"attach" class=3D"attach" title=
+=3D"Upload Images"><span>Attach</span></a>
+<input data-role=3D"media-upload" tabindex=3D"-1" class=3D"regular" accept=
+=3D"image/*" type=3D"file">
+</li>
+</ul>
+</div>
+</div>
+
+<div data-role=3D"login-form"><div><section class=3D"auth-section logged-ou=
+t">
+<div class=3D"connect">
+<h6>Sign in with</h6>
+<ul data-role=3D"login-menu" class=3D"services login-buttons">
+
+
+<li class=3D"auth-disqus">
+<button type=3D"button" data-action=3D"auth:disqus" title=3D"Disqus"><i cla=
+ss=3D"icon-disqus"></i></button>
+</li>
+<li class=3D"auth-facebook">
+<button type=3D"button" data-action=3D"auth:facebook" title=3D"Facebook"><i=
+ class=3D"icon-facebook-circle"></i></button>
+</li>
+<li class=3D"auth-twitter">
+<button type=3D"button" data-action=3D"auth:twitter" title=3D"Twitter"><i=
+ class=3D"icon-twitter-circle"></i></button>
+</li>
+<li class=3D"auth-google">
+<button type=3D"button" data-action=3D"auth:google" title=3D"Google"><i cla=
+ss=3D"icon-google-plus-circle"></i></button>
+</li>
+<li class=3D"auth-signup">
+<button type=3D"button" data-action=3D"auth:disqus" title=3D"Disqus">Sign=
+ up for Disqus</button>
+</li>
+</ul>
+</div>
+<div class=3D"guest">
+<h6 class=3D"guest-form-title">
+or pick a name
+</h6>
+
+<div class=3D"what-is-disqus help-icon">
+<div id=3D"rules" class=3D"tooltip show">
+<h3>Disqus is a conversation network</h3>
+<ul>
+<li><span>Disqus never moderates or censors. The rules on this community ar=
+e its own.</span></li>
+<li><span>Your email is safe with us. It's only used for moderation and opt=
+ional notifications.</span></li>
+<li><span>Don't be a jerk or do anything illegal. Everything is easier that=
+ way.</span></li>
+</ul>
+<p class=3D"clearfix"><a href=3D"http://docs.disqus.com/kb/terms-and-polici=
+es/" class=3D"btn btn-small" target=3D"_blank">Read full terms and conditio=
+ns</a></p>
+</div>
+</div>
+
+<p class=3D"input-wrapper">
+<input dir=3D"auto" placeholder=3D"Name" name=3D"display_name" id=3D"view13=
+1_display_name" maxlength=3D"30" type=3D"text">
+</p>
+
+<div class=3D"guest-details  expanded" data-role=3D"guest-details">
+<p class=3D"input-wrapper">
+<input dir=3D"auto" placeholder=3D"Email" name=3D"email" id=3D"view131_emai=
+l" type=3D"email">
+</p>
+
+<p class=3D"input-wrapper">
+<input dir=3D"auto" placeholder=3D"Password" name=3D"password" id=3D"view13=
+1_password" type=3D"password">
+</p>
+<div class=3D"guest-checkbox">
+<label>
+<input name=3D"author-guest" type=3D"checkbox">
+I'd rather post as guest
+</label>
+</div>
+</div>
+</div>
+<div class=3D"proceed">
+<button type=3D"submit" class=3D"btn submit" aria-label=3D"Post"><span clas=
+s=3D"icon-proceed"></span></button>
+<button type=3D"submit" class=3D"btn next" aria-label=3D"Next"><span class=
+=3D"icon-proceed"></span></button>
+</div>
+</section>
+
+</div></div>
+</div>
+</form></div>
+
+<button class=3D"alert realtime" style=3D"display: none" data-role=3D"realt=
+ime-notification">
+</button>
+
+<div id=3D"no-posts" style=3D"">Be the first to comment.</div>
+
+<ul id=3D"post-list" class=3D"post-list"></ul>
+
+<div class=3D"load-more" data-role=3D"more" style=3D"display:none">
+<a href=3D"#" data-action=3D"more-posts" class=3D"btn">Load more comments</=
+a>
+</div>
+</div>
+
+</section>
+
+<section id=3D"community" data-tracking-area=3D"main" style=3D"display:none=
+" data-role=3D"main" data-outbound-link=3D"embed:community">
+</section>
+
+<section id=3D"dashboard" style=3D"display:none" data-role=3D"main" data-tr=
+acking-area=3D"main">
+<p style=3D"line-height: 1.4">Nothing for you here ... yet. But as you comm=
+ent with Disqus and follow
+other Disqus users, you will start to receive notifications here, as well=
+ as a personalized
+feed of activity by you and the people you follow. So get out there and par=
+ticipate in
+some discussions!</p>
+</section>
+
+<section id=3D"profile" style=3D"display:none" data-role=3D"main" data-trac=
+king-area=3D"main">
+</section>
+
+<div id=3D"discovery" data-tracking-area=3D"discovery-south"></div>
+
+<div id=3D"footer" data-tracking-area=3D"footer">
+<ul>
+<li class=3D"logo"><a href=3D"http://disqus.com/" title=3D"Powered by Disqu=
+s">Powered by Disqus</a></li>
+<li id=3D"thread-subscribe-button" class=3D"email">=20
+<div class=3D"default">
+<a href=3D"#" data-action=3D"subscribe" title=3D"Subscribe and get email up=
+dates from this discussion"><i aria-hidden=3D"true" class=3D"icon-mail"></i=
+><span class=3D"clip">Subscribe</span> <i aria-hidden=3D"true" class=3D"ico=
+n-checkmark"></i></a>
+</div>
+<div class=3D"form">
+<div class=3D"input-wrapper"><input id=3D"thread-subscribe-email" placehold=
+er=3D"yourname@email.com" type=3D"email"></div>
+</div>
+</li>
+<li class=3D"install">
+<a href=3D"https://disqus.com/websites/?utm_source=3Dsunchangming&amp;utm_m=
+edium=3DDisqus-Footer" target=3D"_blank">
+<i aria-hidden=3D"true" class=3D"icon-disqus"></i>
+<span class=3D"clip">Add Disqus to your site</span>
+</a>
+</li>
+<li class=3D"privacy">
+<a href=3D"https://help.disqus.com/customer/portal/articles/1657951?utm_sou=
+rce=3Ddisqus&amp;utm_medium=3Dembed-footer&amp;utm_content=3Dprivacy-btn"=
+ target=3D"_blank">
+<i aria-hidden=3D"true" class=3D"icon-privacy"></i>
+<span class=3D"clip">Privacy</span>
+</a>
+</li>
+</ul>
+</div>
+</div><img src=3D"file:///media/disk/Html/Html/Database/mysql/reference/mys=
+ql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/tpidc8vq250h3huea=
+61" style=3D"display: none;"></body></html>
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/noavatar92.png
+
+iVBORw0KGgoAAAANSUhEUgAAAFwAAABcCAMAAADUMSJqAAAABGdBTUEAALGPC/xhBQAAAAFzUkdC
+AK7OHOkAAAAJUExUReLn6pOep7nByBHPIL4AAAEJSURBVGje7djLDsMgDETRzPz/R/e5KFVCMfhK
+UDGrqosTi6rB9nHs7CTGtl65f0qWVSbP/5bffoqtq1Bl5xSvekh7SJc4XeJ0idPdiBu0u3S1Byy8
+o3SJK90h3GDhwdIdxD0NLoHnQuIO454El8Bz2fjGJ8HX/Yei+Lqv3IWvOfT2Z/sWtONie0W0yw3o
+s00WrXrvpEtOc+wcyk7Qv859dLNAbi0qfM42h9wUnfm5K7SPJZqz5Z1/2+OWC9fnF8AWN2ul66bb
+oucBocYl9IB4C938QuigW8vXQJzwG/bxo3SFz6CvdKXFUNmnupJD2kXxInWRukhdpC5Sh3ChuFDc
+JP7QOVwobhLXDeKxEJVzB1B6AAAAAElFTkSuQmCC
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/tpidc8vq250h3huea61
+
+R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw==
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-F26CD9F4:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/lounge.css
+
+/* Effective stylesheet produced by snapshot save */
+body, html { margin: 0px; padding: 0px; }
+a, abbr, acronym, address, blockquote, button, caption, cite, code, dd, del=
+, dfn, dl, dt, em, fieldset, form, h1, h2, h3, h4, h5, h6, img, label, lege=
+nd, li, ol, p, pre, q, s, samp, small, strike, strong, sub, sup, table, tbo=
+dy, td, tfoot, th, thead, tr, tt, ul, var { margin: 0px; padding: 0px; bord=
+er: 0px none; font-weight: 400; font-style: normal; font-size: 100%; line-h=
+eight: 1; font-family: inherit; }
+ol, ul { list-style: outside none none; }
+blockquote::after, blockquote::before, q::after, q::before { content: "";=
+ }
+html { overflow-y: scroll; font-size: 100%; }
+a:active, a:hover { outline: 0px none; }
+article, aside, details, figcaption, figure, footer, header, hgroup, nav,=
+ section { display: block; }
+audio:not([controls]) { display: none; }
+img { border: 0px none; }
+button, input, select, textarea { font-size: 100%; margin: 0px; vertical-al=
+ign: baseline; }
+button, input { line-height: normal; }
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0px none; paddi=
+ng: 0px; }
+button, input[type=3D"button"], input[type=3D"reset"], input[type=3D"submit=
+"] { cursor: pointer; }
+.clearfix::after, .clearfix::before { display: table; content: ""; line-hei=
+ght: 0; }
+.clearfix::after { clear: both; }
+body { margin: 0px; line-height: 20px; }
+.show { display: block; }
+.btn { margin-bottom: 0px; font-size: 14px; text-align: center; vertical-al=
+ign: middle; cursor: pointer; box-shadow: 0px 1px 0px rgba(255, 255, 255,=
+ 0.2) inset, 0px 1px 2px rgba(0, 0, 0, 0.05); }
+.btn.active, .btn.disabled, .btn:active, .btn:hover, .btn[disabled] { color=
+: rgba(29, 47, 58, 0.6); background-color: rgb(230, 230, 230); }
+.btn:hover { text-decoration: none; transition: background-position 0.1s li=
+near 0s; }
+.btn:focus { outline: thin dotted rgb(51, 51, 51); outline-offset: -2px; }
+.btn.active, .btn:active { outline: 0px none; box-shadow: 0px 2px 4px rgba(=
+0, 0, 0, 0.15) inset, 0px 1px 2px rgba(0, 0, 0, 0.05); }
+.btn-small { padding: 2px 10px; font-size: 11.9px; border-radius: 3px; }
+button.btn::-moz-focus-inner, input.btn[type=3D"submit"]::-moz-focus-inner=
+ { padding: 0px; border: 0px none; }
+.dropdown { position: relative; }
+.dropdown-toggle:active, .open .dropdown-toggle { outline: 0px none; }
+.caret { display: inline-block; width: 0px; height: 0px; text-indent: -9999=
+9px; vertical-align: top; border-left: 4px solid transparent; border-right:=
+ 4px solid transparent; border-top: 4px solid rgb(0, 0, 0); opacity: 0.3;=
+ content: "=E2=86=93"; }
+.dropdown .caret { margin-top: 8px; margin-left: 2px; }
+.dropdown:hover .caret, .open.dropdown .caret { opacity: 1; }
+.dropdown-menu { position: absolute; top: 100%; left: 0px; float: left; dis=
+play: none; max-width: 220px; padding: 4px 0px; margin: 0px; list-style: ou=
+tside none none; }
+.dropdown-menu a { display: block; clear: both; font-weight: 500; line-heig=
+ht: 18px; white-space: nowrap; }
+.dropdown-menu .active > a, .dropdown-menu .active > a:hover, .dropdown-men=
+u li > a:hover { color: rgb(255, 255, 255); text-decoration: none; backgrou=
+nd-color: rgb(46, 159, 255); }
+* { box-sizing: border-box; }
+body { background: transparent none repeat scroll 0px 0px; color: rgb(63,=
+ 69, 73); font-family: "Helvetica Neue",arial,sans-serif; font-size: 15px; }
+a:active, a:hover { text-decoration: none; }
+a:focus { outline: 0px none; }
+a { text-decoration: none; color: rgb(40, 140, 228); transition: color 0.1s=
+ linear 0s; }
+a:hover { color: rgb(25, 119, 202); }
+button {  }
+button.alert { width: 100%; display: block; }
+button::-moz-focus-inner { border: 0px none; }
+strong, strong a { font-weight: 700; }
+p { margin: 0px 0px 1.5em; }
+h3 { font-weight: 700; font-size: 16px; margin: 0px 0px 1.5em; }
+h5 { font-weight: 700; font-size: 11px; color: rgba(0, 39, 59, 0.5); margin=
+: 0px 0px 10px; line-height: 1; }
+h6 { font-weight: 700; font-size: 11px; color: rgba(0, 39, 59, 0.5); text-t=
+ransform: uppercase; margin: 0px 0px 10px; line-height: 1; }
+.alert { background: rgba(0, 0, 0, 0.5) none repeat scroll 0% 0%; padding:=
+ 10px 35px 10px 14px; border: medium none; border-radius: 4px; color: rgb(2=
+55, 255, 255); font-weight: 700; line-height: 20px; font-size: 13px; text-s=
+hadow: none; }
+.alert.info, .alert.realtime { background: rgb(46, 159, 255) none repeat sc=
+roll 0% 0%; }
+.notice::after, .notice::before { display: table; content: ""; line-height:=
+ 0; }
+.notice::after { clear: both; }
+.btn { border: medium none; background: rgba(29, 47, 58, 0.6) none repeat=
+ scroll 0% 0%; display: inline-block; padding: 10px 16px; color: rgb(255,=
+ 255, 255); line-height: 1.1; border-radius: 3px; font-weight: 500; transit=
+ion: background 0.2s ease 0s; text-shadow: none; }
+.btn:hover { background: rgba(29, 47, 58, 0.7) none repeat scroll 0% 0%; co=
+lor: rgb(255, 255, 255); }
+.btn.active, .btn:active { transition: none 0s ease 0s ; background: rgb(46=
+, 159, 255) none repeat scroll 0% 0%; }
+.btn.btn-small { font-size: 12px; padding: 8px 10px; background-position:=
+ 0px -10px; }
+.btn.btn-small:hover { background-position: 0px -40px; }
+.follow-btn.private .icon-lock::before { position: relative; top: 1px; }
+@font-face {
+  font-family: "icons";
+  font-style: normal;
+  font-weight: 400;
+  src: url("urn:not-loaded:file:///next/assets/font/icons.47c6a1ac947c34190=
+cda1cafe989ed8b.eot?#iefix") format("embedded-opentype"), url("urn:download=
+-error:file:///next/assets/font/icons.97d61cac9a78751596d392b8e8de61eb.woff=
+") format("woff"), url("urn:download-error:file:///next/assets/font/icons.2=
+4a68536d9a127f69c497961e1f4531a.ttf") format("truetype"), url("urn:not-load=
+ed:file:///next/assets/font/icons.0b218037050ff39f0edf49278219b7ca.svg?#ico=
+ns") format("svg");
+}
+[class*=3D" icon-"]::before, [class^=3D"icon-"]::before { font-family: icon=
+s; font-style: normal; font-weight: 400; font-variant: normal; text-transfo=
+rm: none; line-height: 1; }
+.icon-arrow-2::before { content: "=E2=96=B3"; }
+.icon-arrow-back::before { content: "=E2=9D=B0"; }
+.icon-arrow-forward::before { content: "=E2=9D=B1"; }
+.icon-arrow::before { content: "=E2=96=BD"; }
+.icon-bell::before { content: "=E2=AC=A6"; }
+.icon-camera::before { content: "=E2=8C=BC"; }
+.icon-cancel::before { content: "=E2=9C=95"; }
+.icon-checkmark::before { content: "=E2=9C=94"; }
+.icon-clock::before { content: "=E2=8F=B2"; }
+.icon-cog::before { content: "=E2=9A=99"; }
+.icon-comment::before { content: "=EE=98=83"; }
+.icon-discovery::before { content: "=E2=98=84"; }
+.icon-disqus::before { content: "d"; }
+.icon-expand-corners::before { content: "=E2=A4=A2"; }
+.icon-expand::before { content: "=E2=8F=8D"; }
+.icon-export::before { content: "=E2=A4=A4"; }
+.icon-facebook-circle::before { content: "F"; }
+.icon-facebook::before { content: "f"; }
+.icon-feed::before { content: "r"; }
+.icon-flag::before { content: "=E2=9A=91"; }
+.icon-forward::before { content: ">"; }
+.icon-google-plus-circle::before { content: "G"; }
+.icon-google-plus::before { content: "g"; }
+.icon-images::before { content: "=E2=9B=BA"; }
+.icon-link::before { content: "=C2=BB"; }
+.icon-location::before { content: "=E2=8D=91"; }
+.icon-lock::before { content: "=F0=9F=94=92"; }
+.icon-mail::before { content: "=E2=9C=89"; }
+.icon-map::before { content: "=E2=97=AB"; }
+.icon-megaphone::before { content: "=EE=98=80"; }
+.icon-menu::before { content: "=E2=98=B0"; }
+.icon-minus::before { content: "-"; }
+.icon-music::before { content: "=E2=99=AB"; }
+.icon-pause::before { content: "=E2=9A=8C"; }
+.icon-pencil-large::before { content: "=E2=9C=8E"; }
+.icon-pencil::before { content: "=E2=9C=8F"; }
+.icon-photo::before { content: "=E2=97=B1"; }
+.icon-pin::before { content: "=E2=86=99"; }
+.icon-play::before { content: "=E2=96=BA"; }
+.icon-plus::before { content: "+"; }
+.icon-privacy::before { content: "=EE=98=81"; }
+.icon-proceed::before { content: "=E2=86=92"; }
+.icon-remove::before { content: "=E2=9C=96"; }
+.icon-reply-large::before { content: "=E2=86=A9"; }
+.icon-reply::before { content: "<"; }
+.icon-search::before { content: "=E2=9A=B2"; }
+.icon-share::before { content: "=E2=A5=85"; }
+.icon-star::before { content: "=E2=98=85"; }
+.icon-trophy::before { content: "=F0=9F=8F=86"; }
+.icon-twitter-circle::before { content: "T"; }
+.icon-twitter::before { content: "t"; }
+.icon-video::before { content: "=E2=96=B6"; }
+.icon-warning::before { content: "=E2=9A=A0"; }
+.icon-write::before { content: "=E2=A7=84"; }
+#layout { overflow: hidden; }
+#layout > section { min-height: 125px; }
+#no-posts { opacity: 0.6; line-height: 107px; text-align: center; }
+.pull-left, .pull-right { float: right ! important; }
+.alert { margin-bottom: 24px; }
+.load-more { margin: 0px 0px 24px; }
+.load-more .btn { font-size: 13px; font-weight: 500; display: block; text-a=
+lign: center; padding: 11px 14px; }
+@keyframes rotate-loading {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.input-wrapper input { transition: all 0.2s linear 0s; background: rgb(255,=
+ 255, 255) none repeat scroll 0% 0%; border: 2px solid rgba(0, 39, 59, 0.2)=
+; padding: 5px 9px; margin: 0px; border-radius: 4px; width: 100%; font-size=
+: 13px; height: 32px; }
+.input-wrapper input:focus { border: 2px solid rgba(0, 39, 59, 0.35); outli=
+ne: 0px none; }
+.input-wrapper .input-label::after { content: ""; position: absolute; left:=
+ 15px; top: -5px; width: 10px; height: 10px; background-color: inherit; tra=
+nsform: rotate(45deg); }
+.post-actions { visibility: hidden; opacity: 0; background: rgb(246, 248,=
+ 249) none repeat scroll 0% 0%; border-radius: 0px 0px 2px 2px; border-top:=
+ 2px solid rgba(0, 39, 59, 0.2); border-color: rgba(0, 39, 59, 0.2); positi=
+on: absolute; bottom: 0px; left: 0px; right: 0px; height: 36px; }
+.post-actions .wysiwyg { position: absolute; top: 2px; left: 2px; }
+.post-actions .wysiwyg li { float: left; position: relative; }
+.post-actions .wysiwyg li input.regular[type=3D"file"] { visibility: hidden=
+; }
+.post-actions .wysiwyg li a { display: block; height: 30px; width: 34px; po=
+sition: relative; }
+.post-actions .wysiwyg li a span { display: block; position: absolute; top:=
+ 9px; left: 10px; text-indent: -9999em; opacity: 0.65; background-image: ur=
+l("urn:download-error:file:///next/assets/img/sprite.aeedc7f7f09ce3c6628247=
+d4307c6f94.png"); background-position: 0px -18px; width: 14px; height: 14px=
+; }
+.post-actions .wysiwyg li a.attach span { background-position: 0px -32px;=
+ }
+.post-actions .wysiwyg li:hover a span { opacity: 1; }
+.post-actions .wysiwyg li:hover a.attach span { background-position: 0px -1=
+8px; }
+.post-actions .wysiwyg li.active a span, .post-actions .wysiwyg li:active=
+ a span { opacity: 1; }
+.textarea-wrapper { position: relative; margin: 0px 0px 0px 60px; backgroun=
+d: rgb(255, 255, 255) none repeat scroll 0% 0%; border: 2px solid rgba(0,=
+ 39, 59, 0.2); border-radius: 4px; }
+.textarea-wrapper:focus { border: 2px solid rgba(0, 39, 59, 0.35); }
+.textarea-wrapper::after, .textarea-wrapper::before { display: table; conte=
+nt: ""; line-height: 0; }
+.textarea-wrapper::after { clear: both; }
+.textarea-wrapper .textarea { color: rgb(63, 69, 73); cursor: text; resize:=
+ none; border: 0px none; display: block; padding: 6px 10px 8px; margin: 0px=
+; width: 100%; min-height: 44px; height: auto; line-height: 1.4; font-size:=
+ 14px; font-family: "Helvetica Neue",arial,sans-serif; overflow-y: scroll;=
+ transition: all 0.15s ease-in-out 0s; }
+.textarea-wrapper .textarea div, .textarea-wrapper .textarea p { margin: 0p=
+x; line-height: 1.4; }
+.textarea-wrapper .textarea:focus { outline: 0px none; }
+.textarea-wrapper .placeholder { color: rgba(0, 39, 59, 0.35); line-height:=
+ 30px; font-size: 18px; position: absolute; top: 7px; left: 10px; right: 9p=
+x; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; cursor:=
+ text; }
+.postbox { position: relative; }
+.postbox .media-drag-hover { position: absolute; overflow: hidden; top: 0px=
+; left: 0px; right: 0px; bottom: 0px; border-radius: 3px; background-color:=
+ rgba(0, 0, 0, 0.4); text-align: center; font-weight: 700; z-index: 2000;=
+ color: rgb(255, 255, 255); }
+.postbox .media-drag-hover .drag-text { border: 3px dashed rgb(255, 255, 25=
+5); padding: 12px; position: absolute; top: 50%; left: 0px; right: 0px; mar=
+gin: -22px 30px 0px; text-align: center; border-radius: 6px; height: 45px; }
+.postbox .media-preview { transition: padding-bottom 0.15s ease-in-out 0s;=
+ background: rgba(16, 48, 68, 0.03) none repeat scroll 0% 0%; border-top:=
+ 2px solid rgba(0, 39, 59, 0.2); border-color: rgba(0, 39, 59, 0.2); paddin=
+g: 10px 0px 8px; margin: 20px 0px 0px; }
+.postbox .media-preview .empty, .postbox .media-preview.empty { display: no=
+ne; }
+.postbox .media-preview .media-expanded { max-height: 300px; margin: 8px 8p=
+x 0px; position: relative; text-align: center; }
+.postbox .media-preview .media-expanded img { max-height: 300px; max-width:=
+ 100%; }
+.postbox .media-preview ul { display: inline; }
+.postbox section { padding: 14px 0px 0px; border-radius: 0px 0px 3px 3px;=
+ }
+.postbox section .guest-form-title { display: inline-block; }
+.postbox section label { font-size: 13px; color: rgba(0, 39, 59, 0.5); }
+.postbox section .what-is-disqus { cursor: pointer; display: inline-block;=
+ position: relative; }
+.postbox section .what-is-disqus:hover #rules { opacity: 1; visibility: vis=
+ible ! important; }
+.postbox section #rules { opacity: 0; visibility: hidden; text-indent: 0px;=
+ z-index: 1001; position: absolute; width: 300px; left: 8px; top: 20px; mar=
+gin-left: -155px; padding: 18px 14px 4px; }
+.postbox section #rules h3 { color: rgba(0, 39, 59, 0.5); padding: 0px 4px;=
+ margin: 0px 0px 14px; font-weight: 700; }
+.postbox section #rules ul { list-style: outside none disc; padding: 0px 0p=
+x 0px 20px; margin: 0px 0px 14px; }
+.postbox section #rules ul li { color: rgba(0, 39, 59, 0.5); list-style: ou=
+tside none disc; margin: 0px 0px 6px; line-height: 1.4; font-size: 13px; }
+.postbox section #rules ul li span { color: rgba(29, 47, 58, 0.6); }
+.postbox section #rules .btn { font-size: 12px; padding: 10px; margin-botto=
+m: -2px; display: block; text-align: center; }
+.avatar { float: left; }
+.avatar img { display: block; width: 48px; height: 48px; border-radius: 3px=
+; }
+.avatar .user { display: block; position: relative; z-index: 100; backgroun=
+d: rgba(0, 39, 59, 0.2) none repeat scroll 0% 0%; border-radius: 3px; }
+#form .avatar, #top-threads .avatar, #top-users .avatar, .notifications .av=
+atar, .tooltip .avatar { position: absolute; left: 0px; transition: left 0.=
+2s linear 0s; }
+#form .postbox { margin: 0px 0px 24px; }
+@media (max-width: 500px) {
+  #form .avatar { display: none; }
+  #form .textarea-wrapper { margin-left: 0px ! important; }
+}
+.expanded .postbox .textarea { margin-bottom: 36px; }
+.expanded .postbox .media-preview { padding-bottom: 42px; }
+.expanded .postbox .post-actions { visibility: visible; opacity: 1; }
+.expanded .postbox .auth-section { display: block; }
+.auth-section { display: none; position: relative; margin: 0px 0px 0px 60px=
+; z-index: 200; }
+.auth-section .proceed { position: absolute; right: 0px; top: 37px; font-si=
+ze: 12px; }
+.auth-section .proceed .btn { height: 32px; padding: 9px 0px; width: 60px;=
+ text-align: center; }
+.auth-section .proceed .next { display: none; }
+.auth-section .connect { position: absolute; }
+.auth-section .connect .services { margin: 0px 0px 18px; }
+.auth-section .connect .services::after, .auth-section .connect .services::=
+before { display: table; content: ""; line-height: 0; }
+.auth-section .connect .services::after { clear: both; }
+.auth-section .connect .services li { float: left; margin: 0px 3px 0px 0px;=
+ }
+.auth-section .connect .services button { font-size: 11px; display: block;=
+ width: 34px; height: 34px; text-indent: -9999em; opacity: 0.9; }
+.auth-section .connect .services button:hover { opacity: 1; }
+.auth-section .connect .services button { background: transparent none repe=
+at scroll 0px 0px; }
+.auth-section .connect .services .auth-twitter button { background-image:=
+ url("urn:download-error:file:///next/assets/img/sprite.aeedc7f7f09ce3c6628=
+247d4307c6f94.png"); background-position: 0px -148px; width: 34px; height:=
+ 34px; }
+.auth-section .connect .services .auth-facebook button { background-image:=
+ url("urn:download-error:file:///next/assets/img/sprite.aeedc7f7f09ce3c6628=
+247d4307c6f94.png"); background-position: 0px -80px; width: 34px; height:=
+ 34px; }
+.auth-section .connect .services .auth-google button { background-image: ur=
+l("urn:download-error:file:///next/assets/img/sprite.aeedc7f7f09ce3c6628247=
+d4307c6f94.png"); background-position: 0px -114px; width: 34px; height: 34p=
+x; }
+.auth-section .connect .services .auth-disqus button { background-image: ur=
+l("urn:download-error:file:///next/assets/img/sprite.aeedc7f7f09ce3c6628247=
+d4307c6f94.png"); background-position: 0px -46px; width: 35px; height: 34px=
+; }
+.auth-section .guest { margin: 0px 70px 0px 156px; padding: 0px 10px; min-h=
+eight: 32px; position: relative; }
+.auth-section .guest p { margin: 0px 0px 12px; }
+.auth-section .guest .guest-details { display: none; }
+.auth-section .guest .guest-details.expanded { display: block; }
+.auth-section .guest .guest-checkbox { margin-bottom: 12px; }
+.actions::after, .actions::before { display: table; content: ""; line-heigh=
+t: 0; }
+.actions::after { clear: both; }
+.row::after, .row::before { display: table; content: ""; line-height: 0; }
+.row::after { clear: both; }
+.dropdown-menu { font-size: 13px; border: 2px solid rgba(0, 39, 59, 0.2);=
+ border-radius: 4px; background: rgb(255, 255, 255) none repeat scroll 0%=
+ 0%; box-shadow: none; min-width: 130px; z-index: 1001; }
+.dropdown-menu.pull-right { right: 0px; left: auto; }
+.dropdown-menu .share ul, .dropdown-menu .share ul > li { display: inline; }
+.dropdown-menu a { transition: none 0s ease 0s ; color: rgba(0, 39, 59, 0.5=
+); padding: 4px 15px; }
+.nav { position: relative; margin: 0px 0px -6px; padding: 0px; }
+.nav > ul { clear: both; }
+.nav > ul::after, .nav > ul::before { display: table; content: ""; line-hei=
+ght: 0; }
+.nav > ul::after { clear: both; }
+.nav > ul > li { float: left; }
+@media (max-width: 480px) {
+  .nav > ul > li #community-tab .community-name { display: none; }
+}
+.nav > ul > li #community-tab .community-name-placeholder { display: none; }
+@media (max-width: 480px) {
+  .nav > ul > li #community-tab .community-name-placeholder { display: bloc=
+k; }
+}
+.nav > ul > li > a, .nav > ul > li > div a { display: block; margin: 0px;=
+ padding: 0px; color: rgba(0, 39, 59, 0.35); font-weight: 700; font-size:=
+ 13px; line-height: 1; position: relative; transition: all 0.2s ease-in-out=
+ 0s; }
+.nav > ul > li > a:hover, .nav > ul > li > div a:hover { color: rgb(63, 69,=
+ 73); }
+.nav .dropdown-toggle { position: relative; padding-right: 12px; background=
+: transparent none repeat scroll 0px 0px ! important; color: rgba(0, 39, 59=
+, 0.35) ! important; }
+.nav .dropdown-toggle:hover { color: rgb(63, 69, 73) ! important; }
+.nav .dropdown-toggle .caret { display: block; position: absolute; right:=
+ 0px; top: 5px; margin: 0px; transition: all 0.2s ease 0s; }
+.nav .dropdown-menu { top: 20px; border-radius: 3px; }
+.nav .dropdown-menu.share-menu { max-width: none; }
+.nav .dropdown-menu li .icon-checkmark::before { display: none; }
+.nav .dropdown-menu li.selected a { position: relative; }
+.nav .dropdown-menu li.selected a .icon-checkmark::before { font-size: 11px=
+; position: absolute; right: 10px; top: 12px; display: block; }
+.nav-primary { margin: 0px 0px 24px; border-bottom: 2px solid rgba(0, 39,=
+ 59, 0.08); border-color: rgba(0, 39, 59, 0.08); padding: 0px; }
+.nav-primary::after, .nav-primary::before { display: table; content: ""; li=
+ne-height: 0; }
+.nav-primary::after { clear: both; }
+.nav-primary > ul > li > a { margin: 0px 15px; padding: 12px 0px; font-size=
+: 15px; font-weight: 700; }
+@media (max-width: 480px) {
+  .nav-primary > ul > li > a { margin: 0px 15px 0px 0px; }
+}
+.nav-primary > ul > li.active > a { color: rgb(63, 69, 73) ! important; }
+.nav-primary > ul > li.active > a::after { content: " "; display: block; ri=
+ght: 0px; height: 2px; background: rgb(46, 159, 255) none repeat scroll 0%=
+ 0%; position: absolute; bottom: -2px; left: 0px; }
+.nav-primary > ul > li.tab-conversation a { margin-left: 0px; text-transfor=
+m: capitalize; }
+@media (max-width: 480px) {
+  .nav-primary > ul > li.tab-conversation a .comment-count { display: none;=
+ }
+}
+.nav-primary > ul > li.tab-conversation a .comment-count-placeholder { disp=
+lay: none; }
+@media (max-width: 480px) {
+  .nav-primary > ul > li.tab-conversation a .comment-count-placeholder { di=
+splay: block; }
+}
+.nav-primary > ul > li.notification-menu { float: right; margin-top: 11px;=
+ padding: 0px; width: 19px; }
+.nav-primary > ul > li.notification-menu a { position: relative; top: -1px;=
+ margin: 0px; }
+.nav-primary > ul > li.notification-menu a::after { display: none; }
+.nav-primary > ul > li.notification-menu a .notification-icon { position:=
+ absolute; top: 0px; left: 0px; font-size: 19px; transition: color 0.1s eas=
+e 0s; }
+.nav-primary > ul > li.notification-menu a .notification-count { position:=
+ absolute; top: 4px; left: 0px; width: 20px; color: rgb(255, 255, 255); fon=
+t-size: 10px; font-weight: 700; text-align: center; }
+.nav-primary > ul > li.notification-menu.notification-loading::before { con=
+tent: ""; display: block; width: 14px; height: 14px; border-radius: 25px;=
+ border-width: 2px; border-style: solid; -moz-border-top-colors: none; -moz=
+-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-le=
+ft-colors: none; border-image: none; border-color: transparent rgba(0, 39,=
+ 59, 0.35); position: absolute; top: 0px; left: 1px; animation: 1.5s linear=
+ 0s normal none infinite running rotate-loading; transform-origin: 50% 50%=
+ 0px; }
+.nav-primary > ul > li.user-menu { float: right; margin-left: 10px; }
+.nav-primary > ul > li.user-menu .dropdown-toggle { max-width: 160px; heigh=
+t: 33px; margin: 0px; }
+.nav-primary > ul > li.user-menu .dropdown-toggle .caret { top: 18px; right=
+: 0px; }
+.nav-primary > ul > li.user-menu .dropdown-toggle .dropdown-toggle-wrapper=
+ { white-space: nowrap; }
+.nav-primary > ul > li.user-menu .dropdown-toggle .dropdown-toggle-wrapper:=
+:before { content: ""; }
+.nav-primary > ul > li.user-menu .dropdown-menu { left: auto; top: 33px; ri=
+ght: 0px; }
+@media (min-width: 500px) {
+  .nav-primary > ul > li.user-menu { margin-left: 6px; }
+  .nav-primary > ul > li.user-menu .dropdown-toggle { overflow: hidden; tex=
+t-overflow: ellipsis; padding-right: 14px; }
+}
+.nav-secondary { margin: -12px 0px 24px; }
+.nav-secondary > ul > li .dropdown-toggle { position: relative; }
+.nav-secondary > ul > li [class|=3D"icon"]::before { position: relative; to=
+p: 0.25em; line-height: 0; font-size: 19px; }
+.nav-secondary > ul > li a { width: auto; font-weight: 700; font-size: 13px=
+; }
+.nav-secondary > ul > li .caret { top: 15px; right: 0px; }
+.nav-secondary > ul > li.favorite .thread-likes a { position: relative; z-i=
+ndex: 100; margin-right: 0px; }
+.nav-secondary > ul > li.favorite .thread-likes a .icon-star::before { top:=
+ 0.15em; font-size: 14px; }
+.nav-secondary > ul > li.favorite .thread-likes a:hover {  }
+.nav-secondary > ul > li.share-menu { float: right; }
+.nav-secondary > ul > li.share-menu .dropdown-menu { padding: 0px; }
+.nav-secondary > ul > li.share-menu .dropdown-menu li a { padding: 5px 10px=
+; }
+.nav-secondary > ul > li.share-menu .dropdown-menu .share { white-space: no=
+wrap; color: rgba(0, 39, 59, 0.5); font-size: 13px; padding: 5px 10px; posi=
+tion: relative; font-weight: 500; }
+.nav-secondary > ul > li.share-menu .dropdown-menu .share li { border: medi=
+um none; }
+.nav-secondary > ul > li.share-menu .dropdown-menu .share a { padding: 0px;=
+ }
+.nav-secondary > ul > li.share-menu .dropdown-menu .share a:hover { border-=
+radius: 2px; }
+.post-list { list-style-type: none; margin: 0px; }
+.post-list .post::after, .post-list .post::before { display: table; content=
+: ""; line-height: 0; }
+.post-list .post::after { clear: both; }
+.children .post::after, .children .post::before { display: table; content:=
+ ""; line-height: 0; }
+.children .post::after { clear: both; }
+.post-content::after, .post-content::before { display: table; content: "";=
+ line-height: 0; }
+.post-content::after { clear: both; }
+.post-content .post-menu::after, .post-content .post-menu::before { display=
+: table; content: ""; line-height: 0; }
+.post-content .post-menu::after { clear: both; }
+.post-content .post-message::after, .post-content .post-message::before {=
+ display: table; content: ""; line-height: 0; }
+.post-content .post-message::after { clear: both; }
+.post-content .see-more::before { content: ""; display: block; height: 3px;=
+ box-shadow: 0px -3px 3px rgba(0, 0, 0, 0.08); position: relative; top: -11=
+px; }
+.post-content footer menu::after, .post-content footer menu::before { displ=
+ay: table; content: ""; line-height: 0; }
+.post-content footer menu::after { clear: both; }
+.post-content footer .voting .vote-down::after, .post-content footer .votin=
+g .vote-up::after { content: ""; display: block; position: absolute; top:=
+ -10px; left: 0px; right: -6px; bottom: -10px; }
+.post-content footer .voting .vote-up::after { right: -3px; left: -5px; }
+.mention::before { content: "@"; }
+.suggestions { position: absolute; left: 0px; top: 99%; z-index: 1002; widt=
+h: 100%; box-sizing: content-box; margin: 0px -2px -2px; padding: 0px; list=
+-style-type: none; line-height: 1; background: rgb(255, 255, 255) none repe=
+at scroll 0% 0%; border: 2px solid rgba(0, 39, 59, 0.2); border-radius: 0px=
+ 0px 3px 3px; cursor: pointer; }
+.suggestions li { position: relative; color: rgba(29, 47, 58, 0.6); padding=
+: 8px; font-weight: 500; overflow: hidden; }
+.suggestions li:hover { background-color: rgba(0, 39, 59, 0.08); }
+.suggestions li.header { background: rgb(255, 255, 255) none repeat scroll=
+ 0% 0%; padding: 8px; margin: 0px; }
+.suggestions li.header h5 { margin: 0px; padding: 0px; border: 0px none; fo=
+nt-weight: 700; font-size: 11px; text-transform: uppercase; line-height: 11=
+px; color: rgb(153, 153, 153); }
+.share .facebook a, .share .link a, .share .twitter a { background-image:=
+ url("urn:download-error:file:///next/assets/img/sprite.aeedc7f7f09ce3c6628=
+247d4307c6f94.png"); background-position: 0px 0px; width: 72px; height: 18p=
+x; }
+.share .facebook a { background-position: -18px 0px; }
+.share > * a { display: inline-block; width: 18px ! important; height: 18px=
+ ! important; opacity: 0.6; text-indent: -9999em; overflow: hidden; padding=
+: 0px; }
+.share > * a:hover { opacity: 0.8; }
+.moderate::after, .moderate::before { display: table; content: ""; line-hei=
+ght: 0; }
+.moderate::after { clear: both; }
+#top-threads .meta::after, #top-threads .meta::before { display: table; con=
+tent: ""; line-height: 0; }
+#top-threads .meta::after { clear: both; }
+.upvoters-outer::after, .upvoters-outer::before { content: ""; display: blo=
+ck; height: 10px; position: absolute; left: 0px; right: 0px; z-index: 900;=
+ border-radius: 5px; }
+.upvoters-outer::before { top: 0px; background-image: linear-gradient(to bo=
+ttom, rgb(255, 255, 255), rgba(255, 255, 255, 0)); background-repeat: repea=
+t-x; background-color: rgba(255, 255, 255, 0); }
+.upvoters-outer::after { bottom: 0px; background-image: linear-gradient(to=
+ bottom, rgba(255, 255, 255, 0), rgb(255, 255, 255)); background-repeat: re=
+peat-x; background-color: rgba(255, 255, 255, 0); }
+@keyframes new-upvoter-insertion {
+  0% { opacity: 0; margin-top: -50px; }
+  50% { margin-top: 0px; }
+  100% { opacity: 1; margin-top: 0px; }
+}
+@keyframes new-upvoter-guest {
+  0% { color: inherit; }
+  100% { color: rgba(29, 47, 58, 0.6); }
+}
+.tooltip-outer .tooltip-point::after { content: ""; position: absolute; lef=
+t: 20px; top: -20px; width: 25px; height: 25px; background: rgb(255, 255,=
+ 255) none repeat scroll 0% 0%; box-shadow: 0px 0px 0px 3px rgba(0, 0, 0,=
+ 0.2); transform: rotate(45deg); }
+.tooltip-outer .tooltip-point::before { content: ""; position: absolute; ba=
+ckground: rgb(255, 255, 255) none repeat scroll 0% 0%; left: 20px; top: -20=
+px; width: 25px; height: 25px; box-shadow: 0px 0px 0px 3px rgb(255, 255, 25=
+5); transform: rotate(45deg); }
+.tooltip-outer div.point-position-tl::after, .tooltip-outer div.point-posit=
+ion-tl::before { top: 9px; }
+.tooltip { position: relative; background: rgb(255, 255, 255) none repeat=
+ scroll 0% 0%; overflow: auto; width: 290px; border-radius: 5px; box-shadow=
+: 0px 0px 0px 3px rgba(0, 0, 0, 0.2); padding: 8px 8px 0px; color: rgb(127,=
+ 141, 153); }
+.tooltip footer::after, .tooltip footer::before { display: table; content:=
+ ""; line-height: 0; }
+.tooltip footer::after { clear: both; }
+.use-opacity-transitions .postbox .post-actions { transition: opacity 0.2s=
+ linear 0s; }
+.use-opacity-transitions .postbox .post-actions .wysiwyg li a span { transi=
+tion: opacity 0.1s linear 0s; }
+.use-opacity-transitions .tooltip { transition: opacity 0.25s linear 0s; }
+.use-opacity-transitions .auth-section .connect .services button, .use-opac=
+ity-transitions .dropdown-menu { transition: opacity 0.2s ease 0s; }
+.use-opacity-transitions .share > * a { transition: opacity 0.2s linear 0s;=
+ }
+.use-opacity-transitions #footer .email .icon-checkmark { transition-proper=
+ty: opacity, top; }
+#footer { clear: both; border-top: 2px solid rgba(0, 39, 59, 0.08); border-=
+color: rgba(0, 39, 59, 0.08); padding: 24px 0px 10px; }
+#footer ul::after, #footer ul::before { display: table; content: ""; line-h=
+eight: 0; }
+#footer ul::after { clear: both; }
+#footer li { float: left; margin: 0px 29px 0px 0px; position: relative; }
+#footer a { color: rgba(0, 39, 59, 0.2); padding: 0px 0px 0px 25px; font-si=
+ze: 12px; font-weight: 700; }
+#footer i { position: absolute; left: 0px; }
+#footer .logo { float: right; margin: 0px; }
+#footer .logo a { display: block; float: right; text-indent: -9999em; backg=
+round-image: url("urn:download-error:file:///next/assets/img/sprite.aeedc7f=
+7f09ce3c6628247d4307c6f94.png"); background-size: 86px 124px; background-po=
+sition: 0px -91px; height: 16px; width: 86px; padding: 0px; }
+#footer .email a, #footer .install a, #footer .privacy a { line-height: 1.1=
+; transition: color 0.2s ease 0s; }
+#footer .email a:hover, #footer .install a:hover, #footer .privacy a:hover=
+ { color: rgb(165, 178, 185); }
+#footer .privacy { margin-right: 0px; }
+#footer .privacy a { padding: 0px 0px 0px 22px; }
+#footer .privacy i { font-size: 17px; left: 1px; }
+#footer .install i { font-size: 18px; top: 0px; }
+#footer .email a { padding: 0px 0px 0px 25px; }
+#footer .email i { font-size: 19px; top: -1px; }
+#footer .email .input-wrapper input { padding: 4px 8px; height: 24px; posit=
+ion: relative; top: -5px; font-size: 11px; }
+#footer .email .icon-checkmark { opacity: 0; visibility: hidden; transition=
+: top 0.15s ease-in-out 0s; color: rgb(143, 200, 71); font-size: 12px; posi=
+tion: absolute; right: -19px; top: -5px; left: auto; }
+#footer .email.show-form .default, #footer .email > .form { display: none; }
+.help-icon { border-radius: 9px; border: 2px solid rgba(0, 39, 59, 0.5); di=
+splay: inline-block; padding: 1px 4px; margin-top: -2px; font-size: 12px;=
+ height: 18px; width: 19px; }
+.help-icon::before { content: "?"; font-weight: 700; color: rgba(29, 47, 58=
+, 0.6); }
+body.dark .notice::after, body.dark .notice::before { display: table; conte=
+nt: ""; line-height: 0; }
+body.dark .notice::after { clear: both; }
+body.dark .post-content .see-more::before { box-shadow: 0px -3px 3px rgba(2=
+55, 255, 255, 0.08); }
+body.dark .nav-primary > ul > li.notification-menu.notification-loading::be=
+fore { border-color: transparent rgb(255, 255, 255); }
+body.dark .mention::after { color: rgb(255, 255, 255) ! important; }
+.mobile .post-list .authored-by-session-user form.edit::before, .mobile .po=
+st-list .authored-by-session-user form.reply::before { left: 140px; }
+.mobile .post-list .post .post-content .post-body .post-meta span.total-vot=
+es .icon::before { vertical-align: middle; }
+.mobile .post-list .post .post-content .post-body footer menu li .icon::bef=
+ore { vertical-align: middle; }
+.mobile .post-list .children .post::after { display: none; }
+@media (min-width: 480px) {
+  .mobile .post-list .auth-section .proceed::after, .mobile .post-list .aut=
+h-section .proceed::before { display: table; content: ""; line-height: 0;=
+ }
+  .mobile .post-list .auth-section .proceed::after { clear: both; }
+}
+@media (min-width: 580px) {
+  .mobile .post-list .auth-section .proceed::after, .mobile .post-list .aut=
+h-section .proceed::before { display: table; content: ""; line-height: 0;=
+ }
+  .mobile .post-list .auth-section .proceed::after { clear: both; }
+}
+.mobile .dark .post-list .post form.reply::before { background: rgba(255,=
+ 255, 255, 0.2) none repeat scroll 0% 0%; }
+.home-notifications *, .home-notifications *::after, .home-notifications *:=
+:before { box-sizing: border-box; text-rendering: optimizelegibility; }
+.home-notifications .avatar-forum-big > a .art-forum-blank path:nth-child(1=
+) { fill: rgb(22, 75, 120); }
+.home-notifications .avatar-forum-big > a .art-forum-blank path:nth-child(2=
+) { fill: rgb(84, 174, 255); }
+.home-notifications .curtain-truncate::after { content: ""; z-index: 149;=
+ display: block; height: 33px; position: absolute; bottom: 30px; left: 0px;=
+ right: 0px; }
+.home-notifications .time::before { content: "=E2=80=A2"; color: rgb(194,=
+ 201, 212); margin-left: 4px; margin-right: 7px; }
+.home-notifications .btn-follow:not(.active) .symbol-following {  }
+@keyframes rotate-loading {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes rotate-loading {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.home-notifications .card-discussion .card-comment-count::before { content:=
+ ""; position: absolute; bottom: -3px; left: -4px; border-width: 7px 9px 5p=
+x 0px; border-style: solid; border-color: transparent rgb(194, 201, 212);=
+ transform: rotate(-38deg); display: block; width: 0px; }
+.home-notifications .card-discussion .card-comment-count::after { content:=
+ ""; position: absolute; bottom: 1px; left: -1px; border-width: 4px 6px 2px=
+ 0px; border-style: solid; border-color: transparent rgb(255, 255, 255); tr=
+ansform: rotate(-34deg); display: block; width: 0px; }
+.home-notifications .card-reason .avatar:nth-child(1) { margin-left: 0px;=
+ }
+.home-notifications .card-reason .actors .actor::after { content: ", "; }
+.home-notifications .card-reason .actors .actor:nth-last-child(2)::after {=
+ content: "and "; }
+.home-notifications .card-reason .actors .actor:last-child::after { content=
+: ""; }
+.home-notifications .card-comment .post-media li:nth-child(3n) { margin-rig=
+ht: 0px; }
+.home-notifications .card-reply .parent .card-comment .comment-body::after=
+ { content: ""; border-left: 2px solid rgb(228, 231, 238); position: absolu=
+te; left: 15px; top: 30px; bottom: -15px; }
+.home-notifications .postbox .clearfix::after, .home-notifications .postbox=
+ .clearfix::before { display: table; content: ""; line-height: 0; }
+.home-notifications .postbox .clearfix::after { clear: both; }
+.home-notifications .postbox .textarea-wrapper::after, .home-notifications=
+ .postbox .textarea-wrapper::before { display: table; content: ""; line-hei=
+ght: 0; }
+.home-notifications .postbox .textarea-wrapper::after { clear: both; }
+.home-notifications .card-notif-reply .card-comment .parent .comment-body::=
+after { border: medium none; }
+.home-notifications .card-notif-follow [data-role=3D"users"] > div .card-us=
+er-notif:not(:first-child) .card-user { margin-top: 20px; padding-top: 20px=
+; border-top: 1px solid rgb(228, 231, 238); }
+.home-notifications .icon-more-vert::before { transition: all 250ms ease-in=
+-out 0s; content: ""; position: absolute; left: 0px; top: 2px; width: 4px;=
+ height: 4px; background: rgb(194, 201, 212) none repeat scroll 0% 0%; box-=
+shadow: 0px 12px 0px 0px rgb(194, 201, 212), 0px 6px 0px 0px rgb(194, 201,=
+ 212); }
+@media only screen and (min-width: 1024px) {
+  .home-notifications .card-expand:hover .icon-more-vert::before { backgrou=
+nd: rgb(46, 135, 231) none repeat scroll 0% 0%; box-shadow: 0px 12px 0px 0p=
+x rgb(46, 135, 231), 0px 6px 0px 0px rgb(46, 135, 231); }
+}
+@media (max-width: 480px) {
+  .auth-section .connect { position: relative; }
+  .auth-section .guest { margin: 0px; padding: 0px; border: medium none; }
+  .auth-section .proceed { position: static; }
+  .auth-section .proceed::after, .auth-section .proceed::before { display:=
+ table; content: ""; line-height: 0; }
+  .auth-section .proceed::after { clear: both; }
+  #footer { margin: 0px 0px 10px; }
+  #footer li { float: none ! important; margin: 0px; border-bottom: 1px sol=
+id rgba(0, 49, 79, 0.08); padding: 16px 0px; }
+  #footer .install i { top: 16px; }
+  #footer .email i { top: 14px; }
+  #footer .logo { padding-top: 0px; }
+  #footer .logo a { float: none; }
+  #footer .email .icon-checkmark { right: 13px; }
+}
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-94EC8425:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/discovery.css
+
+/* Effective stylesheet produced by snapshot save */
+.clearfix::after, .clearfix::before { display: table; content: ""; line-hei=
+ght: 0; }
+.clearfix::after { clear: both; }
+.discovery-post:nth-child(2n+1) { margin-right: 4%; }
+.discovery-post .meta li::after { content: "=E2=80=A2"; color: rgb(204, 204=
+, 204); }
+.discovery-post .meta li:last-of-type::after { content: ""; margin-left: 0p=
+x; }
+@media screen and (max-width: 480px) {
+  .discovery-post:nth-child(2n+1) { margin-right: 0px; }
+}
+.doublesection .discovery-post:nth-child(2n+1) { margin-right: 0px; }
+.discovery-thumbnails .discovery-post:nth-child(2n+1) { margin-right: 2.5%;=
+ }
+@media screen and (max-width: 480px) {
+  .discovery-thumbnails .discovery-post:nth-child(2n+1) { margin-right: 0px=
+; }
+}
+@media screen and (min-width: 750px) {
+  .discovery-thumbnails .hasthumbnail:nth-child(2n+1) { margin-right: 1.3%;=
+ }
+  .discovery-thumbnails .hasthumbnail:nth-child(4) { margin-right: 0px; }
+}
+.doublethumbnails .col-promoted .thumbnail::before { content: ""; display:=
+ block; position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px;=
+ background: transparent linear-gradient(to bottom, transparent 0px, rgba(0=
+, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0.7) 100%) repeat scroll 0% 0%; }
+@media screen and (max-width: 480px) {
+  .doublethumbnails .col-promoted .thumbnail::before { background: rgba(0,=
+ 0, 0, 0.5) none repeat scroll 0% 0%; }
+  .doublethumbnails .col-promoted .thumbnails-rows .hasthumbnail:nth-child(=
+2n+1) { clear: left; margin-right: 20px; }
+}
+.countdown-timer.active::before { opacity: 0.75; }
+.countdown-timer::before { background: rgb(0, 97, 141) none repeat scroll=
+ 0% 0%; display: block; content: ""; position: absolute; top: 0px; left: 0p=
+x; right: 0px; bottom: 0px; opacity: 0; transition: opacity 0.2s linear 0s;=
+ }
+.post-list .sponsored .reviews .rating li::before { color: rgba(0, 39, 59,=
+ 0.35); content: "=E2=98=85"; float: left; padding-top: 2px; margin-right:=
+ 5px; }
+.post-list .sponsored .reviews .rating li.yellow-star::before { color: rgb(=
+255, 198, 46); }
+.post-list .sponsored blockquote::before { color: rgb(204, 204, 204); conte=
+nt: open-quote; font-size: 4em; line-height: 0.1em; margin-right: 0.15em;=
+ vertical-align: -0.4em; }
+.post-list .sponsored blockquote::after { color: rgb(204, 204, 204); conten=
+t: close-quote; font-size: 4em; line-height: 0.1em; margin-left: 0.15em; ve=
+rtical-align: -0.4em; }
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-9F9509FD:file:///next/styles/lounge.12077ed830b02c9a41cb8c0a0a202c18.css
+
+/* Effective stylesheet produced by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-9EC06138:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/common.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-A4796676:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/lounge_002.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-8961890C:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/ga.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: application/x-javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-F86F9D58:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/event.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-D16782CD:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/discovery.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-C5FCD649:file:///next/config.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-D5E9438E:file:///next/common.e67f4dd82cf8aa46b00bb61786919163.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: application/x-javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-02292A5C:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/a_data/lounge.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: application/x-javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-9787A85C:file:///hm.js?2b0ca1b0a9004eca70110bc7c88cbeb5
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: application/x-javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-8D8A81E3:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/hm.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: application/x-javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-892EA943:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/jquery.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: application/x-javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-00902C77:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/bootstrap.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-8984B840:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/MathJax.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-4939E2F9:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/prettify.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-5627404F:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/embed.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: application/x-javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-92A2ED13:file:///media/disk/Html/Html/Database/mysql/reference/mysql/MySQL%E8%AE%A4%E8%AF%81%E5%8D%8F%E8%AE%AE_files/alfie.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72
+Content-Type: text/javascript
+Content-Transfer-Encoding: quoted-printable
+Content-Location: urn:snapshot-FC53B276:file:///embed.js
+
+/* Script removed by snapshot save */
+
+------=_NextPart_000_0000_B11B3A1F.75438F72--

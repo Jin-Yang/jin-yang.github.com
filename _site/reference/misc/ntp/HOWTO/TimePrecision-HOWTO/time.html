@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Computer Global Date and Time Concept</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Managing Accurate Date and Time"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Why do We Need a Precise Clock?"
+HREF="why.html"><LINK
+REL="NEXT"
+TITLE="What are Time Zones?"
+HREF="tz.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Managing Accurate Date and Time</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="why.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="tz.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="time"
+></A
+>2. Computer Global Date and Time Concept</H1
+><P
+>To determine the current time for some planet region, a computer needs exactly this two informations:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Correct <SPAN
+CLASS="acronym"
+>UTC</SPAN
+> (universal time as in Greenwich, but not <SPAN
+CLASS="acronym"
+>GMT</SPAN
+>) time</P
+></LI
+><LI
+><P
+>Region's current Time Zone</P
+></LI
+></OL
+><P
+>For computers, there is also the hardware clock, which is used as a base by the OS to set its time.</P
+><P
+>OS date and time (we'll use only date <EM
+>or</EM
+> time from now on) is set on boot, by some script that reads the hardware clock, makes Time Zone calculations (there is no time zone data stored in <SPAN
+CLASS="acronym"
+>BIOS</SPAN
+>) and sets the OS. After this synchronization, <SPAN
+CLASS="acronym"
+>BIOS</SPAN
+> and OS time are independent from each other. So after a while they may have some seconds of difference. Which one is correct? If you don't make special configurations, none of them.</P
+><P
+>We'll discuss here how to make them both <EM
+>globally 100% accurate</EM
+>.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="why.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="tz.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Why do We Need a Precise Clock?</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>What are Time Zones?</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

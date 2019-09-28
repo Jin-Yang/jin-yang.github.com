@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+            <title>Better Crash-safe replication for MySQL</title>
+        <meta charset="utf-8" />
+                                <link rel="shortcut icon" href="https://q-ec.bstatic.com/static/img/b25logo/favicon.ico">
+                                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+                                <link rel="stylesheet" href="https://blog.booking.com/theme/css/skeleton.css" />
+                                <link rel="stylesheet" href="https://blog.booking.com/theme/css/main.css" />
+                                <link rel="stylesheet" href="https://blog.booking.com/theme/css/font.css" />
+        <link href="https://blog.booking.com/atom.xml" type="application/atom+xml" rel="alternate" title="Booking.com dev blog Atom Feed" />
+        <link href="https://blog.booking.com/rss.xml" type="application/rss+xml" rel="alternate" title="Booking.com dev blog RSS Feed" />
+        <link rel="stylesheet" href="theme/css/pygments_style.css">
+
+
+</head>
+
+<body class="index">
+	<div class="container">
+		<header class="clearfix">
+			<h1 class="six columns"><a href="/"><span class="b_name">B.</span></a></h1>
+		</header> <!-- close header -->
+
+<section class="sidebar four columns" style="float:left;">
+<div class="about">
+	<h2>About</h2>
+	<p>We are the world's leading online accommodation provider, operating across 220+ countries in 43 languages. Our team of designers, developers, database engineers &amp; Sysadmins solve complicated problems at huge scale.</p>
+
+	<ul>
+                <li><a href="https://workingatbooking.com/vacancies/?filter-searchphrase=&filter-company=technology#heading">Work with us</a></li>
+		<li><a href="https://booking.com/">Visit our site</a></li>
+        </ul>
+</div>
+
+<div class="social">
+	<h2>Share this post</h2>
+	<ul>
+		<li class="sharepop-item"><a class="sharepop-lnk" href="https://www.facebook.com/sharer/sharer.php?caption=https://blog.booking.com/better_crash_safe_replication_for_mysql.html&u=https://blog.booking.com/better_crash_safe_replication_for_mysql.html&title=Better Crash-safe replication for MySQL"><img border="0" class="sharepop-img" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDQ4IDQ4IiBpZD0iTGF5ZXJfMSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgNDggNDgiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxjaXJjbGUgY3g9IjI0IiBjeT0iMjQiIGZpbGw9IiM0RTcxQTgiIHI9IjI0Ii8+PHBhdGggZD0iTTI5LjksMTkuNWgtNHYtMi42YzAtMSwwLjctMS4yLDEuMS0xLjJjMC41LDAsMi44LDAsMi44LDB2LTQuNGwtMy45LDBjLTQuNCwwLTUuMywzLjMtNS4zLDUuM3YyLjloLTIuNVYyNCAgaDIuNWMwLDUuOCwwLDEyLjcsMCwxMi43aDUuM2MwLDAsMC03LDAtMTIuN2gzLjZMMjkuOSwxOS41eiIgZmlsbD0iI0ZGRkZGRiIvPjwvc3ZnPg==" alt="Facebook"></a></li>
+		<li class="sharepop-item"><a class="sharepop-lnk" href="https://twitter.com/home?status=Better Crash-safe replication for MySQL - https://blog.booking.com/better_crash_safe_replication_for_mysql.html"><img border="0" class="sharepop-img" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDQ4IDQ4IiBpZD0iTGF5ZXJfMSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgNDggNDgiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxjaXJjbGUgY3g9IjI0IiBjeT0iMjQiIGZpbGw9IiMxQ0I3RUIiIHI9IjI0Ii8+PGc+PGc+PHBhdGggZD0iTTM2LjgsMTUuNGMtMC45LDAuNS0yLDAuOC0zLDAuOWMxLjEtMC43LDEuOS0xLjgsMi4zLTMuMWMtMSwwLjYtMi4xLDEuMS0zLjQsMS40Yy0xLTEuMS0yLjMtMS44LTMuOC0xLjggICAgYy0yLjksMC01LjMsMi41LTUuMyw1LjdjMCwwLjQsMCwwLjksMC4xLDEuM2MtNC40LTAuMi04LjMtMi41LTEwLjktNS45Yy0wLjUsMC44LTAuNywxLjgtMC43LDIuOWMwLDIsMC45LDMuNywyLjMsNC43ICAgIGMtMC45LDAtMS43LTAuMy0yLjQtMC43YzAsMCwwLDAuMSwwLDAuMWMwLDIuNywxLjgsNSw0LjIsNS42Yy0wLjQsMC4xLTAuOSwwLjItMS40LDAuMmMtMC4zLDAtMC43LDAtMS0wLjEgICAgYzAuNywyLjMsMi42LDMuOSw0LjksMy45Yy0xLjgsMS41LTQuMSwyLjQtNi41LDIuNGMtMC40LDAtMC44LDAtMS4zLTAuMWMyLjMsMS42LDUuMSwyLjYsOC4xLDIuNmM5LjcsMCwxNS04LjYsMTUtMTYuMSAgICBjMC0wLjIsMC0wLjUsMC0wLjdDMzUuMiwxNy42LDM2LjEsMTYuNiwzNi44LDE1LjR6IiBmaWxsPSIjRkZGRkZGIi8+PC9nPjwvZz48L3N2Zz4=" alt="Twitter"></a></li>
+		<li class="sharepop-item"><a class="sharepop-lnk" href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.booking.com/better_crash_safe_replication_for_mysql.html&title=Better Crash-safe replication for MySQL&source="><img border="0" class="sharepop-img" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDQ4IDQ4IiBpZD0iTGF5ZXJfMSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgNDggNDgiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxjaXJjbGUgY3g9IjI0IiBjeT0iMjQiIGZpbGw9IiMxNjg2QjAiIHI9IjI0Ii8+PHBhdGggZD0iTTE3LjQsMzQuOWgtNC42VjIwLjFoNC42VjM0Ljl6IE0xNC45LDE4LjJMMTQuOSwxOC4yYy0xLjcsMC0yLjgtMS4xLTIuOC0yLjZjMC0xLjUsMS4xLTIuNiwyLjgtMi42ICBjMS43LDAsMi44LDEuMSwyLjgsMi42QzE3LjcsMTcuMSwxNi43LDE4LjIsMTQuOSwxOC4yeiBNMzUuOSwzNC45aC01LjN2LTcuN2MwLTItMC44LTMuNC0yLjYtMy40Yy0xLjQsMC0yLjEsMC45LTIuNSwxLjggIGMtMC4xLDAuMy0wLjEsMC44LTAuMSwxLjJ2OGgtNS4yYzAsMCwwLjEtMTMuNiwwLTE0LjhoNS4ydjIuM2MwLjMtMSwyLTIuNSw0LjYtMi41YzMuMywwLDUuOSwyLjEsNS45LDYuN1YzNC45eiIgZmlsbD0iI0ZGRkZGRiIvPjwvc3ZnPg==" alt="Linked In"></a></li>
+	</ul>
+	<h2>Get in touch</h2>
+	<ul>
+		<li><a href="https://twitter.com/Bookingcom">Twitter</a></li>
+		<li><a href="https://facebook.com/Bookingcom">Facebook</a></li>
+		<li><a href="https://www.linkedin.com/company/11348">LinkedIn</a></li>
+		<li><a href="https://www.dribbble.com/Bookingcom">Dribbble</a></li>
+	</ul>
+</div></section>
+
+<article id="content" class="body category_Operations twelve columns">
+  <header>
+    <h1 class="entry-title">Better Crash-safe replication for MySQL</h1>
+                <div class="post_meta">
+                            <a class="post_author" href="https://blog.booking.com/author/jean-francois-gagne.html">Jean-François Gagné</a><br/>
+                        <time data-icon="%">Wed 22 October 2014</time>
+                </div>
+  </header>
+  <div class="entry-content ten columns">
+    <p>At <a href="https://booking.com">Booking.com</a>, we use MySQL replication extensively
+for read scaling.  However, because we have so many slaves
+(we have thousands), sooner or later, one of them
+will fail.  In MySQL 5.5 and earlier, replication was not
+crash-safe.  MySQL 5.6 provides crash-safe replication when
+modifying the default configuration. But this safety comes with
+several downsides.  Read on to find out more about crash-safe replication
+in MySQL 5.6 and learn how to mitigate its downsides.</p>
+<p>MySQL replication involves two tasks on a slave: the IO thread and
+the SQL thread:</p>
+<ul>
+<li>The IO thread downloads events from the master binary logs
+  and appends them to the relay logs.</li>
+<li>The SQL thread reads the events from the relay logs and executes
+  them on the local database.</li>
+</ul>
+<p>To keep track of its progress, each thread needs to store a state:</p>
+<ul>
+<li>The IO thread keeps track of the next event to download from
+  the master binary logs using two variables: a filename and a position
+  (Master_Log_File and Read_Master_Log_Pos from <a href="https://dev.mysql.com/doc/refman/5.6/en/show-slave-status.html">SHOW SLAVE
+  STATUS</a>).</li>
+<li>The SQL thread keeps track of the next event to execute using four
+  variables: the filename and position in the slave relay logs
+  and the two corresponding values in the master binary logs
+  (respectively Relay_Log_File, Relay_Log_Pos, Relay_Master_Log_File
+  and Exec_Master_Log_Pos from SHOW SLAVE STATUS).</li>
+</ul>
+<p>In MySQL 5.5 and earlier, those states are persisted in files
+(see the <a href="https://dev.mysql.com/doc/refman/5.5/en/replication-options-slave.html#option_mysqld_master-info-file">master-info-file</a>
+and <a href="https://dev.mysql.com/doc/refman/5.5/en/replication-options-slave.html#option_mysqld_relay-log-info-file">relay-log-info-file</a>
+options for more information about those files).  However, the IO thread
+and the SQL thread cannot make progress and update their state files at the
+same time (atomically).  This means that inconsistencies can be
+introduced by a crash:</p>
+<ol>
+<li>If the IO thread has appended data to the relay logs but has
+   not updated its state file when MySQL crashes, <strong>the same event
+   is re-appended</strong> to the relay logs after restart.</li>
+<li>If the SQL thread has committed a transaction but has not
+   updated its state file when MySQL crashes, <strong>the same transaction
+   is re-run</strong> after restart.</li>
+</ol>
+<p>Those two inconsistencies are the cause of the infamous "Duplicate
+entry for key PRIMARY" errors when restarting a slave after a crash.
+This error happens when running an INSERT twice.  Other errors can
+also happen on UPDATE and DELETE statements depending on many factors,
+the list of which is too long and complex to give here.  In the worst cases
+silent data corruption will occur.</p>
+<p>To solve inconsistency #2 above, MySQL 5.6 introduces the option
+to persist the state of the SQL thread in the database.  By setting
+<a href="https://dev.mysql.com/doc/refman/5.6/en/replication-options-slave.html#option_mysqld_relay-log-info-repository">relay-log-info-repository</a>
+to TABLE (this is not the default option), the SQL thread saves
+its state at the same time as it commits a transaction.  If the
+storage engine is atomic (like InnoDB), inconsistency in the
+state of the SQL thread is prevented.</p>
+<p>However, it is not possible to avoid inconsistency #1.
+The IO thread has no way to synchronize its
+progress (appending events to the relay logs) and its
+state (saving data in a FILE or a TABLE).  The consequence
+is that it is impossible, once a crash has occurred, to trust both the content of the relay
+log and the state of the IO thread.</p>
+<p>If we cannot trust those, how can MySQL 5.6 provide crash-safe
+replication?  The implemented solution is to:</p>
+<ul>
+<li>Initialize the state of the IO thread to the position of
+  the SQL thread (which can be trusted when relay-log-info-repository
+  is set to TABLE and the storage engine is atomic), and</li>
+<li>Advance the position of the SQL thread to the tail
+  of the relay logs.</li>
+</ul>
+<p>In other words, all the relay logs are considered <em>un-proper for
+SQL thread consumption</em>.  This behaviour is not enabled by
+default.  To benefit from it, the option
+<a href="https://dev.mysql.com/doc/refman/5.6/en/replication-options-slave.html#option_mysqld_relay-log-recovery">relay-log-recovery</a>
+must be set to 1 (the default value is 0).</p>
+<p>In summary, to obtain crash-safe replication in MySQL 5.6, one
+must:</p>
+<ul>
+<li>Set relay-log-info-repository to TABLE,</li>
+<li>Set relay-log-recovery to 1, and</li>
+<li>Use only atomic storage engines.</li>
+</ul>
+<p>More information about <a href="https://dev.mysql.com/doc/refman/5.6/en/slave-logs.html#replication-implementation-crash-safe">MySQL 5.6 crash-safe
+replication</a>
+can be found in the manual.</p>
+<h2>The problems with MySQL 5.6 Crash-safe replication</h2>
+<p>So far, everything looks good, so what are the downsides?  We
+identified a number of problems:</p>
+<ol>
+<li>When setting relay-log-recovery to 1 in the configuration file,
+   the relay logs are considered un-proper for SQL thread consumption
+   every time MySQL is started.</li>
+<li>After a restart or a crash, if the
+   IO thread had been ahead of the SQL thread, unnecessary traffic caused by
+   downloading binary logs will be incurred on both the master and on the network.</li>
+<li>After a restart or a crash,
+   if the master is not available, no progress
+   can be made by the SQL thread, even if there are plenty of
+   unexecuted relay logs on the slave.</li>
+<li>After a restart or a crash, if critical binary logs
+   have been purged from the master, the slave will not be able to
+   resume replication.</li>
+<li>If we want to keep a copy of the relay logs on the
+   slave by setting
+   <a href="https://dev.mysql.com/doc/refman/5.6/en/replication-options-slave.html#option_mysqld_relay-log-purge">relay-log-purge</a>
+   to 0, a restart or a crash could corrupt the stored relay logs.</li>
+</ol>
+<p>Problem #1 means that all restarts must be done with extra care.
+If a lagging slave is restarted, it can trigger problems #2, #3, #4, and #5.
+Having those problems after a crash could be acceptable, but
+having those after a simple restart is harder to accept.</p>
+<p>Problem #2 is the one that worries us most at Booking.com.
+As presented in a <a href="https://blog.booking.com/mysql_slave_scaling_and_more.html">previous
+post</a>,
+the network load on our master is a concern for us.  The idea
+of a master network interface being overloaded as a result of a restart/crash of a slave
+is hard to accept.</p>
+<p>A special case of problem #2 is <a href="https://dev.mysql.com/doc/refman/5.6/en/replication-delayed.html">delayed
+replication</a>.
+In the case of a restart/crash of a delayed slave the amount of the binary log that needs to be re-downloaded is proportional to the delay of the slave.
+We have delayed slaves that store tens
+of GBs of unexecuted relay logs.  A restart/crash of those would overload
+the network interface or a master for minutes.  This is unbearable:
+we must find something better.</p>
+<p>Again on problem #2, the restarted/crashed slave could be remote from the
+master.  If the bandwidth of the WAN link is limited, it can be saturated
+by the slave downloading binary logs from the master.  This is also an
+undesirable effect.</p>
+<p>Problem #3 is less of a concern for us, but still not an
+enjoyable proposition (it might be more of a concern for others).</p>
+<p>Problem #4 means that before purging binary logs, a DBA must make
+sure that they have been <strong>executed</strong> by all slaves.  This is an
+additional task that DBAs could do without.</p>
+<p>Problem #5 is more subtle since it is dependent upon the preference of our DBAs
+to keep a copy of the relay logs on the slave (setting relay-log-purge
+to 0).  With relay-log-recovery=1, this copy of the relay logs
+cannot be trusted after a restart or a crash:</p>
+<ul>
+<li>If before a restart or a crash there are unexecuted events in the
+  relay logs, which are appended again to the relay logs after a
+  restart, resulting in duplicate events in the relay logs (not executed
+  in double though).</li>
+<li>If just before an operating system crash some events are executed by the
+  SQL thread but not synced to the relay logs by the IO thread, those
+  events are missing from the relay logs after the restart.</li>
+</ul>
+<p>The following bugs/feature requests have been logged to trace those problems:</p>
+<ul>
+<li><a href="https://bugs.mysql.com/bug.php?id=74089">Bug # 74089</a>: Report
+  Relay_Log_File and Relay_Log_Pos on relay-log-recovery.</li>
+<li><a href="https://bugs.mysql.com/bug.php?id=74321">Bug # 74321</a>: Execute
+  relay-log-recovery only when needed.</li>
+<li><a href="https://bugs.mysql.com/bug.php?id=74323">Bug # 74323</a>: Avoid overloading
+  the master NIC on crash recovery of a lagging slave.</li>
+<li><a href="https://bugs.mysql.com/bug.php?id=74324">Bug # 74324</a>: Make keeping
+  relay logs (relay_log_purge=0) crash safe.</li>
+</ul>
+<h2>Our wishes for MySQL Crash-safe replication</h2>
+<p>Do not get us wrong. Having a way to make replication crash-safe
+is a great step forward since MySQL 5.5.  Still, some other small steps
+need to be carried out to have ideal crash-safe replication.  For
+us, ideal crash-safe replication should:</p>
+<ol>
+<li>Not take destructive measures if no crash has happened</li>
+<li>Minimize the number of binary logs downloaded from the master
+   on crash recovery</li>
+<li>Have consistent relay logs after crash recovery when relay_log_purge=0.</li>
+</ol>
+<p>Our wish #2 above can be implemented by adding four variables to
+the IO thread state.  Those variables would indicate the last
+trusted (synced) position in the relay logs and the
+corresponding position in the master binary logs.
+When restarting MySQL, the relay
+logs would be truncated at that last synced position and the IO
+thread would be initialized at the corresponding position in the
+master binary logs. (Note that if the IO thread was stopped
+correctly, nothing is truncated, which satisfies our wish #1
+above.)
+After the truncation, if the position of the SQL thread
+is above (or at) the truncation point (IO thread ahead of or at the
+same position as the SQL thread), nothing special needs to be
+done.
+If the position of the SQL thread is after the truncation point,
+the behaviour will depend on relay_log_purge:</p>
+<ul>
+<li>If relay_log_purge is 1, all the previous relay logs are
+  dropped and the IO thread position is set to the SQL position.</li>
+<li>If relay_log_purge is 0, more work must be done to honour the
+  DBA's wish to keep the relay logs.  To do that, the IO thread
+  must be started UNTIL the position of the SQL thread.  When the
+  IO thread reaches this position, the SQL thread can be started
+  after updating its corresponding relay log position.  This
+  satisfies our wish #3 above.</li>
+</ul>
+<h2>Our workaround</h2>
+<p>Until ideal crash-safe replication is implemented in a future version of
+MySQL, we need to mitigate the problems caused by the current
+implementation (for our deployment at Booking.com, the biggest problem
+is unnecessarily downloading binary logs from the
+master).  The solution we are currently investigating is to deploy a
+<a href="https://mariadb.com/blog/mariadb-replication-maxscale-and-need-binlog-server/">Binlog
+Server</a>
+on our slaves:</p>
+<ul>
+<li>The Binlog Server downloads binary logs from the master</li>
+<li>The slave downloads the binary logs from the local
+  Binlog Server</li>
+<li>If the slave is restarted (after a crash or a
+  planned restart), it will not put undesired load on the master
+  because the binary logs will be downloaded locally</li>
+</ul>
+<p>This way, we avoid the downsides of MySQL relay log recovery
+by pushing the problem to the Binlog Server.  And because making the
+Binlog Server crash-safe is trivial, we successfully work-around the
+downsides of MySQL relay log recovery.</p>
+<p>But if we are not careful with this approach, we could end up
+consuming twice the disk space that is necessary by storing binary logs in the
+Binlog Server directory, and storing the relay logs in the MySQL directory.</p>
+<p>The
+<a href="https://dev.mysql.com/doc/refman/5.6/en/replication-options-slave.html#option_mysqld_relay-log-space-limit">relay-log-space-limit</a>
+option can be used to solve this problem.
+By setting this option to twice the max-relay-log-size (as
+recommended in the documentation), we put an upper limit on the
+extra space that can be used.  But when using this option, care must be taken
+to set it right as changing the value will necessitate restarting
+MySQL <a href="#fn1">[1]</a>.  There is a feature request (bug #68236) to <a href="https://bugs.mysql.com/bug.php?id=68236">make the
+relay-log-space-limit option
+dynamic</a>.
+Hopefully this will be implemented soon.</p>
+<h2>Conclusion</h2>
+<p>As promised in <a href="https://blog.booking.com/mysql_slave_scaling_and_more.html">our last
+post</a>,
+we presented another case for using the Binlog Server.  Hopefully,
+this will be a temporary use that will become obsolete. When a better relay log
+recovery is implemented in MySQL, we will not need to
+deploy additional software on our MySQL servers.</p>
+<p>We have yet another instance where using the Binlog Server is beneficial.
+I will present this at <a href="https://www.percona.com/live/london-2014/">Percona Live
+London</a> in my talk:
+<a href="https://www.percona.com/live/london-2014/sessions/high-availability-disaster-recovery-and-extreme-read-scaling-using-binlog-servers">High Availability, Disaster Recovery and Extreme Read
+Scaling using Binlog
+Servers</a>.</p>
+<p><a name="fn1">[1]</a>:
+When restarting MySQL to change the option, care must be
+taken not to restart MySQL with relay-log-recovery=1 as this could cause the
+unnecessary re-downloading of binary logs. With a local Binlog Server, this
+becomes less of a concern.</p>
+  </div>
+<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	  var disqus_shortname = 'bookingdevblog';
+	  (function() {
+	    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+	    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	  })();
+	</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+        </article>
+        </div> <!-- close container -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js" type="text/javascript"></script>
+<script src="https://blog.booking.com/theme/scripts/rm.js"></script>
+<script type="text/javascript">
+	$('header p').responsiveMeasure({
+	    idealLineLength: 66,
+	    minimumFontSize: 8,
+	    maximumFontSize: 16,
+	});
+
+	$('[class^=category_]').on('click', function () {
+		var href = $(this).find('a[rel=bookmark]').attr('href');
+
+		window.location.href = href;
+	});
+
+	var _gaq = _gaq || [];
+	 _gaq.push(['_setAccount', 'UA-36055905-1']);
+	 _gaq.push(['_trackPageview']);
+
+	 (function() {
+	   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'https://www') + '.google-analytics.com/ga.js';
+	   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	 })();
+	
+	// dev
+	if (window.location.hostname == 'localhost') {
+		var $h = $("[href^='https://blog.booking']");
+		$h.attr('href', function () {
+			return this.href.replace('https://blog.booking.com/','https://localhost:8000/');
+		});
+		
+		var $i = $("img[src^='https://blog.booking']");
+		$i.attr('src', function () {
+			return this.src.replace('https://blog.booking.com/','https://localhost:8000/');
+		});
+
+	}	  	
+</script>
+<script>
+	// popup share
+	$('.sharepop-lnk').click(function (e) {
+		e.preventDefault();
+
+		var strWindowFeatures = "menubar=no,location=no,resizable=yes,scrollbars=yes,status=yes,width=700,height=400";
+		var url = this.href;
+		var win = window.open(url, 'sharepopup', strWindowFeatures);
+	});
+</script></body>
+</html>

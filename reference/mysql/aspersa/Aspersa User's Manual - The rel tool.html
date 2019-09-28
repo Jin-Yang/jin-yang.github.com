@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20rel%20tool_files/default.css" media="screen">
+<title>Aspersa User's Manual - The rel tool</title>
+</head>
+<body>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The rel tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The rel tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+<p>The <em>rel</em> tool detects patterns in text, and for each line 
+that's similar to a previously seen line, it converts the numbers in the
+ line from absolute values to relative values.  This can be helpful for 
+watching the changes in numbers over time.</p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>This tool has no command-line options.  Any arguments given on the 
+command-line are interpreted as filenames, and if no filenames are 
+given, the tool reads from standard input.</p>
+
+<h2>How it Works</h2>
+
+<p>The tool tries to match each line of input to a list of patterns.  If the line matches, then <em>rel</em>
+ captures the numbers from the match, finds the last successful match of
+ this pattern, and prints out the line again, with the numbers converted
+ to relative values.  If the line doesn't match any existing patterns, 
+then <em>rel</em> generates a pattern that will match the line and 
+capture numbers in it.  It saves this pattern and tries to match any 
+further inputs against it.</p>
+
+<h2>Example Usage</h2>
+
+<p>Here is an example of two snippets from MySQL's SHOW INNODB STATUS output:</p>
+
+<code>
+Mutex spin waits 0, rounds 99584819933, OS waits 437663963
+RW-shared spins 834337527, OS waits 20258150; RW-excl spins 1769749834
+Mutex spin waits 0, rounds 99591465498, OS waits 437698122
+RW-shared spins 834352175, OS waits 20259032; RW-excl spins 1769762980
+</code>
+
+<p>After processing with <em>rel</em>, the text becomes the following:</p>
+
+<code>
+Mutex spin waits 0, rounds 99584819933, OS waits 437663963
+RW-shared spins 834337527, OS waits 20258150; RW-excl spins 1769749834
+Mutex spin waits 0, rounds 6645565, OS waits 34159
+RW-shared spins 14648, OS waits 882; RW-excl spins 13146
+</code>
+
+<p>It can be handy to combine <em>rel</em> and <em>align</em>.  For example, you can capture a number of samples to a file, relativize it, and then use <em>align</em> to print it out in a nice tabular format.  An example usage is given in <a href="http://www.xaprb.com/blog/2010/05/14/how-to-read-linuxs-procdiskstats-easily/">this blog post on formatting disk statistics</a>.</p>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

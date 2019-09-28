@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>LXC 网络设置相关|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>LXC 网络设置相关</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-03-08 Sunday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>LXC 本身就是基于内核的 Namespace、Cgroup 的隔离技术，对于网络同样使用了网络上常用的虚拟技术，包括 veth、vlan、macvlan 等等。</p>
+
+<p>在此仅介绍一下 LXC 中与网络相关的使用方法。</p>
+
+<!-- more -->
+
+<h1 id="网络设置">网络设置</h1>
+
+<p>创建完容器之后，默认会将容器的配置文件保存在 /var/lib/lxc/centos/config，可以参考网络相关的配置，默认使用 veth，此时可以自动联网。</p>
+
+<p>网络相关的设置可以查看源码中的 lxc-net 脚本，通过如下命令查看容器中的网络配置。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 容器中的网络设置
+[root@centos ~]# ip address show eth0
+23: eth0@if24: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether fe:cf:69:db:e7:3c brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 192.168.122.118/24 brd 192.168.122.255 scope global dynamic eth0
+       valid_lft 3542sec preferred_lft 3542sec
+    inet6 fe80::fccf:69ff:fedb:e73c/64 scope link
+       valid_lft forever preferred_lft forever
+
+----- 容器中的路由设置
+[root@centos ~]# ip route show
+default via 192.168.122.1 dev eth0
+169.254.0.0/16 dev eth0  scope link  metric 1023
+192.168.122.0/24 dev eth0  proto kernel  scope link  src 192.168.122.118
+
+----- DNS解析地址
+[root@centos ~]# cat /etc/resolv.conf
+; generated by /usr/sbin/dhclient-script
+nameserver 192.168.122.1
+
+----- 测试下能否ping通外部网络
+[root@centos ~]# ping www.hao123.com  -c 3
+PING hao123.n.shifen.com (180.149.132.3) 56(84) bytes of data.
+64 bytes from 180.149.132.3: icmp_seq=1 ttl=53 time=40.3 ms
+64 bytes from 180.149.132.3: icmp_seq=2 ttl=53 time=34.1 ms
+64 bytes from 180.149.132.3: icmp_seq=3 ttl=53 time=32.6 ms
+
+--- hao123.n.shifen.com ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 32.694/35.728/40.303/3.291 ms</code></pre></figure>
+
+<p>其中与网络相关的默认的配置如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">lxc.network.type = veth
+lxc.network.flags = up
+lxc.network.link = virbr0
+lxc.network.hwaddr = fe:cf:69:db:e7:3c</code></pre></figure>
+
+<p>也就是说，如上的配置文件采用的是 veth (Virtual Ethernet Interface) 模式。该模式会创建一对网络设备，其中一端在容器中，另一端会添加到 bridge (通过 lxc.network.link 指定)。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看网桥的设置
+# brctl show virbr0
+bridge name     bridge id               STP enabled     interfaces
+virbr0          8000.52540054901b       yes             vethXTBOA0
+
+----- 查看主机是否打开了路由转发
+# cat /proc/sys/net/ipv4/ip_forward
+1
+
+----- 查看iptables的SNAT设置
+# iptables -nL POSTROUTING -t nat --line-number
+Chain POSTROUTING (policy ACCEPT)
+num  target     prot opt source               destination
+1    MASQUERADE  tcp  --  192.168.122.0/24    !192.168.122.0/24     masq ports: 1024-65535
+2    MASQUERADE  udp  --  192.168.122.0/24    !192.168.122.0/24     masq ports: 1024-65535
+3    MASQUERADE  all  --  192.168.122.0/24    !192.168.122.0/24</code></pre></figure>
+
+<p>veth 实际上就是模拟了一对以太网络设备，类似于一个管道，从设备的一端传入，然后从另一端传出；两个设备处在同一个广播域中，而非基于 IP 的端对端的传输。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">实际上网络设备的大致创建过程如下。
+
+创建一对 VETH 网络设备。后续的网络设置将会通过 DNSmasq 进行，该程序实际会监听网桥 (在此为 virbr0) 上的端口，而且网桥的 IP 将作为容器的默认网关。
+&lt;pre style=&quot;font-size:0.8em; face:arial;&quot;&gt;
+# netstat -atunp | grep dnsmasq                 # 在主机中查看DNSmasq，包括其监听的端口等
+# ip addr show virbr0                           # 查看网桥对应的IP
+
+# grep nameserver /etc/resolv.conf              # 容器中的DNS服务器实际上是网桥上的IP
+# route -nee                                    # 默认路由同样是
+&lt;/pre&gt;&lt;/li&gt;&lt;br&gt;&lt;li&gt;
+
+主机一侧的 VETH 设备，实际上会链接网桥，也就是 virbr0 。&lt;/li&gt;&lt;br&gt;&lt;li&gt;
+
+另一侧的 VETH 设备会移动到容器中，并且重命名为 eth0，并在容器中进行配置。&lt;/li&gt;&lt;br&gt;&lt;li&gt;
+
+当 init 进程启动之后，会设置相应的网络设备，并可以使用网络了。
+&lt;/li&gt;&lt;/ol&gt;
+通过上述的步骤之后，通过一对网络设备可以在主机和容器之间进行通讯。&lt;br&gt;&lt;br&gt;
+
+在主机中会有一个 vethXXXXX 的设备，而另一端在容器中；而主机端的设备会添加到配置中的网桥中。
+# brctl show                 # 查看网桥的配置
+
+在如下的步骤中，我们尝试模拟 lxc 配置网络设备。当新建 NET-NS 之后，会默认创建一个 lo 设备；然后可以进入这个命名空间，创建一对设备，不过此时还没有设置 IP 。
+
+# mkdir -p /var/run/netns
+# ip netns add mynamespace
+# ip netns list
+# ls -l /var/run/netns
+
+# ip netns exec mynamespace bash                       # 进入NET-NS
+# ip link add vethMYTEST type veth peer name eth0      # NS中新建一对设备
+# ip link list                                         # NS中的网络设备，应该有3个
+
+# ip address add 192.168.122.63/24 dev eth0            # 设置IP，注意网段
+# ip link set eth0 up                                  # 启动设备
+# ip address list                                      # 查看
+
+# ip link set vethMYTEST netns 1                       # 将另一个设备添加到PID=1的命名空间
+# ip link set vethMYTEST up                            # 返回主机执行
+# ip link list vethMYTEST                              # 主机中查看
+# ping -c 2 192.168.122.63                             # 此时网络是不通的
+
+# brctl addif virbr0 vethMYTEST                        # 将设备添加到网桥中
+# ping -c 2 192.168.122.63                             # 好了现在网络是通的</code></pre></figure>
+
+<p>可以从源码的 config_network_type() 函数中看到，LXC 中可供选择的网络类型包括了 veth、macvlan、vlan、phys、empty、none 六种，不太清楚 empty 和 none 什么区别。</p>
+
+<h1 id="empty">empty</h1>
+
+<p>配置文件中相关的网络配置如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># grep network /var/lib/lxc/centos/config
+lxc.network.type = empty
+lxc.network.hwaddr = fe:cf:69:db:e7:3c
+lxc.network.flags = up</code></pre></figure>
+
+<p>此时通过 lxc-info 查看时会发现，实际上是没有联网的，不过这正好符合预期，empty 网络定义如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">empty network type creates only the loopback interface</code></pre></figure>
+
+<p>此时会创建一个 Namespace，所以在 host 上是看不到 lo 设备的。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看进程ID
+# ps aux | grep &#39;lxc-start -n centos&#39;
+
+----- 通过procfs查看对应的namespace
+# ls -l /proc/17923/ns/</code></pre></figure>
+
+<h1 id="veth">veth</h1>
+
+<p>如下是对于 veth 的描述。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">a peer network device is created with one side assigned to the container and
+the other side is attached to a bridge specified by the lxc.network.link.</code></pre></figure>
+
+<p>与网络相关的配置如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># grep network /var/lib/lxc/veth01/config
+lxc.network.type = veth
+lxc.network.flags = up
+lxc.network.link = virbr0
+lxc.network.hwaddr = fe:cf:69:db:e7:3c</code></pre></figure>
+
+<h1 id="phys">phys</h1>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">an already existing interface specified by the lxc.network.link is assigned to the container</code></pre></figure>
+
+<h1 id="参考">参考</h1>
+
+<p><a href="http://containerops.org/2013/11/19/lxc-networking/">Exploring LXC Networking</a>，介绍 LXC 网络不错的文章，可以参考 <a href="/reference/linux/container/Exploring LXC Networking.mht">本地文档</a> 。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-container-lxc-introduce.html" title="LXC 简介">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-container-lxc-sshd.html" title="LXC sshd 单进程启动">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1425744000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-container-lxc-network_init.html" data-title="LXC 网络设置相关" data-url="/post/linux-container-lxc-network_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

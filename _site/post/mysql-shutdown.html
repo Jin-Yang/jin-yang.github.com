@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL 关闭过程|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,shutdown,关闭">
+  <meta name="description" content="简单分析下 mysqld 进程关闭的过程，并讨论如何安全地关闭 MySQL 实例。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL 关闭过程</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-09-01 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>简单分析下 mysqld 进程关闭的过程，并讨论如何安全地关闭 MySQL 实例。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>通常有几种方式关闭 MySQL 服务器，常见有如下：A) 执行 <code>mysqladmin shutdown</code> 命令；B) 向服务器发送 SIGTERM、SIGQUIT 信号。</p>
+
+<h3 id="mysqladmin">mysqladmin</h3>
+
+<p>首先，看下通过 <code>mysqladmin shutdown</code> 调用时的执行流程。</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">static</span> <span class="kt">int</span> <span class="nf">execute_commands</span><span class="p">(</span><span class="n">MYSQL</span> <span class="o">*</span><span class="n">mysql</span><span class="p">,</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="p">...</span> <span class="p">...</span>
+  <span class="k">for</span> <span class="p">(;</span> <span class="n">argc</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">argv</span><span class="o">++</span><span class="p">,</span><span class="n">argc</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">option</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">log_warnings</span><span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">option</span><span class="o">=</span> <span class="n">find_type</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">command_typelib</span><span class="p">,</span> <span class="n">FIND_TYPE_BASIC</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nl">ADMIN_SHUTDOWN</span><span class="p">:</span>
+      <span class="p">...</span> <span class="p">...</span>
+      <span class="k">if</span><span class="p">(</span><span class="n">mysql_get_server_version</span><span class="p">(</span><span class="n">mysql</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">50709</span><span class="p">)</span>
+        <span class="n">resShutdown</span><span class="o">=</span> <span class="n">mysql_shutdown</span><span class="p">(</span><span class="n">mysql</span><span class="p">,</span> <span class="n">SHUTDOWN_DEFAULT</span><span class="p">);</span>
+      <span class="k">else</span>
+        <span class="n">resShutdown</span><span class="o">=</span> <span class="n">mysql_query</span><span class="p">(</span><span class="n">mysql</span><span class="p">,</span> <span class="s">&quot;shutdown&quot;</span><span class="p">);</span>
+      <span class="k">if</span><span class="p">(</span><span class="n">resShutdown</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">my_printf_error</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&quot;shutdown failed; error: &#39;%s&#39;&quot;</span><span class="p">,</span> <span class="n">error_flags</span><span class="p">,</span>
+        <span class="n">mysql_error</span><span class="p">(</span><span class="n">mysql</span><span class="p">));</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如上，当版本小于 5.7.9 时，实际上会调用 <code>mysql_shutdown()</code> 函数，而在 5.7.9 版本之后(包括该版本)，则会调用 <code>mysql_query()</code> 函数。</p>
+
+<p>在此，主要看下后者的处理。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">dispatch_command()
+ |                              ← COM_SHUTDOWN:
+ |-shutdown()                   ← 调用相同文件下的函数，关闭mysqld服务
+   |-check_global_access()
+   |-my_ok()                    ← 返回客户端，COM_QUERY&lt;=&gt;my_ok()，COM_SHUTDOWN&lt;=&gt;my_eof()
+   |-general_log_print()        ← 打印日志&quot;Got shutdown command for&quot;
+   |-kill_mysql()
+     |-pthread_kill()           ← 向signal_thread发送SIGTERM信号</code></pre></figure>
+
+<p>也就是说，实际上还是通过用户线程向服务发送 SIGTERM 信号完成。</p>
+
+<h3 id="sigterm">sigterm</h3>
+
+<p>如上，两种方式最终的实现都是通过发送 SIGTERM 信号完成的，那么我们接下来就看看 mysqld 服务是如何处理该信号量的。</p>
+
+<h4 id="初始化">初始化</h4>
+
+<p>其中部分信号，如 SIGABRT、SIGSEGV 等会在 <code>my_init_signals()</code> 函数中进行初始化信号处理函数，而 SIGTERM、SIGQUIT、SIGHUP 则会在单独的线程中进行处理，对应 <code>signal_hand()</code> 函数。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysqld_main()
+ |-my_init_signals()               ← 设置信号处理函数
+ |-start_signal_handler()          ← 创建一个单独的信号处理线程
+   |-mysql_thread_create()         ← 创建signal_hand()单独线程</code></pre></figure>
+
+<h4 id="信号处理">信号处理</h4>
+
+<p>接下来看看 <code>signal_hand()</code> 函数中的处理方式。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">signal_hand()
+ |-abort_loop=true                 ← 设置abort_loop变量，很多循环会检查该变量
+ |-pthread_kill()                  ← 先主线程发送SIGUSR1信号
+ |-close_connections()             ← 关闭所有链接</code></pre></figure>
+
+<p>实际上，在主线程中对 SIGUSR1 信号并没有进行处理，应该只是一个线程切换；接下来，还是看看主线程的处理：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysqld_main()
+ |-my_thread_join()                ← 等待上述的signal_hand()处理线程
+ |-clean_up()
+   |-plugin_shutdown()
+     |-plugin_deinitialize()
+       |-ha_finalize_handlerton()
+         |-hton-&gt;panic()           ← 调用插件的关闭函数</code></pre></figure>
+
+<p>也就是会依次调用各个存储引擎的 <code>panic()</code> 函数，对应到 InnoDB 就是 <code>innobase_end()</code> 函数。</p>
+
+<h2 id="innodb-关闭过程">InnoDB 关闭过程</h2>
+
+<p>在关闭 MySQL 时，可以通过 innodb_fast_shutdown 参数控制存储引擎 InnoDB 的行为，该参数可以取 0、1、2，各个值的含义分别如下：</p>
+
+<p>0 关闭时 InnoDB 需要完成所有的 full purge 和 merge insert buffer 操作，这个过程会需要一定的时间，有时候可能会花上几个小时；通常在升级 InnoDB 时，需要设置为 0。</p>
+
+<p>1 默认值，关闭 InooDB 时不完成 full purge 和 merge insert buffer，但是会将缓冲池中的脏页写到磁盘中。</p>
+
+<p>2 意味着既不完成 full purge 和 merge insert buffer，同时也不将缓冲池中的脏页刷新到磁盘，但是会将 redo log 写入到磁盘；这种情况下，事务也不会丢失，但是下次启动时需要执行崩溃恢复。</p>
+
+<p>接着看看 InnoDB 关闭时的详细处理过程。</p>
+
+<h3 id="源码解析">源码解析</h3>
+
+<p>如下是代码的处理过程，其中 <code>logs_empty_and_mark_files_at_shutdown()</code> 函数是主要的关闭处理函数，在系统关闭时同时执行 sharp checkpoint 操作。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">innobase_end()
+ |-srv_fast_shutdown                           ← 根据参数innodb_fast_shutdown判断是否快速关闭
+ |-hash_table_free()                           ← 释放innodb表占用的内存
+ |-innobase_shutdown_for_mysql()
+ | |-fts_optimize_shutdown()
+ | |-dict_stats_shutdown()
+ | |-logs_empty_and_mark_files_at_shutdown()   ← 1.  将buffer pool落盘，并将LSN写入表空间，主要函数，后面均为资源清理
+ | | |-ib::info()                              ← 1.0 打印Starting shutdown日志 &lt;&lt;&lt;&lt;&lt;&lt;
+ | | |-srt_shutdown_state                            设置变量，进入SRV_SHUTDOWN_CLEANUP状态
+ | | |
+ | | |-srv_any_background_threads_are_active() ← 1.1 等待后台线程关闭，没1min打印一次等待线程信息
+ | | |
+ | | |-trx_sys_any_active_transactions()       ← 1.2 如果事务已经在prepare阶段了，则等待其处理完成
+ | | |
+ | | |-srv_get_active_thread_type()            ← 1.3 等待worker、master、purge线程进入suspend状态
+ | | |
+ | | |-srt_shutdown_state                            设置变量，进入SRV_SHUTDOWN_FLUSH_PHASE状态
+ | | |-buf_page_cleaner_is_active              ← 1.4 正常此时只剩下了page_cleaner线程刷Buffer Pool了，等待其完成
+ | | |-buf_pool_check_no_pending_io()                检查IO操作是否都已经完成
+ | | |
+ | | |                                         ← 1.5 如果srv_fast_shutdown变量值为2
+ | | |-log_buffer_flush_to_disk()                    将redo-log刷新到磁盘
+ | | |-srv_any_background_threads_are_active()
+ | | |-fil_close_all_files()                         关闭文件，然后返回
+ | | |
+ | | |-log_make_checkpoint_at()                ← 1.6 将最近LSN做checkpoint
+ | | |-fil_flush_file_spaces()                       将表空间文件和日志文件刷新到磁盘
+ | | |-srt_shutdown_state                            设置变量，进入SRV_SHUTDOWN_LAST_PHASE状态
+ | | |-srv_get_active_thread_type()                  再次确认所有服务已经关闭
+ | | |
+ | | |-fil_write_flushed_lsn()                 ← 1.7 将LSN写入到系统表空间的第一页中
+ | | |-fil_close_all_files()                         关闭所有文件
+ | |
+ | |-srv_conc_get_active_threads()             ← 正常应该无活跃的线程，有则打印到日志
+ | |
+ | |                                           ← 2. 接下来是一些资源的清理
+ | |-srv_shutdown_all_bg_threads()                  关闭InnoDB创建的后台线程
+ | |-fclose()                                       关闭InnoDB打开的文件
+ | |-dict_stats_thread_deinit()
+ | |                                                释放mutexes，释放内存
+ | |-os_thread_free()                               释放线程相关的资源
+ | |-sync_check_close()                             释放同步相关资源
+ |
+ |-innobase_space_shutdown()</code></pre></figure>
+
+<p>实际上，Buffer Pool 中脏页刷到磁盘的操作是最耗时的，脏页越多需要 flush 的块也就越多，从而导致关闭时间变长；可以通过下面的命令来观察 Dirty Page 的数量：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ mysqladmin -uroot ext -i 1 | grep &quot;Innodb_buffer_pool_pages_dirty&quot;</code></pre></figure>
+
+<!--
+2. 参数innodb_max_dirty_pages_pct
+
+Buffer_Pool中Dirty_Page所占的数量，直接影响InnoDB的关闭时间。参数innodb_max_dirty_pages_pct可以直接控制了Dirty_Page在Buffer_Pool中所占的比率，而且幸运的是innodb_max_dirty_pages_pct是可以动态改变的。
+
+所以，在关闭InnoDB之前先将innodb_max_dirty_pages_pct调小，强制数据块Flush一段时间，则能够大大缩短MySQL关闭的时间。
+set global innodb_max_dirty_pages_pct=0;
+
+一般执行了上面的命令之后，Dirty_Page的Flush仍需要一段时间，所以要稍等一会儿，再关闭MySQL才有效果。
+3. 关闭前做些什么
+
+有时候，就算你改变innodb_max_dirty_pages_pct=0，仍然不能保证InnoDB快速关闭。还有一些注意事项。
+
+设置数据库为只读：如果数据库一直是活跃的，有连接在向里面写数据，那么Dirty Page则还可能不断的产生。
+
+如果是备库，在innodb_max_dirty_pages_pct设置成0的同时，最好先stop slave：这个很关键，而且对关闭时间影响也会很大。第一，主动stop slave后，MySQL在关闭时，需要停止的线程其实是更少了的。第二，如果slave的SQL线程还在执行的话，Buffer Pool则还在活动，Dirty Page也可能还会不断的增多。
+
+一般，如果注意到了上面三点：
+set global innodb_max_dirty_pages_pct=0
+set global read_only=1
+stop slave
+
+关闭数据库，就会很快了。如果你把上面三步做完，然后观察Dirty Page的数量，当数量很少时，再执行命令关库，这样总能保证以较快的速度完成关库命令。
+4. 一个注意事项
+
+这里需要注意的是，你不需等到Dirty Page的数量到零，才开始关闭MySQL。因为有时候，即使已经没有活动的会话时，InnoDB的Insert Buffer的合并仍然会产生一些Dirty Page，所以这时你可能会发现，等了很久很久很久Dirty Page的数量仍然大于零。
+
+其实这时，你已经可以快速的关闭数据库了。我怎么判断这种情况呢？这时我们可以通过InnoDB的LSN来判断，下面是SHOW InnoDB Status里面获取的信息：
+
+Log sequence number 814 3121743145
+Log flushed up to   814 3121092043
+Last checkpoint at  814 2826361389
+
+这里看到，当前的LSN是814 3121743145，最后一个检查点在814 2826361389，也就是说两者相差了3121743145-2826361389=295381756，那么意味着InnoDB还有很多Dirty Page需要Flush。
+
+下面是另一个库的LSN信息：
+
+Log sequence number 0 1519256161
+Log flushed up to   0 1519256161
+Last checkpoint at  0 1519256161
+
+可以看到，这里的Dirty Page都已经Flush了，那么关闭InnoDB也就很快了。
+-->
+
+<h3 id="faqs">FAQs</h3>
+
+<p>1. 如何查看 InnoDB 在等待那些线程？</p>
+
+<p>InnoDB 在关闭时，会每隔 100ms 检查一次后台线程是否已经全部退出，具体检查那些线程可以查看 <code>srv_any_background_threads_are_active()</code> 函数；等待超过了 1min ，则会打印日志 “Waiting for” 。</p>
+
+<p>2. 为什么要等待出于 prepare 阶段的事务？</p>
+
+<p>如果事务处于 prepare 阶段，说明已经在 InnoDB 执行了 commit 操作，也就是在存储引擎中认为已经提交，只需要服务端提交即可，显然，我们不希望丢失这部分数据。</p>
+
+<p>实际上，接下来的操作不会再与客户端进行交互，都是服务端的执行流程了，正常来说执行的时间会非常短。</p>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://dev.mysql.com/doc/refman/en/server-shutdown.html">Reference Manual - The Server Shutdown Process</a></p>
+
+<!--
+
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/flask-tips.html" title="Flask 常见示例">&larr; Older</a></li> 
+         <li class="next"><a href="/post/mysql-repaire-table_init.html" title="MySQL 表修复">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1472659200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-shutdown.html" data-title="MySQL 关闭过程" data-url="/post/mysql-shutdown.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

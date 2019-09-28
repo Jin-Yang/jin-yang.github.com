@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux 用户管理|JinYang's Blog</title>
+  <meta name="keywords" content="linux,用户管理">
+  <meta name="description" content="Linux 是多用户系统，可以允许多个用户登陆，这里简单介绍与用户管理相关的内容。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux 用户管理</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2014-10-03 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Linux 是多用户系统，可以允许多个用户登陆，这里简单介绍与用户管理相关的内容。</p>
+
+<!-- more -->
+
+<h2 id="用户管理">用户管理</h2>
+
+<p>在 CentOS 中，useradd 和 adduser 是相同的；Ubuntu 上可能会有所区别，<code>/etc/login.defs</code> 定义了部分在创建用户时的默认配置选项。</p>
+
+<p>useradd 的操作的一般步骤为：</p>
+
+<ol>
+  <li>帐号信息添加到 <code>/etc/passwd</code>、<code>/etc/shadow</code>、<code>/etc/group</code>、<code>/etc/gshadow</code> 文件中。</li>
+  <li>创建 <code>/home/USERNAME</code> 目录。</li>
+  <li>将 <code>/etc/skel </code> 目录下的内容复制到 <code>/home/USERNAME</code> 目录下，很多是隐藏文件。</li>
+  <li>在 <code>/var/mail</code> 目录下创建邮箱帐号。</li>
+</ol>
+
+<p>其中第一步基本上所有的发行版本都会执行，而剩余的不同的发行版本会有不同的操作。最后还需要通过 <code>passwd USERNAME</code> 命令设置用户的密码，CentOS 在没有设置密码时无法登陆。</p>
+
+<p>在通过 <code>userdel USERNAME</code> 删除用户时，会删除 <code>/etc/passwd</code>、<code>/etc/group</code> 中的内容，但是不会删除 <code>/home/user</code> 目录以及 <code>/var/mail</code> 目录下文件，可以使用 <code>-r</code> 删除这两项。</p>
+
+<p>通过 <code>id user</code> 命令查看用户。</p>
+
+<h3 id="常见操作">常见操作</h3>
+
+<p>新创建一个用户，并添加到一个已知的附加用户组里，如果用户组不存在则需要手动创建，也可以通过逗号分隔指定多个用户组。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># useradd -G admins,ftp,www,developers foobar</code></pre></figure>
+
+<p>注意，如上的方法会同时创建一个主用户组。</p>
+
+<p>也可以通过 <code>-g</code> 参数将新增加的用户初始化为指定为登录组，也就是主要用户组。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># useradd -g developers foobar</code></pre></figure>
+
+<p>其它常见操作可以参考如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 修改主要用户组为apache
+# usermod -g apache foobar
+----- 将已经存在的用户添加到一个组里面，此时会在/etc/group的apache分组最后一列增加
+# usermod -a -G apache foobar</code></pre></figure>
+
+<p>其中 <code>-g</code> 表示 <code>initial login group</code>，<code>-G</code> 表示 <code>supplementary groups</code>。</p>
+
+<h3 id="uid-vs-euid">UID VS. EUID</h3>
+
+<p>Linux 系统中每个进程都有 2 个 ID，分别为用户 ID(uid) 和有效用户 ID(euid)；其中，前者一般表示进程的创建者 (表示通过那个用户创建)，而 EUID 表示进程对于文件和资源的访问权限 (表示拥有那个用户的权限)。</p>
+
+<p>一般来说，UID 和 EUID 是相同的，如果用户设置了 setuid 权限，那么两者将会不同。</p>
+
+<p>命令行可以通过 <code>chmod u+s</code> 或 <code>chmod g+s</code> 来设置二进制的可执行文件的 euid，注意，只对可执行文件设置，一般来说 passwd 文件是具有该权限的。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;pwd.h&gt;</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;errno.h&gt;</span>
+<span class="cp">#include &lt;fcntl.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+<span class="cp">#include &lt;sys/stat.h&gt;</span>
+<span class="cp">#include &lt;sys/types.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">struct</span> <span class="n">passwd</span> <span class="o">*</span> <span class="n">pw</span><span class="p">;</span>
+
+	<span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">pw</span> <span class="o">=</span> <span class="n">getpwnam</span><span class="p">(</span><span class="s">&quot;monitor&quot;</span><span class="p">);</span> <span class="c1">// 注意，入参不能为NULL</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">pw</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;user is not exist</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+		<span class="k">else</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;get user failed, %d:%s.&quot;</span><span class="p">,</span> <span class="n">errno</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Password information:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;    pw-&gt;pw_name = %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_name</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;    pw-&gt;pw_passwd = %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_passwd</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;    pw-&gt;pw_uid = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_uid</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;    pw-&gt;pw_gid = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_gid</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;    pw-&gt;pw_gecos = %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_gecos</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;    pw-&gt;pw_dir = %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_dir</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;    pw-&gt;pw_shell = %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_shell</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">setgid</span><span class="p">(</span><span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_gid</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Failed to set group id(%d): %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+				<span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_gid</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">setuid</span><span class="p">(</span><span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_uid</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Failed to set user id(%d): %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+				<span class="n">pw</span><span class="o">-&gt;</span><span class="n">pw_uid</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+	<span class="p">}</span>
+
+	<span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Current user/group info: UID=%d, EUID=%d, GID=%d, EGID=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+				<span class="n">getuid</span><span class="p">(),</span> <span class="n">geteuid</span><span class="p">(),</span> <span class="n">getgid</span><span class="p">(),</span> <span class="n">getegid</span><span class="p">());</span>
+
+	<span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/tmp/mysql.test&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Failed to openfile: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="过期设置">过期设置</h3>
+
+<p>通过如下方法设置过期条件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># useradd USER -e 01/28/12               # 创建用户时指定过期条件
+# grep EXPIRE /etc/default/useradd       # 或者修改模板对应的默认参数
+# useradd -D -e 01/19/12                 # 修改默认新建帐户过期时间
+# useradd -D | grep EXPIR                # 查看
+# chage -l USER                          # 查看用户的过期时间
+# usermod -e 01/28/12 USER               # 修改用户属性
+# chage -E 01/28/12 USER                 # 调整账户过期时间</code></pre></figure>
+
+<h3 id="faq">FAQ</h3>
+
+<p>当排查系统用户是否有访问权限时，可以通过如下方法：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># su - monitor -s /bin/bash -c &#39;cat /tmp/mysql.test&#39;
+# su - monitor -g monitor -s /bin/bash -c &#39;cat /tmp/mysql.test&#39;</code></pre></figure>
+
+<h2 id="审计">审计</h2>
+
+<p>CentOS 系统上，用户登录历史存储在以下这些文件中：</p>
+
+<ul>
+  <li><code>/var/run/utmp</code> 记录当前打开的会话，会被 who 和 w 记录当前有谁登录以及他们正在做什么。</li>
+  <li><code>/var/log/wtmp</code> 存储系统连接历史记录，被 last 工具用来记录最后登录的用户的列表。</li>
+  <li><code>/var/log/btmp</code> 失败的登录尝试，被 lastb 工具用来记录最后失败的登录尝试的列表。</li>
+</ul>
+
+<p>实际上，可以直接通过 <code>utmpdump</code> 将上述文件中保存的数据 dump 出来，另外，默认的登陆日志保存在 <code>/var/log/secure</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 当前当登录的用户的信息
+# who
+huey     pts/1        2015-05-11 18:29 (192.168.1.105)
+sugar    pts/2        2015-05-11 18:29 (192.168.1.105)
+
+----- 登录的用户及其当前执行的任务
+# w
+18:30:51 up 3 min,  2 users,  load average: 0.10, 0.14, 0.06
+USER     TTY      FROM              LOGIN@   IDLE   JCPU   PCPU WHAT
+huey     pts/1    192.168.1.105    18:29    3.00s  0.52s  0.00s w
+sugar    pts/2    192.168.1.105    18:29    1:07   0.47s  0.47s -bash
+
+-----  当前当登录的用户的用户名
+# users
+huey sugar
+
+-----  当前与过去登录系统的用户的信息
+# last
+root     pts/3        192.168.1.105    Mon May 11 18:33 - 18:33  (00:00)
+sugar    pts/2        192.168.1.105    Mon May 11 18:32   still logged in
+sugar    pts/2        192.168.1.105    Mon May 11 18:29 - 18:32  (00:02)
+huey     pts/1        192.168.1.105    Mon May 11 18:29   still logged in
+reboot   system boot  3.5.0-43-generic Mon May 11 18:27 - 18:33  (00:05)
+huey     pts/1        192.168.1.105    Sat May  9 10:57 - 17:31  (06:33)
+
+----- 所有登录系统失败的用户的信息
+# lastb
+btmp begins Sat May  9 09:48:59 2015
+
+----- 用户最后一次登录的信息
+# lastlog
+root             pts/3    192.168.1.105    一  5月 11 18:36:43 +0800 2015
+huey             pts/1    192.168.1.105    一  5月 11 18:29:40 +0800 2015
+mysql                                      **从未登录过**
+sshd                                       **从未登录过**
+
+----- 用户连接时间的统计数据
+-----   1. 每天的总的连接时间
+# ac -d
+May  9  total        6.55
+Today   total        0.54
+----- 2. 每个用户的总的连接时间
+# ac -p
+    huey                                 6.78
+    sugar                                0.23
+    root                                 0.12
+    total        7.13</code></pre></figure>
+
+<!--
+## 安全加固
+
+
+centos限制登录失败次数并锁定设置
+
+vim /etc/pam.d/login
+
+在#%PAM-1.0下面添加：
+auth required pam_tally2.so deny=5 unlock_time=180 #登录失败5次锁定180秒，不包含root
+auth required pam_tally2.so deny=5 unlock_time=180 even_deny_root root_unlock_time=180 #包含root
+
+## 每次修改密码禁止使用前N次用过的密码
+
+出于安全考虑，要求修改linux密码策略，每次修改密码时设置的新密码不能是前n次使用过的密码。配置如下：
+
+Debian / Ubuntu：修改文件 # vi /etc/pam.d/common-password
+CentOS / RHEL / RedHat / Fedora 修改文件 # vi /etc/pam.d/system-auth
+
+在 password sufficient pam_unix.so use_authtok md5 shadow remember=10
+在相应行的后面添加 remember=10，而不是添加一行！
+
+SUSE比较恶心，找了半天才找到。man pw_check
+在/etc/security/pam_pwcheck文件中添加remember=5
+passwd:     nullok use_cracklib remember=5
+
+http://www.deer-run.com/~hal/sysadmin/pam_cracklib.html
+http://zhidao.baidu.com/link?url=xLcMH0cokvN585CPxKf3QVmmN1wDtgESTpAhl1_cxhPQZ0B3D41DhKZCcXr3E0-1nwfBtSKQWQCNKUGPhRvvcq
+-->
+
+<h2 id="capi">CAPI</h2>
+
+<p>在 C 语言中可以通过如下的示例读取用户信息，然后切换到用户。</p>
+
+<p>Linux 中进程在运行的时候，会有多个 UID 信息，可以通过 <code>/proc/PID/status</code> 查看当前进程的 UID 信息，包括了四列，分别为：</p>
+
+<ol>
+  <li>RUID Real 实际用户，也就是指进程的执行者；</li>
+  <li>EUID Effective 有效用户，进程执行时的访问权限；</li>
+  <li>SUID Saved 保存设置用户，作为 EUID 的副本，可以再次恢复到 EUID；</li>
+  <li>FSUID FileSystem 一般与 EUID 是相同的。</li>
+</ol>
+
+<p>在如上的示例中，当通过 <code>setuid()</code> 接口切换用户时，对应的所有 ID 都会切换，那么这几个 UID 的用途是什么。</p>
+
+<p>其中 FSUID 用于 NFS 使用，不过不太清楚如何使用，这里暂时忽略。</p>
+
+<h3 id="uid-vs-euid-1">UID VS. EUID</h3>
+
+<p>切换用户时，有两种方式，A) 通过 <code>setuid()</code> 永久切换；B) 利用 <code>seteuid()</code> 临时切换。</p>
+
+<p>前者类似上面的示例，所有的 UID 参数都会被修改，不过此时切换之后无法切换回来，而 <code>seteuid()</code> 可以做到。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;pwd.h&gt;</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;errno.h&gt;</span>
+<span class="cp">#include &lt;fcntl.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+<span class="cp">#include &lt;sys/stat.h&gt;</span>
+<span class="cp">#include &lt;sys/types.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">char</span> <span class="o">*</span><span class="n">buff</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">size</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">ouid</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">passwd</span> <span class="n">mpwd</span><span class="p">,</span> <span class="n">upwd</span><span class="p">,</span> <span class="o">*</span><span class="n">result</span><span class="p">;</span>
+        <span class="kt">char</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+
+        <span class="n">snprintf</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">cmd</span><span class="p">),</span> <span class="s">&quot;grep -rne &#39;^Uid:&#39; /proc/%d/status&quot;</span><span class="p">,</span> <span class="n">getpid</span><span class="p">());</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="n">sysconf</span><span class="p">(</span><span class="n">_SC_GETPW_R_SIZE_MAX</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;get passwd size failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="mi">4096</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">buff</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">buff</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;malloc buffer(%d) failed, out of memory.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">getpwnam_r</span><span class="p">(</span><span class="s">&quot;monitor&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">mpwd</span><span class="p">,</span> <span class="n">buff</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">result</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;user &#39;monitor&#39; doesn&#39;t exists.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+                <span class="k">else</span>
+                        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;get user &#39;monitor&#39; info failed, %d:%s.&quot;</span><span class="p">,</span>
+                                        <span class="n">rc</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">rc</span><span class="p">));</span>
+                <span class="n">free</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">getpwnam_r</span><span class="p">(</span><span class="s">&quot;foobar&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">upwd</span><span class="p">,</span> <span class="n">buff</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">result</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;user &#39;monitor&#39; doesn&#39;t exists.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+                <span class="k">else</span>
+                        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;get user &#39;monitor&#39; info failed, %d:%s.&quot;</span><span class="p">,</span>
+                                        <span class="n">rc</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">rc</span><span class="p">));</span>
+                <span class="n">free</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">ouid</span> <span class="o">=</span> <span class="n">getuid</span><span class="p">();</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Monitor UID %d, Fooobar UID %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">mpwd</span><span class="p">.</span><span class="n">pw_uid</span><span class="p">,</span> <span class="n">upwd</span><span class="p">.</span><span class="n">pw_uid</span><span class="p">);</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Before  RUID=%d, EUID=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getuid</span><span class="p">(),</span> <span class="n">geteuid</span><span class="p">());</span>
+        <span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">seteuid</span><span class="p">(</span><span class="n">mpwd</span><span class="p">.</span><span class="n">pw_uid</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Set monitor user id(%d) failed, %d:%s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                                <span class="n">mpwd</span><span class="p">.</span><span class="n">pw_uid</span><span class="p">,</span> <span class="n">errno</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Monitor RUID=%d, EUID=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getuid</span><span class="p">(),</span> <span class="n">geteuid</span><span class="p">());</span>
+        <span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">setuid</span><span class="p">(</span><span class="n">ouid</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Restore user id(%d) failed, %d:%s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                                <span class="n">ouid</span><span class="p">,</span> <span class="n">errno</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Restore RUID=%d, EUID=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getuid</span><span class="p">(),</span> <span class="n">geteuid</span><span class="p">());</span>
+        <span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">setuid</span><span class="p">(</span><span class="n">upwd</span><span class="p">.</span><span class="n">pw_uid</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Set fooobar user id(%d) failed, %d:%s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                                <span class="n">upwd</span><span class="p">.</span><span class="n">pw_uid</span><span class="p">,</span> <span class="n">errno</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Fooobar RUID=%d, EUID=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getuid</span><span class="p">(),</span> <span class="n">geteuid</span><span class="p">());</span>
+        <span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>执行的结果如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Monitor UID 1005, Fooobar UID 1006
+Before  RUID=0, EUID=0
+9:Uid:  0       0       0       0
+Monitor RUID=0, EUID=1005
+9:Uid:  0       1005    0       1005
+Restore RUID=0, EUID=0
+9:Uid:  0       0       0       0
+Fooobar RUID=1006, EUID=1006
+9:Uid:  1006    1006    1006    1006</code></pre></figure>
+
+<p>注意，没有 C 接口获取 <code>SUID</code> 和 <code>FSUID</code>，需要直接查看 <code>/proc/&lt;PID&gt;/status</code> 文件。</p>
+
+<h3 id="重试">重试</h3>
+
+<p>需要注意，如果在获取用户信息的时候，刚好有添加用户之类的操作，包括了保存 <code>/etc/passwd</code> 文件，可能会导致获取用户失败，而且 <code>errno</code> 仍然为 0 。</p>
+
+<p>所以，此时最好增加重试机制，带来的副作用是，如果用户真的不存在可能会浪费资源。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">get_user_unsafe</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">passwd</span> <span class="o">*</span><span class="n">pw</span><span class="p">;</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">pw</span> <span class="o">=</span> <span class="n">getpwnam</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="cm">/* getpwuid(uid); */</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">pw</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="c1">//fprintf(stderr, &quot;no such user &#39;%s&#39;.\n&quot;, name);</span>
+                                <span class="n">usleep</span><span class="p">(</span><span class="mi">20000</span><span class="p">);</span>
+                                <span class="k">continue</span><span class="p">;</span>
+                        <span class="p">}</span>
+                        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;get user info failed, %d:%s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                                        <span class="n">errno</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;get user info in %d times.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="安全性">安全性</h3>
+
+<p><code>getpwnam()</code> 函数会使用 glibc 中的静态内存，返回的结果实际上就指向这块内存，每次调用该接口会覆盖。这也就意味着，如果多次调用，实际上只会获取到最后的一次结果。</p>
+
+<p>另外，需要注意 <code>getpwnam_r()</code> 函数不是信号安全的，内部会对线程加锁，不要在信号处理函数中调用，可能会造成死锁。</p>
+
+<h2 id="杂项">杂项</h2>
+
+<p>简单记录常用的使用技巧。</p>
+
+<h3 id="wheel">wheel</h3>
+
+<p>wheel 组是一特殊用户组，被一些 Unix 系统用来控制能否通过 su 命令来切换到 root 用户。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ grep &#39;wheel&#39; /etc/group
+wheel:x:10:foo,bar,foobar</code></pre></figure>
+
+<p>可以配置成非 wheel 组的用户不能通过 su 命令切换到 root 用户。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ grep &#39;pam_wheel&#39; /etc/pam.d/su
+auth            required        pam_wheel.so use_uid
+
+$ grep &#39;WHEEL&#39; /etc/login.defs
+SU_WHEEL_ONLY yes</code></pre></figure>
+
+<p>这时非 wheel 组的成员用 su 命令切换到 root 时提示权限不够，而用 wheel 组的成员切换没任何问题。</p>
+
+<h3 id="忘记root密码">忘记root密码</h3>
+
+<p>启动进入 Grub 时，通过 e 进入编辑方式，添加 single 参数 (也就是进入单用户模式)，登陆之后，通过 password 修改密码即可。</p>
+
+<h3 id="登陆提示信息">登陆提示信息</h3>
+
+<p>涉及的有两个配置文件 <code>/etc/issue</code> 以及 <code>/etc/motd</code>，其中前者为登陆前的提示，后者为登陆后的提示信息。</p>
+
+<p>如果切换到终端登陆 (注意，是终端，通常为类似 <code>CTRL+ALT+F2</code>)，通常会显示提示信息，该信息是在 <code>/etc/issue</code> 中进行设置。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 提示信息为
+CentOS Linux 7 (Core)
+Kernel 3.10.0-327.el7.x86_64 on an X86_64
+
+----- 其中/etc/issue配置为
+\S
+Kernel \r on an \m
+
+----- 配置文件中各个选项的含义为：
+    \d 本地端时间的日期；
+    \l 显示第几个终端机接口；
+    \m 显示硬件的等级 (i386/i486/i586/i686)；
+    \n 显示主机的网络名称；
+    \o 显示 domain name；
+    \r 操作系统的版本 (相当于 uname -r)
+    \t 显示本地端时间的时间；
+    \s 操作系统的名称；
+    \v 操作系统的版本</code></pre></figure>
+
+<p>其中 motd 为 <code>Message Of ToDay</code> 的简称，也就是布告栏信息，每次用户登陆的时候都会将该信息显示在终端，可以添加些维护信息之类的。不过缺点是，如果是图形界面，会看不到这些信息。</p>
+
+<p>一个对于 ROOT 用户常见的提示如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">We trust you have received the usual lecture from the local System Administrator.
+It usually boils down to these three things:
+	#1) Respect the privacy of others.
+	#2) Think before you type.
+	#3) With great power comes great responsibility.</code></pre></figure>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/network-loopback_init.html" title="Linux 中的 loopback 设备">&larr; Older</a></li> 
+         <li class="next"><a href="/post/stay-hungry-stay-foolish.html" title="Stay hungry, Stay foolish">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1412265600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-user-management-introduce.html" data-title="Linux 用户管理" data-url="/post/linux-user-management-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

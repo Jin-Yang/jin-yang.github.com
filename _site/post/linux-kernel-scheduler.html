@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Kernel 调度系统|JinYang's Blog</title>
+  <meta name="keywords" content="linux,scheduling policy,调度策略">
+  <meta name="description" content="操作系统的调度算法必须实现几个互相冲突的目标：进程响应时间尽可能快，后台作业的吞吐量尽可能高，进程的饥饿现象尽可能避免，低优先级和高优先级进程的需要尽可能调和等等。什么时候以怎样的方式选择一个进程运行，就是所谓的调度策略 (Scheduling Policy)。本文中，介绍下 Linux Kernel 中时如何实现的。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Kernel 调度系统</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2013-06-21 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>操作系统的调度算法必须实现几个互相冲突的目标：进程响应时间尽可能快，后台作业的吞吐量尽可能高，进程的饥饿现象尽可能避免，低优先级和高优先级进程的需要尽可能调和等等。</p>
+
+<p>什么时候以怎样的方式选择一个进程运行，就是所谓的调度策略 (Scheduling Policy)。</p>
+
+<p>本文中，介绍下 Linux Kernel 中时如何实现的。</p>
+
+<!-- more -->
+
+<h2 id="调度器">调度器</h2>
+
+<p>Linux 的调度算法通过模块的方式实现，每种类型的调度器会有一个优先级，调度时会按照优先级遍历调度类，拥有一个可执行进程的最高优先级的调度器类胜出，去选择下面要执行的那个程序。</p>
+
+<h3 id="调度类型">调度类型</h3>
+
+<p>目前 Linux 中主要有两大类调度算法，CFS (完全公平调度算法) 以及 实时调度算法，在应用中，可以通过 <code>sched_setscheduler()</code> 函数修改进程的调度策略，目前有 5 种调度策略：</p>
+
+<ul>
+  <li>SCHED_NORMAL<br />最常用的，调度策略主要用于 CFS 调度，存在静态优先级和动态优先级。</li>
+  <li>SCHED_BATCH<br />除了不能抢占外，与上相同，可让任务延长执行的时间 (time slice)，减小上下文切换的次数，以提高 cache 的利用率 (每次 context-switch 都会导致 cache-flush)。<br />该调度策略适用于周期批量执行的任务，而不适合交互性的产品，主要是由于任务的切换延迟，让人感觉系统性能不佳。</li>
+  <li>SCHED_IDLE<br />它甚至比 nice 19 还弱，用于空闲时需要处理的任务。</li>
+  <li>SCHED_RR<br />多次循环调度，拥有时间片，结束后会放在队列末尾。</li>
+  <li>SCHED_FIFO<br />先进先出规则，一次机会做完，没有时间片可以运行任意长的时间。</li>
+</ul>
+
+<p>其中前面三种策略使用的是 CFS 调度器类，后面两种使用 RT 调度器类。任何时候，实时进程的优先级都高于普通进程，实时进程只会被更高级的实时进程抢占。</p>
+
+<h3 id="调度时机">调度时机</h3>
+
+<p>Linux 调度时机主要有：</p>
+
+<ol>
+  <li>
+    <p>进程状态转换的时刻：进程终止、进程睡眠；<br />进程调用 <code>sleep()</code> 或 <code>exit()</code> 等进行状态转换，此时会主动调用调度程序进行进程调度；</p>
+  </li>
+  <li>
+    <p>当前进程的时间片用完时（current-&gt;counter=0）<br />由于进程的时间片是由时钟中断来更新的，因此，这种情况和时机 4 是一样的。</p>
+  </li>
+  <li>
+    <p>设备驱动程序<br />当设备驱动程序执行长而重复的任务时，直接调用调度程序。在每次反复循环中，驱动程序都检查 <code>need_resched</code> 的值，如果必要，则调用调度程序 <code>schedule()</code> 主动放弃 CPU 。</p>
+  </li>
+  <li>
+    <p>进程从中断、异常及系统调用返回到用户态时<br />如前所述，不管是从中断、异常还是系统调用返回，最终都调用 <code>ret_from_sys_call()</code>，由这个函数进行调度标志的检测，如果必要，则调用调用调度程序。</p>
+  </li>
+</ol>
+
+<p>对于最后一条，那么为什么从系统调用返回时要调用调度程序呢？这主要是从效率考虑，从系统调用返回意味着要离开内核态而返回到用户态，而状态的转换要花费一定的时间，因此，在返回到用户态前，系统把在内核态该处理的事全部做完。</p>
+
+<h3 id="smp-负载均衡">SMP 负载均衡</h3>
+
+<p>在目前的 CFS 调度器中，每个 CPU 维护本地 RQ 所有进程的公平性，为了实现跨 CPU 的调度公平性，CFS 必须定时进行 load balance，将一些进程从繁忙的 CPU 的 RQ 中移到其他空闲的 RQ 中。</p>
+
+<p>这个 load balance 的过程需要获得其它 RQ 的锁，这种操作降低了多运行队列带来的并行性。当然，load balance 引入的加锁操作依然比全局锁的代价要低，这种代价差异随着 CPU 个数的增加而更加显著。</p>
+
+<p>但是，如果系统中的 CPU 个数有限，多 RQ 的优势便不明显了；而采用单一队列，每一个需要调度的新进程都可以在全局范围内查找最合适的 CPU ，而无需 CFS 那样等待 load balance 代码来决定，这减少了多 CPU 之间裁决的延迟，最终的结果是更小的调度延迟。</p>
+
+<p>也就是说，CFS 为了维护多 CPU 上的公平性，所采用的负载平衡机制，可能会抵消了 per cpu queue 曾带来的好处。</p>
+
+<h2 id="cfs-完全公平调度">CFS 完全公平调度</h2>
+
+<p>Completely Fair Schedule, CFS 在 2.6.23 引入，同时包括了模块化、完全公平调度、组调度等一系列特性；按作者的说法：CFS 80% 的工作可以用一句话来概括，<strong>CFS 在真实的硬件上模拟了理想且精确的多任务处理器</strong>。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">80% of CFS&#39;s design can be summed up in a single sentence: CFS basically models
+an &quot;ideal, precise multi-tasking CPU&quot; on real hardware.</code></pre></figure>
+
+<p>关于 CFS 的简单介绍可以查看内核文档 <a href="https://www.kernel.org/doc/Documentation/scheduler/sched-design-CFS.txt">sched-design-CFS.txt</a> 。</p>
+
+<h3 id="简介">简介</h3>
+
+<p>该模型是从 RSDL/SD 中吸取了完全公平的思想，不再跟踪进程的睡眠时间，也不再企图区分交互式进程，它将所有的进程都统一对待，在既定的时间内每个进程都获得了公平的 CPU 占用时间，调度的依据就是每个进程的权重，这就是公平的含义。</p>
+
+<p>为了实现完全公平调度，内核引入了虚拟时钟（virtual clock）的概念，统计进程已经运行的时间采用虚拟运行时间 (virtual runtime)，该值与具体的时钟晶振没有关系，只是为了公平分配 CPU 时间而提出的一种时间量度。</p>
+
+<p>vt 是递增的，该值与其实际的运行时间成正比，与权重成反比；也就是说权重越高，对应的优先级越高，进而该进程虚拟时钟增长的就慢。权重的计算与静态优先级相关，该值在 <code>set_load_weight()</code> 函数中设置。</p>
+
+<p>注意，优先级和权重之间的关系并不是简单的线性关系，内核使用一些经验数值来进行转化。</p>
+
+<p>如上所述，这就意味着，vt 用来作为对进程进行排序的参考，而不能用来反映进程真实执行时间。</p>
+
+<!--
+CFS 的核心思想是把 CPU 总时间按运行队列所占权重进行分配，即占用 CPU 后能够执行的理想运行时间 (ideal runtime)，而在调度时选择 vt 最小的运行，并且保证在某个时间周期 (__sched_period) 内运行队列里的所有调度单元都能够至少被调度执行一次。
+
+并且为了保证新进程能够获得合理的 vruntime，不至于一开始太小导致长期占用 cpu，在每个 cfs_rq 上维护了一个 min_vruntime，所有调度单元的 vruntime 调整按它自己 cfs_rq 中的 min_vruntime 做为基准。
+
+假设有 a、b、c 三个进程，权重分别是1、2、3,那么所有的进程的权重和为6, 按照cfs的公平原则来分配，那么a的重要性为1/6, b、c 为2/6, 3/6。这样如果a、b、c 运行一次的总时间为6个时间单位，a占1个，b占2个，c占3个。
+-->
+
+<h3 id="faqs">FAQs</h3>
+
+<p>CFS 的基本原理是在一个调度周期 (sched_latency_ns) 内让每个进程至少有机会运行一次，也就是说每个进程等待 CPU 的最长时间不超过这个调度周期。</p>
+
+<p>然后根据进程的数量平分这个调度周期内的 CPU 使用权，由于进程的优先级 (nice) 不同，分割调度周期的时候要加权；每个进程的累计运行时间保存在自己的 vruntime 字段里，哪个进程的 vruntime 最小就获得本轮运行的权利。</p>
+
+<h4 id="新进程vruntime的初始值是0">新进程vruntime的初始值是0？</h4>
+
+<p>假如新进程 vruntime 的初值为 0 的话，也就是比老进程的值小很多，那么它在相当长的时间内都会保持抢占 CPU 的优势，老进程就要饿死了，这显然是不公平的。</p>
+
+<p>所以 CFS 为每个 CPU 的运行队列 cfs_rq 维护了一个 min_vruntime 字段，记录该运行队列中所有进程的最小 vruntime 值，新进程的初始 vruntime 值就以其所在运行队列的 min_vruntime 为基础来设置，与老进程保持在合理的差距范围内。</p>
+
+<!--
+新进程的vruntime初值的设置与两个参数有关：
+sched_child_runs_first：规定fork之后让子进程先于父进程运行;
+sched_features的START_DEBIT位：规定新进程的第一次运行要有延迟。
+
+注：
+sched_features是控制调度器特性的开关，每个bit表示调度器的一个特性。在sched_features.h文件中记录了全部的特性。START_DEBIT是其中之一，如果打开这个特性，表示给新进程的vruntime初始值要设置得比默认值更大一些，这样会推迟它的运行时间，以防进程通过不停的fork来获得cpu时间片。
+
+如果参数 sched_child_runs_first打开，意味着创建子进程后，保证子进程会在父进程之前运行。
+
+子进程在创建时，vruntime初值首先被设置为min_vruntime；然后，如果sched_features中设置了START_DEBIT位，vruntime会在min_vruntime的基础上再增大一些。设置完子进程的vruntime之后，检查sched_child_runs_first参数，如果为1的话，就比较父进程和子进程的vruntime，若是父进程的vruntime更小，就对换父、子进程的vruntime，这样就保证了子进程会在父进程之前运行。
+-->
+
+<h4 id="休眠进程的vruntime一直保持不变吗">休眠进程的vruntime一直保持不变吗？</h4>
+
+<p>如果休眠进程的 vruntime 保持不变，而其它运行进程的 vruntime 一直在增加，那么休眠进程唤醒时，由于其 vruntime 相比要小很多，就会使它获得长时间抢占 CPU 的优势，从而导致其它进程饿死。</p>
+
+<p>为此，CFS 会在休眠进程被唤醒时重新设置 vruntime 值，以 min_vruntime 值为基础，并进行一定的补偿。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">place_entity</span><span class="p">(</span><span class="k">struct</span> <span class="n">cfs_rq</span> <span class="o">*</span><span class="n">cfs_rq</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sched_entity</span> <span class="o">*</span><span class="n">se</span><span class="p">,</span> <span class="kt">int</span> <span class="n">initial</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">u64</span> <span class="n">vruntime</span> <span class="o">=</span> <span class="n">cfs_rq</span><span class="o">-&gt;</span><span class="n">min_vruntime</span><span class="p">;</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * The &#39;current&#39; period is already promised to the current tasks,</span>
+<span class="cm">     * however the extra weight of the new task will slow them down a</span>
+<span class="cm">     * little, place the new task so that it fits in the slot that</span>
+<span class="cm">     * stays open at the end.</span>
+<span class="cm">     */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">initial</span> <span class="o">&amp;&amp;</span> <span class="n">sched_feat</span><span class="p">(</span><span class="n">START_DEBIT</span><span class="p">))</span>  <span class="cm">/* initial表示新进程 */</span>
+        <span class="n">vruntime</span> <span class="o">+=</span> <span class="n">sched_vslice</span><span class="p">(</span><span class="n">cfs_rq</span><span class="p">,</span> <span class="n">se</span><span class="p">);</span>
+
+    <span class="cm">/* sleeps up to a single latency don&#39;t count. */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">initial</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* 休眠进程 */</span>
+        <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">thresh</span> <span class="o">=</span> <span class="n">sysctl_sched_latency</span><span class="p">;</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         * Halve their sleep time&#39;s effect, to allow</span>
+<span class="cm">         * for a gentler effect of sleepers:</span>
+<span class="cm">         */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sched_feat</span><span class="p">(</span><span class="n">GENTLE_FAIR_SLEEPERS</span><span class="p">))</span>
+            <span class="n">thresh</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="n">vruntime</span> <span class="o">-=</span> <span class="n">thresh</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* ensure we never gain time by being placed backwards. */</span>
+    <span class="n">se</span><span class="o">-&gt;</span><span class="n">vruntime</span> <span class="o">=</span> <span class="n">max_vruntime</span><span class="p">(</span><span class="n">se</span><span class="o">-&gt;</span><span class="n">vruntime</span><span class="p">,</span> <span class="n">vruntime</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="休眠进程在唤醒时会立刻抢占cpu吗">休眠进程在唤醒时会立刻抢占CPU吗？</h4>
+
+<p>这由 CFS 的唤醒抢占特性决定，也即 sched_features 的 WAKEUP_PREEMPT 位。</p>
+
+<p>由于休眠进程在唤醒时会获得 vruntime 的补偿，所以在醒来时抢占 CPU 是大概率事件，这也是 CFS 调度算法的本意，即保证交互式进程的响应速度，因为交互式进程等待用户输入会频繁休眠。</p>
+
+<!--
+除了交互式进程以外，主动休眠的进程同样也会在唤醒时获得补偿，例如通过调用sleep()、nanosleep()的方式，定时醒来完成特定任务，这类进程往往并不要求快速响应，但是CFS不会把它们与交互式进程区分开来，它们同样也会在每次唤醒时获得vruntime补偿，这有可能会导致其它更重要的应用进程被抢占，有损整体性能。我曾经处理过的一个案例：服务器上有两类应用进程，A进程定时循环检查有没有新任务，如果有的话就简单预处理后通知B进程，然后调用nanosleep()主动休眠，醒来后再重复下一个循环；B进程负责数据运算，是CPU消耗型的；B进程的运行时间很长，而A进程每次运行时间都很短，但睡眠/唤醒却十分频繁，每次唤醒就会抢占B，导致B的运行频繁被打断，大量的进程切换带来很大的开销，整体性能下降很厉害。那有什么办法吗？有，CFS可以禁止唤醒抢占 特性：
+# echo NO_WAKEUP_PREEMPT > /sys/kernel/debug/sched_features
+
+禁用唤醒抢占 特性之后，刚唤醒的进程不会立即抢占运行中的进程，而是要等到运行进程用完时间片之后。在以上案例中，经过这样的调整之后B进程被抢占的频率大大降低了，整体性能得到了改善。
+
+如果禁止唤醒抢占特性对你的系统来说太过激进的话，你还可以选择调大以下参数：
+
+sched_wakeup_granularity_ns
+这个参数限定了一个唤醒进程要抢占当前进程之前必须满足的条件：只有当该唤醒进程的vruntime比当前进程的vruntime小、并且两者差距(vdiff)大于sched_wakeup_granularity_ns的情况下，才可以抢占，否则不可以。这个参数越大，发生唤醒抢占就越不容易。
+-->
+
+<h4 id="进程占用的cpu时间片可以无穷小吗">进程占用的CPU时间片可以无穷小吗？</h4>
+
+<p>假设有两个进程，它们的 vruntime 初值一样，当其中的一个进程运行后，它的 vruntime 就比另外的进大了，那么正在运行的进程什么时候会被抢占呢？</p>
+
+<p>答案是：为了避免进程切换过于频繁造成太大的资源消耗，CFS 设定了进程占用 CPU 的最小时间值 (sched_min_granularity_ns)，正在 CPU 上运行的进程如果不足这个时间是不可以被调离 CPU 的。</p>
+
+<p>另外，CFS 默认会把调度周期 sched_latency_ns 按照进程的数量平分，给每个进程平均分配相同的 CPU 时间片，但是如果进程数量太多的话，就会造成 CPU 时间片太小，如果小于上述的最小值，那么就以最小值为准，而调度周期也不再遵守 sched_latency_ns 。</p>
+
+<!-- 而是以 (sched_min_granularity_ns * 进程数量) 的乘积为准。-->
+
+<h4 id="进程切换cpu时vruntime会不会改变">进程切换CPU时vruntime会不会改变？</h4>
+
+<p>在 SMP 系统上，当 CPU 的负载不同时会进行负载均衡，而每个 CPU 都有自己的运行队列，而每个队列中的 vruntime 也各不相同，比如可以对比下每个运行队列的 min_vruntime 值：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># grep min_vruntime /proc/sched_debug
+  .min_vruntime                  : 526279705.695991
+  .min_vruntime                  : 532370994.256253
+  .min_vruntime                  : 720871453.830955
+  .min_vruntime                  : 692323575.852029</code></pre></figure>
+
+<p>显然，如果对 vruntime 不做处理直接切换，必然会导致不公平。</p>
+
+<p>当进程从一个 CPU 的中出队 (dequeue_entity) 时，它的 vruntime 要减去队列的 min_vruntime 值；而当进程加入另一个 CPU 的运行队列 (enqueue_entiry) 时，它的 vruntime 要加上该队列的 min_vruntime 值。</p>
+
+<p>这样，进程从一个 CPU 迁移到另一个 CPU 之后 vruntime 保持相对公平。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span>
+<span class="nf">dequeue_entity</span><span class="p">(</span><span class="k">struct</span> <span class="n">cfs_rq</span> <span class="o">*</span><span class="n">cfs_rq</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sched_entity</span> <span class="o">*</span><span class="n">se</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">...</span>
+        <span class="cm">/*</span>
+<span class="cm">         * Normalize the entity after updating the min_vruntime because the</span>
+<span class="cm">         * update can refer to the -&gt;curr item and we need to reflect this</span>
+<span class="cm">         * movement in our normalized position.</span>
+<span class="cm">         */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">DEQUEUE_SLEEP</span><span class="p">))</span>
+                <span class="n">se</span><span class="o">-&gt;</span><span class="n">vruntime</span> <span class="o">-=</span> <span class="n">cfs_rq</span><span class="o">-&gt;</span><span class="n">min_vruntime</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">enqueue_entity</span><span class="p">(</span><span class="k">struct</span> <span class="n">cfs_rq</span> <span class="o">*</span><span class="n">cfs_rq</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sched_entity</span> <span class="o">*</span><span class="n">se</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="cm">/*</span>
+<span class="cm">         * Update the normalized vruntime before updating min_vruntime</span>
+<span class="cm">         * through callig update_curr().</span>
+<span class="cm">         */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">ENQUEUE_WAKEUP</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">ENQUEUE_WAKING</span><span class="p">))</span>
+                <span class="n">se</span><span class="o">-&gt;</span><span class="n">vruntime</span> <span class="o">+=</span> <span class="n">cfs_rq</span><span class="o">-&gt;</span><span class="n">min_vruntime</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="源码解析">源码解析</h2>
+
+<p>接下来看看 Linux 中代码的实现。</p>
+
+<h3 id="相关结构体">相关结构体</h3>
+
+<p>Linux2.6.24 内核采用分层管理调度，也就是两层：第一层被称为核心调度器，在核心调度器下面为调度器类。调度算法实现相关的数据结构主要有运行实体 (struct rq)、调度类 (struct sched_class) 和运行队列。</p>
+
+<p><img src="/images/linux/kernel/scheduler_stucture.png" alt="scheduler stucture" title="scheduler stucture" class="pull-center" /></p>
+
+<p>首先是进程描述符中与调度相关的信息。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">task_struct</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="kt">int</span> <span class="n">prio</span><span class="p">,</span> <span class="n">static_prio</span><span class="p">,</span> <span class="n">normal_prio</span><span class="p">;</span>      <span class="c1">// 进程优先级</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">rt_priority</span><span class="p">;</span>                <span class="c1">// RT优先级</span>
+    <span class="k">const</span> <span class="k">struct</span> <span class="n">sched_class</span> <span class="o">*</span><span class="n">sched_class</span><span class="p">;</span>   <span class="c1">// 响应的调度类</span>
+    <span class="k">struct</span> <span class="n">sched_entity</span> <span class="n">se</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sched_rt_entity</span> <span class="n">rt</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sched_dl_entity</span> <span class="n">dl</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">policy</span><span class="p">;</span>                     <span class="c1">// 调度策略，默认为SCHED_NORMAL</span>
+    <span class="kt">cpumask_t</span> <span class="n">cpus_allowed</span><span class="p">;</span>                  <span class="c1">// 限制此进程在哪个处理器上运行</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>就绪队列用于存储一些基本的用于调度的信息，包括实时调度的、CFS 调度的以及 DL 调度的，两者属于不同的调度实体，每个 CPU 会有一个 rq 结构体，也就是就绪队列。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">rq</span> <span class="p">{</span>                      <span class="c1">// @ kernel/sched/sched.h</span>
+    <span class="kt">spinlock_t</span> <span class="n">lock</span><span class="p">;</span>                     <span class="c1">// 锁</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">nr_running</span><span class="p">;</span>            <span class="c1">// 当前就绪对列进程的数目</span>
+    <span class="k">struct</span> <span class="n">load_weight</span> <span class="n">load</span><span class="p">;</span>             <span class="c1">// 当前就绪队列负荷</span>
+    <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">curr</span><span class="p">,</span> <span class="o">*</span><span class="n">idle</span><span class="p">;</span>     <span class="c1">// 分别指向当前以及空闲进程描述符</span>
+    <span class="k">struct</span> <span class="n">cfs_rq</span> <span class="n">cfs</span><span class="p">;</span>                   <span class="c1">// 分别表示三个不同的就绪队列</span>
+    <span class="k">struct</span> <span class="n">rt_rq</span> <span class="n">rt</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">dl_rq</span> <span class="n">dl</span><span class="p">;</span>
+    <span class="n">u64</span> <span class="n">clock</span><span class="p">;</span>                           <span class="c1">// 就绪队列的时钟，这个是周期更新的，真实的系统晶振时钟</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">cfs_rq</span> <span class="p">{</span>                  <span class="c1">// @ kernel/sched/sched.h</span>
+    <span class="k">struct</span> <span class="n">load_weight</span> <span class="n">load</span><span class="p">;</span>             <span class="c1">// 队列上所有进程的权重值weight总和</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">nr_running</span><span class="p">;</span>             <span class="c1">// 当前就绪队列的进程数=队列进程的总数+正在运行的那个进程</span>
+    <span class="k">struct</span> <span class="n">sched_entity</span> <span class="o">*</span><span class="n">curr</span><span class="p">;</span>           <span class="c1">// 指向当前进程的运行实体</span>
+    <span class="k">struct</span> <span class="n">rb_root</span> <span class="n">tasks_timeline</span><span class="p">;</span>       <span class="c1">// 就绪队列的树跟</span>
+    <span class="k">struct</span> <span class="n">rb_node</span> <span class="o">*</span><span class="n">rb_leftmost</span><span class="p">;</span>         <span class="c1">// 保存红黑树最左边的节点，直接作为下一个运行进程</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>调度类 <code>sched_class</code> 为模块编程的上层支持，对于每个 Linux 新添加进来的调度算法都有自己的调度类实例，包括了 <code>fair_sched_class</code>、<code>rt_sched_class</code>、<code>dl_sched_class</code>、<code>idle_sched_class</code> 等。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">sched_class</span> <span class="p">{</span>            <span class="c1">// @ kernel/sched/sched.h</span>
+    <span class="k">const</span> <span class="k">struct</span> <span class="n">sched_class</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>                                           <span class="c1">// 调度类组成单向链表</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">enqueue_task</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">rq</span> <span class="o">*</span><span class="n">rq</span><span class="p">,</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="kt">int</span> <span class="n">wakeup</span><span class="p">);</span>  <span class="c1">// 向就绪队列插入进程</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">dequeue_task</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">rq</span> <span class="o">*</span><span class="n">rq</span><span class="p">,</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>   <span class="c1">// 从就绪队列中删除</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">yield_task</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">rq</span> <span class="o">*</span><span class="n">rq</span><span class="p">);</span>                                       <span class="c1">// 进程主动放弃处理器</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">check_preempt_curr</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">rq</span> <span class="o">*</span><span class="n">rq</span><span class="p">,</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>        <span class="c1">// 用一个新唤醒的进程抢占当前进程</span>
+    <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">pick_next_task</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">rq</span> <span class="o">*</span><span class="n">rq</span><span class="p">);</span>                   <span class="c1">// 选择下一个将要运行的进程</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">put_prev_task</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">rq</span> <span class="o">*</span><span class="n">rq</span><span class="p">,</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">task_tick</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">rq</span> <span class="o">*</span><span class="n">rq</span><span class="p">,</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>                 <span class="c1">// 由周期调度器调用</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">task_new</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">rq</span> <span class="o">*</span><span class="n">rq</span><span class="p">,</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>                  <span class="c1">// 每次建立新进程调用此函数通知调度器</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>调度运行队列，也就是就绪队列，用于保存处于 ready 状态的进程，不同的调度算法使用不同的运行队列，对于 CFS 调度，运用的是红黑树；而对于实时调度为组链表。</p>
+
+<p>运行实体，也就是调度单位，对应的结构为 <code>sched_entity</code>。调度器的调度单位不再是进程，而是可调度的实体，可以将多个进程捆绑在一起作为一个调度单位 (即调度实体) 进行调度，也就是说可调度实体可以是一个进程，也可以是多个进程构成的一个组。</p>
+
+<p>另外，由于 CFS 不再有时间片的概念，但仍需要对每个进程运行的时间记账，从而确保每个进程只在公平分配给他的处理器时间内运行，相关信息同样保存在 sched_entity 中。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">sched_entity</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span>        <span class="n">on_rq</span><span class="p">;</span>                    <span class="c1">// 是否在运行队列或正在执行，当前任务不会保存在红黑树中</span>
+    <span class="k">struct</span> <span class="n">load_weight</span>  <span class="n">load</span><span class="p">;</span>                     <span class="c1">// 该调度实体的权重，决定了运行时间以及被调用次数</span>
+    <span class="n">u64</span>                 <span class="n">vruntime</span><span class="p">;</span>                 <span class="c1">// 存放进程的虚拟运行时间，用于调度器的选择</span>
+    <span class="n">u64</span>                 <span class="n">exec_start</span>                <span class="c1">// 记录上次执行update_curr()的时间</span>
+    <span class="n">u64</span>                 <span class="n">sum_exec_runtime</span><span class="p">;</span>         <span class="c1">// 进程总共执行的cpu clock，占用cpu的物理时间</span>
+    <span class="n">u64</span>                 <span class="n">pre_sum_exec_runtime</span><span class="p">;</span>     <span class="c1">// 进程在切换经CPU时的sum_exec_runtime值</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>每个 <code>task_struct</code> 都嵌入了一个 <code>sched_entity</code>，这也就是为什么进程也是一个可调度实体。</p>
+
+<h3 id="代码实现">代码实现</h3>
+
+<p>调度器的核心代码在 <code>kernel/sched</code> 目录下，包括 <code>sched_init()</code>、<code>schedule()</code>、<code>scheduler_tick()</code> 等，其中核心调度器包括了：</p>
+
+<ul>
+  <li>
+    <p>周期性调度器，schedule_tick()<br />不负责进程的切换，只是定时更新调度相关的统计信息，以备主调度器使用。</p>
+  </li>
+  <li>
+    <p>主调度器，schedule()<br />完成进程的切换，将 CPU 的使用权从一个进程切换到另一个进程。</p>
+  </li>
+</ul>
+
+<p>我们知道在通过 <code>fork()</code>、<code>vfork()</code>、<code>clone()</code> 等函数时，进程创建最终都会调用 <code>do_fork()</code>，而该函数会调用 <code>copy_process()-&gt;sched_fork()</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">do_fork()
+ |-copy_process()
+ | |-security_task_create()
+ | |-dup_task_struct()
+ | |-sched_fork()
+ |-trace_sched_process_fork()
+ |-get_task_pid()
+ |-wake_up_new_task()
+ |-put_pid()</code></pre></figure>
+
+<p>在 <code>sched_fork()</code> 函数中会复制父进程的优先级，并将 <code>fair_sched_class</code> 调度器类实例的地址赋给新进程中的 <code>sched_class</code> 指针。</p>
+
+<h3 id="scheduler_tick">scheduler_tick()</h3>
+
+<p><code>scheduler_tick()</code> 会以 HZ 为周期调度，用来更新运行队列的时钟及 load，然后调用当前进程的调度器类的周期调度函数。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">scheduler_tick()
+  |-update_rq_clock()                 更新运行队列的时钟rq-&gt;clock
+  |-curr-&gt;sched_class-&gt;task_tick()    执行调度器的周期性函数，以CFS为例
+  | |-task_tick_fair()                CFS对应的task_tick()
+  |   |-entity_tick()
+  |     |-update_curr()
+  |     |-update_cfs_shares()         对SMP有效
+  |     |-check_preempt_tick()        检查当前进程是否运行了足够长的时间，是否需要抢占
+  |-update_cpu_load_active()          更新运行队列load，将数组中先前存储的load向后移动一个位置，并插入新值</code></pre></figure>
+
+<p>在 <code>update_cpu_load_active()</code> 中，更新运行队列的 load 本质是将数组中先前存储的负荷值向后移动一个位置，将当前负荷记入数组的第一个位置。</p>
+
+<p>另外，<code>check_preempt_tick()</code> 函数用于检查当前进程是否运行了足够长的时间，如果超过了理想运行时间则无条件 resched；如果运行时间小于 <code>sysctl_sched_min_granularity</code> 那么也直接返回。</p>
+
+<p>可以看到每个时钟都对会当前运行的 se 进行实质执行时间及虚拟执行时间进行更新，最后检查该进程是否运行的足够长的时间，如果是的话则将它置为 <code>TIF_NEED_RESCHED</code> 供主调度在适当的时机进行切换。</p>
+
+<h3 id="schedule">schedule()</h3>
+
+<p>核心调度函数为 <code>schedule()</code>，作为内核和其他部分用于调用进程调度器的入口，选择哪个进程可以运行，何时将其投入运行。</p>
+
+<!--
+<pre style="font-size:0.8em; face:arial;">
+schedule()
+  |-sched_submit_work()
+  |-__schedule()
+     |-deactivate_task()                     // 从运行队列中删除prev进程，与具体的调度类相关
+     |-pick_next_task()                      // 从各自的运行队列中选择下一个进程来运行
+     |  |-class->pick_next_task()            // 调用调度类的相应函数，以CFS为例
+     |  |-pick_next_task_fair()
+     |     |-pick_next_entity()
+     |-context_switch()                      // 执行进程的上下文切换
+</pre>
+
+schedule() 通常会找到一个最高优先级的调度类，查找自己的可运行队列，然后找到下一个该运行的进程，该函数唯一重要的事情是调用 pick_next_task() 。<br><br>
+
+其主要流程为：<ol><li>
+将当前进程从相应的运行队列中删除；</li><br><li>
+
+计算和更新调度实体和进程的相关调度信息；</li><br><li>
+
+将当前进重新插入到调度运行队列中，对于CFS调度，根据具体的运行时间进行插入而对于实时调度插入到对应优先级队列的队尾；</li><br><li>
+
+从运行队列中选择运行的下一个进程；</li><br><li>
+
+进程调度信息和上下文切换；
+</li></ol>
+当进程上下文切换后（关于进程切换在前面的文章中有介绍），调度就基本上完成了，当前运行的进程就是切换过来的进程了。
+在上述结构体中，sum_exec_runtime - pre_sum_exec_runtime 等于进程获得 CPU 使用权后总的总时间，也就是 ideal_runtime 已被消耗了多少。<br><br>
+
+在抽象模型中，计算 ideal_runtime 的时候需要求所有进程的权重值的和；而实际实现的时候，没有求和的过程，而是把该值记录在就绪队列的 load.weight 中。在向就绪队列中添加新进程时，就加上新进程的权重值，反之则减去。<br><br>
+
+每个进程的 ideal_runtime 并没有用变量保存起来，而是在需要用到时用函数 sched_slice() 计算得到，计算规则为 (task->se.load.weight/cfs_rq->load.weight)*period 。<br><br>
+
+period 也没有用变量来保存，用 __sched_period() 计算得到，sysctl_sched_latency * (nr_running / sysctl_nr_latency)。
+-->
+
+<h2 id="参考">参考</h2>
+
+<!--
+http://linuxperf.com/?p=42
+
+linux cfs调度器_理论模型
+http://www.cnblogs.com/openix/archive/2013/08/13/3254394.html
+ Linux内核学习笔记（一）CFS完全公平调度类
+http://blog.chinaunix.net/uid-24757773-id-3266304.html
+Linux内核-CFS进程调度器
+https://wongxingjun.github.io/2015/09/09/Linux%E5%86%85%E6%A0%B8-CFS%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6%E5%99%A8/
+Completely Fair Scheduler
+http://www.linuxjournal.com/magazine/completely-fair-scheduler
+linux内核分析——CFS
+http://muyunzhe.blog.51cto.com/9164050/1651853
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/time-mess.html" title="关于时间的杂七杂八">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-kernel-timer.html" title="Kernel 系统时钟">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1371744000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-kernel-scheduler.html" data-title="Kernel 调度系统" data-url="/post/linux-kernel-scheduler.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

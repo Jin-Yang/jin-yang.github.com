@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>VIM 基本功能|JinYang's Blog</title>
+  <meta name="keywords" content="vim,编辑器">
+  <meta name="description" content="Vim 是一个功能强大、高度可定制的文本编辑器，在 Vi 的基础上改进和增加了很多特性。与其相匹敌的是 Emacs ，这两个都是不错的编辑器，在此不再比较两者的优劣，仅介绍 Vim 相关的内容。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>VIM 基本功能</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-06-13 Saturday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Vim 是一个功能强大、高度可定制的文本编辑器，在 Vi 的基础上改进和增加了很多特性。与其相匹敌的是 Emacs ，这两个都是不错的编辑器，在此不再比较两者的优劣，仅介绍 Vim 相关的内容。</p>
+
+<!-- more -->
+
+<p><img src="/images/misc/vim_logo.png" alt="vim logo" title="vim logo" class="pull-center" width="25%" /></p>
+
+<h2 id="简介">简介</h2>
+
+<p>除了 Vim 之外，还可以使用 NeoVim ，其中后者是较新的一个版本，据说是一个刚烈的汉子对 Vim 不满而做的兼容开发，核心代码基本没变，但是有很多有用的特性。</p>
+
+<p>在安装配置时使用的是 CentOS ，其它发行版本可能会有些出入。</p>
+
+<p>有些插件，例如 vim-go 就会对 vim 的版本有要求，一般是大于 <code>Vim 7.4.1689</code> 或者 <code>Neovim</code> 才可以；<code>YouCompleteMe</code> 要求 <code>Vim 7.4.1578</code> 以上版本，所以有时需要从源码开始编译安装。</p>
+
+<h3 id="源码安装">源码安装</h3>
+
+<p>很多的一些插件依赖一些高版本的特性，所以需要手动编译安装，直接从 <a href="https://www.vim.org/download.php">www.vim.org/download</a> 或者 <a href="https://github.com/vim/vim">github</a> 上下载相关的版本。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum remove vim-common vim-enhanced vim-filesystem vim-minimal
+$ git clone https://github.com/vim/vim.git
+$ cd vim
+$ ./configure -h
+$ ./configure --with-features=huge                                      \
+    --enable-pythoninterp                                               \
+    --with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu \
+    --enable-multibyte                                                  \   多字节，支持UTF8
+    --enable-rubyinterp                                                 \
+    --enable-perlinterp                                                 \
+    --enable-luainterp                                                  \
+    --enable-cscope --prefix=/usr                                       \
+    --disable-selinux                                                   \
+    --enable-gui=auto --enable-xim  --with-x --enable-fontset               也可以使用gnome或者gtk2
+$ make VIMRUNTIMEDIR=/usr/share/vim/vim80
+# make install
+# checkinstall
+$ vim --version</code></pre></figure>
+
+<p>此时会安装到 <code>/usr/bin</code> 目录下，也就是 <code>/usr/bin/vim</code> ，安装时基本依赖 <code>ncurses-devel</code> 包</p>
+
+<h4 id="python-支持">Python 支持</h4>
+
+<p>也即是支持对 Python 编写插件的支持，上述支持的是 Python2 ，如果要支持 Python3 需要添加 <code>--enable-python3interp</code> 配置项，同时添加相关的 <code>--with-python-config-dir</code> 配置。</p>
+
+<p>需要通过 <code>yum install python-devel</code> 安装相关的开发版本。</p>
+
+<h4 id="perl-支持">Perl 支持</h4>
+
+<p>在编译时会依赖 <code>xsubpp</code> 命令生成 <code>src/auto/if_perl.c</code> 文件，在 CentOS 中该命令依赖可以通过 <code>yum install perl-ExtUtils-Embed</code> 安装。</p>
+
+<h3 id="常用操作">常用操作</h3>
+
+<p>启动 Vim ，默认会进入 Normal 模式；按下键 i 进入 Insert 模式；此时，可以输入文本；按下 ESC 键，返回 Normal 模式。注意：在 Normal 模式下，所有的按键都是功能键。</p>
+
+<p>通过 <code>:help &lt;command&gt;</code> 可以查看相关命令的帮助文件，或者直接通过 <code>:help</code> 查看帮助文件。</p>
+
+<p>首先是常见的插入、替换操作。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">===== 插入操作 :help inserting
+a                   → 在当前光标字符后插入
+A                   → 在当前行的末尾插入
+i                   → 在当前光标字符前插入
+I                   → 在当前行的第一个非空字符前插入
+o                   → 在当前行后插入一个新行，也即打开新行
+O                   → 在当前行前插入一个新行
+
+===== 替换操作 :help replacing
+s                   → substitute替换当前字符，删除字符+进入插入模式
+S                   → 替换一行，删除行+进入插入模式
+r                   → 替换一个字符，进入替换模式，自动回到normal模式
+R                   → 可以替换多个连续字符，Esc退出Replace模式
+c                   → change改变选中内容，通常使用Visual Mode，选中+c
+cw                  → 替换从光标所在位置后到一个单词结尾的字符；首先删除，然后等待插入</code></pre></figure>
+
+<h3 id="其它">其它</h3>
+
+<p>如果有多个配置，则可以通过 <code>source ~/.vim/default.vim</code> 加载。</p>
+
+<h4 id="mapleader">mapleader</h4>
+
+<p>可以通过 <code>let mapleader=','</code> 设置命令的前缀，然后直接使用即可。</p>
+
+<h4 id="启动时间">启动时间</h4>
+
+<p>可以通过 <code>vim --startuptime tmp.txt</code> 命令将启动时间信息保存在 <code>tmp.txt</code> 文件中，然后通过 <code>sort -nrk 2</code> 排序即可。</p>
+
+<p>另外，可以通过 <code>vim --noplugin</code> 取消插件加载。</p>
+
+<h4 id="加载插件">加载插件</h4>
+
+<p>通过 <code>:scriptnames</code> 命令查看发现没有加载相应的插件。</p>
+
+<h2 id="基本配置">基本配置</h2>
+
+<p>vim 含有多种变量，<code>$HOME</code> 表示环境变量；<code>&amp;options</code> 表示选项；<code>@a</code> 表示寄存器；可以通过 <code>:help function-list</code> 查看所支持的函数列表；<code>has()</code> 用于判断 vim 是否支持这一特性。</p>
+
+<p>如果不知道 vim 配置文件的位置，可以通过 <code>:version</code> 查询，不同的平台其配置文件名、配置文件顺序会有所区别；还可以通过 <code>:help vimrc</code> 来查看配置文件在所有平台上的加载位置。</p>
+
+<p>在 Windows 平台下，通常为 <code>_vimrc</code> (也即 <code>$VIM/_vimrc</code> )，可以通过 <code>source</code> 指令包含其它的配置文件，如与 <code>_vimrc</code> 同目录下 <code>source $VIM/myvim.vim</code> 。</p>
+
+<p>在配置文件中，可以指定变量，而对应的变量可通过 <code>:echo $VIM</code> 查看。</p>
+
+<h3 id="tab-操作">Tab 操作</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:help tabpage
+
+:tabnew file :tabe file      → 新建或打开某一文件并开启新标签页
+:tab split                   → 用标签页打开当前编辑的文件
+:tabf filename_re            → 基于正则表达式递归遍历当前工作目录查找名称匹配的文件并为其建立新标签页
+
+:tabs                        → 显示已打开标签页的列表，&amp;lt;指示当前页，+显示修改未保存
+:tabc    :tabnew             → 关闭当前标签页等价与:q，新建
+:tabn    :tabp               → 移动到下/上一个标签页
+:tablast :tabfirst           → 移动到最后/第一个标签页
+gt                           → 切换到下一个Tab
+gT                           → 反向切换
+
+:tabmove 0                   → 将当前tab移动到第一个位置，位置编号从0开始
+:tabdo %s/aaa/bbb/g          → 在每个打开的Tab上执行操作
+
+:tab help tabpage            → 使用Tab而非Windows打开帮助窗口
+:help setting-guitablabel    → 自己配置tab标题</code></pre></figure>
+
+<p><code>:tabr</code> 跳转第一个标签页 gvim 提供了 remote-tab 的功能。</p>
+
+<p>在标签栏中，各标签页的默认名称是对应文件所在路径全称的简写，如 <code>/usr/share/doc/test.txt</code> 文件所对应的标签页名默认是 <code>/u/s/d/test.txt</code>，这样的标签页名看上去有些诡异。可以在配置文件中添加如下内容，在标签页栏中去除当前所编辑文件的路径信息，只保留文件名。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">function ShortTabLabel ()
+    let bufnrlist = tabpagebuflist (v:lnum)
+    let label = bufname (bufnrlist[tabpagewinnr (v:lnum) -1])
+    let filename = fnamemodify (label, &#39;:t&#39;)
+    return filename
+endfunction
+
+set guitablabel=%{ShortTabLabel()}</code></pre></figure>
+
+<h3 id="缓冲区">缓冲区</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:help buffer|buffer-list</code></pre></figure>
+
+<p>缓冲区是一块内存区域，里面存储着正在编辑的文件，如果没有把缓冲区里的文件存盘，那么原始文件不会被更改。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:e &lt;path/to/file&gt;            → 打开一个文件，保存到缓冲区列表，e是edit缩写
+:badd &lt;path/to/file&gt;         → 添加到缓冲区列表中
+:saveas &lt;path/to/file&gt;       → 另存为 &amp;lt;path/to/file&amp;gt;
+:wq                          → 存盘并退出
+:x                           → 表示仅在需要时保存
+ZZ                           → 不需要输入冒号并回车
+:q!                          → 退出不保存
+:qa!                         → 强行退出所有的正在编辑的文件，就算别的文件有更改
+
+:[buffers|ls]                → 列出当前编辑中所有的缓冲区状态
+:buffer number|filename      → 切换缓冲区，可通过缓冲区的序号或者打开文件的名字选择缓冲区
+:sbuffer number|filename     → 水平分割窗口
+:ball                        → 为每个缓冲区打开一个窗口，默认按顺序水平切分
+:bnext :bprevious            → 调转到下/上一个缓冲区，简写为:bn/:bp，:n 调转到下个文件
+:blast :bfirst               → 调转到最后/第一个缓冲区
+:bd(elete) number|filename   → 删除缓冲区
+:3 bdelete :1,3 bdelete      → 删除或者指定范围的缓冲区</code></pre></figure>
+
+<p>查看缓冲区时，在这个状态列表中，前面的数字是缓冲区的数字标记，第二个标记就是缓冲区当前的状态，紧接着是与缓冲区所关联的文件名。有如下几种状态：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">    - （非活动的缓冲区）
+    a （激活缓冲区）
+    h （隐藏的缓冲区）
+    % （当前的缓冲区）
+    # （交换缓冲区）
+    = （只读缓冲区）
+    + （已经更改的缓冲区）</code></pre></figure>
+
+<p>在删除缓冲区时，如果缓冲区被改动过，那么该命令将失败，除非使用 <code>!</code> 选项。如果使用了带 <code>!</code> 选项的 <code>:bdelete! filename</code> 命令，那么在缓冲区中的所有改动都会被放弃。</p>
+
+<h3 id="折叠">折叠</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">: help folding
+: help usr_28
+
+: set foldenable</code></pre></figure>
+
+<p>当进入插入模式，将会自动打开折叠，也可通过 <code>:nnoremap &lt;space&gt; za</code> 定义通过空格展开/关闭。</p>
+
+<p>主要有如下几种方式，当进入非 manual 时，所有的折叠将会删除重建，反之则不会。</p>
+
+<h4 id="marker-fold-标记折叠">Marker Fold 标记折叠</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:set foldmethod=marker
+vim: foldmarker={,} foldlevel=0 foldmethod=marker :</code></pre></figure>
+
+<p>可以精确地定义折叠，折叠的标记通过 <code>foldmaker</code> 定义，默认以 {{{ 开始，以 }}} 结束，同时在标记后面可以添加数字表示折叠的层级，通过 <code>foldlevel</code> 设置级别，超过默认值则会折叠。</p>
+
+<!--
+#### Manual Fold 手动折叠
+
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:set foldmethod=manual</code></pre></figure>
+
+
+在可视化模式下，通过命令 zf ，将折叠选中的文本；通过组合使用移动命令折叠指定行，如，zf70j(折叠光标之后的70行)、5zF(当前行及随后 4 行折叠)；zf7G(当前行至全文第 7 行折叠)、zfa[(折叠括号(如()、[]、{}、><等)包围的区域)。<br><br>
+
+vim 不会自动记忆手工折叠，可以通过命令 :mkview 来保存当前的折叠状态；下次打开文档时，使用命令 :loadview 来载入记忆的折叠信息；使用命令 :help fold-manual 查看关于手工折叠的帮助信息。
+
+#### Indent Fold 缩进折叠
+
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:set foldmethod=indent</code></pre></figure>
+
+
+，相同缩进距离的行构成折叠。<br>
+
+对于已经格式化好的语言，如 Python 比较有用。此时所有文本将按照（选项shiftwidth定义的）缩进层次自动折叠，使用zr打开，zm关闭。zm和zr实际控制的是 set foldlevel=N，zr增加，zm减小，0时关闭所有折叠，1时打开一层折叠。可以设置foldignore='#'来忽略对一些行的折叠，仅用于该选项。可以使用以下命令，查看关于缩进折叠的帮助信息：:help fold-indent</li><br><li>
+
+#### Syntax Fold 语法折叠
+
+:set foldmethod=syntax
+
+
+所有文本将按照语法结构自动折叠。可以使用以下命令，查看关于语法折叠的帮助信息：:help fold-syntax</li><br><li>
+
+Expression Fold, :set foldmethod=expr，表达式折叠<br>
+通过 'foldexpr' 给出每行的折叠级别。如<br>
+set foldexpr=strlen(substitute(substitute(getline(v:lnum),'\\s','',\"g\"),'[^>].*','',''))<br>
+上面是对>开头（如邮件）的折叠，其中 getline(v:lnum)：获得当前行；substitute(...,'\\s','','g')：删除所有的空白字符；substitute(...,'[^>].*','','')：删除>之后的所有内容；strlen(...)：计算长度，也就是>的个数。
+
+
+zfap 创建一个折叠。当我们在折叠处左右移动或者跳转(如0)时，折叠会自动打开； set foldopen=all 使光标在当前时自动打开，注意此时光标不能移动到关闭的折叠，因此经常临时使用，可以使用 set foldopen& 恢复默认；使用 set foldclose=all 当光标移动之后自动关闭。<br><br>
+
+注意折叠只对本窗口有效，因此可以对同一个缓冲区打开两个窗口，一个带有折叠，另一个没有。<br><br>
+
+当关闭时折叠不会保存，因此应该在关闭之前使用 mkview 此时会保存包括 folder 在内的影响 view 的所有内容；再次打开时使用 loadview 加载。最多可以保存10个，可以使用 mkview 3 或 loadview 2 。
+-->
+
+<h4 id="常用命令">常用命令</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">zo  打开当前的折叠，O-pen a fold.
+zO  打开当前所有的折叠，O-pen all fold.
+zr  打开所有折叠，R-educe the folding.
+zR  打开所有折叠及其嵌套的折叠
+
+zc  关闭当前打开的折叠，C-lose a fold.
+zC  关闭当前所有打开的折叠，C-lose all fold.
+zm  关闭所有折叠，folds M-ore.
+zM  关闭所有折叠及其嵌套的折叠
+
+za  关闭、打开相互切换
+
+zd  删除当前折叠，对于标记则会自动删除，D-elete a fold
+zD  删除当前所有折叠，D-elete all fold
+
+zj  移动至下一个折叠
+zk  移动至上一个折叠
+
+zn  禁用折叠
+zN  启用折叠
+zi  在上述两者之间切换</code></pre></figure>
+
+<!--
+zf  关闭所有折叠，F-old creation.
+zE  删除所有折叠
+-->
+
+<h3 id="高亮显示">高亮显示</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:help syntax
+:help usr_44.txt</code></pre></figure>
+
+<p>Vim 会根据 <code>$VIMRUNTIME/syntax/language.vim</code> 中的配置内容，自动识别关键字、字符串以及其他语法元素，并以不同的颜色显示出来。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:syntax [enable|clear]          → 启用|关闭语法高亮度，只在当前文件中有效
+:syntax [off|on]                → 同上，会对所有缓冲区中的文件立刻生效
+:set filetype=c                 → 如果VIM无法识别，则设置文件类型</code></pre></figure>
+
+<p>高亮显示主要通过两步来实现：A) 首先，确定需要格式化的字符；B) 然后，根据配色方案决定如何显示这些字符。</p>
+
+<p>其中经典的是 <a href="http://ethanschoonover.com/solarized">solarized</a> ，一个配色方案在 github 就有 4K+ 的 Star ，可通过如下方式配置：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">syntax enable
+if has(&#39;gui_running&#39;)
+    set background=light
+else
+    set background=dark
+endif
+colorscheme solarized</code></pre></figure>
+
+<p>还有一种很受欢迎的配色方案 <a href="https://github.com/tomasr/molokai">Molokai</a>，它是 Mac 上 TextMate 编辑器的一种经典配色。</p>
+
+<!--
+如可使用以下命令，将所有 FIX 和 ENDFIX 关键字显示为特定颜色。
+
+:syntax match cscFix "FIX\|ENDFIX"              // 创建名为 cscFix 的匹配模式
+:highlight cscFix ctermfg=cyan guifg=#00FFFF    // 青色显示匹配的文本
+
+注释的开头到结尾，可用于识别代码注释。
+
+:syntax region myComments start=/\/\*/ end=/\*\//
+:syntax keyword myToDo FIXME TODO
+:syntax region myComments start=/\/\*/ end=/\*\// contains=myToDo
+
+https://github.com/altercation/vim-colors-solarized
+-->
+
+<h3 id="自动缩进和对齐">自动缩进和对齐</h3>
+
+<p>可以在配置文件中添加如下内容。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">set autoindent         &quot; 设置自动缩进
+set smartindent        &quot; 对autoindent进行了一些改进
+
+set shiftwidth=4       &quot; 自动缩进所使用的空白长度
+set tabstop=4          &quot; 定义tab所等同的空格长度
+set softtabstop=4      &quot; 详见如下的解释
+
+set expandtab          &quot; 将TAB自动替换为空格
+
+set listchars=tab:▸\ ,trail:-,extends:&gt;,precedes:&lt;,eol:¬    &quot; 设置不可见字符的显示方式
+set nolist             &quot; 不显示TAB、空格、回车等不可见字符
+
+filetype indent on     &quot; 可以通过如下的设置，根据文件类型自动进行设置
+autocmd FileType python setlocal expandtab smarttab shiftwidth=4 softtabstop=4</code></pre></figure>
+
+<h4 id="autoindentsmartindentcindent">autoindent/smartindent/cindent</h4>
+
+<p>当在 <code>insert</code> 状态用回车新增一个新行，或者在 <code>normal</code> 状态用 <code>o/O</code> 插入一个新行时，会根据配置的不同模式，进行不同的缩进。</p>
+
+<p>在 <code>autoindent</code> 模式中，会自动将当前行的缩进拷贝到新行，也就是 “自动对齐”，当然了，如果你在新行没有输入任何字符，那么这个缩进将自动删除。</p>
+
+<p><code>smartindent</code> 对 <code>autoindent</code> 进行了一些改进，可以识别一些基本的语法。</p>
+
+<p><code>cindent</code> 会按照 C 语言的语法，自动地调整缩进的长度，可以与上述配置共存。比如，当输入了半条语句然后回车时，缩进会自动增加一个 <code>TABSTOP</code> 值，当你键入了一个右花括号时，会自动减少一个 <code>TABSTOP</code> 值。</p>
+
+<p>另外，可以通过 <code>indentexpr</code> 设置不同的模式，在此不详述，详见 <a href="http://man.chinaunix.net/newsoft/vi/doc/indent.html">vim reference manual</a> 。</p>
+
+<h4 id="缩进宽度设置">缩进宽度设置</h4>
+
+<p>如上配置的第二部分，就是所使用的缩进模式，如下主要介绍下 <code>softtabstop</code> 的含义。</p>
+
+<p>当 <code>shiftwidth/tabstop</code> 不同时，会导致程序对齐很难看，这时可以使用 <code>softtabstop</code>；此时，当按下 <code>TAB</code> 键，插入的是空格和 <code>TAB</code> 制表符的混合，具体如何混合取决于你设定的 <code>softtabstop</code> 。</p>
+
+<p>举个例子，如果设定 <code>softtabstop=4</code> ，那么按下 <code>tab</code> 键，插入的就是正常的一个制表符；如果设定 <code>softtabstop=8</code> ，那么插入的就是两个制表符；如果 <code>softtabstop=10</code> ，那么插入的就是一个制表符加上 2 个空格；如果 <code>softtabstop=2</code> 呢？</p>
+
+<p>开始插入的就是 2 个空格，此时一旦你再按下一次 tab ，这次的 2 个空格就会和上次的 2 个空格组合起来变成一个制表符。换句话说，<code>softtabstop</code> 是 “逢 4 空格进 1 制表符” ，前提是 <code>tabstop=4</code> 。</p>
+
+<h4 id="tab-和空格替换">TAB 和空格替换</h4>
+
+<p><code>:set expandtab/noexpandtab</code> 使用空格替换TAB/不进行替换。对于已保存的文件，可以使用下面的方法进行空格和TAB的替换。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- TAB替换为空格
+:set ts=4
+:set expandtab
+:%retab!
+
+----- 空格替换为TAB
+:set ts=4
+:set noexpandtab
+:%retab!</code></pre></figure>
+
+<p>加 <code>!</code> 用于处理非空白字符之后的 <code>TAB</code>，即所有的 <code>TAB</code>，若不加 <code>!</code>，则只处理行首的 <code>TAB</code> 。</p>
+
+<p>假设配置文件中使用了 <code>set expandtab</code>，如果想要输入 <code>TAB</code>，Linux 下使用 <code>Ctrl-V + TAB</code>，Win 下使用 <code>Ctrl-Q + TAB</code> 。</p>
+
+<h4 id="设置对齐方式">设置对齐方式</h4>
+
+<p>通过如下方式设置 C 语言的缩进方式，具体配置可查看 <a href="http://vimdoc.sourceforge.net/htmldoc/indent.html">Vim documentation: indent</a> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,&gt;;1s,=1s,:1s</code></pre></figure>
+
+<h4 id="常用命令-1">常用命令</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 执行缩进，前面可以加数字进行多节缩进
+&gt;&gt;               # Normal模式下，增加当前行的缩进
+&lt;&lt;               # Normal模式下，减少当前行的缩进
+CTRL+SHIFT+T     # Insert模式下，增加当前行缩进
+CTRL+SHIFT+D     # Insert模式下，减小当前行缩进
+=                # Visual模式下，对选中的部分进行自动缩进
+
+: set list       # 查看不可见字符，包括TAB、空格、回车等</code></pre></figure>
+
+<!-- ]p可以实现p的粘贴功能，并自动缩进。 -->
+
+<h3 id="文件类型检测">文件类型检测</h3>
+
+<p>Vim 会根据不同的文件类型，分别设置高亮、缩进等功能。可以通过 <code>:filetype</code> 查看 Vim 的文件类型检测功能是否已打开，通常有三个选项 <code>detection:ON plugin:ON indent:ON</code> 。</p>
+
+<ul>
+  <li>detection，是否自动检测文件类型。</li>
+  <li>plugin，是否自动加载该类型相关的插件。</li>
+  <li>indent，根据文件类型定义缩进方式，通常在安装目录的 indent 目录下定义缩进相关脚本。</li>
+</ul>
+
+<p>当配置文件中添加了 <code>filetype on</code> 命令时，实际上会调用 <code>$VIMRUNTIME/filetype.vim</code> 脚本检测文件的类型。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:filetype [detection|plugin|indent] on  → 设置开关
+:filetype plugin indent on              → 同上，也可以在一行中设置
+:filetype [off|on]                      → 关闭/打开
+:set filetype                           → 查看当前文件类型
+:set filetype=python                    → 设置类型</code></pre></figure>
+
+<p>在设置文件类型时，会同时触发 <code>FileType</code> 自动命令；从而，可以用下面的命令实现，根据不同文件类型设置不同的配置项。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">autocmd FileType c,cpp set shiftwidth=4 | set expandtab</code></pre></figure>
+
+<h2 id="高级进阶">高级进阶</h2>
+
+<h3 id="区域选择">区域选择</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:help object-motions
+:help text-objects</code></pre></figure>
+
+<p><code>Text Objects Commands</code> 或许这个是最强大的命令了。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&lt;number&gt;&lt;command&gt;&lt;text object or motion&gt;
+  &lt;number&gt;     操作的重复次数；
+  &lt;command&gt;    命令，如chang(c), delete(d), yank(y)，默认是选择，如果不指定则只移动；
+  &lt;text object or motion&gt;
+               可以是指定文本，例如word、sentence、paragraph；或者是动作，如前进一行、行尾等。
+
+Old text                  Command     New text
+the t*ext object          daw         the object     删除Word，同时删除空格
+the t*ext object          diw         the  object    删除Word，不删除空格
+the t*ext object          dw          the tobject    删除Word，从开始位置删除，含空格
+&lt;h2&gt;Sa*mple&lt;/h2&gt;          dit         &lt;h2&gt;&lt;/h2&gt;      删除tag之间的内容
+&lt;div *id=&quot;cont&quot;&gt;&lt;/div&gt;    di&gt;         &lt;&gt;&lt;/div&gt;       删除单个tag的内容</code></pre></figure>
+
+<p>除了上面的 <code>Word</code> 外，还可以通过如下方式指定范围。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">aw(A Word)        iw(Inner Word)        前者包含了区分子的空格，后者不包含；
+as(A Sentence)    is(Inner Sentence)    通过.分割，作为一个句子；
+as(A Block)       is(Inner Block)       也就是括号
+ap(A Paragraph)   ip(Inner Paragraph)   通过空白行分割；
+at(A Tag Block)   it(Inner Tag Block)   使用tag，例如HTML中的tag
+a&gt;(A Single Tag)  i&gt;(Inner Single Tag)  在单个的tag内</code></pre></figure>
+
+<p>除了上述的定义外，还可以通过 <code>a)</code> <code>i)</code> <code>a]</code> <code>i]</code> <code>a}</code> <code>i}</code> <code>a'</code> <code>i'</code> <code>a"</code> <code>i"</code> 还有反问号 ( ` ) ，这类操作与上述的 <code>Word</code> 操作相同。另外，<code>%</code> 可以在括号之间切换，其中 <code>c%</code> 和 <code>ca)</code> 等价。</p>
+
+<p>需要注意 <code>Motion Commands</code> 和 <code>Text Objects Commands</code> 的区别，前者如 <code>cw</code> 是从当前的位置操作，而像 <code>ciw</code> 则处理的是光标所在的整个 <code>Word</code> 。</p>
+
+<!--
+在 visual 模式下，这些命令很强大，其命令格式为 ```<action>a<object>``` 和 ```<action>i<object>``` ，其中 a 含有空格，i 不含。在 Normal 模式下按 'v' 进入自由选择，'V' 行选择，Ctrl-v 块选择。
+
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Old text                  Command     New text ~
+ &quot;Hello *world!&quot;           ds&quot;         Hello world!
+ [123+4*56]/2              cs])        (123+456)/2
+ &quot;Look ma, I&#39;m *HTML!&quot;     cs&quot;&lt;q&gt;      &lt;q&gt;Look ma, I&#39;m HTML!&lt;/q&gt;
+ if *x&gt;3 {                 ysW(        if ( x&gt;3 ) {
+ my $str = *whee!;         vlllls&#39;     my $str = &#39;whee!&#39;;
+ &lt;div&gt;Yo!*&lt;/div&gt;           dst         Yo!
+ &lt;div&gt;Yo!*&lt;/div&gt;           cst&lt;p&gt;      &lt;p&gt;Yo!&lt;/p&gt;</code></pre></figure>
+
+-->
+
+<p>常用操作。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ci[ ci( ci&lt; ci{      删除一对 [], (), &lt;&gt;, 或{} 中的所有字符并进入插入模式
+ci&quot; ci&#39; ci`          删除一对引号字符 &quot; &#39; 或 ` 中所有字符并进入插入模式
+cit                  删除一对 HTML/XML 的标签内部的所有字符并进入插入模式
+
+ci                   如 ci(，或者 ci)，将会修改 () 之间的文本；
+di                   删除配对符号之间文本；
+yi                   复制；
+ca                   同ci，但修改内容包括配对符号本身；
+da                   同di，但剪切内容包括配对符号本身；
+ya                   同yi，但复制内容包括配对符号本身。</code></pre></figure>
+
+<p>另外，<code>dib</code> 等同于 <code>di(</code>，<code>diB</code> 等同于 <code>di{</code> 。</p>
+
+<h3 id="宏录制">宏录制</h3>
+
+<p>通过 <code>q</code> 进入宏录制模式，操作为 A) 录制，<code>qa do_something q</code>；B) 使用 <code>@a</code>, <code>@@</code>。<code>qa</code> 会把操作记录在寄存器 <code>a</code>；<code>@a</code> 会重做被录制的宏，就好象自己在输入一样；<code>@@</code> 是一个快捷键，用来执行最近被执行的宏。</p>
+
+<p>如，在一个只有一行且这一行只有 <code>"1"</code> 的文本中，键入如下命令:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">qaYp&lt;C-a&gt;     → qa开始录制；Yp复制行；&lt;C-a&gt;增加1；q停止录制
+@a            → 在1下面写下2
+@@            → 在2正面写下3
+100@@         → 会创建新的100行，并把数据增加到103</code></pre></figure>
+
+<h3 id="块操作">块操作</h3>
+
+<p>在 Normal 模式下，通过 <code>Ctrl-v</code> 执行操作，如在指定的行首添加 <code>"--"</code> 字符串，其执行命令顺序为 <code>0 &lt;C-v&gt; &lt;C-d&gt; I-- [ESC]</code>，解释如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0             → 到行头
+&lt;C-v&gt;         → 开始块操作
+&lt;C-d&gt;         → 向下移动，也可以使用hjkl来移动光标
+I-- [ESC]     → I是插入，插入&quot;--&quot;，按ESC键来为每一行生效</code></pre></figure>
+
+<p>行后添加字符的执行顺序如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&lt;C-v&gt;       → 视图模式
+&lt;C-d&gt;       → 选中相关的行，也可以使用j，或是/pattern或是%等
+$           → 到行最后
+A           → 输入字符串，按ESC</code></pre></figure>
+
+<p>在 Windows 下的 vim ，需要使用 <code>&lt;C-q&gt;</code> 而不是 <code>&lt;C-v&gt;</code>，<code>&lt;C-v&gt;</code> 是拷贝剪贴板。</p>
+
+<h3 id="可视化选择">可视化选择</h3>
+
+<p>常见的操作包括了 <code>v</code>、<code>V</code>、<code>&lt;C-v&gt;</code> 等视图模式下，在 Windows 下应该是 <code>&lt;C-q&gt;</code>，选好之后，可以做下面的事。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">J           → 把所有的行连接起来，变成一行
+&lt; 或 &gt;      → 左右缩进
+=           → 自动缩进</code></pre></figure>
+
+<h3 id="其它-1">其它</h3>
+
+<h4 id="重复执行命令">重复执行命令</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">.                     → 重复上一次的命令
+&lt;NUM&gt;&lt;command&gt;        → 重复某个命令N次
+2dd                   → 删除2行
+100idesu [ESC]        → 会写下100个&quot;desu &quot;</code></pre></figure>
+
+<h4 id="模式行">模式行</h4>
+
+<p>可以通过 <code>:help modeline</code> 查看帮助，在文件首、尾的若干行 (modelines默认5行) 添加的配置内容，可以用来指明这个文件的类型，以及一些其它的相关配置项。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># vim: filetype=python
+/* vim: filetype=java */
+# vim: foldmarker={,} foldlevel=0 foldmethod=marker :</code></pre></figure>
+
+<h4 id="其它-2">其它</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:set cc=80         → 高亮显示第80列
+: shell            → 切换到shell执行命令，退出后返回到VIM
+: messages         → 出现错误时可以通过该命令查看错误信息</code></pre></figure>
+
+<h2 id="杂项">杂项</h2>
+
+<p>简单记录下杂七杂八。</p>
+
+<h3 id="常用技巧">常用技巧</h3>
+
+<h4 id="大小些操作">大小些操作</h4>
+
+<p>按 <code>v</code> 进入 <code>visual</code> 模式，<code>ap</code> paragraph 选择整段，<code>aw</code> word 选择一个词，通过 <code>~</code> 大小写取反；通过 <code>gU</code> 更改为大些，<code>gu</code> 改为小写。</p>
+
+<h4 id="取消备份">取消备份</h4>
+
+<p>Windows 的配置文件在安装目录下，为 <code>_vimrc</code> 。可以添加 <code>set nobackup | backup</code> ，如果只需要当前文件不保存可以 <code>:set nobackup</code> ，或者保存在固定目录下 <code>set backupdir=dir</code> 。</p>
+
+<p>默认会将文件保存为 <code>filename~</code> ，也可以通过 <code>:set backupext=.bak</code> 指定后缀名，当然这样只能保存最后的一个版本。</p>
+
+<p>另外，在 VIM 中，还提供了 patchmode 把第一次的原始文件备份下来，不会改动，可以直接通过 <code>:set patchmode=.orig</code> 命令开启。</p>
+
+<h4 id="没有使用-root">没有使用 root</h4>
+
+<p>如果由于权限不足导致无法保存，可以通过如下方式保存 <code>:w !sudo tee %</code> 。</p>
+
+<h4 id="二进制文件">二进制文件</h4>
+
+<p>通常使用外部程序 <code>xxd</code> 达到这样的效果，通过 <code>vim -b file</code> 命令以二进制格式打开, <code>:%xxd</code> 将二进制转换为文本，然后通过 <code>:%xxd -r</code> 重新保存为二进制，详细参数可以参考 <code>man xxd</code> 。</p>
+
+<p>另外，可以通过 <code>:set display=uhex</code> 以 uhex 模式显示，用来显示一些无法显示的字符，例如控制字符之类。</p>
+
+<h4 id="外部修改">外部修改</h4>
+
+<p>可以通过 <code>:e</code> 或 <code>:e!</code> 加载，后者会放弃之前的修改。</p>
+
+<h4 id="输入特殊字符">输入特殊字符</h4>
+
+<p>通过 <code>:digraphs</code> 可以查看特殊字符，在插入模式下或输入命令时可以通过 <code>Ctrl-k XX</code> ，其中 <code>XX</code> 为 digraphs 前面指定的两个字符；也可以通过 <code>Ctrl-v NUM</code> 对应的数字输入特殊字符。</p>
+
+<h4 id="替换m字符">替换^M字符</h4>
+
+<p>在 Linux 下查看一些 Windows 下创建的文本文件时，经常会发现在行尾有一些 <code>^M</code> 字符，有几种方法可以处理。</p>
+
+<h5 id="1-dos2unix">1. dos2unix</h5>
+
+<p>使用 <code>dos2unix</code> 命令，发布版本一般都带这个工具，通过 <code>dos2unix myfile.txt</code> 修改即可。</p>
+
+<h5 id="2-vim">2. vim</h5>
+
+<p>使用 vim 的替换功能，当启动 vi 后，进入命令模式，输入以下命令:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">:%s/^M$//g                      # 去掉行尾的^M
+:%s/^M//g                       # 去掉所有的^M
+:%s/^M/[ctrl-v]+[enter]/g       # 将^M替换成回车
+:%s/^M/\r/g                     # 将^M替换成回车</code></pre></figure>
+
+<h5 id="3-sed">3. sed</h5>
+
+<p>使用 sed 命令，和 vi 的用法相似 <code>sed -e 's/^M/\n/g' myfile.txt</code> 。</p>
+
+<p>注意：这里的 <code>^M</code> 要使用 <code>CTRL-V CTRL-M</code> 生成，而不是直接键入 <code>^M</code> 。</p>
+
+<h4 id="光标闪烁">光标闪烁</h4>
+
+<p>可以通过 <code>set gcr=a:block-blinkon0</code> 设置，其中 <code>gcr</code> 是 <code>guicursor</code> 的简写，<code>a</code> 表示所有模式，冒号后面是对应模式下的行为参数，每个参数用 <code>-</code> 分隔，<code>block</code> 说明用块状光标，<code>blinkon</code> 表示亮起光标时长，时长为零表示禁用闪烁。</p>
+
+<!--
+也可以是 blinkoff0 或者 blinkwait0。具体参考 :help gcr。
+Applications->System Tools->Settings->Keyboard->[Cursor Blinking]
+-->
+
+<h3 id="异常处理">异常处理</h3>
+
+<p>如果发现某个插件无法使用，可以通过 <code>:scriptnames</code> 命令查看当前已经加载的脚本程序。</p>
+
+<h3 id="键盘图">键盘图</h3>
+
+<p><img src="/images/misc/vim-keyboard-1.gif" alt="vim keyboard 1" title="vim keyboard 1" class="pull-center" width="90%" /></p>
+
+<p>也可以参考英文版的 <a href="/images/misc/vim-keyboard-en.gif">vim Keyboard en</a> ，或者 <a href="http://michael.peopleofhonoronly.com/vim/">参考下图</a> 。</p>
+
+<p><img src="/images/misc/vim-keyboard-2.png" alt="vim keyboard 2" title="vim keyboard 2" class="pull-center" width="90%" /></p>
+
+<p>另外，关于按键列表可以参考 <a href="/reference/linux/vim-keys.pdf">vim keys</a> 。</p>
+
+<!-- http://jrmiii.com/attachments/Vim.pdf -->
+
+<h2 id="参考">参考</h2>
+
+<p>如果要编写 VIM 脚本，可以参考 Trinity 这个简单的插件，常见的语法可以参考 Vim 脚本语言官方文档 <a href="http://vimdoc.sourceforge.net/htmldoc/usr_41.html">Write a Vim script</a> 。</p>
+
+<p>可以查看中文文档 <a href="http://vimcdoc.sourceforge.net/doc/">VIM 中文帮助文档</a> ；另外一个很经典的文档 <a href="http://yannesposito.com/Scratch/en/blog/Learn-Vim-Progressively/">Learn Vim Progressively</a>，以及 <a href="http://coolshell.cn/articles/5426.html">中文版</a>； 还有就是一个 PDF 教程，也就是 <a href="/reference/linux/Practical_Vim.pdf">Practical Vim.pdf</a> 。</p>
+
+<p>一个 vim 的游戏，用于熟悉各种操作，可以参考 <a href="http://vim-adventures.com/">vim adventures</a> 。</p>
+
+<p>关于如何针对新的语言添加 tags 可以参考 <a href="http://ctags.sourceforge.net/EXTENDING.html">How to Add Support for a New Language to Exuberant Ctags</a> 。</p>
+
+<!--
+https://raw.githubusercontent.com/nvie/vimrc/master/vimrc
+https://github.com/amix/vimrc
+https://github.com/vgod/vimrc
+https://github.com/humiaozuzu/dot-vimrc
+https://github.com/xolox/vim-easytags
+https://github.com/ruchee/vimrc/blob/master/_vimrc
+http://www.cnblogs.com/ma6174/archive/2011/12/10/2283393.html
+https://www.zhihu.com/question/26713049
+
+vim 配置文件，将 F2 等功能添加到 default 文件中。
+
+http://www.yeolar.com/note/2010/01/27/vim/
+https://github.com/vim-airline/vim-airline/wiki/FAQ
+
+<a href="http://python.42qu.com/11180003">使用Vim打造现代化的Python IDE</a>。<br><br>
+<a href="http://python.42qu.com/11165602">如何用python写vim插件</a>
+
+http://ju.outofmemory.cn/entry/79671                      经典插件的介绍
+http://blog.chinaunix.net/uid-24118190-id-4077308.html    VIM终极配置
+/reference/linux/{default.vim, plugin.vim}                本地保存的版本
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/mysql-process_init.html" title="MySQL 执行过程">&larr; Older</a></li> 
+         <li class="next"><a href="/post/mysql-optimizer-switch_init.html" title="MySQL 优化开关">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1434124800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-vim-introduce.html" data-title="VIM 基本功能" data-url="/post/linux-vim-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

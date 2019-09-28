@@ -1,0 +1,33 @@
+#!/bin/sh
+cmd=$(which tmux)        # tmux path
+session="basic"          # $(hostname -s) # session name
+
+if [ -z $cmd ]; then
+    echo "You need to install tmux."
+    exit 1
+fi
+
+$cmd has-session -t $session 2> /dev/null
+if [ $?  != 0 ]
+then
+    # -s: session's name. -n: initial window's name, -d: detaching from the new session.
+    $cmd new-session -s $session -n editor -d
+    # send a command. C-m: send the Carriage Return sequence.
+    $cmd send-keys -t $session 'cd ~' C-m
+    $cmd send-keys -t $session 'vim' C-m
+    # split window. -v: top/botton, -h: left/right, -p: percent, default 50.
+    $cmd split-window -v -p 10 -t $session
+    # or, select a default tmux layout.
+    #cmd select-layout -t $session main-horizontal
+    # using [session]:[window].[pane] to sepecify a exact pane.
+    # NOTE: the default base index has changed to 1(default 0).
+    $cmd send-keys -t $session:1.2 'cd ~' C-m
+    # create a new window.
+    $cmd new-window -n console -t $session
+    $cmd send-keys -t $session:2 'cd ~' C-m
+    # select the first window to display.
+    $cmd select-window -t $session:1
+fi
+$cmd attach -t $session
+exit 0
+

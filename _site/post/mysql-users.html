@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL 用户管理|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,database,数据库,权限管理">
+  <meta name="description" content="MySQL 权限管理系统的主要功能是证实连接到一台给定主机的用户，并且赋予该用户在数据库上的相关权限，在认证的时候是通过用户名+主机名定义。 此，简单介绍下 MySQL 的权限管理，以及设置相应的用户管理。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL 用户管理</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-04-27 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>MySQL 权限管理系统的主要功能是证实连接到一台给定主机的用户，并且赋予该用户在数据库上的相关权限，在认证的时候是通过用户名+主机名定义。</p>
+
+<p>在此，简单介绍下 MySQL 的权限管理，以及设置相应的用户管理。</p>
+
+<!-- more -->
+
+<p><img src="/images/databases/mysql/account-logo.png" alt="mysql" title="mysql" class="pull-center" width="75%" /></p>
+
+<h2 id="权限管理">权限管理</h2>
+
+<p>简单介绍一些用户管理的操作。</p>
+
+<h3 id="常用操作">常用操作</h3>
+
+<p>在设置权限时可以使用通配符，其中 % 表示可以匹配任意长度字符， _ 表示可以匹配单字符，常见的操作列举如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看帮助
+mysql&gt; help account management;
+mysql&gt; help create user;
+
+----- 常用操作
+mysql&gt; SELECT current_user();                                        ← 查看当前用户
+mysql&gt; SELECT user,host,password FROM mysql.user;                    ← 查看用户信息
+mysql&gt; SHOW GRANTS;                                                  ← 当前用户权限，会生成SQL语句
+mysql&gt; CREATE USER &#39;user&#39;@&#39;host&#39; IDENTIFIED BY &#39;password&#39;;           ← 创建用户
+mysql&gt; DROP USER &#39;user&#39;@&#39;host&#39;;                                      ← 删除用户
+mysql&gt; RENAME USER &#39;user&#39;@&#39;host&#39; TO &#39;fool&#39;@&#39;host&#39;;                   ← 修改用户名
+
+----- 修改密码
+mysql&gt; ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;new-password&#39;;   ← 修改密码(recommand)
+mysql&gt; SET PASSWORD FOR &#39;root&#39;@&#39;localhost&#39;=PASSWORD(&#39;new-password&#39;); ← 修改密码
+mysql&gt; UPDATE mysql.user SET password=PASSWORD(&#39;new-password&#39;)
+       WHERE USER=&#39;root&#39; AND Host=&#39;127.0.0.1&#39;;
+mysql&gt; UPDATE mysql.user SET password=&#39;&#39; WHERE user=&#39;root&#39;;          ← 清除密码
+mysql&gt; FLUSH PRIVILEGES;
+$ mysqladmin -uROOT -pOLD_PASSWD password NEW_PASSWD                 ← 通过mysqladmin修改
+$ mysqladmin -uROOT -p flush-privileges
+
+----- 权限管理
+mysql&gt; GRANT ALL ON *.* TO &#39;user&#39;@&#39;%&#39; [IDENTIFIED BY &#39;password&#39;];
+mysql&gt; GRANT ALL PRIVILIGES ON [TABLE | DATABASE] student,course TO user1,user2;
+mysql&gt; GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, CREATE TEMPORARY, ALTER,
+       DROP, REFERENCES, INDEX, CREATE VIEW, SHOW VIEW, CREATE ROUTINE,
+       ALTER ROUTINE, EXECUTE
+       ON db.tbl TO &#39;user&#39;@&#39;host&#39; [IDENTIFIED BY &#39;password&#39;];
+mysql&gt; GRANT ALL ON sampdb.* TO PUBLIC WITH GRANT OPTION;            ← 所有人，可以授权给其他人
+mysql&gt; GRANT UPDATE(col),SELECT ON TABLE tbl TO user;                ← 针对列赋值
+mysql&gt; SHOW GRANTS [FOR &#39;user&#39;@&#39;host&#39;];                              ← 查看权限信息
+mysql&gt; REVOKE ALL ON *.* FROM &#39;user&#39;@&#39;host&#39;;                         ← 撤销权限
+mysql&gt; REVOKE SELECT(user, host), UPDATE(host) ON db.tbl FROM &#39;user&#39;@&#39;%&#39;;
+
+----- 查看用户或者密码为空的用户
+mysql&gt; SELECT user, host, password FROM mysql.user
+       WHERE (user IS NULL OR user=&#39;&#39;) OR (password IS NULL OR password=&#39;&#39;);
+
+----- 重命名用户
+mysql&gt; RENAME USER &#39;user1&#39;@&#39;%&#39; TO &#39;user2&#39;@&#39;%&#39;;</code></pre></figure>
+
+<p>WITH GRANT OPTION 表示可以将被授予的权力再次授权给其他人；实际上，在上述操作中，如下的步骤是相同的。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; CREATE USER &#39;user&#39; IDENTIFIED BY &#39;password&#39;;
+mysql&gt; GRANT privileges TO &#39;user&#39;@&#39;host&#39; [WITH GRANT OPTION];
+mysql&gt; FLUSH PRIVILEGS;
+
+mysql&gt; GRANT privileges  TO &#39;user&#39;@&#39;host&#39; IDENTIFIED BY &#39;password&#39; [WITH GRANT OPTION];
+mysql&gt; FLUSH PRIVILEGS;</code></pre></figure>
+
+<p>也就是将创建用户和授权是否分开处理。</p>
+
+<h4 id="取消grnat">取消GRNAT</h4>
+
+<p>默认 root 是有 GRANT 权限，为了安全考虑可以手动取消其权限。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; UPDATE mysql.user SET grant_priv=&#39;N&#39; WHERE user=&#39;ROOT&#39;;
+mysql&gt; FLUSH PRIVILEGES;</code></pre></figure>
+
+<p>注意，修改权限后需要重新登录生效！</p>
+
+<h3 id="用户设置">用户设置</h3>
+
+<p><img src="/images/databases/mysql/account-logo2.png" alt="mysql" title="mysql" class="pull-right" width="18%" /></p>
+
+<p>为了最小化用户权限，通常可以设置四类：</p>
+
+<ul>
+  <li>monitor 对内部表的只读权限，用于监控系统采集监控数据；</li>
+  <li>readonly 业务表的只读权限，比如用于运营、开发排查问题等；</li>
+  <li>admin 基本是最高权限，一些运维人员使用的帐号，例如建表、帐号管理等操作；</li>
+  <li>foobar 业务帐号，也就是应用使用的帐号，业务业务表有增删改查的权限。</li>
+</ul>
+
+<p>接下来，我们看看如何管理这些帐号。</p>
+
+<h4 id="monitor">monitor</h4>
+
+<p>创建完用户之后，默认是有 information_schema 库的读权限的。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; CREATE USER &#39;monitor&#39;@&#39;%&#39; IDENTIFIED BY &#39;password&#39;;
+mysql&gt; SHOW GRANTS FOR &#39;monitor&#39;@&#39;%&#39;;
+mysql&gt; GRANT SELECT ON performance_schema.* TO &#39;monitor&#39;@&#39;%&#39;;
+mysql&gt; GRANT SELECT ON mysql.* TO &#39;monitor&#39;@&#39;%&#39;;
+
+mysql&gt; REVOKE SELECT ON mysql.* FROM &#39;monitor&#39;@&#39;%&#39;;
+mysql&gt; REVOKE SELECT ON performance_schema.* FROM &#39;monitor&#39;@&#39;%&#39;;
+mysql&gt; DROP USER &#39;monitor&#39;@&#39;%&#39;;</code></pre></figure>
+
+<h4 id="readonly">readonly</h4>
+
+<p>与 monitor 用户相同，不过是针对的业务数据库授权。</p>
+
+<h4 id="admin">admin</h4>
+
+<p>只针对管理平面的机器设置权限，也就是指定 IP 地址。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; CREATE USER &#39;admin&#39;@&#39;IP&#39; IDENTIFIED BY &#39;password&#39;;
+mysql&gt; GRANT ALL PRIVILEGES ON *.* TO &#39;admin&#39;@&#39;IP&#39;;
+
+mysql&gt; REVOKE ALL PRIVILEGES ON *.* FROM &#39;admin&#39;@&#39;IP&#39;;
+mysql&gt; DROP USER &#39;admin&#39;@&#39;IP&#39;;</code></pre></figure>
+
+<h4 id="root">root</h4>
+
+<p>保留只允许本地登陆的 root 用户，Always have a plan B 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; GRANT ALL PRIVILEGES ON *.* TO &#39;root&#39;@&#39;localhost&#39; WITH GRANT OPTION;</code></pre></figure>
+
+<p>Plan C 是免密码登陆。</p>
+
+<h2 id="加固插件">加固插件</h2>
+
+<h3 id="密码复杂度检查">密码复杂度检查</h3>
+
+<p>提供了一个插件，可以用于密码的加固，可以采用如下的其中一个方式加载。</p>
+
+<ol>
+  <li>
+    <p>参数启动时指定 <code>--plugin-load='validate_password.so'</code> ；</p>
+  </li>
+  <li>
+    <p>在配置文件 my.cnf 中的 mysqld 段添加 <code>plugin-load=validate_password.so</code> ，同时为了防止插件在 mysql 运行时的时候被卸载可以同时添加 <code>validate-password=FORCE_PLUS_PERMANENT</code> ；</p>
+  </li>
+  <li>
+    <p>登陆 mysql，在命令行模式下直接安装/卸载插件插件 <code>INSTALL PLUGIN validate_password SONAME 'validate_password.so';</code> 以及 <code>UNINSTALL PLUGIN validate_password;</code> 。</p>
+  </li>
+</ol>
+
+<p>注意：安装和卸载语句是不记录 binlog 的如果是复制环境，需要在主备库分别进行操作才可。</p>
+
+<h4 id="使用简介">使用简介</h4>
+
+<p>当修改 MySQL 的账号密码时，会检查当前的是密码策略如果不符合预定义的策略，不符合则返回 <code>ER_NOT_VALID_PASSWORD</code> 错误，相关的语句有 <code>CREATE USER</code>、<code>GRANT</code>、<code>SET PASSWORD</code> 。</p>
+
+<p>可以通过 <code>VALIDATE_PASSWORD_STRENGTH()</code> 函数对密码强度进行检查，从 0 到 100 依次表示从弱到强；当然，需要提前加载插件，否则只会返回 0 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SELECT VALIDATE_PASSWORD_STRENGTH(&#39;123&#39;);
+mysql&gt; SELECT VALIDATE_PASSWORD_STRENGTH(&#39;123_abc&#39;);
+mysql&gt; SELECT VALIDATE_PASSWORD_STRENGTH(&#39;123_abc_ABC&#39;);
+
+mysql&gt; SHOW VARIABLES LIKE &#39;validate_password%&#39;;
++--------------------------------------+--------+
+| Variable_name                        | Value  |
++--------------------------------------+--------+
+| validate_password_dictionary_file    |        |  验证密码的目录路径
+| validate_password_length             | 8      |  密码的最小长度
+| validate_password_mixed_case_count   | 1      |  至少有一个大写和小写的字符
+| validate_password_number_count       | 1      |  至少要有一个数字字符
+| validate_password_policy             | MEDIUM |  密码安全策略LOW,MEDIUM,STRONG
+| validate_password_special_char_count | 1      |  至少包含一个特殊字符
++--------------------------------------+--------+
+6 rows in set (0.02 sec)</code></pre></figure>
+
+<p>其中 LOW 表示只限制长度；MEDIUM 则为长度，字符，数字，大小写，特殊字符；STRONG 则在之前的基础上增加字典目录。</p>
+
+<h3 id="使用密码插件登陆">使用密码插件登陆</h3>
+
+<p>MySQL 提供了一个 <code>mysql_config_editor</code> 工具，用于加密用户密码，并提供了免密码登陆，适用于 <code>mysql</code>、<code>mysqladmin</code>、<code>mysqldump</code> 等。</p>
+
+<p>该工具提供了 <code>set</code>、<code>remove</code>、<code>print</code>、<code>reset</code>，如下简单介绍其使用方法：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 1. 创建MySQL测试账号密码
+mysql&gt; CREATE USER &#39;mysqldba&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;NEW-123_password&#39;;
+mysql&gt; DROP USER &#39;mysqldba&#39;@&#39;localhost&#39;;
+
+----- 2. 创建/删除/查看加密文件，此时会生成一个~/.mylogin.cnf加密二进制文件
+$ mysql_config_editor set --login-path=mysqldba --host=192.30.16.136 \
+  --user=mysqldba --password=&#39;NEW-123_password&#39;
+$ mysql_config_editor print --all
+$ mysql_config_editor print --login-path=mysqldba
+$ mysql_config_editor remove --login-path=mysqldba
+
+$ mysql --login-path=mysqldba</code></pre></figure>
+
+<!--
+可以参考如下内容，解密
+http://www.kikikoo.com/uid-20708886-id-5599401.html
+-->
+
+<h2 id="其它">其它</h2>
+
+<p>在此，主要列举一些常见的用户相关操作。</p>
+
+<h3 id="重置-root-用户密码">重置 root 用户密码</h3>
+
+<p>如果忘记了 root 用户，可以通过如下方法进行更改。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 1. 停止mysql服务器
+# systemctl stop mysqld
+# /opt/mysql-5.7/bin/mysqladmin -uroot -p&#39;init-password&#39; shutdown
+Shutting down MySQL..     done
+
+----- 2. 获取跳过认证的启动参数
+# mysqld --help --verbose | grep &#39;skip-grant-tables&#39; -A1
+    --skip-grant-tables Start without grant tables. This gives all users FULL
+                          ACCESS to all tables.
+
+----- 3. 启动服务器，跳过认证
+# mysqld --skip-grant-tables --user=mysql &amp;
+[1] 10209
+
+----- 4. 取消密码
+mysql&gt; UPDATE mysql.user SET password=&#39;&#39; WHERE user=&#39;root&#39;;
+Query OK, 2 rows affected (0.00 sec)
+Rows matched: 2  Changed: 2  Warnings: 0</code></pre></figure>
+
+<p>然后正常重启即可，空密码登陆，再设置好密码。</p>
+
+<h3 id="密码存储">密码存储</h3>
+
+<p>MySQL 把所有用户的用户名和密码的密文存放在 mysql.user 表中，而 5.7 将原有的 password 字段替换为了 authentication_string 字段，如果使用 mysql_native_password 插件，则结果相同。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SELECT user,plugin,authentication_string FROM mysql.user;
++-----------+-----------------------+-------------------------------------------+
+| user      | plugin                | authentication_string                     |
++-----------+-----------------------+-------------------------------------------+
+| root      | mysql_native_password | *4A82FDF1D80BA7470BA2E17FEEFD5A53D5D3B762 |
+| mysql.sys | mysql_native_password | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE |
+| mysync    | mysql_native_password | *09A25204677367FC91363E3AE2F5BEFE4602EA70 |
++-----------+-----------------------+-------------------------------------------+
+3 rows in set (0.00 sec)</code></pre></figure>
+
+<p>一般来说密文是通过不可逆加密算法得到的，这样即使敏感信息泄漏，除了暴力破解是无法快速从密文直接得到明文的。</p>
+
+<p>MySQL 使用了两次 SHA1，以及夹杂一次 unhex 的方式对用户密码进行了加密；算法的具体公式可以通过如下方式表示：<code>password_str = concat('*', sha1(unhex(sha1(password))))</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SELECT PASSWORD(&#39;password&#39;),UPPER(CONCAT(&#39;*&#39;,SHA1(UNHEX(SHA1(&#39;password&#39;)))));
++-------------------------------------------+--------------------------------------------------+
+| PASSWORD(&#39;password&#39;)                      | UPPER(CONCAT(&#39;*&#39;,SHA1(UNHEX(SHA1(&#39;password&#39;))))) |
++-------------------------------------------+--------------------------------------------------+
+| *2470C0C06DEE42FD1618BB99005ADCA2EC9D1E19 | *2470C0C06DEE42FD1618BB99005ADCA2EC9D1E19        |
++-------------------------------------------+--------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)</code></pre></figure>
+
+<p>其实 MySQL 在 5.6 以前，对安全性的重视度非常低，甚至可以从 binlog 中直接通过 mysqlbinlog 将密码解密出来；5.7 之后在 binlog 中对密码进行了加密处理。</p>
+
+<p>不过 <code>CHANGE MASTER TO</code> 命令仍会将密码明文保存在 master.info 文件中。</p>
+
+<h3 id="tips">Tips</h3>
+
+<ol>
+  <li>创建 MySQL 账号密码时，如果在配置文件中使用了 bind-address 选项，而且有多个 IP 地址，那么需要注意绑定的 IP 地址，否则会报 <code>ERROR 2003 (HY000): Can't connect to MySQL server on 'IP' (111)</code> 。</li>
+</ol>
+
+<h2 id="参考">参考</h2>
+
+<p>官方文档 <a href="http://dev.mysql.com/doc/refman/en/security.html">MySQL Reference Manual - Security</a>，主要是与安全相关的内容，包括了用户管理。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/program-c-linux-pthreads-synchronize.html" title="Linux 线程同步">&larr; Older</a></li> 
+         <li class="next"><a href="/post/network-service-ftp.html" title="FTP 服务简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1430064000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-users.html" data-title="MySQL 用户管理" data-url="/post/mysql-users.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

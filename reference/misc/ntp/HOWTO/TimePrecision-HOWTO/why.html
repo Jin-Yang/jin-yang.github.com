@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Why do We Need a Precise Clock?</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Managing Accurate Date and Time"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Managing Accurate Date and Time"
+HREF="index.html"><LINK
+REL="NEXT"
+TITLE="Computer Global Date and Time Concept"
+HREF="time.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Managing Accurate Date and Time</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="index.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="time.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="why"
+></A
+>1. Why do We Need a Precise Clock?</H1
+><P
+>If our computer never connects to other computers (or other devices that use a clock), the precision of the clock is not critical itself, it depends on the need of the user. However, programs that some way use the net are dependent on a precise date and time. Some examples, when you may need precise clock:</P
+><P
+></P
+><UL
+><LI
+><P
+>Softwares that deal with transactions</P
+></LI
+><LI
+><P
+>Commercial applications (e.g. eBay)</P
+></LI
+><LI
+><P
+>Mail and messaging-related client and servers</P
+></LI
+><LI
+><P
+>Websites that use cookies</P
+></LI
+><LI
+><P
+>Distributed web applications</P
+></LI
+><LI
+><P
+>Web services</P
+></LI
+><LI
+><P
+>Distributed component-based applications as <SPAN
+CLASS="acronym"
+>J2EE</SPAN
+>, <SPAN
+CLASS="acronym"
+>.NET</SPAN
+>, etc</P
+></LI
+><LI
+><P
+>Advanced modern and paralel filesystems, as AFS, DFS, GFS, GPFS, etc</P
+></LI
+></UL
+><P
+>And of course, to use the computer to adjust our wristwatch clock.</P
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="why.pcclock"
+></A
+>1.1. On What Factors Does the Hardware-Clock Depend?</H2
+><P
+>Here we talk a little about the hardware-clock precision.</P
+><P
+>In PCs we find quartz-oscillators maintaining the hardware clock. The frequency of the oscillator is divided, and at the end we get a counter stepping once in one second (in reality it is more complicated, but now it's enough for us). The clock-oscillator runs even if the computer is switched off, so after starting the computer (and starting Linux) the hardware clock can give the values of the actual time. The stability of this clock is mostly dependent on the temperature of its surroundings, but it is also dependent on the air-pressure and the stability of the power supply voltage. The hardware clock is inaccurate in short term, however in the long term it shows a certain difference from the exact time. As we continously can compare the frequency of our hardware clock and an exact clock, we can calculate the frequency of the hardware clock and so to create the exact time. If this exact clock is inside your LAN (local area network), the accuracy of your Linux machine clock is within 0.01 sec. If you use the internet for this purpose, the accuracy of your clock will be within 0.2 sec regarding to the exact time.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="time.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Managing Accurate Date and Time</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Computer Global Date and Time Concept</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

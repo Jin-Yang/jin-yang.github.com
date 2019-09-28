@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>AI 100 天 -- 02|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- mathjax config similar to math.stackexchange -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+	displayMath: [ ['$$','$$'] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+  <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+          var all = MathJax.Hub.getAllJax(), i;
+          for(i=0; i < all.length; i += 1) {
+              all[i].SourceElement().parentNode.className += ' has-jax';
+          }
+      });
+  </script>
+  <script type="text/javascript"
+     src="https://cdn.bootcss.com/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+  <style type="text/css">.MathJax .mi, .MathJax .mo { color: #111; font-size: 86%; font-weight: 100; }</style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>AI 100 天 -- 02</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2018-11-06 Tuesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <!-- more -->
+
+<h2 id="线性回归">线性回归</h2>
+
+<p>简单来说，现在有一批的数据，示例如下。</p>
+
+<p><img src="/images/ai/linear-regression-example-data.png" alt="linear regression example data" title="linear regression example data" class="pull-center" /></p>
+
+<p>可以通过如下代码生成如上的测试数据。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">pylab</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+<span class="n">pylab</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;What our data looks like&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></code></pre></figure>
+
+<p>我们希望通过这些数据来拟合出一条直线。</p>
+
+<script type="math/tex; mode=display">y=\beta_1x+\beta_0</script>
+
+<p>也就是要确定 $\beta_1$ 和 $\beta_0$ 的值，一般来说，最常用的计算方法是获取这些数据最小的 Root Mean Squared Error, RMSE ，也即。</p>
+
+<script type="math/tex; mode=display">\beta_1,\beta_0=argmin_{\beta_1,\beta_0}\sum_{i=1}^{N}(y_i - (\beta_1 x_i + \beta_0))^2</script>
+
+<h3 id="普通最小二乘法">普通最小二乘法</h3>
+
+<p>如上所述，也就是找到一条参数对应的曲线，使得所有数据具有最小均方根误差 (RMSE)，可以直接使用 <code>Scikit-Learn</code> 中的 <code>LinearRegression</code> 模块，完整的代码如下。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">pylab</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+<span class="n">lr</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+<span class="n">lr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">pylab</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lr</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">lr</span><span class="o">.</span><span class="n">intercept_</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></code></pre></figure>
+
+<p>在如上的处理时，sklearn 要求输入的特征必须是二维数组的类型，但目前只有 1 个特征，需要用 <code>reshape()</code> 转行成二维数组的类型。</p>
+
+<p>最终得到的直线如下所示。</p>
+
+<p><img src="/images/ai/linear-regression-scikit-learn-example.png" alt="linear regression example" title="linear regression example" class="pull-center" /></p>
+
+<p>实际上这里缺少一个度量，也就是 置信界限 (confidence bounds)，当某个点的数据比较多时，认为这个范围内可信度大，而当数据较少时则不确定性增加。</p>
+
+<p>有点类似于下图。</p>
+
+<p>接下来介绍，如何通过贝叶斯进行线性估计。</p>
+
+<h2 id="贝叶斯线性回归">贝叶斯线性回归</h2>
+
+<p>可以将贝叶斯公式修改为如下所示。</p>
+
+<script type="math/tex; mode=display">P(θ|D) = \frac{P(D|θ)P(θ)}{P(D)}</script>
+
+<p>简单来说，该等式意味这，当给定数据 D 之后，参数 $\beta_0=0.5$ 且 $\beta_1=2.0$ 的概率是 0.5 ，而 $\beta_0=1.5$ 且 $\beta_1=3.0$ 的概率是 0.1 。</p>
+
+<p>也就是说，后者只是在当前数据集出现的概率要低于前者，而非不可能出现。</p>
+
+<p>其中的几个参数含义如下。</p>
+
+<ul>
+  <li>$P(D|θ)$ 似然函数，用来描述，在给定参数 $\theta$ 后，数据 $D$ 出现的概率是多少。</li>
+  <li>$P(θ)$ 开始对 $\theta$ 的估计，越接近于后验估计，越能更好更快的找到后验估计。</li>
+  <li>$P(D)$ 数据 $D$ 出现的概率，这是一个归一化的常数，用来确保右侧的后验概率分布是一个合理的概率密度。</li>
+</ul>
+
+<p>假设有如下的数据模型。</p>
+
+<p>$y={\beta_1}x+{\beta_0}+{\epsilon}\ \ \ where\  {\epsilon} {\sim} N(\mu, \sigma^2)$</p>
+
+<p>其中 $\epsilon$ 表示噪声，为正态分布。</p>
+
+<p>假设 $\beta_0$ 和 $\beta_1$ 满足正态分布，但是对应的参数有所区别。</p>
+
+<script type="math/tex; mode=display">\beta_0 \sim N(\mu=0, \sigma^2=9) \\ \beta_1 \sim N(\mu=0, \sigma^2=5)</script>
+
+<h3 id="先验-pθ">先验 P(θ)</h3>
+
+<p>先验估计 <code>P(θ)</code> 是我们主观认为参数应该符合的概率分布，一般会使用高斯分布，相比来说高斯分布更容易简化计算。</p>
+
+<p>注意，先验 <code>P(θ)</code> 非常重要，必须依赖好的先验，当先验与后验越接近，便会更快得到真正的后验。如果取的先验分布和后验分布一致，那么当从先验分布中抽样时，实际上是从后验中取样，这也正是我们需要的。</p>
+
+<p>假设随机变量 X 服从期望为 $\mu$、标准差为 $\sigma$ 的正态分布，则可以记为：</p>
+
+<p>$X \sim N(\mu ,\sigma ^{2})$</p>
+
+<p>对应的概率密度函数为：</p>
+
+<script type="math/tex; mode=display">f(x)={1 \over {\sigma {\sqrt {2\pi }}}} {e^{-{(x-\mu )^{2} \over 2\sigma ^{2}}}}</script>
+
+<p>在 python 中，可以通过 <code>numpy.random.normal()</code> 生成对应的数据。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="k">def</span> <span class="nf">get_normal_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">sigma</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="n">mu0</span><span class="p">,</span> <span class="n">sigma0</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span>
+<span class="n">mu1</span><span class="p">,</span> <span class="n">sigma1</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span>
+
+<span class="n">b0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">mu0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">sigma0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">b1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">mu1</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">sigma1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
+<span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">b0</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">get_normal_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu0</span><span class="p">,</span> <span class="n">sigma0</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+
+<span class="n">ax2</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">get_normal_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu1</span><span class="p">,</span> <span class="n">sigma1</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></code></pre></figure>
+
+<p><img src="/images/ai/linear-regression-parameters.png" alt="linear regression parameters" title="linear regression parameters" class="pull-center" width="100%" /></p>
+
+<p>如何选择 <code>P(θ)</code> 是非常重要的，后验估计会依赖 <code>P(θ)</code> ，也就是说，<code>P(θ)</code> 越接近于后验估计，越能快速的得到期望的结果。</p>
+
+<h3 id="似然函数-pdθ">似然函数 P(D|θ)</h3>
+
+<p>所谓的似然函数 $P(D|\theta)$，实际表示了在使用参数 $\theta$ 时，数据 $D$ 出现的概率是多少。</p>
+
+<p>接下来就是在已知参数的条件下，如何进行计算，也就是说，如何计算 $P(Y|X,\theta)$ 。</p>
+
+<p>首先，假设各个数据点 $(x_i,y_i)$ 是独立同分布 (Independent and Identically Distributed) 的，那么有如下的等式。</p>
+
+<script type="math/tex; mode=display">P(Y|X,\theta)=P(Y|X,{\beta_1},{\beta_0})={\prod_{i=1}^N}{P(y_i|x_i,\beta_1,\beta_0)}</script>
+
+<p>根据如上的线性函数，也就是：</p>
+
+<script type="math/tex; mode=display">y={\beta_1}x+{\beta_0}+{\epsilon}\ \ \ where\  {\epsilon} {\sim} N(\mu, \sigma^2)</script>
+
+<p>带入之后，可以得到：</p>
+
+<script type="math/tex; mode=display">P(Y|X,\theta)={\prod_{i=1}^N}{P({\beta_1}{x_i}+{\beta_0}+{\epsilon_i}|x_i,\beta_1,\beta_0)}</script>
+
+<p>因为 $x$ $\beta_0$ $\beta_1$ 现在已知，对应的条件概率实际上是 1 ，所以，上式可以简化为。</p>
+
+<script type="math/tex; mode=display">P(Y|X,\theta)={\prod_{i=1}^N}{P({\epsilon_i}|x_i,\beta_1,\beta_0)}</script>
+
+<p>另外，假设噪音 $\epsilon$ 与数据是相互独立的，那么上述的等式可以继续简化为：</p>
+
+<script type="math/tex; mode=display">P(Y|X,\theta)={\prod_{i=1}^N}{P({\epsilon_i})}</script>
+
+<p>如上，我们还假设噪音满足高斯分布，其对应的概率密度函数也就是。</p>
+
+<script type="math/tex; mode=display">f(x)={1 \over {\sigma {\sqrt {2\pi }}}} {e^{-{(x-\mu )^{2} \over 2\sigma ^{2}}}}</script>
+
+<p>实际上，对于高斯分布的参数，还有两个假设：A) 均值为 0；B) 方差为固定常数，那么等式再次简化为：</p>
+
+<script type="math/tex; mode=display">P(Y|X,\theta)={\prod_{i=1}^N}{1 \over {\sigma_\epsilon {\sqrt {2\pi }}}} {e^{-{(\epsilon_i - 0)^2 \over 2\sigma_\epsilon^{2}}}}</script>
+
+<p>另外，按照线性表达式，可以得到如下等式。</p>
+
+<script type="math/tex; mode=display">{\epsilon_i}={y_i} - ({\beta_1} {x_i}+{\beta_0})</script>
+
+<p>那么最终的等式为。</p>
+
+<script type="math/tex; mode=display">P(Y|X,\theta)={\prod_{i=1}^N}{1 \over {\sigma_\epsilon {\sqrt {2\pi }}}} {e^{-{({y_i} - ({\beta_1} {x_i}+{\beta_0}))^2 \over 2\sigma_\epsilon^{2}}}}</script>
+
+<p>这也就是最终的等式，然后对表达式进行简化。</p>
+
+<script type="math/tex; mode=display">f_n(x_i | \mu = \beta_1 x_i + \beta_0, \sigma^2=\sigma_{\epsilon}^2)={1 \over {\sigma_\epsilon {\sqrt {2\pi }}}} {e^{-{({y_i} - ({\beta_1} {x_i}+{\beta_0}))^2 \over 2\sigma_\epsilon^{2}}}}</script>
+
+<p>也就是。</p>
+
+<script type="math/tex; mode=display">P(Y|X, \theta)=\prod_{i=1}^N f_n(x_i | \beta_1 x_i + \beta_0, \sigma_{\epsilon}^{2})</script>
+
+<h3 id="后验估计-pθd">后验估计 P(θ|D)</h3>
+
+<p>也就是根据所观察到的数据，估计参数 (这里是 $\beta_0$ 和 $\beta_1$ ) 的概率密度函数。</p>
+
+<script type="math/tex; mode=display">P(\beta_1,\beta_0|X,Y)=\frac{P(Y|X,\beta_0,\beta_1) P(\beta_1,\beta_0)}{P(X,Y)}</script>
+
+<p>其中 $P(X,Y)$ 是一个常量，这里通过 $Z$ 表示。</p>
+
+<script type="math/tex; mode=display">P(\beta_1,\beta_0|X,Y)=\frac{P(Y|X,\beta_0,\beta_1) P(\beta_1,\beta_0)}{Z}</script>
+
+<p>有两种方式可以获取到对应的后验估计：A) 通过公式推导；B) 通过对参数 $\beta_0$ 和 $\beta_1$ 的采样获取。</p>
+
+<p>这里采用第二种方法，也就有如下等式。</p>
+
+<h2 id="其它">其它</h2>
+
+<h3 id="似然函数">似然函数</h3>
+
+<p>这里通过一个简单的示例介绍似然函数的作用。</p>
+
+<p>暂时将上面的 $\theta_0$ 参数取消，同时假设 $\theta_1=4$ ，也就是对应的等式如下所示。</p>
+
+<script type="math/tex; mode=display">y_i=\beta_1 x_i + \epsilon_i \ where \ \beta_1=4 \ and \ \epsilon_i \sim N(\mu=0, \theta^2=1)</script>
+
+<p>如果将 $\beta_1$ 设置一个取值范围，例如 $[0, 8]$，那么同样可以得到对应 $y$ 的一个范围，也就是。</p>
+
+<script type="math/tex; mode=display">\hat{y_i}=\hat{\beta_1} x_i + \epsilon_i \ where \ \hat{\beta_1}\in [0, 8] \ and \ \epsilon_i \sim N(\mu=0, \theta^2=1)</script>
+
+<p>可以通过如下的代码得到对应的结果。</p>
+
+<!--
+https://towardsdatascience.com/unraveling-bayesian-dark-magic-non-bayesianist-implementing-bayesian-regression-e4336ef32e61
+
+https://blog.csdn.net/lanchunhui/article/details/50172659
+https://blog.csdn.net/u010329855/article/details/75281346
+
+https://cloud.tencent.com/developer/news/114376
+
+
+这里的公式有如下的假设：数据点 (x,y) 是 Independent and Identically Distributed 独立同分布的。
+
+最大似然估计(Maximum likelihood estimation)
+
+https://www.cnblogs.com/liliu/archive/2010/11/22/1883702.html
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-process-exit-code-introduce.html" title="Linux 进程退出码">&larr; Older</a></li> 
+         <li class="next"><a href="/post/simple-life-ukiyoe-01.html" title="【转载】浮世绘 01">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1541433600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/artificial-intelligence-100-days-02.html" data-title="AI 100 天 -- 02" data-url="/post/artificial-intelligence-100-days-02.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

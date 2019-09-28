@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>ETCD 源码解析|JinYang's Blog</title>
+  <meta name="keywords" content="golang,go,etcd">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>ETCD 源码解析</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2017-12-15 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  program ,  golang ,  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>在上篇 <a href="/post/golang-raft-etcd-example-sourcode-details.html">ETCD 示例源码</a> 中介绍了 ETCD 代码中 RAFT 相关的示例代码，接着介绍与 ETCD 相关的代码。</p>
+
+<!-- more -->
+
+<h2 id="数据结构">数据结构</h2>
+
+<p>简单介绍下一些常见的数据结构。</p>
+
+<h3 id="type-storage-interface">type Storage interface</h3>
+
+<p>定义了存储的接口。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Storage</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="c1">// InitialState returns the saved HardState and ConfState information.</span>
+    <span class="nx">InitialState</span><span class="p">()</span> <span class="p">(</span><span class="nx">pb</span><span class="p">.</span><span class="nx">HardState</span><span class="p">,</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">ConfState</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="c1">// Entries returns a slice of log entries in the range [lo,hi).</span>
+    <span class="c1">// MaxSize limits the total size of the log entries returned, but</span>
+    <span class="c1">// Entries returns at least one entry if any.</span>
+    <span class="nx">Entries</span><span class="p">(</span><span class="nx">lo</span><span class="p">,</span> <span class="nx">hi</span><span class="p">,</span> <span class="nx">maxSize</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">([]</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Entry</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="c1">// Term returns the term of entry i, which must be in the range</span>
+    <span class="c1">// [FirstIndex()-1, LastIndex()]. The term of the entry before</span>
+    <span class="c1">// FirstIndex is retained for matching purposes even though the</span>
+    <span class="c1">// rest of that entry may not be available.</span>
+    <span class="nx">Term</span><span class="p">(</span><span class="nx">i</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">(</span><span class="kt">uint64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="c1">// LastIndex returns the index of the last entry in the log.</span>
+    <span class="nx">LastIndex</span><span class="p">()</span> <span class="p">(</span><span class="kt">uint64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="c1">// FirstIndex returns the index of the first log entry that is</span>
+    <span class="c1">// possibly available via Entries (older entries have been incorporated</span>
+    <span class="c1">// into the latest Snapshot; if storage only contains the dummy entry the</span>
+    <span class="c1">// first log entry is not available).</span>
+    <span class="nx">FirstIndex</span><span class="p">()</span> <span class="p">(</span><span class="kt">uint64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="c1">// Snapshot returns the most recent snapshot.</span>
+    <span class="c1">// If snapshot is temporarily unavailable, it should return ErrSnapshotTemporarilyUnavailable,</span>
+    <span class="c1">// so raft state machine could know that Storage needs some time to prepare</span>
+    <span class="c1">// snapshot and call Snapshot later.</span>
+    <span class="nx">Snapshot</span><span class="p">()</span> <span class="p">(</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Snapshot</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>其中官方提供的 <a href="https://github.com/coreos/etcd/tree/master/contrib/raftexample">Github Raft Example</a> 中使用的是库自带 MemoryStorage 。</p>
+
+<h3 id="type-ready-struct">type Ready struct</h3>
+
+<p>对于这种 IO 网络密集型的应用，提高吞吐最好的手段就是批量操作，ETCD 与之相关的核心抽象就是 Ready 结构体。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="c1">// Ready encapsulates the entries and messages that are ready to read,</span>
+<span class="c1">// be saved to stable storage, committed or sent to other peers.</span>
+<span class="c1">// All fields in Ready are read-only.</span>
+<span class="kd">type</span> <span class="nx">Ready</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="c1">// The current volatile state of a Node.</span>
+    <span class="c1">// SoftState will be nil if there is no update.</span>
+    <span class="c1">// It is not required to consume or store SoftState.</span>
+    <span class="o">*</span><span class="nx">SoftState</span>
+
+    <span class="c1">// The current state of a Node to be saved to stable storage BEFORE</span>
+    <span class="c1">// Messages are sent.</span>
+    <span class="c1">// HardState will be equal to empty state if there is no update.</span>
+    <span class="nx">pb</span><span class="p">.</span><span class="nx">HardState</span>
+
+    <span class="c1">// ReadStates can be used for node to serve linearizable read requests locally</span>
+    <span class="c1">// when its applied index is greater than the index in ReadState.</span>
+    <span class="c1">// Note that the readState will be returned when raft receives msgReadIndex.</span>
+    <span class="c1">// The returned is only valid for the request that requested to read.</span>
+    <span class="nx">ReadStates</span> <span class="p">[]</span><span class="nx">ReadState</span>
+
+    <span class="c1">// Entries specifies entries to be saved to stable storage BEFORE</span>
+    <span class="c1">// Messages are sent.</span>
+    <span class="nx">Entries</span> <span class="p">[]</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Entry</span>
+
+    <span class="c1">// Snapshot specifies the snapshot to be saved to stable storage.</span>
+    <span class="nx">Snapshot</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Snapshot</span>
+
+    <span class="c1">// CommittedEntries specifies entries to be committed to a</span>
+    <span class="c1">// store/state-machine. These have previously been committed to stable</span>
+    <span class="c1">// store.</span>
+    <span class="nx">CommittedEntries</span> <span class="p">[]</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Entry</span>
+
+    <span class="c1">// Messages specifies outbound messages to be sent AFTER Entries are</span>
+    <span class="c1">// committed to stable storage.</span>
+    <span class="c1">// If it contains a MsgSnap message, the application MUST report back to raft</span>
+    <span class="c1">// when the snapshot has been received or has failed by calling ReportSnapshot.</span>
+    <span class="nx">Messages</span> <span class="p">[]</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Message</span>
+
+    <span class="c1">// MustSync indicates whether the HardState and Entries must be synchronously</span>
+    <span class="c1">// written to disk or if an asynchronous write is permissible.</span>
+    <span class="nx">MustSync</span> <span class="kt">bool</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="type-node-struct">type node struct</h3>
+
+<p>在 <code>raft/node.go</code> 中定义了 <code>type node struct</code> 对应的结构，一个 RAFT 结构通过 Node 表示各结点信息，该结构体内定义了各个管道，用于同步信息，下面会逐一遇到。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">node</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">propc</span>      <span class="kd">chan</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Message</span>
+    <span class="nx">recvc</span>      <span class="kd">chan</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Message</span>
+    <span class="nx">confc</span>      <span class="kd">chan</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">ConfChange</span>
+    <span class="nx">confstatec</span> <span class="kd">chan</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">ConfState</span>
+    <span class="nx">readyc</span>     <span class="kd">chan</span> <span class="nx">Ready</span>
+    <span class="nx">advancec</span>   <span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>
+    <span class="nx">tickc</span>      <span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>
+    <span class="nx">done</span>       <span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>
+    <span class="nx">stop</span>       <span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>
+    <span class="nx">status</span>     <span class="kd">chan</span> <span class="kd">chan</span> <span class="nx">Status</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>其实现，就是通过这些管道在 RAFT 实现与外部应用之间来传递各种消息。</p>
+
+<h3 id="type-raft-struct">type raft struct</h3>
+
+<p>在 <code>raft/raft.go</code> 中定义了 <code>type raft struct</code> 结构，其中有两个关键函数指针 <code>tick</code> 和 <code>step</code>，在不同的状态时会调用不同的函数，例如 Follower 中使用 <code>tickElection()</code> 和 <code>stepFollower()</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">raft</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">id</span> <span class="kt">uint64</span>
+
+	<span class="nx">Term</span> <span class="kt">uint64</span>
+	<span class="nx">Vote</span> <span class="kt">uint64</span>
+
+	<span class="nx">readStates</span> <span class="p">[]</span><span class="nx">ReadState</span>
+
+	<span class="c1">// the log</span>
+	<span class="nx">raftLog</span> <span class="o">*</span><span class="nx">raftLog</span>
+
+	<span class="nx">maxInflight</span> <span class="kt">int</span>
+	<span class="nx">maxMsgSize</span>  <span class="kt">uint64</span>
+	<span class="nx">prs</span>         <span class="kd">map</span><span class="p">[</span><span class="kt">uint64</span><span class="p">]</span><span class="o">*</span><span class="nx">Progress</span>
+
+	<span class="nx">state</span> <span class="nx">StateType</span>
+
+	<span class="nx">votes</span> <span class="kd">map</span><span class="p">[</span><span class="kt">uint64</span><span class="p">]</span><span class="kt">bool</span>
+
+	<span class="nx">msgs</span> <span class="p">[]</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Message</span>
+
+	<span class="c1">// the leader id</span>
+	<span class="nx">lead</span> <span class="kt">uint64</span>
+	<span class="c1">// leadTransferee is id of the leader transfer target when its value is not zero.</span>
+	<span class="c1">// Follow the procedure defined in raft thesis 3.10.</span>
+	<span class="nx">leadTransferee</span> <span class="kt">uint64</span>
+	<span class="c1">// New configuration is ignored if there exists unapplied configuration.</span>
+	<span class="nx">pendingConf</span> <span class="kt">bool</span>
+
+	<span class="nx">readOnly</span> <span class="o">*</span><span class="nx">readOnly</span>
+
+	<span class="c1">// number of ticks since it reached last electionTimeout when it is leader</span>
+	<span class="c1">// or candidate.</span>
+	<span class="c1">// number of ticks since it reached last electionTimeout or received a</span>
+	<span class="c1">// valid message from current leader when it is a follower.</span>
+	<span class="nx">electionElapsed</span> <span class="kt">int</span>
+
+	<span class="c1">// number of ticks since it reached last heartbeatTimeout.</span>
+	<span class="c1">// only leader keeps heartbeatElapsed.</span>
+	<span class="nx">heartbeatElapsed</span> <span class="kt">int</span>
+
+	<span class="nx">checkQuorum</span> <span class="kt">bool</span>
+	<span class="nx">preVote</span>     <span class="kt">bool</span>
+
+	<span class="nx">heartbeatTimeout</span> <span class="kt">int</span>
+	<span class="nx">electionTimeout</span>  <span class="kt">int</span>
+	<span class="c1">// randomizedElectionTimeout is a random number between</span>
+	<span class="c1">// [electiontimeout, 2 * electiontimeout - 1]. It gets reset</span>
+	<span class="c1">// when raft changes its state to follower or candidate.</span>
+	<span class="nx">randomizedElectionTimeout</span> <span class="kt">int</span>
+
+	<span class="nx">tick</span> <span class="kd">func</span><span class="p">()</span>          <span class="c1">// 两个重要的函数指针</span>
+	<span class="nx">step</span> <span class="nx">stepFunc</span>
+
+	<span class="nx">logger</span> <span class="nx">Logger</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Node 代表了 etcd 中一个节点，是 RAFT 协议核心部分实现的代码，而在 EtcdServer 的应用层与之对应的是 raftNode ，两者一对一，raftNode 中有匿名嵌入了 node 。</p>
+
+<h2 id="整体架构">整体架构</h2>
+
+<p>Etcd 服务端主要由几大组件构成，各部分介绍如下：</p>
+
+<ul>
+  <li><code>EtcdServer[etcdserver/server.go]</code> 主进程，直接或者间接包含了 raftNode、WAL、snapshotter 等多个核心组件，可以理解为一个容器。</li>
+  <li><code>raftNode[etcdserver/raft.go]</code> 对内部 RAFT 协议实现的封装，暴露简单的接口，用来保证写事务的集群一致性。</li>
+</ul>
+
+<!--
+Store 管理维护Etcd数据库
+Wal 管理事务日志
+Snapshotter 负责数据快照，管理store数据库在内存中和磁盘上的相互转换。
+
+raftNode除了负责集群间raft消息交互，还负责事务和快照的存储，保持数据一致性。
+-->
+
+<h3 id="处理流程">处理流程</h3>
+
+<p>这里的采用的是异步状态机，基于 GoLang 的 Channel 机制，RAFT 状态机作为一个 Background Thread/Routine 运行，会通过 Channel 接收上层传来的消息，状态机处理完成之后，再通过 Ready() 接口返回给上层。</p>
+
+<p>其中 <code>type Ready struct</code> 结构体封装了一批更新操作，包括了：</p>
+
+<ul>
+  <li><code>pb.HardState</code> 需要在发送消息前持久化的消息，包含当前节点见过的最大的 term，在这个 term 给谁投过票，已经当前节点知道的 commit index；</li>
+  <li><code>Messages</code>  需要广播给所有 peers 的消息；</li>
+  <li><code>CommittedEntries</code> 已经提交但是还没有apply到状态机的日志；</li>
+  <li><code>Snapshot</code> 需要持久化的快照。</li>
+</ul>
+
+<p>库的使用者从 <code>type node struct</code> 结构体提供的 ready channel 中不断 pop 出一个个 Ready 进行处理，库使用者通过如下方法拿到 Ready channel 。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">node</span><span class="p">)</span> <span class="nx">Ready</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">Ready</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">n</span><span class="p">.</span><span class="nx">readyc</span> <span class="p">}</span></code></pre></figure>
+
+<p>应用需要对 Ready 的处理包括:</p>
+
+<ol>
+  <li>将 HardState、Entries、Snapshot 持久化到 storage；</li>
+  <li>将 Messages 非阻塞的广播给其他 peers；</li>
+  <li>将 CommittedEntries (已经提交但是还没有应用的日志) 应用到状态机；</li>
+  <li>如果发现 CommittedEntries 中有成员变更类型的 entry，则调用 node 的 <code>ApplyConfChange()</code> 方法让 node 知道；</li>
+  <li>调用 <code>Node.Advance()</code> 告诉 raft node 这批状态更新处理完，状态已经演进了，可以给我下一批 Ready 让我处理了。</li>
+</ol>
+
+<p>注意，上述的第 4 部分和 RAFT 论文中的内容有所区别，论文中只要节点收到了成员变更日志就应用，而这里实际需要等到日志提交之后才会应用。</p>
+
+<h2 id="启动流程">启动流程</h2>
+
+<p>ETCD 服务器是通过 EtcdServer 结构抽象，对应了 <code>etcdserver/server.go</code> 中的代码，包含属性 <code>r raftNode</code>，代表 RAFT 集群中的一个节点，启动入口在 <code>etcdmain/main.go</code> 文件中。</p>
+
+<!--
+在服务器启动过程中，会调用raftNode(etcdserver/raft.go)的start方法：
+-->
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">main()                                etcdmain/main.go
+ |-checkSupportArch()
+ |-startEtcdOrProxyV2()               etcdmain/etcd.go
+   |-newConfig()
+   |-setupLogging()
+   |-startEtcd()
+   | |-embed.StartEtcd()              embed/etcd.go
+   |   |-startPeerListeners()
+   |   |-startClientListeners()
+   |   |-EtcdServer.ServerConfig()    生成新的配置
+   |   |-EtcdServer.NewServer()       etcdserver/server.go正式启动RAFT服务&lt;&lt;&lt;1&gt;&gt;&gt;
+   |   |-EtcdServer.Start()           开始启动服务
+   |   | |-EtcdServer.start()
+   |   |   |-wait.New()               新建WaitGroup组以及一些管道服务
+   |   |   |-EtcdServer.run()         etcdserver/raft.go 启动应用层的处理协程&lt;&lt;&lt;2&gt;&gt;&gt;
+   |   |-Etcd.servePeers()            启动集群内部通讯
+   |   | |-etcdhttp.NewPeerHandler()  启动http服务
+   |   | |-v3rpc.Server()             启动gRPC服务 api/v3rpc/grpc.go
+   |   |   |-grpc.NewServer()         调用gRPC的接口创建
+   |   |   |-pb.RegisterKVServer()    注册各种的服务，这里包含了多个
+   |   |   |-pb.RegisterWatchServer()
+   |   |-Etcd.serveClients()          启动协程处理客户请求
+   |   |-Etcd.serveMetrics()
+   |-notifySystemd()
+   |-select()                         等待stopped
+   |-osutil.Exit()</code></pre></figure>
+
+<p>在标记 1 处会启动 RAFT 协议的核心部分，也就是 <code>node.run()[raft/node.go]</code> 。</p>
+
+<p>在标记 2 处启动的是 ETCD 应用层的处理协程，对应了 <code>raftNode.start()[etcdserver/raft.go]</code> 。</p>
+
+<p>这里基本上是大致的启动流程，主要是解析参数，设置日志，启动监听端口等，接下来就是其核心部分 <code>etcdserver.NewServer()</code> 。</p>
+
+<h3 id="启动raft">启动RAFT</h3>
+
+<p>应用通过 <code>raft.StartNode()</code> 来启动 raft 中的一个副本，函数内部会通过启动一个 goroutine 运行。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">NewServer()                           etcdserver/server.go 通过配置创建一个新的EtcdServer对象，不同场景不同
+ |-store.New()
+ |-wal.Exist()
+ |-restartNode()                      etcdserver/raft.go 已有WAL，直接根据SnapShot启动，最常见场景
+ | |-readWAL()                        读取WAL
+ | |-NewCluster()                     每个会对应一个新的集群配置
+ | |-raft.RestartNode()               raft/node.go 真正做重启节点的函数
+ |   |-newRaft()                      raft/raft.go 新建一个type raft struct对象
+ |   | |-raft.becomeFollower()        成为Follower状态
+ |   |-newNode()                      raft/node.go 新建一个type node struct对象
+ |   |-node.run()                     raft/node.go RAFT协议运行的核心函数，会单独启动一个协程&lt;&lt;&lt;1&gt;&gt;&gt;
+ |-NewAuthStore()
+ |                                    &lt;====会根据不同的启动场景执行相关任务
+ |-startNode()                        新建一个节点，前提是没有WAL日志，且是新配置结点 etcdserver/raft.go
+ | |-raft.NewMemoryStorage()
+ | |-raft.StartNode()                 启动一个节点raft/node.go，开始node的处理过程&lt;&lt;&lt;start&gt;&gt;&gt;
+ |   |-newRaft()                      创建RAFT对象raft/raft.go
+ |   |-raft.becomeFollower()          这里会对关键对象初始化以及赋值，包括step=stepFollower r.tick=r.tickElection函数
+ |   | |-raft.reset()                 开始启动时设置term为1
+ |   | | |-raft.resetRandomizedElectionTimeout() 更新选举的随机超时时间
+ |   |-raftLog.append()               将配置更新日志添加
+ |   |-raft.addNode()
+ |   |-newNode()                      新建节点
+ |   |-node.run()                     raft/node.go 节点运行，会启动一个协程运行 &lt;&lt;&lt;long running&gt;&gt;&gt;
+ |     |-newReady()                   新建type Ready对象
+ |     |-raft.tick()                  等待n.tickc管道，这里实际就是在上面赋值的tickElection()函数
+ |
+ |-time.NewTicker()                   在通过&amp;EtcdServer{}创建时新建tick时钟 etcdserver/server.go</code></pre></figure>
+
+<p>启动的后台程序也就是 <code>node.run()</code>。</p>
+
+<h2 id="客户端发送请求">客户端发送请求</h2>
+
+<p>这里是通过 <code>clientv3</code> 发送数据，该端口使用的是 gRPC 通讯，关于客户端的使用方式，可以参考代码 clientv3 目录下的 example 示例，例如 <code>example_kv_test.go</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">clientv3.New()                 clientv3/client.go
+ |-newClient()
+ | |-Client{}                  示例化Client对象
+ | |-newHealthBalancer()       etcd实现的负载均衡策略
+ | |-Client.dial()             开始建立链接
+ | | |-Client.dialSetupOpts()
+ | | |-grpc.DialContext()      真正建立链接
+ | |-NewCluster()              新建集群配置
+ | |-NewKV()                   其入参是上述创建的Client
+ |   |-RetryKVClient()         新建KV对象时指定了remote参数&lt;&lt;&lt;1&gt;&gt;&gt;
+ |     |-NewKVClient()         调用proto生成的函数接口建立链接
+ |-client.autoSync()           单独协程开启自动重连
+
+cli.Put()                      实际上对应了kv.go中的实现
+ |-kv.Put()                    kv.go 中的实现
+   |-kv.Do()                   调用该函数实现，统一实现接口，根据类型调用不同的接口
+     | &lt;&lt;&lt;tPut&gt;&gt;&gt;
+     |-pb.PutRequest{}         构造proto中指定的请求
+     | |-kv.remote.Put()       在如上新建客户端时，将kv.remote设置为了RetryKVClient()返回值
+     |=retryKVClient.Put()     上述调用实际上就是该函数
+       |-rkv.kc.Put()          最终的gRPC调用接口，发送请求并处理返回值</code></pre></figure>
+
+<p>上述的最终调用，在外层会封装一个 <code>retryf()</code> 函数，也就是如果有异常会直接重试。</p>
+
+<!--
+https://blog.csdn.net/zoumy3/article/details/79521190
+https://yuerblog.cc/2017/12/12/etcd-v3-sdk-usage/
+
+etcd v3 的简单使用示例
+https://zhuanlan.zhihu.com/p/36719209
+-->
+
+<h2 id="服务端处理请求">服务端处理请求</h2>
+
+<p>服务器 RPC 接口的定义在 <code>etcdserver/etcdserverpb/rpc.proto</code> 文件中，对应了 <code>service KV</code> 中的定义，而真正的启动对应了 <code>api/v3rpc/grpc.go</code> 中的实现。</p>
+
+<p>以 KV 存储为例，其对应了 <code>NewQuotaKVServer()</code> 中的实现，这里实际上是封装了一层，用来检查是否有足够的空间。</p>
+
+<h3 id="put">Put</h3>
+
+<p>例如，对于 Put 请求，对应了该函数中的实现。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">quotaKVServer.Put() api/v3rpc/quota.go 首先检查是否满足需求
+ |-quotoAlarm.check() 检查
+ |-KVServer.Put() api/v3rpc/key.go 真正的处理请求
+   |-checkPutRequest() 校验请求参数是否合法
+   |-RaftKV.Put() etcdserver/v3_server.go 处理请求
+   |=EtcdServer.Put() 实际调用的是该函数
+   | |-raftRequest()
+   |   |-raftRequestOnce()
+   |     |-processInternalRaftRequestOnce() 真正开始处理请求
+   |       |-context.WithTimeout() 创建超时的上下文信息
+   |       |-raftNode.Propose() raft/node.go
+   |         |-raftNode.step() 对于类型为MsgProp类型消息，向propc通道中传入数据
+   |-header.fill() etcdserver/api/v3rpc/header.go填充响应的头部信息</code></pre></figure>
+
+<p>此时，实际上已经将添加记录的请求发送到了 RAFT 协议的核心层处理。</p>
+
+<h3 id="range">Range</h3>
+
+<p>没有操作单个 key 的方法，即使是读取单个 key，也是需要使用 Range 方法。</p>
+
+<p>上述的 quota 检查实际上只针对了 Put Txn 操作，其它的请求，例如 Range 实际上会直接调用 <code>api/v3rpc/key.go</code> 中的实现。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">kvServer.Range() api/v3rpc/key.go
+ |-checkRangeRequest()
+ |-RaftKV.Range()
+ |-header.fill()</code></pre></figure>
+
+<h2 id="日志复制">日志复制</h2>
+
+<p>在 RAFT 协议中，整个集群所有变更都必须通过 Leader 发起，如上其入口为 <code>node.Propose()</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">node</span><span class="p">)</span> <span class="nx">Propose</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">n</span><span class="p">.</span><span class="nx">step</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Message</span><span class="p">{</span><span class="nx">Type</span><span class="p">:</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">MsgProp</span><span class="p">,</span> <span class="nx">Entries</span><span class="p">:</span> <span class="p">[]</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Entry</span><span class="p">})</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>这里消息类型是 <code>pb.MsgProp</code> ，对于 leader 来说，实际上调用的是 <code>stepLeader()</code> 函数。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">case</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">MsgProp</span><span class="p">:</span>
+	<span class="nx">r</span><span class="p">.</span><span class="nx">appendEntry</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">Entries</span><span class="o">...</span><span class="p">)</span>
+	<span class="nx">r</span><span class="p">.</span><span class="nx">bcastAppend</span><span class="p">()</span>
+	<span class="k">return</span></code></pre></figure>
+
+<h2 id="raft-核心处理">RAFT 核心处理</h2>
+
+<h3 id="状态机简介">状态机简介</h3>
+
+<p>在 RAFT 协议实现的代码中，<code>node[raft/node.go]</code> 是其核心的实现，也是整个分布式算法的核心所在。</p>
+
+<p>另外，通过 <code>raftNode[etcdserver/raft.go]</code> 对 node 进一步封装，只对 EtcdServer 暴露了 <code>startNode()</code>、<code>start()</code>、<code>apply()</code>、<code>processMessages()</code> 等少数几个接口。</p>
+
+<p>其中核心部分是通过 <code>start()</code> 方法启动的一个协程，这里会等待从 readyc 通道上报的数据。</p>
+
+<h3 id="状态机处理">状态机处理</h3>
+
+<p>如上，在添加数据时，已经添加到了 propc 管道中，此时会触发 <code>node.run()[raft/node.go]</code> 中协程。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">node.run()                       raft/node.go 单独的协程调用
+ |-newReady()                    获取已经就绪的数据，也就是msgs []pb.Message中的数据，保存到了rd.Messages中
+ |-Ready.containsUpdates()       判断是否有更新，以决定是否将数据发送到readyc的管道中
+ |-hasLeader()                   如果leader已经变化，那么需要获取最新的propc管道
+ |                               等待propc获取数据
+ |-raft.Step()                   raft/raft.go
+   |-raft.step()                 这里是一个函数指针，不同状态调用函数有所区别
+   |=stepLeader()                对于Leader来说，也就是同步到其它节点
+   | |
+   | |  &lt;&lt;&lt;pb.MsgProp&gt;&gt;&gt;
+   | |-raft.appendEntry()        将日志添加到raftlog的unstable entry中，等待commit变成stable entry
+   | | |                             放到storage中，最终变成snapshot
+   | | |-raftLog.lastIndex()     raft/log.go 日志最新的ID，并对每个消息赋值ID
+   | | |-raftLog.append()        将新的entry加到unstable entry中
+   | | | |-unstable.truncateAndAppend()
+   | | |-raft.getProgress().maybeUpdate() 这里更新了leader自己的Match
+   | | |-raft.maybeCommit()      只增加了自己的commit，未收到其它节点的返回消息，此时不会更新commit index
+   | |   |-raftLog.maybeCommit() 会读取raft.prs中的内容，也就是Progress
+   | |     |-raftLog.commitTo()  修改commitIndex
+   | |
+   | |-raft.bcastAppend()        将entry广播到其它的节点，也就是日志复制
+   | | |-raft.sendAppend()       构造pb.MsgApp类型的消息结构体开始发送
+   | |   |-raft.send()
+   | |     |-append()            添加到msgs []pb.Message中，这里相当于一个发送的缓冲区
+   | |
+   | |  &lt;&lt;&lt;pb.MsgAppResp&gt;&gt;&gt;
+   | |-maybeUpdate()             从其它节点获取到的响应消息，更新本地计数
+   | |-raft.maybeCommit()        判断是否提交成功，如果更新成功则广播
+   | |-raft.bcastAppend()
+   |
+   |=stepFollower()              对于Follower来说
+     |
+     |  &lt;&lt;&lt;pb.MsgProp&gt;&gt;&gt;
+     |-raft.send()               直接添加到msgs []pb.Message数组中并转发给Leader
+     |
+     |  &lt;&lt;&lt;pb.MsgApp&gt;&gt;&gt;
+     |-raft.handleAppendEntries()
+       |-raft.send()</code></pre></figure>
+
+<p>注意，这里在处理时，readyc 和 advancec 只有一个是有效值。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">advancec</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="cm">/* 如果 advance 不空，则把 readyc 置空 */</span>
+	<span class="nx">readyc</span> <span class="p">=</span> <span class="kc">nil</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="cm">/* 每次循环都会创建一个新的ready对象，其中包含了数据msgs */</span>
+	<span class="nx">rd</span> <span class="p">=</span> <span class="nx">newReady</span><span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">prevSoftSt</span><span class="p">,</span> <span class="nx">prevHardSt</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">rd</span><span class="p">.</span><span class="nx">containsUpdates</span><span class="p">()</span> <span class="p">{</span> <span class="cm">/* 如果raft.msgs中队列大小不为0，表示有数据发出 */</span>
+		<span class="nx">readyc</span> <span class="p">=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">readyc</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">readyc</span> <span class="p">=</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">lead</span> <span class="o">!=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">lead</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">hasLeader</span><span class="p">()</span> <span class="p">{</span><span class="c1">//当前raft节点r中lead不为空，表示已经存在leader</span>
+		<span class="k">if</span> <span class="nx">lead</span> <span class="o">==</span> <span class="nx">None</span> <span class="p">{</span>
+			<span class="nx">r</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">Infof</span><span class="p">(</span><span class="s">&quot;raft.node: %x elected leader %x at term %d&quot;</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">lead</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Term</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">r</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">Infof</span><span class="p">(</span><span class="s">&quot;raft.node: %x changed leader from %x to %x at term %d&quot;</span><span class="p">,</span> 
+					    <span class="nx">r</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">lead</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">lead</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Term</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">propc</span> <span class="p">=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">propc</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">r</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">Infof</span><span class="p">(</span><span class="s">&quot;raft.node: %x lost leader %x at term %d&quot;</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">lead</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Term</span><span class="p">)</span>
+		<span class="nx">propc</span> <span class="p">=</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="nx">lead</span> <span class="p">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">lead</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在下个循环中，会通过 <code>newReady()</code> 读取数据，也就是 <code>msgs []pb.Message</code> 中的数据，并发送到 readyc 管道中。接着会触发消息的发送，也就是 <code>raftNode.start()[etcdserver/raft.go]</code> 中的处理。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">raftNode.start() etcdserver/raft.go 单独协程处理，包括发送消息
+ |
+ | &lt;&lt;&lt;readyc&gt;&gt;&gt;                这里会等待raft/node.go中node.Ready()返回的管道
+ |-rd := &lt;- r.Ready()          阻塞等待readyc管道中的消息，包括上述提交的数据
+ |-apply{}                     构造apply对象，其中包括了已经提交的日志，SnapShot等
+ |-updateCommittedIndex()
+ | |-raftReadyHandler.updateCommittedIndex()
+ | applyc&lt;-ap                  添加到管道中，并等待提交完成
+ |-transport.Send()            将数据，真正发送到对端
+ |
+ |-raftNode.processMessages()  会根据不同类型的消息进行一些异常的处理
+ |-transport.Send()            rafthttp/transport.go 发送请求消息
+ |-storage.Save()              这里同时会对日志以及SnapShot进行持久化处理</code></pre></figure>
+
+<h3 id="消息发送">消息发送</h3>
+
+<p>在消息通过 <code>append(r.msgs, m)</code> 添加到了发送缓冲区中之后，接着就是如何通过网络层发送数据。</p>
+
+<p>在搜索 <code>r.msgs</code> 是，实际用的只有在 <code>newReady()</code> 函数中，也就是上述的处理协程中，对应了 <code>node.run()</code> 函数，此时会发送到 readyc 管道中。</p>
+
+<p>其中，raft/node.go 中有如下的实现。</p>
+
+<p>func (n *node) Ready() &lt;-chan Ready { return n.readyc }</p>
+
+<p>也就是是说，实际处理 readyc 请求是在 <code>raftNode.start()[etcdserver/raft.go]</code> 中。</p>
+
+<h3 id="消息发送-1">消息发送</h3>
+
+<p>一般在 <code>raft/raft.go</code> 文件中，会通过 <code>r.send()</code> 发送，也就是 <code>raft.send()</code> 发送消息时，例如，如下是处于 Follower 状态时的处理函数 <code>stepFollower()</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nx">stepFollower</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">raft</span><span class="p">,</span> <span class="nx">m</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">Message</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">switch</span> <span class="nx">m</span><span class="p">.</span><span class="nx">Type</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">MsgProp</span><span class="p">:</span>
+		<span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">lead</span> <span class="o">==</span> <span class="nx">None</span> <span class="p">{</span>
+			<span class="nx">r</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">Infof</span><span class="p">(</span><span class="s">&quot;%x no leader at term %d; dropping proposal&quot;</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Term</span><span class="p">)</span>
+			<span class="k">return</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">disableProposalForwarding</span> <span class="p">{</span>
+			<span class="nx">r</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">Infof</span><span class="p">(</span><span class="s">&quot;%x not forwarding to leader %x at term %d; dropping proposal&quot;</span><span class="p">,</span>
+				<span class="nx">r</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">lead</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Term</span><span class="p">)</span>
+			<span class="k">return</span>
+		<span class="p">}</span>
+		<span class="nx">m</span><span class="p">.</span><span class="nx">To</span> <span class="p">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">lead</span>
+		<span class="nx">r</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">m</span><span class="p">)</span>
+	<span class="c1">// ... ...</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在同一个文件中，最终会调用 <code>append(r.msgs, m)</code>，那么这个消息是在什么时候消费的呢？</p>
+
+<p>在 <code>type node struct</code> 结构体中，存在一个 readyc 的管道。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">node</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">readyc</span> <span class="kd">chan</span> <span class="nx">Ready</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在 <code>raft/node.go</code> 中存在一个 <code>node.run()</code> 函数，会读取所有的消息，然后同时通过管道发送。<!-- ？？？如果没有消息更新，这里会阻塞吗？？？？--></p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nx">newReady</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">raft</span><span class="p">,</span> <span class="nx">prevSoftSt</span> <span class="o">*</span><span class="nx">SoftState</span><span class="p">,</span> <span class="nx">prevHardSt</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">HardState</span><span class="p">)</span> <span class="nx">Ready</span> <span class="p">{</span>
+	<span class="nx">rd</span> <span class="o">:=</span> <span class="nx">Ready</span><span class="p">{</span>
+	    <span class="nx">Entries</span><span class="p">:</span>          <span class="nx">r</span><span class="p">.</span><span class="nx">raftLog</span><span class="p">.</span><span class="nx">unstableEntries</span><span class="p">(),</span>
+		<span class="nx">CommittedEntries</span><span class="p">:</span> <span class="nx">r</span><span class="p">.</span><span class="nx">raftLog</span><span class="p">.</span><span class="nx">nextEnts</span><span class="p">(),</span>
+		<span class="nx">Messages</span><span class="p">:</span>         <span class="nx">r</span><span class="p">.</span><span class="nx">msgs</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="o">...</span> <span class="o">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>也就是说，在 <code>node.go</code> 里 <code>node.run()</code> 中构建了 Ready 对象，对象里就包涵被赋值的 msgs，并最终写到 <code>node.readyc</code> 这个管道里，如下是对应这个 case 的实现：</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">case</span> <span class="nx">readyc</span> <span class="o">&lt;-</span> <span class="nx">rd</span><span class="p">:</span>
+	<span class="nx">r</span><span class="p">.</span><span class="nx">msgs</span> <span class="p">=</span> <span class="kc">nil</span>
+	<span class="nx">r</span><span class="p">.</span><span class="nx">readStates</span> <span class="p">=</span> <span class="kc">nil</span>
+	<span class="nx">advancec</span> <span class="p">=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">advancec</span></code></pre></figure>
+
+<p>这里的 msgs 已经读取过并写入到了管道中，直接设置为空，并会赋值 advancec，在 <code>etcdserver/raft.go</code> 的 <code>raftNode.start()</code> 中，会起一个单独的协程读取数据；其中读取的函数实现在 raft/node.go 中：</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">node</span><span class="p">)</span> <span class="nx">Ready</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">Ready</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">n</span><span class="p">.</span><span class="nx">readyc</span> <span class="p">}</span></code></pre></figure>
+
+<p>应用层 (也就是etcd) 读取到的 Ready 里面包含了 Vote 消息，会调用网络层发送消息出去，并且调用 Advance() 。</p>
+
+<!--
+### 消息接收处理
+
+其它 node 接收到网络层消息后，会调用 raft.Step() 函数。
+
+raft.Step()  raft/raft.go
+ |-raft.becomeFollower() 如果本地的term小于消息的term，就把自己置为follower
+ |-raft.send() 当接收到的消息term一致时，就返回voteRespMsg为其投票
+
+voteRespMsg 的返回信息被之前的发送方接收到了之后，就会计算收到的选票数目是否大于所有 node 的一半，如果大于则自己成为 leader，否则将自己置为 follower；
+
+stepCandidate() raft/raft.go
+ |-[case myVoteRespType] 如果收到了投票返回的消息
+   |-raft.poll() 检查是否满足多数派原则
+
+
+case myVoteRespType:
+    gr := r.poll(m.From, m.Type, !m.Reject)
+    switch r.quorum() {
+    case gr:
+        if r.state == StatePreCandidate {
+            r.campaign(campaignElection)
+        } else {
+            r.becomeLeader()
+            r.bcastAppend()
+        }
+    case len(r.votes) - gr:
+        r.becomeFollower(r.Term, None)
+    }
+在成为leader之后，和上面的两个角色一样的，最重要的是step被置为了stepLeader，具体stepLeader中涉及到的一些操作，更多的是下一个问题会用到，这里就不多说了。
+
+func (r *raft) becomeLeader() {
+    r.step = stepLeader
+}
+-->
+
+<p>在 <code>raft/node.go-&gt;run()</code> 函数中，是一个节点 (Node) 的主要处理过程，开始处于 Follower 状态，然后随着 <code>case &lt;-n.tickc</code> 进行，开始进入选举。</p>
+
+<!--
+## 代码走读
+### 数据结构
+
+
+在 campaign() 中的实现选举逻辑时，实际上实现了两个阶段 PreElection 和 Election 。？？？？
+
+## 1. Leader选举
+
+EtcdServer.Start()
+ |-EtcdServer.start()
+   |-EtcdServer.run()
+     |-raftNode.start() 启动新的协程处理请求
+       |-raftNode.Tick()  对于r.ticker.C管道的时钟处理
+       |- 针对r.Ready()的请求
+
+raftNode.start()
+
+开始启动的时候，首先会设置为 Follower 状态，而且 term 为 1 。
+
+当 node 初始化完成之后，通过 `node.run()` 开始运行，这里会启动单独的协程读取如上的管道。
+
+
+
+raft.tickElection() 时钟处理函数，默认时间间隔为500ms raft/raft.go
+ |-raft.Step() 如果超时，则开始发起选举，构造消息发送给自己，消息类型为MsgHup
+   |-raft.campaign() 开始进入选举
+     |-raft.becomeCandidate() 进入选举后状态由Follower转换为Candidate
+	 | |-指针函数修改step=stepCandidate tick=tickElection
+	 | |-raft.reset() 重置，同时term会增加1
+     |-raft.send() 向每个节点发送voteMsg消息
+
+-->
+
+<h2 id="progress">Progress</h2>
+
+<p>RAFT 实现的内部，本身还维护了一个子状态机。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">                            +--------------------------------------------------------+
+                            |                  send snapshot                         |
+                            |                                                        |
+                  +---------+----------+                                  +----------v---------+
+              +---&gt;       probe        |                                  |      snapshot      |
+              |   |  max inflight = 1  &lt;----------------------------------+  max inflight = 0  |
+              |   +---------+----------+                                  +--------------------+
+              |             |            1. snapshot success
+              |             |               (next=snapshot.index + 1)
+              |             |            2. snapshot failure
+              |             |               (no change)
+              |             |            3. receives msgAppResp(rej=false&amp;&amp;index&gt;lastsnap.index)
+              |             |               (match=m.index,next=match+1)
+receives msgAppResp(rej=true)
+(next=match+1)|             |
+              |             |
+              |             |
+              |             |   receives msgAppResp(rej=false&amp;&amp;index&gt;match)
+              |             |   (match=m.index,next=match+1)
+              |             |
+              |             |
+              |             |
+              |   +---------v----------+
+              |   |     replicate      |
+              +---+  max inflight = n  |
+                  +--------------------+</code></pre></figure>
+
+<p>详细可以查看 <a href="https://github.com/coreos/etcd/blob/master/raft/design.md">raft/design.md</a> 中的介绍，对于 Progress 实际上就是 Leader 维护的各个 Follower 的状态信息，总共分为三种状态：probe, replicate, snapshot 。</p>
+
+<p>应该是 AppendEntries 接口的一种实现方式，为每个节点维护两个 Index 信息：A) matchIndex 已知服务器的最新 Index，如果还未确定则是 0；<!-- 作用是啥??????；--> B) nextIndex 用来标示需要从那个索引开始复制。那么 Leader 实际上就是将 nextIndex 到最新的日志复制到 Follower 节点。</p>
+
+<!--
+如果多数派已经收到了请求，并进行了相关的处理，在响应之前主崩溃，那么新的日志可能在集群写入成功吗???????
+-->
+
+<h2 id="参考">参考</h2>
+
+<p>两种不同的实现方式 <a href="https://github.com/coreos/etcd">Github CoreOS-etcd</a>、<a href="https://github.com/hashicorp/raft">Github Hashicorp-raft</a> 。</p>
+
+<!--
+据说一个性能比lmdb好很多的存储引擎
+https://github.com/leo-yuriev/libmdbx
+
+
+RAFT论文的中文翻译
+http://www.opscoder.info/ectd-raft-library.html
+http://vlambda.com/wz_xberuk7dlD.html
+http://chenneal.github.io/2017/03/16/phxpaxos%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E4%B9%8B%E4%B8%80%EF%BC%9A%E8%B5%B0%E9%A9%AC%E8%A7%82%E8%8A%B1/
+https://www.jianshu.com/p/ae462a2d49a8
+https://www.jianshu.com/p/ae1031906ef4
+http://blog.neverchanje.com/2017/01/30/etcd_raft_core/
+http://www.cnblogs.com/foxmailed/p/7173137.html
+https://www.jianshu.com/p/5aed73b288f7
+
+https://zhuanlan.zhihu.com/p/27767675
+
+
+
+
+
+
+
+
+
+##
+
+ETCD V3 底层的存储引擎是 Bolt，也就是通过 KV 结构保存上报的数据，最新的项目代码可以参考 [coreos bbolt](https://github.com/coreos/bbolt)。
+
+简单来说，通过 BoltDB 的 MVCC 保证单机数据一致性，通过 RAFT 保证集群数据的一致性。
+
+### MVCC
+
+在内存中维护了一个 BTree 结构，对应的结构体如下：
+
+type treeIndex struct {
+	sync.RWMutex
+	tree *btree.BTree
+}
+
+这个树中的 Key 是用户传入的 Key ，而 Value 却不是用户传入的 Value。
+
+关于 etcd 的版本信息有如下的特性：
+
+* 每个事务有唯一事务ID(Main ID)，在全局范围内递增且不连续；
+* 一个事务可以包含多个修改操作，如 PUT、DELETE 等，每个操作为一次 Revision，共享同一个 MainID；
+* 一个事务内连续的多个操作从 0 开始递增编号，称为 SubID；
+* 每个 Revision 通过 (MainID, SubID) 唯一标识。
+
+其中 revision 通过 `type revision struct` 进行定义，而在内存索引中，每个用户的原始 key 会关联一个 keyIndex 结构，在该结构体中维护了多版本信息。
+
+type keyIndex struct {
+	key         []byte // 用户定义的原始Key
+	modified    revision // 该Key的最后一次修改对应的Revision信息
+	generations []generation // 保存的多版本信息
+}
+
+type generation struct {
+	ver     int64
+	created revision // 创建时的第一个版本号
+	revs    []revision
+}
+
+当用户多次更新这个 key 时，对应的 revs 数组就会不断追加记录本次的 Revision 信息。
+
+多版本中，每次操作都被以版本号的形式单独记录下来，而每个版本对应的数据则保存在 BoltDB 中。
+
+在 BoltDB 存储时，会将每次的 Revision 作为 Key 进行序列化，首先从内存中获取对应的版本号，然后查询最终的数据。
+
+在多版本控制中，一般会采用 compact 来压缩历史版本，即当历史版本到达一定数量时，会删除一些历史版本，只保存最近的一些版本，在 `keyIndex` 之前有相关的解析。
+
+tombstone就是指delete删除key，一旦发生删除就会结束当前的generation，生成新的generation，小括号里的(t)标识tombstone。
+compact(n)表示压缩掉revision.main <= n的所有历史版本，会发生一系列的删减操作，可以仔细观察上述流程。
+
+#### 总结
+
+内存中通过 BTree 维护是用户 `key -> keyIndex` 的映射，而 keyIndex 中维护了多版本的 Revision 信息，然后再通过 Revision 映射到磁盘 BoltDB 中的用户值。
+
+## Watch机制
+
+也就是时间通知机制，同样是基于 MVCC 多版本实现，客户端可以指定监听的版本，如果有历史版本数据，同时会推送当时的数据快照，后续的变化值同样会发送到客户端。
+
+newWatchableStore() 会新建unsynced、synced两个newWatcherGroup对象
+ |-syncWatchersLoop() 启动后台处理Watcher的协程
+   |-watcherGroup.size() watcher_group.go 如果有未同步的客户端则调用下面函数同步，否则等待100ms
+   |-syncWatchers() 在循环中不断调用该函数处理，如下是真正的处理过程
+     |-watcherGroup.choose() 1. 选择一批未同步的客户端
+       |-watcherGroup.chooseAll() 2. 返回最小的版本号，并删除一些重复的Wather
+
+MVCC/Watcher介绍
+https://yuerblog.cc/2017/12/10/principle-about-etcd-v3/
+
+其中会有两个队列，分别是 sync 和 unsync ，后者表示还没有完成通过，在放到 sync 队列之前会先将 unsync 队列中的请求处理完。
+
+
+
+
+
+https://www.compose.com/articles/utilizing-etcd3-with-go/
+
+
+
+
+
+
+
+
+
+## Etcd VS. BoltDB
+
+
+1. 客户端的请求通过 propc 管道传递给内部的 RAFT 协议层；
+2. 收到集群内其它节点的响应后，对投票进行计数，如果超过半数则提交？？？？
+3. 从 Ready() 中读取已经提交后的日志，并发送给 readyc 管道 node.run()[raft/node.go]；备注：readyc 处理完之后，会继续更新 advancec 管道。
+4. 在 raftNode 中会阻塞等待 readyc 管道，当读取到之后，会构建一个 apply 对象，并再次传递给 applyc 管道；同时会阻塞等待处理完成。raftNode.start()[etcdserver/raft.go]
+5. 接着调用 EtcdServer 中阻塞等待的协程，也就是 ap := <-s.r.apply() ，此时会直接调用后台将数据写入。
+
+ETCD 会启动几个后台的协程。
+
+node.run() raft/node.go
+
+
+真正读取数据。
+
+store.Get() store/store.go
+ |-store.internalGet() 用于获取数据
+ | |-walkFunc 函数指针，用来递归查找
+ | | |-parent.Children[name] 从map中获取节点
+ | |-store.walk() 遍历各个节点
+ |-loadInternalNode() store/node_extern.go
+   |-node.Read() store/node.go
+
+flock / funlock / mmap / munmap
+
+newBackend() mvcc/backend/backend.go
+ |-bolt.Open()
+ |-backend{} 实例化一个后端对象
+ |-newBatchTxBuffered() 批量缓存对象
+ |-backend.run() [协程]后台的批量刷新任务
+   |-time.NewTimer()
+   |-batchTx.CommitAndStop() 最后事件退出时保存数据
+   |-batchTx.Commit() 周期性的提交数据
+   |-time.Reset() 重置定时器
+
+
+网络发送
+状态机应用
+WAL追加
+
+storeTxnWrite.put() mvcc/kvstore_txn.go
+ |-newRevBytes()
+ |-revToBytes()
+ |-kv.Marshal() 对数据序列化
+ |-UnsafeSeqPut() mvcc/backend/batch_tx.go 真正的数据持久化
+ |-kvindex.Put() 添加到key->revision索引
+
+kvindex 实际上是内存中的 btree ，可以参考 mvcc/index.go 中的实现。
+
+
+实际上 `type Ready struct` 封装了多种消息的更新，
+
+type Ready struct {
+
+// Messages specifies outbound messages to be sent AFTER Entries are
+    // committed to stable storage.
+    // If it contains a MsgSnap message, the application MUST report back to raft
+    // when the snapshot has been received or has failed by calling ReportSnapshot.
+
+	用来保存在提交持久化之后应该发送的消息
+	Messages []pb.Message
+}
+
+## Backend 写入
+
+EtcdServer.run() etcdserver/server.go
+ |-raftStorage.Snapshot()
+ |-NewFIFOScheduler() ???不清楚干嘛用的
+ |
+ | <<<applyc>>> 这里调用的是raftNode.apply()返回后的管道
+ |-Schedule() 会新建一个FIFO调度队列处理如下的请求
+ |-EtcdServer.applyAll()
+   |-EtcdServer.applySnapshot()
+   |-EtcdServer.applyEntries()
+     |-EtcdServer.apply()
+	   |-EtcdServer.applyEntryNormal()
+         |-applyV3.Apply() etcdserver/apply.go 这里会根据操作类型调用特定的接口处理
+           |-applyV3.Put()
+             |-KV().Write()
+               |-txn.Put()
+                 |-tw.tx.UnsafeSeqPut()
+
+也就是说，在 run() 协程中，会消费 applyc 管道中的数据，并持久化到磁盘中，那么 applyc 的数据是从哪里来的？
+
+
+整体来说，这个库实现了raft协议核心的内容，比如append log的逻辑，选主逻辑，snapshot，成员变更等逻辑。需要明确的是：library没有实现消息的网络传输和接收，库只会把一些待发送的消息保存在内存中，用户自定义的网络传输层取出消息并发送出去，并且在网络接收端，需要调一个library的函数，用于将收到的消息传入library，后面会详细说明。同时，library定义了一个Storage接口，需要library的使用者自行实现。
+
+
+客户端发起的状态更新请求首先都会被记录在日志中，待主节点将更新日志在集群多数节点之间完成同步以后，便将该日志项内容在状态机中进行应用，进而便完成了一次客户的更新请求。
+
+
+
+ETCD-RAFT 核心库实际上没有实现日志的追加逻辑，WAL 需要应用来实现，重点讨论：
+
+1. 应用如何调用 WAL 库完成日志追加；
+2. WAL 库如何管理日志；
+3. WAL 如何与协议核心相互配合完成日志内容的同步。
+
+### WAL
+
+相关的代码在 wal 目录下，用来处理日志的追加、日志文件的切换、日志的回放等操作。
+
+日志只有 read 和 appending 两种方式，且两种模式不会同时出现，在所有老日志读取完成之后，会变为 appending 模式，此时只增加不能修改之前日志，通过 `type WAL struct` 表示一个日志。
+
+WAL 在持久化时采用的是 protobuf 协议，对应了 wal/walpb/record.proto 中的格式，而其编码解码对应的实现为 wal/{decoder.go,encoder.go} 。
+
+
+
+Create() wal/wal.go
+ |-CreateDirAll() 创建临时目录
+
+### RaftLog
+
+实际上 RAFT 协议的核心工作是在集群节点之间复制日志，协议核心需要了解当前日志的复制情况，这个结构便是 `type raftLog struct`，其实现在 raft/log.go 文件中。
+
+在 raftLog 结构体中记录了当前日志的状态。
+
+type raftLog struct {
+	storage Storage    // 最近一次snapshot之后所有稳定的日志
+	unstable unstable  // 未提交的entries，日志缓存，用于集群各个节点间复制日志，最后持久化到存储中
+	committed uint64   // 已经在集群内完成提交的最大索引值
+	applied uint64     // 已经将日志应用到状态机的最近一次提交 applied<=committed
+	logger Logger
+}
+
+type unstable struct {
+   snapshot *pb.Snapshot
+   entries []pb.Entry
+   offset  uint64
+}
+
+unstable 在内存中使用数组维护所有的更新日志项，在 Leader 中保存了客户端的所有更新请求；在 Follower 中维护了从 Leader 节点复制后的日志项。
+
+任何节点的日志都会先保存在 unstable 结构中，然后再由内部状态机将 unstable 维护的日志项交给应用层处理，并由应用层将日志项进行持久化并转发至系统其它节点。
+
+注意：将日志项追加到 Storage 的动作是由应用完成的，而不是 raft 协议核心处理层。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+最终调用的是 `type Raft interface` 中实现的接口，实际上就是 `etcdserver/server.go` 或者示例 `contrib/raftexample/raft.go` 中的接口实现。
+
+quotaKVServer.Put() api/v3rpc/quota.go 首先检查是否满足需求
+ |-quotoAlarm.check() 检查
+ |-kvServer.Put() api/v3rpc/key.go 真正的处理请求
+   |-checkPutRequest() 校验请求参数是否合法
+   |-RaftKV.Put() etcdserver/v3_server.go 处理请求
+   |=EtcdServer.Put() 实际调用的是该函数，这里会重新构建一个Internal的Proto对象
+   | |-raftRequest()
+   |   |-raftRequestOnce()
+   |     |-processInternalRaftRequestOnce() 真正开始处理请求，这里会完成阻塞等待处理完成
+   |       |-reqIDGent.Next() 获取最新的一个消息ID
+   |       |-Marshal() 执行序列化
+   |       |-Wait.Register(id) 注册一个ID到一个全局的MAP中，实际上是一个管道
+   |       |-context.WithTimeout() 创建超时的上下文信息
+   |       |-raftNode.Propose() raft/node.go
+   |       | |-raftNode.step() 对于类型为MsgProp类型消息，向propc通道中传入数据
+   |       |-
+   |       |-ctx.Done() 请求处理超时
+   |
+   |-header.fill() etcdserver/api/v3rpc/header.go填充响应的头部信息
+
+注意，在上述发送请求的时候，实际上先完成了一次 proto 格式的转换，会将所有的操作统一转换为 `raft_internal.proto` 中定义的 `message InternalRaftRequest` 对象，例如 Put 操作，会将 `message PutRequest` 进行转换。
+
+
+这里实际上有个同步机制，也就是在 `pkg/wait` 中的实现，简单来说，在提交完请求之后，会在这里的 map 中添加一条记录，同时返回一个管道，并阻塞在管道中。
+
+在完成处理之后，也就是已经将数据 Apply 成功，会向该管道中写入 applyResult 对象。
+
+对于后者是在 `applyEntryNormal()` 中实现。
+
+在示例的代码中有 `blocks until accepted by raft state machine` 的一段注释，不过感觉这里只能确保数据发送到了状态机中，并不能确保提交成功。
+
+node.Propose() raft/node.go
+
+在收到 InternalRaftRequest 对象之后，是如何判断这里的消息类型的？
+
+https://blog.csdn.net/zg_hover/article/details/81840556
+http://xargin.com/about-beanstalkd/
+https://segmentfault.com/a/1190000016067218
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+quotaKVServer.Put() api/v3rpc/quota.go 首先检查是否满足需求
+ |-quotoAlarm.check() 检查
+ |-kvServer.Put() api/v3rpc/key.go 真正的处理请求
+   |-checkPutRequest() 校验请求参数是否合法
+   |-RaftKV.Put() etcdserver/v3_server.go 处理请求
+   |=EtcdServer.Put() 实际调用的是该函数，这里会重新构建一个Internal的Proto对象
+   | |-raftRequest()
+   |   |-raftRequestOnce()
+   |     |-processInternalRaftRequestOnce() 真正开始处理请求，这里会完成阻塞等待处理完成
+   |       |-reqIDGent.Next() 获取最新的一个消息ID
+   |       |-Marshal() 执行序列化
+   |       |-Wait.Register(id) 注册一个ID到一个全局的MAP中，实际上是一个管道
+   |       |-context.WithTimeout() 创建超时的上下文信息
+   |       |-raftNode.Propose() raft/node.go
+   |       | |-raftNode.step() 对于类型为MsgProp类型消息，向propc通道中传入数据
+   |       |-
+   |       |-ctx.Done() 请求处理超时
+   |
+   |-header.fill() etcdserver/api/v3rpc/header.go填充响应的头部信息
+
+注意，在上述发送请求的时候，实际上先完成了一次 proto 格式的转换，会将所有的操作统一转换为 `raft_internal.proto` 中定义的 `message InternalRaftRequest` 对象，例如 Put 操作，会将 `message PutRequest` 进行转换。
+
+
+这里实际上有个同步机制，也就是在 `pkg/wait` 中的实现，简单来说，在提交完请求之后，会在这里的 map 中添加一条记录，同时返回一个管道，并阻塞在管道中。
+
+在完成处理之后，也就是已经将数据 Apply 成功，会向该管道中写入 applyResult 对象。
+
+对于后者是在 `applyEntryNormal()` 中实现。
+
+
+在收到 InternalRaftRequest 对象之后，是如何判断这里的消息类型的？
+
+在提交完之后，
+
+linearizableReadLoop
+
+
+## Pre-Vote 算法
+
+RAFT 依赖于一个特性，集群中所有的节点总是使用它所观察到的当前最大 Term 。一般 term id 使用的是 64-bits ，正常很难会溢出，当在修复一个故障节点后重新加入集群，即使之前的集群是正常的，此时的 term 仍然会加 1 。
+
+例如，一个集群有三个节点，其中一个节点因为网络被隔离，每次选举超时都会增加 Term 值，因为被隔离，始终无法完成选举。
+
+
+
+
+
+
+
+
+
+https://www.jianshu.com/p/27329f87c104
+https://www.jianshu.com/p/21acb670ccf1
+https://zhuanlan.zhihu.com/p/29865583
+
+http://blog.sina.com.cn/s/blog_4b146a9c0102yml3.html
+http://www.ituring.com.cn/book/tupubarticle/16510
+https://www.jianshu.com/p/ae1031906ef4
+https://blog.csdn.net/xxb249/article/details/80779577
+https://www.cnblogs.com/foxmailed/p/7161878.html
+
+https://www.jianshu.com/p/ef1ac201f685
+https://bbs.huaweicloud.com/blogs/f65bc75d3ba811e89fc57ca23e93a89f
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/fastdfs-introduce_init.html" title="AirFlow 工作流简介">&larr; Older</a></li> 
+         <li class="next"><a href="/post/javascript-react-syntax-introduce.html" title="React & JavaScript 语法简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1513267200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/golang-raft-etcd-sourcode-details.html" data-title="ETCD 源码解析" data-url="/post/golang-raft-etcd-sourcode-details.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

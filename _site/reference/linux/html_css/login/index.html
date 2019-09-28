@@ -1,0 +1,56 @@
+<!DOCTYPE html><html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Create a nice login form using CSS3 and HTML5</title>
+<style><!--
+html, body { height: 100%; }
+body { font: 12px "Lucida Sans Unicode","Trebuchet MS",Arial,Helvetica; margin: 0px; background-color: rgb(217, 222, 226); background-image: -moz-linear-gradient(center top , rgb(235, 238, 242), rgb(217, 222, 226)); }
+
+
+#login {
+  background-color: rgb(255, 255, 255);
+  background-image: -moz-linear-gradient(center top , rgb(255, 255, 255), rgb(238, 238, 238)); height: 240px; width: 400px; margin: -150px 0px 0px -230px; padding: 30px; position: absolute; top: 50%; left: 50%; z-index: 0; border-radius: 3px; 
+
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2),
+              0px 1px 1px rgba(0, 0, 0, 0.2),
+              0px 3px 0px rgb(255, 255, 255),
+              0px 4px 0px rgba(0, 0, 0, 0.2), 0px 6px 0px rgb(255, 255, 255), 0px 7px 0px rgba(0, 0, 0, 0.2); }
+
+
+#login::before { content: ""; position: absolute; z-index: -1; border: 1px dashed rgb(204, 204, 204); top: 5px; bottom: 5px; left: 5px; right: 5px; box-shadow: 0px 0px 0px 1px rgb(255, 255, 255); }
+h1 { text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.7), 0px 2px 0px rgba(0, 0, 0, 0.5); text-transform: uppercase; text-align: center; color: rgb(102, 102, 102); margin: 0px 0px 30px; letter-spacing: 4px; font: 26px/1 Verdana,Helvetica; position: relative; }
+h1::after, h1::before { background-color: rgb(119, 119, 119); content: ""; height: 1px; position: absolute; top: 15px; width: 120px; }
+h1::after { background-image: -moz-linear-gradient(left center , rgb(119, 119, 119), rgb(255, 255, 255)); right: 0px; }
+h1::before { background-image: -moz-linear-gradient(right center , rgb(119, 119, 119), rgb(255, 255, 255)); left: 0px; }
+fieldset { border: 0px none; padding: 0px; margin: 0px; }
+#inputs input { background: rgb(241, 241, 241) url("login-sprite.png") no-repeat scroll 0% 0%; padding: 15px 15px 15px 30px; margin: 0px 0px 10px; width: 353px; border: 1px solid rgb(204, 204, 204); border-radius: 5px; box-shadow: 0px 1px 1px rgb(204, 204, 204) inset, 0px 1px 0px rgb(255, 255, 255); }
+#username { background-position: 5px -2px ! important; }
+#password { background-position: 5px -52px ! important; }
+#inputs input:focus { background-color: rgb(255, 255, 255); border-color: rgb(232, 194, 145); outline: medium none; box-shadow: 0px 0px 0px 1px rgb(232, 194, 145) inset; }
+#actions { margin: 25px 0px 0px; }
+#submit { background-color: rgb(255, 185, 75); background-image: -moz-linear-gradient(center top , rgb(253, 219, 111), rgb(255, 185, 75)); border-radius: 3px; text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5); box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.3), 0px 1px 0px rgba(255, 255, 255, 0.3) inset; border-width: 1px; border-style: solid; border-color: rgb(214, 158, 49) rgb(227, 160, 55) rgb(213, 152, 45); float: left; height: 35px; padding: 0px; width: 120px; cursor: pointer; font: bold 15px Arial,Helvetica; color: rgb(143, 90, 10); }
+#submit:hover, #submit:focus { background-color: rgb(253, 219, 111); background-image: -moz-linear-gradient(center top , rgb(255, 185, 75), rgb(253, 219, 111)); }
+#submit:active { outline: medium none; box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.5) inset; }
+#submit::-moz-focus-inner { border: medium none; }
+#actions a { color: rgb(49, 81, 162); float: right; line-height: 35px; margin-left: 10px; }
+#back { display: block; text-align: center; position: relative; top: 60px; color: rgb(153, 153, 153); }
+--></style>
+</head>
+
+<body>
+
+<form id="login">
+    <h1>Log In</h1>
+    <fieldset id="inputs">
+        <input id="username" placeholder="Username" autofocus="" required="" type="text">   
+        <input id="password" placeholder="Password" required="" type="password">
+    </fieldset>
+    <fieldset id="actions">
+        <input id="submit" value="Log in" type="submit">
+        <a href="">Forgot your password?</a><a href="">Register</a>
+    </fieldset>
+    <!--<a href="http://red-team-design.com/slick-login-form-with-html5-css3" id="back">Back to article...</a>-->
+</form>
+
+
+
+</body></html>

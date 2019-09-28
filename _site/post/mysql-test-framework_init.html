@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL 测试框架|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,测试,mysqltest">
+  <meta name="description" content="MySQL 测试包含了多种类型的，当然同时也会含多种工具，例如 MySQL 的测试框架、基于 Test Anything Protocol, TAP 的单元测试框架、基于 Google Test Framework 的单元测试、性能压测工具、Random Query Generator 等等。在此介绍与测试框架相关的内容。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL 测试框架</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-10-12 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>MySQL 测试包含了多种类型的，当然同时也会含多种工具，例如 MySQL 的测试框架、基于 Test Anything Protocol, TAP 的单元测试框架、基于 Google Test Framework 的单元测试、性能压测工具、Random Query Generator 等等。</p>
+
+<p>在此介绍与测试框架相关的内容。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>当给 MySQL 打了补丁之后，</p>
+
+<p>不仅需要测试新增的功能，同时更重要的问题是，需要对原有的功能作回归――若新增的patch导致原有其他功能产生bug，就得不偿失。</p>
+
+<p>MySQL自动测试框架是一个以MySQL框架和内部引擎为测试对象的工具。主要执行脚本在发布路径的mysql-test目录下。自动测试框架的主要测试步骤，是通过执行一个case，将该case的输出结果，与标准的输出结果作diff。这里的“标准输出结果”指代在可信任的MySQL版本上的执行结果。</p>
+
+<p>如果某个case的执行结果与标准输出结果不同，则说明正在执行的这个MySQL服务有问题，或许是框架，或许是引擎。 当然若干case执行正确并不能确保被测试的框架和引擎是没有问题的，除非能够证明执行的case已经覆盖了所有的分支（这太难了）。</p>
+
+<p>这里说到的case，是指一系列的语句，包括SQL语句和一些必要的shell语句。在mysql-test/t/目录下，可以找到很多这样的case，他们的文件名以.test为后缀。接下来我们用一个简单的例子来说明用法。</p>
+
+<p>2、初体验</p>
+
+<pre><code>   再简单的例子也不如自己写的简单。因此我们通过自己作一个case，来体验一下这个框架的便捷。
+</code></pre>
+
+<p>a)          在mysql-test/t/目录下创建文件 mytest.test， 内容为
+  1 — source include/have_innodb.inc</p>
+
+<p>2 use test;</p>
+
+<p>3 create table t(c int) engine=InnoDB ;</p>
+
+<p>4 insert into t values(1);</p>
+
+<p>5 select c from t;</p>
+
+<p>6 drop table t;</p>
+
+<pre><code>   从第二行开始是我们熟悉的SQL语句，创建一个InnoDB表，插入一行，执行一个查询，删除这个表。输出也是显而易见的。
+</code></pre>
+
+<p>b)      在mysql-test/r/目录下创建文件 mytest.result， 内容为
+  1 use test;</p>
+
+<p>2 create table t(c int) engine=InnoDB ;</p>
+
+<p>3 insert into t values(1);</p>
+
+<p>4 select c from t;</p>
+
+<p>5 c</p>
+
+<p>6 1</p>
+
+<p>7 drop table t;</p>
+
+<p>c)      在mysql-test/ 目录下执行 ./mtr mytest</p>
+
+<p>===================================================================</p>
+
+<p>TEST                                      RESULT   TIME (ms)</p>
+
+<p>————————————————————</p>
+
+<p>worker[1] Using MTR_BUILD_THREAD 300, with reserved ports 13000..13009</p>
+
+<p>worker[1] mysql-test-run: WARNING: running this script as <em>root</em> will cause some tests to be skipped</p>
+
+<p>main.mytest                              [ skipped ]  No innodb support</p>
+
+<p>main.mytest ‘innodb_plugin’              [ pass ]      5</p>
+
+<p>————————————————————</p>
+
+<p>The servers were restarted 0 times</p>
+
+<p>Spent 0.005 of 3 seconds executing testcases</p>
+
+<p>Completed: All 1 tests were successful.</p>
+
+<p>最后一句话说明，测试通过了。</p>
+
+<p>说明：</p>
+
+<p>1)      mysql-test/mtr这个文件，是一个perl脚本。同目录下还有 mysql-test-run 和mysql-test-run.pl这两个文件，这三个文件一模一样。</p>
+
+<p>2)      每个case会启动一个mysql服务，默认端口为13000。如果这个case涉及到需要启动多个服务（比如主从），则端口从13000递增。</p>
+
+<p>3)      ./mtr的参数只需要指明测试case的前缀即可，如你看到的。当你执行./mtr testname会自动到t/目录下搜索 testname.test文件来执行。当然你也可以执行./mtr mytest.test， 效果相同。</p>
+
+<p>4)      mytest.test第一行是必须的，当你需要使用InnoDB引擎的时候。可以看到mtr能够解释source语法，等效于将目标文件的内容全部拷贝到当前位置。Mysql-test/include目录下有很多这样的文件，他们提供了类似函数的功能，以简化每个case的代码。注意souce前面的 –， 大多数的非SQL语句都要求加 –。</p>
+
+<p>5)      mytest.test最后一行是删除这个创建的表。因为每个case都要求不要受别的case影响，也不要影响别的case，因此自己在case中创建的表要删除。</p>
+
+<p>6)      mtr会将mytest.test的执行结果与r/mytest.result作diff。 若完全相同，则表示测试结果正常。注意到我们例子中的mytest.result. 其中不仅包括了这个case的输出，也包括了输入的所有内容。实际上有效输出只有5、6两行。如果希望输出文件中只有执行结果，可以在第一行后面加入 — disable_query_log。</p>
+
+<p>3、冲突结果及处理</p>
+
+<pre><code>          我们来测试一个错误的输入输出。就在上文的mytest.test中加入一行，如下：   1 — source include/have_innodb.inc
+</code></pre>
+
+<p>2 — disable_query_log</p>
+
+<p>3 use test;</p>
+
+<p>4 create table t(c int) engine=InnoDB ;</p>
+
+<p>5 insert into t values(1);</p>
+
+<p>6 select c from t;</p>
+
+<p>7 drop table t;</p>
+
+<pre><code>   执行 ./mtr mytest，我们知道，他只会输出两行，分别为c和1.
+</code></pre>
+
+<p>执行结果
+。。。。。。</p>
+
+<p>@@ -1,7 +1,2 @@</p>
+
+<p>-use test;</p>
+
+<p>-create table t(c int) engine=InnoDB ;</p>
+
+<p>-insert into t values(1);</p>
+
+<p>-select c from t;</p>
+
+<p>c</p>
+
+<p>1</p>
+
+<p>-drop table t;</p>
+
+<p>mysqltest: Result length mismatch</p>
+
+<p>。。。。。。</p>
+
+<p>Completed: Failed 1/1 tests, 0.00% were successful.</p>
+
+<p>最后一句话说明我们的这个case测试没有通过。我们知道mtr将执行结果与r/mytest.result文件作diff，这个结果的前面部分就是diff的结果。</p>
+
+<pre><code>   说明：
+</code></pre>
+
+<p>1)      执行case失败有很多中可能，比如中间执行了某个非法的语句，这个例子中的失败，指代的是执行结果与预期结果不同。</p>
+
+<p>2)      当前的执行结果会保存在r/mytest.reject中</p>
+
+<p>3)      如果mytest.reject中的结果才是正确的结果（错入出现在mytest.result中），可以用mytest.reject将result覆盖掉，这样正确的标准测试case就完成了。可以直接使用 ./mtr mytest –record命令生成mytest.result.</p>
+
+<p>4)      注意mtr在作diff的时候是直接文本比较，因此如果你的case中出现了多次执行结果可能不同的情况（比如时间相关），这不是一个好的case。当然处理的办法是有的，请参加附录中关于 replace_column的描述。</p>
+
+<pre><code>  4、批量执行的一些命令
+</code></pre>
+
+<p>实际上我们更常用到的是批量执行的命令。</p>
+
+<p>1)      ./mtr</p>
+
+<p>就是这么简单。会执行所有的case。当然包括刚刚我们加入的mytest.这里说的”所有的case”，包括t/目录下所有以.test为后缀的文件。也包括 suits目录下的所有以.test为后缀的文件。</p>
+
+<p>注意只要任何一个case执行失败（包括内部执行失败和与result校验失败）都会导致整个执行计划退出。因此–force很常用，加入这个参数后，mtr会忽略错误并继续执行下一个case直到所有的case执行结束。</p>
+
+<p>2)      ./mtr –suite=funcs_1</p>
+
+<p>Suits目录下有多个目录，是一些测试的套餐。此命令单独执行 suits/funcs_1目录下的所有case。（其他目录不执行）</p>
+
+<p>t/目录下的所有文件组成了默认的套餐main。 因此 ./mtr –suite=main则只执行t/*.test.</p>
+
+<p>3)      ./mtr  –do-test=events</p>
+
+<p>执行所有以 events为前缀的case（搜索范围为t/和所有的suite）。</p>
+
+<p>–do-test的参数支持正则表达式，上诉命令等效于./mtr –do-test=events.*</p>
+
+<p>所以如果想测试所有的包括innodb的case，可以用 ./mtr –do-test=.<em>innodb.</em></p>
+
+<p>5、结束了</p>
+
+<p>好吧。上面说的一些太简单了，简单到入门都不够。需要详细了解的可以到官网看e文。以下的tips是看官网的一些笔记。看到一点记录一点的，不成章。</p>
+
+<p>附录
+1、目录下的mtr文件即为mysql-test-run的缩写，文件内容相同</p>
+
+<p>2、Mtr会启动mysql，有些case下可能重启server，为了使用不同的参数启动</p>
+
+<p>3、调用bin/mysqltest读case并发送給mysql-server</p>
+
+<p>4、输入和输出分别放在不同的文件中，执行结果与输出文件内容作对比</p>
+
+<p>5、输入文件都在t目录下，输出文件在r目录下。对应的输入输出文件仅后缀名不同，分别为 *.test 和 *.result</p>
+
+<p>6、每个testfile是一个测试用例，多个测试用例之间可能有关联。 一个file中任何一个非预期的失败都会导致整个test停止（使用force参数则可继续执行）。</p>
+
+<p>7、注意如果服务端输出了未过滤的warning或error，则会也会导致test退出。</p>
+
+<p>8、t目录下的*.opt文件是指在这个测试中，mysql必须以opt文件的内容作为测试参数启动。 *.sh文件是在执行启动mysql-server之前必须提前执行的脚本。disabled.def中定义了不执行的testfile。</p>
+
+<p>9、r目录下， 若一个执行输出结果和testname.result文件不同，会生成一个testname.reject文件。 该文件在下次执行成功之后被删除。</p>
+
+<p>10、            include目录是一些头文件，这些文件在t/*.test文件中使用，用source 命令引入</p>
+
+<p>11、            lib目录是一些库函数，被mtr脚本调用</p>
+
+<p>12、            有些测试需要用到一些标准数据，存在std_data目录下。</p>
+
+<p>13、            Suite目录也是一些测试用例，每个目录下包含一套，./mtr –suite=funcs_1执行suits/funcs_1目录下的所有case</p>
+
+<p>14、            Mtr实际调用mysqltest作测试。 –result-file文件用于指定预定义的输出，用于与实际输出作对比。若同时指定了 –recored参数，则表示这个输出数据不是用来对比的，而是要求将这个输出结果写入到指定的这个文件中。</p>
+
+<p>15、            Mtr所在的目录路径中不能有空格</p>
+
+<p>16、            Mtr  –force参数会跳过某个错误继续执行，以查看所有的错误。</p>
+
+<p>17、            执行./mtr时另外启动了一个mysql server，默认端口13000</p>
+
+<p>18、            指定执行某个具体case使用 ./mtr testname, 会自动使用t/testname.rest</p>
+
+<p>19、            ./mtr  –do-test=events 执行以events开头的所有case，包括events_grant.test 等</p>
+
+<p>同理 –skip-test=events 将以events打头的所有case跳过。 这里支持正则表达是，如./mtr –do-test=.<em>innodb.</em>则会执行t/目录下所有包含innodb子串的case</p>
+
+<p>20、            Mtr允许并行执行，端口会从13000开始使用。但需要特别指定不同的—vardir指定不同的日志目录。但并行执行的case可能导致写同一个testname.reject.</p>
+
+<p>21、            使用–parallel=auto可以多线程执行case。</p>
+
+<p>22、            Mtr对比结果使用简单的diff，因此自己编写的测试case不应该因为执行时间不同而导致结果不同。当然框架在执行diff之前，允许自定义处理规则对得到的result作处理，来应对一些变化。</p>
+
+<p>23、            ./mtr –record test_name 会将输出结果存入文件 r/test_name.result</p>
+
+<p>24、            自己在脚本中创建的库、表等信息，要删除，否则会出warnning</p>
+
+<p>25、            Mtr默认使用的是mysql-test/var/my.cnf文件，需要替换该文件为自定义的配置文件</p>
+
+<p>26、            若要使用innodb引擎，必须明确在testname.test文件头加</p>
+
+<p>– source include/have_innodb.inc</p>
+
+<p>27、            Test文件名由字母数字、下划线、中划线组成，但只能以字母数字打头</p>
+
+<p>28、            — sleep 10 等待10s 注意前面的—和后面没有分号</p>
+
+<p>29、            默认情况下， r/testname.result中会包含原语句和执行结果，若不想输出原语句，需要自t/restname.test文件头使用 — disable_query_log</p>
+
+<p>30、            每个单独的case会重启服务并要求之前的数据是清空的。</p>
+
+<p>31、            如果要测试出错语句，必须在testname.test文件中，在会出错的语句之前加入 –error 错误号。</p>
+
+<p>比如重复创建表，语句如下</p>
+
+<p>create table t(c int) engine=InnoDB ;</p>
+
+<p>– error 1050</p>
+
+<p>create table t(c int) engine=InnoDB ;</p>
+
+<p>这样在testname.result中输出</p>
+
+<p>create table t(c int) engine=InnoDB ;</p>
+
+<p>ERROR 42S01: Table ‘t’ already exists</p>
+
+<p>则能够正常通过</p>
+
+<p>也可使用 ER_TABLE_EXISTS_TABLE （宏定义为1050）</p>
+
+<p>也可使用 –error S42S01 （注意需要加前缀S），但S系列的可能一个错误号对应多种错误。</p>
+
+<p>32、            –enable_info 在testname.test文件头增加这个命令，在结果中会多输出影响行数。</p>
+
+<pre><code>对应的关闭命令为 –disable_info
+</code></pre>
+
+<p>33、            enable_metadata 可以显示更多信息 disable_result_log不输出执行结果</p>
+
+<p>34、            有些case的输出结果可能包含时间因素的影响，导致无法重复验证。–replace_column 可以解决部分情况。</p>
+
+<p>–replace_column 1 XXXXX</p>
+
+<p>Select a, b from t;</p>
+
+<p>输出结果会是</p>
+
+<p>XXXXX     b.value</p>
+
+<p>即将第一列固定替换为xxxxx。 注意，每个replace_column的影响范围仅局限于下一行的第一个select语句。</p>
+
+<p>35、            mtr –mysqld=–skip-innodb –mysqld=–key_buffer_size=16384 用这种将参数启动传递給mysql server 。 每个选项必须有一个—mysqld打头，不能连在一起写，即使引号包含多个也不行。</p>
+
+<p>36、            mysql-test-run.pl –combination=–skip-innodb   –combination=–innodb,–innodb-file-per-table</p>
+
+<p>这个命令是参数传给多个test case， 第一个参数传 skip-innodb， 第二个参数传 –innodb, innodb-file-per-table。  若所有启动参数中combination只出现一次，则无效。</p>
+
+<p>37、            skip-core-file 强行控制server不要core</p>
+
+<p>38、            如果需要在server启动前执行一些脚本，可以写在 t/testname.sh文件中，由mtr自动执行。</p>
+
+<p>39、            等待语句</p>
+
+<p>let $wait_condition= SELECT c = 3 FROM t;</p>
+
+<p>–source include/wait_condition.inc</p>
+
+<pre><code>          Mtr会一直停在 source这行，每隔0.1s检测，直到上个语句中的$wait_condition返回值非0
+</code></pre>
+
+<p>40、            主从测试case</p>
+
+<pre><code>              a)        testname.test头部必须包含 souce include/master-slave.inc
+
+              b)        主库的配置写在testname-master.opt， 从库的写在testname-slave.opt
+
+              c)        对出从库的操作统一写在testname.test中，要对主库操作时，先执行connection master，之后的语句都是在主库上操作；同理connection slave;
+</code></pre>
+
+<p>从库上执行start slave之后要执行 –source include/wait_for_slave_to_start.inc 等待启动完成， 执行stop slave之后要执行–source include/wait_for_slave_to_stop.inc 等待停止完成。</p>
+
+<p>41、            Case完成后，mtr会检测server的错误日志，如果里面包含Error或Warning，则会认为case fail。</p>
+
+<pre><code>             a)        如果要忽略整个验证server日志的过程，可以在文件头增加 –nowarnings
+
+             b)        如果要指定忽略某些行，允许使用正则表达式，比如 call mtr.add_suppression(“The table ‘t[0-9]*’ is full”); 能够忽略 The table ‘t12′ is full 这样的warning
+
+             c)        注意上面这个call语句也是输入语句的一部分，因此会输出到结果内容中，除非
+</code></pre>
+
+<p>–disable_query_log</p>
+
+<p>call mtr.add_suppression(“The table ‘t[0-9]*’ is full”);</p>
+
+<p>–enable_query_log</p>
+
+<p>42、            在一个case中重启server</p>
+
+<p>–exec echo “wait” &gt; $MYSQL_TMP_DIR/mysqld.1.expect</p>
+
+<p>–shutdown_server 10</p>
+
+<p>–source include/wait_until_disconnected.inc</p>
+
+<h1 id="do-something-while-server-is-down">Do something while server is down</h1>
+
+<p>–enable_reconnect</p>
+
+<p>–exec echo “restart” &gt; $MYSQL_TMP_DIR/mysqld.1.expect</p>
+
+<p>–source include/wait_until_connected_again.inc</p>
+
+<p>43、            循环语句语法</p>
+
+<p>let $1= 1000;</p>
+
+<p>while ($1)</p>
+
+<p>{</p>
+
+<p># execute your statements here</p>
+
+<p>dec $1;</p>
+
+<p>}</p>
+
+<p>44、            mysql_client_test是一个单独的case，里面包含了多个case， 但并不是写成脚本，而是直接调用，可以直接从源码中看到里面调用的各个语句。源码位置tests/mysql_client_test.c</p>
+
+<p>45、            直接执行 ./mtr 会执行t/目录下的所有case，外加suits目录</p>
+
+<p>46、            若在不同目录中有重名的case，则会依次全部执行</p>
+
+<p>47、            Mysql-stress-test.pl用于压力测试，注意默认的my.cnf中的参数，比如innodb_buffer_pool_size只有128M</p>
+
+<p>48、            Case中的语句是以分号结尾的。echo a; select 1 from t limit 1; echo b;是三个语句，在result文件中的对应输出是  a \n 1 \n b</p>
+
+<p>49、            Testcase中支持的脚本语言函数
+http://dev.mysql.com/doc/mysqltest/2.0/en/mysqltest-commands.html</p>
+
+<p>没有列出的函数可以用 – exec +shell命令实现</p>
+
+<p>50、            设置变量 let $a = xx， 前面可加 –</p>
+
+<p>51、            若是数字，可使用 inc $a / dec $a， 前面可加 –</p>
+
+<p>52、            可以赋值为sql返回值 let $q = <code>select c from t limit 1</code>,
+    可以赋值为系统变量 let $q = $PATH</p>
+
+<h2 id="参考">参考</h2>
+
+<p>关于 MySQL 的测试框架可参考官方的手册 <a href="https://dev.mysql.com/doc/mysqltest/en/">The MySQL Test Framework</a>，也可下载 PDF 文档。</p>
+
+<p><a href="https://launchpad.net/randgen">Random Query Generator</a> 产生随机数据，并生成随机的查询 SQL，用来测试 SQL 解析。</p>
+
+<!--
+http://dinglin.iteye.com/blog/804798
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/lua-coroutine.html" title="Lua 协程">&larr; Older</a></li> 
+         <li class="next"><a href="/post/kernel-memory-mmap-introduce.html" title="Kernel 映射文件">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1444579200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-test-framework_init.html" data-title="MySQL 测试框架" data-url="/post/mysql-test-framework_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

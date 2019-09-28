@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Hello World !!!|JinYang's Blog</title>
+  <meta name="keywords" content="hello world,示例,sample,markdown">
+  <meta name="description" content="简单记录一下一些与 Markdown 相关的内容，包括了一些使用模版。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Hello World !!!</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2018-02-12 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <!-- more -->
+
+<pre><code>每个命令行块都是以根目录为基础的。例如下面命令行块，都是基于根目录的。
+</code></pre>
+
+<p>cd src/pages
+mkdir Home</p>
+
+<pre><code>技术栈均是目前最新的。
+
+react 15.6.1
+react-router-dom 4.2.2
+redux 3.7.2
+webpack 3.5.5
+
+目录说明
+</code></pre>
+
+<p>│  .babelrc                          #babel配置文件
+│  package-lock.json
+│  package.json
+│  README.MD
+│  webpack.config.js                 #webpack生产配置文件
+│  webpack.dev.config.js             #webpack开发配置文件
+│
+├─dist
+├─public                             #公共资源文件
+└─src                                #项目源码
+    │  index.html                    #index.html模板
+    │  index.js                      #入口文件
+    │
+    ├─component                      #组建库
+    │  └─Hello
+    │          Hello.js
+    │
+    ├─pages                          #页面目录
+    │  ├─Counter
+    │  │      Counter.js
+    │  │
+    │  ├─Home
+    │  │      Home.js
+    │  │
+    │  ├─Page1
+    │  │  │  Page1.css                #页面样式
+    │  │  │  Page1.js
+    │  │  │
+    │  │  └─images                    #页面图片
+    │  │          brickpsert.jpg
+    │  │
+    │  └─UserInfo
+    │          UserInfo.js
+    │
+    ├─redux
+    │  │  reducers.js
+    │  │  store.js
+    │  │
+    │  ├─actions
+    │  │      counter.js
+    │  │      userInfo.js
+    │  │
+    │  ├─middleware
+    │  │      promiseMiddleware.js
+    │  │
+    │  └─reducers
+    │          counter.js
+    │          userInfo.js
+    │
+    └─router                        #路由文件
+            Bundle.js
+            router.js</p>
+
+<h3 id="1-初始化项目">1. 初始化项目</h3>
+
+<p>首先创建项目目录，并初始化。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 创建文件夹并进入
+$ mkdir react &amp;&amp; cd react
+
+----- 按照提示填写项目基本信息
+$ npm init</code></pre></figure>
+
+<h3 id="2-配置webpack">2. 配置WebPack</h3>
+
+<p>首先是安装，默认是安装到本地目录下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 安装
+$ npm install --save-dev webpack@3</code></pre></figure>
+
+<p>一般来说，<code>--save-dev</code> 是开发时依赖的东西，<code>--save</code> 是发布之后还依赖的东西。</p>
+
+<h4 id="21-编写配置文件">2.1 编写配置文件</h4>
+
+<p>编写最基础的配置文件 <code>webpack.dev.config.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="cm">/*入口*/</span>
+	<span class="nx">entry</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;src/index.js&#39;</span><span class="p">),</span>
+
+	<span class="cm">/*输出到dist文件夹，输出文件名字为bundle.js*/</span>
+	<span class="nx">output</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">path</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;./dist&#39;</span><span class="p">),</span>
+		<span class="nx">filename</span><span class="o">:</span> <span class="s1">&#39;bundle.js&#39;</span>
+	<span class="p">}</span>
+<span class="p">};</span></code></pre></figure>
+
+<h4 id="22-编译文件">2.2 编译文件</h4>
+
+<p>首先，根据如上的配置新建入口文件 <code>src/index.js</code> ，并添加如下内容。</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;app&#39;</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;Webpack works&quot;</span></code></pre></figure>
+
+<p>然后，执行命令 <code>./node_modules/.bin/webpack --config webpack.dev.config.js</code> ，编译完成后，会自动生成 <code>dist/bundle.js</code> 文件。</p>
+
+<p>最后，在 <code>dist</code> 文件夹下面新建一个 <code>index.html</code> 文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+	&lt;meta charset=&quot;UTF-8&quot;&gt;
+	&lt;title&gt;Document&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;./bundle.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></figure>
+
+<p>用浏览器打开 <code>index.html</code> 即可。</p>
+
+<p>也就是说，这里把入口文件 <code>index.js</code> 处理后，生成 <code>bundle.js</code> 。</p>
+
+<h3 id="3-babel">3. Babel</h3>
+
+<p>Babel 把用最新标准编写的 JavaScript 代码向下编译成可以在今天随处可用的版本，通俗的说，就是我们可以用 ES6, ES7 等来编写代码，Babel 会把他们统统转为 ES5 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">babel-core            调用Babel的API进行转码
+babel-loader
+babel-preset-es2015   用于解析 ES6
+babel-preset-react    用于解析 JSX
+babel-preset-stage-0  用于解析 ES7 提案</code></pre></figure>
+
+<p>先通过如下命令安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ npm install --save-dev babel-core babel-loader babel-preset-es2015 babel-preset-react babel-preset-stage-0</code></pre></figure>
+
+<p>然后，新建 babel 配置文件 <code>.babelrc</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">{
+	&quot;presets&quot;: [
+		&quot;es2015&quot;,
+		&quot;react&quot;,
+		&quot;stage-0&quot;
+	],
+	&quot;plugins&quot;: []
+}</code></pre></figure>
+
+<p>修改 <code>webpack.dev.config.js</code> 文件，增加 <code>babel-loader</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/*src文件夹下面的以.js结尾的文件，要使用babel解析*/</span>
+<span class="cm">/*cacheDirectory是用来缓存编译结果，下次编译加速*/</span>
+<span class="nx">module</span><span class="o">:</span> <span class="p">{</span>
+	<span class="nx">rules</span><span class="o">:</span> <span class="p">[{</span>
+		<span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js$/</span><span class="p">,</span>
+		<span class="nx">use</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;babel-loader?cacheDirectory=true&#39;</span><span class="p">],</span>
+		<span class="nx">include</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">)</span>
+	<span class="p">}]</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>简单测试下是否能正确转义 <code>ES6</code>，修改 <code>src/index.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">/*使用es6的箭头函数*/
+var func = str =&gt; {
+	document.getElementById(&#39;app&#39;).innerHTML = str;
+};
+func(&#39;Hello Babel!&#39;);</code></pre></figure>
+
+<p>执行打包命令 <code>./node_modules/.bin/webpack --config webpack.dev.config.js</code>，并通过浏览器打开 <code>index.html</code> 。</p>
+
+<!--
+Babel介绍
+https://segmentfault.com/a/1190000008159877
+
+Babel 入门教程
+http://www.ruanyifeng.com/blog/2016/01/babel.html
+-->
+
+<h3 id="4-react">4. React</h3>
+
+<p>同样，首先要安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ npm install --save react react-dom</code></pre></figure>
+
+<p>修改 <code>src/index.js</code> 使用 React 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React from &#39;react&#39;;
+import ReactDom from &#39;react-dom&#39;;
+
+ReactDom.render(&lt;div&gt;Hello React!&lt;/div&gt;, document.getElementById(&#39;app&#39;));</code></pre></figure>
+
+<p>执行打包命令 <code>./node_modules/.bin/webpack --config webpack.dev.config.js</code>，然后打开 <code>index.html</code> 看效果。</p>
+
+<h4 id="41-组件化">4.1 组件化</h4>
+
+<p>这里简单处理下，把 <code>Hello React</code> 放到组件里面，新建文件 <code>src/component/Hello/Hello.js</code>。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React, {Component} from &#39;react&#39;;
+
+export default class Hello extends Component {
+	render() {
+		return (&lt;div&gt;Hello Component React!&lt;/div&gt;)
+	}
+}</code></pre></figure>
+
+<p>然后修改 <code>src/index.js</code>，引用 <code>Hello</code> 组件！</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React from &#39;react&#39;;
+import ReactDom from &#39;react-dom&#39;;
+import Hello from &#39;./component/Hello/Hello&#39;;
+
+ReactDom.render(&lt;Hello/&gt;, document.getElementById(&#39;app&#39;));</code></pre></figure>
+
+<p>同上，在根目录执行打包命令，并测试。</p>
+
+<h4 id="43-优化命令">4.3 优化命令</h4>
+
+<p>修改 <code>package.json</code> 里面的 script，增加 <code>dev-build</code> ，然后可以通过 <code>npm run dev-build</code> 编译即可。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&quot;scripts&quot;: {
+	&quot;test&quot;: &quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;,
+	&quot;dev-build&quot;: &quot;webpack --config webpack.dev.config.js&quot;
+}</code></pre></figure>
+
+<h3 id="5-react-router">5. React Router</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 安装
+$ npm install --save react-router-dom
+
+----- 新建Router文件夹和组件
+$ mkdir src/router &amp;&amp; touch src/router/router.js</code></pre></figure>
+
+<p>如下添加一个最基本的 Router 文件，也就是 <code>src/router/router.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React from &#39;react&#39;;
+import {BrowserRouter as Router, Route, Switch, Link} from &#39;react-router-dom&#39;;
+import Home from &#39;../pages/Home/Home&#39;;
+import Page1 from &#39;../pages/Page1/Page1&#39;;
+
+const getRouter = () =&gt; (
+	&lt;Router&gt;
+		&lt;div&gt;
+			&lt;ul&gt;
+				&lt;li&gt;&lt;Link to=&quot;/&quot;&gt;首页&lt;/Link&gt;&lt;/li&gt;
+				&lt;li&gt;&lt;Link to=&quot;/page1&quot;&gt;Page1&lt;/Link&gt;&lt;/li&gt;
+			&lt;/ul&gt;
+			&lt;Switch&gt;
+				&lt;Route exact path=&quot;/&quot; component={Home}/&gt;
+				&lt;Route path=&quot;/page1&quot; component={Page1}/&gt;
+			&lt;/Switch&gt;
+		&lt;/div&gt;
+	&lt;/Router&gt;
+);
+
+export default getRouter;</code></pre></figure>
+
+<p>接着创建所需的文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 新建两个页面 Home Page1
+$ mkdir -p src/pages/{Home,Page1}</code></pre></figure>
+
+<p>对应的源码文件如下，分别为 <code>src/pages/Home/Home.js</code> 和 <code>src/pages/Page1/Page1.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React, {Component} from &#39;react&#39;;
+
+export default class Home extends Component {
+	render() { return(&lt;div&gt;this is home~&lt;/div&gt;) }
+}</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React, {Component} from &#39;react&#39;;
+
+export default class Page1 extends Component {
+	render() { return(&lt;div&gt;this is Page1~&lt;/div&gt;) }
+}</code></pre></figure>
+
+<p>路由和页面建好了，然后需要修改入口文件 <code>src/index.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React from &#39;react&#39;;
+import ReactDom from &#39;react-dom&#39;;
+import getRouter from &#39;./router/router&#39;;
+
+ReactDom.render(getRouter(), document.getElementById(&#39;app&#39;));</code></pre></figure>
+
+<p>最后，执行打包命令 <code>npm run dev-build</code> ，打开 <code>index.html</code> 页面。</p>
+
+<p>注意，这里点击链接实际上是没有反映的，主要是由于采用的是类似 <code>file:///your/index/path/index.html</code> 路径，而非 <code>http://localhost:3000/</code> 之类的路径。</p>
+
+<!--
+    Nginx, Apache, IIS等配置启动一个简单的的WEB服务器。
+    使用webpack-dev-server来配置启动WEB服务器。
+
+下一节，我们来使用第二种方法启动服务器。这一节的DEMO，先放这里。
+
+参考地址
+    http://www.jianshu.com/p/e3adc9b5f75c
+    http://reacttraining.cn/web/guides/quick-start
+-->
+
+<h3 id="6-webpack-dev-server">6. webpack-dev-server</h3>
+
+<p>简单来说 <code>webpack-dev-server</code> 就是一个小型的静态文件服务器，可以为 webpack 打包生成的资源文件提供简单的 Web 服务。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ npm install webpack-dev-server@2 --save-dev</code></pre></figure>
+
+<p>注意：这里没有全局进行安装，后面使用的时候要写相对路径，可以通过 <code>npm install webpack-dev-server@2 -g</code> 进行全局安装。</p>
+
+<p>接着，修改 <code>webpack.dev.config.js</code> 增加 webpack-dev-server 的配置。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">devServer: {
+	contentBase: path.join(__dirname, &#39;./dist&#39;)
+}</code></pre></figure>
+
+<p>接着执行 <code>./node_modules/.bin/webpack-dev-server --config webpack.dev.config.js</code>，然后浏览器打开 <code>http://localhost:8080</code>，现在就可以点击相关的链接了。</p>
+
+<!--
+看URL地址变化啦！我们看到react-router已经成功了哦。
+
+Q: --content-base是什么？
+
+A：URL的根目录。如果不设定的话，默认指向项目根目录。
+
+重要提示：webpack-dev-server编译后的文件，都存储在内存中，我们并不能看见的。你可以删除之前遗留的文件dist/bundle.js，
+仍然能正常打开网站！
+
+每次执行webpack-dev-server --config webpack.dev.config.js,要打很长的命令，我们修改package.json，增加script->start:
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev-build": "webpack --config webpack.dev.config.js",
+    "start": "webpack-dev-server --config webpack.dev.config.js"
+  }
+
+下次执行npm start就可以了。
+
+既然用到了webpack-dev-server，我们就看看它的其他的配置项。
+看了之后，发现有几个我们可以用的。
+
+    color（CLI only） console中打印彩色日志
+    historyApiFallback 任意的404响应都被替代为index.html。有什么用呢？你现在运行
+    npm start，然后打开浏览器，访问http://localhost:8080,然后点击Page1到链接http://localhost:8080/page1，
+    然后刷新页面试试。是不是发现刷新后404了。为什么？dist文件夹里面并没有page1.html,当然会404了，所以我们需要配置
+    historyApiFallback，让所有的404定位到index.html。
+    host 指定一个host,默认是localhost。如果你希望服务器外部可以访问，指定如下：host: "0.0.0.0"。比如你用手机通过IP访问。
+    hot 启用Webpack的模块热替换特性。关于热模块替换，我下一小节专门讲解一下。
+    port 配置要监听的端口。默认就是我们现在使用的8080端口。
+    proxy 代理。比如在 localhost:3000 上有后端服务的话，你可以这样启用代理：
+
+    proxy: {
+      "/api": "http://localhost:3000"
+    }
+
+    progress（CLI only） 将编译进度输出到控制台。
+
+根据这几个配置，修改下我们的webpack-dev-server的配置~
+
+webpack.dev.config.js
+
+    devServer: {
+        port: 8080,
+        contentBase: path.join(__dirname, './dist'),
+        historyApiFallback: true,
+        host: '0.0.0.0'
+    }
+
+CLI ONLY的需要在命令行中配置
+
+package.json
+
+"dev": "webpack-dev-server --config webpack.dev.config.js --color --progress"
+
+现在我们执行npm start 看看效果。是不是看到打包的时候有百分比进度？在http://localhost:8080/page1页面刷新是不是没问题了？
+用手机通过局域网IP是否可以访问到网站？
+
+参考地址：
+    https://segmentfault.com/a/1190000006670084
+    https://webpack.js.org/guides/development/#using-webpack-dev-server
+-->
+
+<h3 id="7-模块热替换">7. 模块热替换</h3>
+
+<!-- Hot Module Replacement -->
+
+<p>到目前为止，当修改代码时浏览器会自动刷新，这里看下 webpack 模块热替换教程。</p>
+
+<!--
+使用自动编译代码时，可能会在保存文件时遇到一些问题。某些编辑器具有“安全写入”功能，可能会影响重新编译。
+
+要在一些常见的编辑器中禁用此功能，请查看以下列表：
+    Sublime Text 3 - 在用户首选项(user preferences)中添加 atomic_save: "false"。
+    IntelliJ - 在首选项(preferences)中使用搜索，查找到 "safe write" 并且禁用它。
+    Vim - 在设置(settings)中增加 :set backupcopy=yes。
+    WebStorm - 在 Preferences > Appearance & Behavior > System Settings 中取消选中 Use "safe write"。
+-->
+
+<!-- 我相信看这个教程的人，应该用过别人的框架。我们在修改代码的时候，浏览器不会刷新，只会更新自己修改的那一块。我们也要实现这个效果。 -->
+
+<p>接下来需要在 <code>package.json</code> 文件中增加 <code>--hot</code>，也就是如下内容。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&quot;start&quot;: &quot;./node_modules/.bin/webpack-dev-server --config webpack.dev.config.js --color --progress --hot&quot;</code></pre></figure>
+
+<p>同时在 <code>src/index.js</code> 文件中增加 <code>module.hot.accept()</code>，内容如下，当模块更新时，会通知 <code>index.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React from &#39;react&#39;;
+import ReactDom from &#39;react-dom&#39;;
+import getRouter from &#39;./router/router&#39;;
+
+if (module.hot) {
+	module.hot.accept();
+}
+
+ReactDom.render(getRouter(), document.getElementById(&#39;app&#39;));</code></pre></figure>
+
+<p>现在执行 <code>npm start</code>，打开浏览器，修改 Home.js ，在不刷新页面的情况下，内容会自动更新了。</p>
+
+<!--
+做模块热替换，我们只改了几行代码，非常简单的。纸老虎一个~
+
+现在我需要说明下我们命令行使用的--hot，可以通过配置webpack.dev.config.js来替换，
+向文档上那样,修改下面三处。但我们还是用--hot吧。下面的方式我们知道一下就行，我们不用。同样的效果。
+
+const webpack = require('webpack');
+
+devServer: {
+    hot: true
+}
+
+plugins:[
+     new webpack.HotModuleReplacementPlugin()
+]
+
+HRM配置其实有两种方式，一种CLI方式，一种Node.js API方式。我们用到的就是CLI方式，比较简单。
+Node.js API方式，就是建一个server.js等等，网上大部分教程都是这种方式，这里不做讲解了。
+
+你以为模块热替换到这里就结束了？nonono~
+
+上面的配置对react模块的支持不是很好哦。
+
+例如下面的demo，当模块热替换的时候，state会重置，这不是我们想要的。
+
+修改Home.js,增加计数state
+
+src/pages/Home/Home.js
+
+import React, {Component} from 'react';
+
+export default class Home extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            count: 0
+        }
+    }
+
+    _handleClick() {
+        this.setState({
+            count: ++this.state.count
+        });
+    }
+
+    render() {
+        return (
+            <div>
+                this is home~<br/>
+                当前计数：{this.state.count}<br/>
+                <button onClick={() => this._handleClick()}>自增</button>
+            </div>
+        )
+    }
+}
+
+你可以测试一下，当我们修改代码的时候，webpack在更新页面的时候，也把count初始为0了。
+
+为了在react模块更新的同时，能保留state等页面中其他状态，我们需要引入react-hot-loader~
+
+Q:　请问webpack-dev-server与react-hot-loader两者的热替换有什么区别？
+
+A: 区别在于webpack-dev-server自己的--hot模式只能即时刷新页面，但状态保存不住。因为React有一些自己语法(JSX)是HotModuleReplacementPlugin搞不定的。
+而react-hot-loader在--hot基础上做了额外的处理，来保证状态可以存下来。（来自segmentfault）
+
+下面我们来加入react-hot-loader v3,
+
+安装依赖
+
+npm install react-hot-loader@next --save-dev
+
+根据文档，
+我们要做如下几个修改~
+
+    .babelrc 增加 react-hot-loader/babel
+
+.babelrc
+
+{
+  "presets": [
+    "es2015",
+    "react",
+    "stage-0"
+  ],
+  "plugins": [
+    "react-hot-loader/babel"
+  ]
+}
+
+    webpack.dev.config.js入口增加react-hot-loader/patch
+
+webpack.dev.config.js
+
+    entry: [
+        'react-hot-loader/patch',
+        path.join(__dirname, 'src/index.js')
+    ]
+
+    src/index.js修改如下
+
+src/index.js
+
+import React from 'react';
+import ReactDom from 'react-dom';
+import {AppContainer} from 'react-hot-loader';
+
+import getRouter from './router/router';
+
+/*初始化*/
+renderWithHotReload(getRouter());
+
+/*热更新*/
+if (module.hot) {
+    module.hot.accept('./router/router', () => {
+        const getRouter = require('./router/router').default;
+        renderWithHotReload(getRouter());
+    });
+}
+
+function renderWithHotReload(RootElement) {
+    ReactDom.render(
+        <AppContainer>
+            {RootElement}
+        </AppContainer>,
+        document.getElementById('app')
+    )
+}
+
+现在，执行npm start，试试。是不是修改页面的时候，state不更新了？
+
+参考文章：
+
+    gaearon/react-hot-loader#243
+-->
+
+<h3 id="8-文件路径优化">8. 文件路径优化</h3>
+
+<p>在之前的代码中，在引用组件或者页面时，写的是相对路径，例如比如 <code>src/router/router.js</code> 里面，引用 Home.js 的时候就用的相对路径。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import Home from &#39;../pages/Home/Home&#39;;</code></pre></figure>
+
+<p>webpack 提供了一个别名配置，就是我们无论在哪个路径下，引用都可以这样</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import Home from &#39;pages/Home/Home&#39;;</code></pre></figure>
+
+<p>修改 <code>webpack.dev.config.js</code> 增加别名。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">    resolve: {
+        alias: {
+            pages: path.join(__dirname, &#39;src/pages&#39;),
+            component: path.join(__dirname, &#39;src/component&#39;),
+            router: path.join(__dirname, &#39;src/router&#39;)
+        }
+    }</code></pre></figure>
+
+<p>然后把之前使用的绝对路径统统改掉，包括 <code>src/router/router.js</code> 以及 <code>src/index.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import Home from &#39;pages/Home/Home&#39;;
+import Page1 from &#39;pages/Page1/Page1&#39;;</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import getRouter from &#39;router/router&#39;;</code></pre></figure>
+
+<h3 id="9-redux">9. Redux</h3>
+
+<p>这里简单实现一个计数器。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ npm install --save redux</code></pre></figure>
+
+<p>初始化目录结构以及相关的文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ mkdir -p src/redux/{actions,reducers}</code></pre></figure>
+
+<p>先来写 action 创建函数，通过该函数可以创建 action，也就是 <code>src/redux/actions/counter.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">/*action*/
+export const INCREMENT = &quot;counter/INCREMENT&quot;;
+export const DECREMENT = &quot;counter/DECREMENT&quot;;
+export const RESET = &quot;counter/RESET&quot;;
+
+export function increment() {
+	return {type: INCREMENT}
+}
+
+export function decrement() {
+	return {type: DECREMENT}
+}
+
+export function reset() {
+	return {type: RESET}
+}</code></pre></figure>
+
+<p>接着是 reducer，一个纯函数，接收 action 和旧的 state 生成新 state ，<code>src/redux/reducers/counter.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import {INCREMENT, DECREMENT, RESET} from &#39;../actions/counter&#39;;
+
+/*
+ * 初始化state
+ */
+const initState = {
+	count: 0
+};
+/*
+ * reducer
+ */
+export default function reducer(state = initState, action) {
+	switch (action.type) {
+	case INCREMENT:
+		return { count: state.count + 1 };
+	case DECREMENT:
+		return { count: state.count - 1 };
+	case RESET:
+		return {count: 0};
+	default:
+		return state
+	}
+}</code></pre></figure>
+
+<p>一个项目可能会有很多个 <code>reducers</code>，可以通过如下方式把它们整合到一起，<code>src/redux/reducers.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import counter from &#39;./reducers/counter&#39;;
+
+export default function combineReducers(state = {}, action) {
+	return { counter: counter(state.counter, action) }
+}</code></pre></figure>
+
+<p>这里无论是 combineReducers 还是 reducer 函数，都是接收 state 和 action，然后返回一个新的 state。</p>
+
+<h4 id="91-创建-store">9.1 创建 Store</h4>
+
+<p>前面可以使用 action 来描述 “发生了什么”，使用 action 创建函数来返回 action ；并使用 reducers 来根据 action 更新 state 。</p>
+
+<p>那如何提交 action 并触发 reducers 呢？</p>
+
+<p>store 就是把它们联系到一起的对象，其具有以下职责：</p>
+
+<ul>
+  <li>维持应用的 state；</li>
+  <li>提供 getState() 方法获取 state；</li>
+  <li>提供 dispatch(action) 触发reducers方法更新 state；</li>
+  <li>通过 subscribe(listener) 注册监听器;</li>
+  <li>通过 subscribe(listener) 返回的函数注销监听器。</li>
+</ul>
+
+<p>新建 <code>src/redux/store.js</code> 文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import {createStore} from &#39;redux&#39;;
+import combineReducers from &#39;./reducers.js&#39;;
+
+let store = createStore(combineReducers);
+
+export default store;</code></pre></figure>
+
+<p>到此为止，可以使用 redux 了，这里简单测试下，新建 <code>src/redux/testRedux.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import {increment, decrement, reset} from &#39;./actions/counter&#39;;
+
+import store from &#39;./store&#39;;
+
+// 打印初始状态
+console.log(store.getState());
+
+// 每次 state 更新时，打印日志
+// 注意 subscribe() 返回一个函数用来注销监听器
+let unsubscribe = store.subscribe(() =&gt;
+	console.log(store.getState())
+);
+
+// 发起一系列 action
+store.dispatch(increment());
+store.dispatch(decrement());
+store.dispatch(reset());
+
+// 停止监听 state 更新
+unsubscribe();</code></pre></figure>
+
+<p>当前文件夹执行命令 <code>../../node_modules/.bin/webpack testRedux.js build.js &amp;&amp; node build.js</code> ，此时输出为。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">{ counter: { count: 0 } }
+{ counter: { count: 1 } }
+{ counter: { count: 0 } }
+{ counter: { count: 0 } }</code></pre></figure>
+
+<p>也就是说，redux 和 react 没关系，虽说他俩能合作。</p>
+
+<!--
+到这里，我建议你再理下redux的数据流，看看这里。
+
+    调用store.dispatch(action)提交action。
+    redux store调用传入的reducer函数。把当前的state和action传进去。
+    根 reducer 应该把多个子 reducer 输出合并成一个单一的 state 树。
+    Redux store 保存了根 reducer 返回的完整 state 树。
+
+就是酱紫~~
+
+-->
+
+<p>调整 <code>webpack.dev.config.js</code> 路径别名。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">alias: {
+	actions: path.join(__dirname, &#39;src/redux/actions&#39;),
+	reducers: path.join(__dirname, &#39;src/redux/reducers&#39;),
+	redux: path.join(__dirname, &#39;src/redux&#39;)
+}</code></pre></figure>
+
+<p>把前面的相对路径都改改。</p>
+
+<h4 id="92-配合-react-使用">9.2 配合 React 使用</h4>
+
+<p>写一个 Counter 页面 <code>src/pages/Counter/Counter.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React, {Component} from &#39;react&#39;;
+
+export default class Counter extends Component {
+	render() {
+		return (
+			&lt;div&gt;
+				&lt;div&gt;当前计数为(显示redux计数)&lt;/div&gt;
+				&lt;button onClick={() =&gt; {
+					console.log(&#39;调用自增函数&#39;);
+				}}&gt;自增
+				&lt;/button&gt;
+				&lt;button onClick={() =&gt; {
+					console.log(&#39;调用自减函数&#39;);
+				}}&gt;自减
+				&lt;/button&gt;
+				&lt;button onClick={() =&gt; {
+					console.log(&#39;调用重置函数&#39;);
+				}}&gt;重置
+				&lt;/button&gt;
+			&lt;/div&gt;
+		)
+	}
+}</code></pre></figure>
+
+<p>修改路由，增加 Counter，也就是 <code>src/router/router.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React from &#39;react&#39;;
+
+import {BrowserRouter as Router, Route, Switch, Link} from &#39;react-router-dom&#39;;
+
+import Home from &#39;pages/Home/Home&#39;;
+import Page1 from &#39;pages/Page1/Page1&#39;;
+import Counter from &#39;pages/Counter/Counter&#39;;
+
+const getRouter = () =&gt; (
+	&lt;Router&gt;
+		&lt;div&gt;
+			&lt;ul&gt;
+				&lt;li&gt;&lt;Link to=&quot;/&quot;&gt;首页&lt;/Link&gt;&lt;/li&gt;
+				&lt;li&gt;&lt;Link to=&quot;/page1&quot;&gt;Page1&lt;/Link&gt;&lt;/li&gt;
+				&lt;li&gt;&lt;Link to=&quot;/counter&quot;&gt;Counter&lt;/Link&gt;&lt;/li&gt;
+			&lt;/ul&gt;
+			&lt;Switch&gt;
+				&lt;Route exact path=&quot;/&quot; component={Home}/&gt;
+				&lt;Route path=&quot;/page1&quot; component={Page1}/&gt;
+				&lt;Route path=&quot;/counter&quot; component={Counter}/&gt;
+			&lt;/Switch&gt;
+		&lt;/div&gt;
+	&lt;/Router&gt;
+);
+
+export default getRouter;</code></pre></figure>
+
+<p>接着运行 <code>npm start</code> 看下效果。</p>
+
+<h4 id="93-联合-counter-和-redux">9.3 联合 Counter 和 Redux</h4>
+
+<p>使 Counter 能获得到 Redux 的 state，并且能发射 action。</p>
+
+<!--
+当然我们可以使用刚才测试testRedux的方法，手动监听~手动引入store~但是这肯定很麻烦哦。
+
+react-redux提供了一个方法connect。
+
+    容器组件就是使用 store.subscribe() 从 Redux state 树中读取部分数据，并通过 props 来把这些数据提供给要渲染的组件。你可以手工来开发容器组件，但建议使用 React Redux 库的 connect() 方法来生成，这个方法做了性能优化来避免很多不必要的重复渲染。
+
+connect接收两个参数，一个mapStateToProps,就是把redux的state，转为组件的Props，还有一个参数是mapDispatchToprops,
+就是把发射actions的方法，转为Props属性函数。
+-->
+
+<p>先通过命令 <code>npm install --save react-redux</code> 安装 <code>react-redux</code> 。</p>
+
+<p>然后修改 <code>src/pages/Counter/Counter.js</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">import React, {Component} from &#39;react&#39;;
+import {increment, decrement, reset} from &#39;actions/counter&#39;;
+
+import {connect} from &#39;react-redux&#39;;
+
+class Counter extends Component {
+    render() {
+        return (
+            &lt;div&gt;
+                &lt;div&gt;当前计数为{this.props.counter.count}&lt;/div&gt;
+                &lt;button onClick={() =&gt; this.props.increment()}&gt;自增
+                &lt;/button&gt;
+                &lt;button onClick={() =&gt; this.props.decrement()}&gt;自减
+                &lt;/button&gt;
+                &lt;button onClick={() =&gt; this.props.reset()}&gt;重置
+                &lt;/button&gt;
+            &lt;/div&gt;
+        )
+    }
+}
+
+const mapStateToProps = (state) =&gt; {
+    return {
+        counter: state.counter
+    }
+};
+
+const mapDispatchToProps = (dispatch) =&gt; {
+    return {
+        increment: () =&gt; {
+            dispatch(increment())
+        },
+        decrement: () =&gt; {
+            dispatch(decrement())
+        },
+        reset: () =&gt; {
+            dispatch(reset())
+        }
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Counter);</code></pre></figure>
+
+<p>下面我们要传入store</p>
+
+<pre><code>所有容器组件都可以访问 Redux store，所以可以手动监听它。一种方式是把它以 props 的形式传入到所有容器组件中。但这太麻烦了，因为必须要用 store 把展示组件包裹一层，仅仅是因为恰好在组件树中渲染了一个容器组件。
+
+建议的方式是使用指定的 React Redux 组件 来 魔法般的 让所有容器组件都可以访问 store，而不必显示地传递它。只需要在渲染根组件时使用即可。
+</code></pre>
+
+<p>src/index.js</p>
+
+<p>import React from ‘react’;
+import ReactDom from ‘react-dom’;
+import {AppContainer} from ‘react-hot-loader’;
+import {Provider} from ‘react-redux’;
+import store from ‘./redux/store’;</p>
+
+<p>import getRouter from ‘router/router’;</p>
+
+<p>/<em>初始化</em>/
+renderWithHotReload(getRouter());</p>
+
+<p>/<em>热更新</em>/
+if (module.hot) {
+    module.hot.accept(‘./router/router’, () =&gt; {
+        const getRouter = require(‘router/router’).default;
+        renderWithHotReload(getRouter());
+    });
+}</p>
+
+<p>function renderWithHotReload(RootElement) {
+    ReactDom.render(
+        <AppContainer>
+            &lt;Provider store={store}&gt;
+                {RootElement}
+            &lt;/Provider&gt;
+        </AppContainer>,
+        document.getElementById(‘app’)
+    )
+}</p>
+
+<p>到这里我们就可以执行npm start，打开localhost:8080/counter看效果了。</p>
+
+<p>但是你发现npm start一直报错</p>
+
+<p>ERROR in ./node_modules/react-redux/es/connect/mapDispatchToProps.js
+Module not found: Error: Can’t resolve ‘redux’ in ‘F:\Project\react\react-family\node_modules\react-redux\es\connect’</p>
+
+<p>ERROR in ./src/redux/store.js
+Module not found: Error: Can’t resolve ‘redux’ in ‘F:\Project\react\react-family\src\redux’</p>
+
+<p>WTF？这个错误困扰了半天。我说下为什么造成这个错误。我们引用redux的时候这样用的</p>
+
+<p>import {createStore} from ‘redux’</p>
+
+<p>然而，我们在webapck.dev.config.js里面这样配置了</p>
+
+<pre><code>resolve: {
+    alias: {
+        ...
+        redux: path.join(__dirname, 'src/redux')
+    }
+}
+</code></pre>
+
+<p>然后webapck编译的时候碰到redux都去src/redux去找了。但是找不到啊。所以我们把webpack.dev.config.js里面redux这一行删除了，就好了。
+并且把使用我们自己使用redux文件夹的地方改成相对路径哦。</p>
+
+<p>现在你可以npm start去看效果了。</p>
+
+<p>这里我们再缕下（可以读React 实践心得：react-redux 之 connect 方法详解）</p>
+
+<pre><code>Provider组件是让所有的组件可以访问到store。不用手动去传。也不用手动去监听。
+
+connect函数作用是从 Redux state 树中读取部分数据，并通过 props 来把这些数据提供给要渲染的组件。也传递dispatch(action)函数到props。
+</code></pre>
+
+<p>接下来，我们要说异步action</p>
+
+<p>参考地址： http://cn.redux.js.org/docs/advanced/AsyncActions.html</p>
+
+<p>想象一下我们调用一个异步get请求去后台请求数据：</p>
+
+<pre><code>请求开始的时候，界面转圈提示正在加载。isLoading置为true。
+请求成功，显示数据。isLoading置为false,data填充数据。
+请求失败，显示失败。isLoading置为false，显示错误信息。
+</code></pre>
+
+<p>下面，我们以向后台请求用户基本信息为例。</p>
+
+<pre><code>我们先创建一个user.json，等会请求用，相当于后台的API接口。
+</code></pre>
+
+<p>cd dist
+mkdir api
+cd api
+touch user.json</p>
+
+<p>dist/api/user.json</p>
+
+<p>{
+  “name”: “brickspert”,
+  “intro”: “please give me a star”
+}</p>
+
+<pre><code>创建必须的action创建函数。
+</code></pre>
+
+<p>cd src/redux/actions
+touch userInfo.js</p>
+
+<p>src/redux/actions/userInfo.js</p>
+
+<p>export const GET_USER_INFO_REQUEST = “userInfo/GET_USER_INFO_REQUEST”;
+export const GET_USER_INFO_SUCCESS = “userInfo/GET_USER_INFO_SUCCESS”;
+export const GET_USER_INFO_FAIL = “userInfo/GET_USER_INFO_FAIL”;</p>
+
+<p>function getUserInfoRequest() {
+    return {
+        type: GET_USER_INFO_REQUEST
+    }
+}</p>
+
+<p>function getUserInfoSuccess(userInfo) {
+    return {
+        type: GET_USER_INFO_SUCCESS,
+        userInfo: userInfo
+    }
+}</p>
+
+<p>function getUserInfoFail() {
+    return {
+        type: GET_USER_INFO_FAIL
+    }
+}</p>
+
+<p>我们创建了请求中，请求成功，请求失败三个action创建函数。</p>
+
+<pre><code>创建reducer
+</code></pre>
+
+<p>再强调下，reducer是根据state和action生成新state的纯函数。</p>
+
+<p>cd src/redux/reducers
+touch userInfo.js</p>
+
+<p>src/redux/reducers/userInfo.js</p>
+
+<p>import {GET_USER_INFO_REQUEST, GET_USER_INFO_SUCCESS, GET_USER_INFO_FAIL} from ‘actions/userInfo’;</p>
+
+<p>const initState = {
+    isLoading: false,
+    userInfo: {},
+    errorMsg: ‘’
+};</p>
+
+<p>export default function reducer(state = initState, action) {
+    switch (action.type) {
+        case GET_USER_INFO_REQUEST:
+            return {
+                …state,
+                isLoading: true,
+                userInfo: {},
+                errorMsg: ‘’
+            };
+        case GET_USER_INFO_SUCCESS:
+            return {
+                …state,
+                isLoading: false,
+                userInfo: action.userInfo,
+                errorMsg: ‘’
+            };
+        case GET_USER_INFO_FAIL:
+            return {
+                …state,
+                isLoading: false,
+                userInfo: {},
+                errorMsg: ‘请求错误’
+            };
+        default:
+            return state;
+    }
+}</p>
+
+<p>这里的…state语法，是和别人的Object.assign()起同一个作用，合并新旧state。我们这里是没效果的，但是我建议都写上这个哦</p>
+
+<p>组合reducer</p>
+
+<p>src/redux/reducers.js</p>
+
+<p>import counter from ‘reducers/counter’;
+import userInfo from ‘reducers/userInfo’;</p>
+
+<p>export default function combineReducers(state = {}, action) {
+    return {
+        counter: counter(state.counter, action),
+        userInfo: userInfo(state.userInfo, action)
+    }
+}</p>
+
+<pre><code>现在有了action，有了reducer，我们就需要调用把action里面的三个action函数和网络请求结合起来。
+    请求中 dispatch getUserInfoRequest
+    请求成功 dispatch getUserInfoSuccess
+    请求失败 dispatch getUserInfoFail
+</code></pre>
+
+<p>src/redux/actions/userInfo.js增加</p>
+
+<p>export function getUserInfo() {
+    return function (dispatch) {
+        dispatch(getUserInfoRequest());</p>
+
+<pre><code>    return fetch('http://localhost:8080/api/user.json')
+        .then((response =&gt; {
+            return response.json()
+        }))
+        .then((json) =&gt; {
+                dispatch(getUserInfoSuccess(json))
+            }
+        ).catch(
+            () =&gt; {
+                dispatch(getUserInfoFail());
+            }
+        )
+} }
+</code></pre>
+
+<p>我们这里发现，别的action创建函数都是返回action对象：</p>
+
+<p>{type: xxxx}</p>
+
+<p>但是我们现在的这个action创建函数 getUserInfo则是返回函数了。</p>
+
+<p>为了让action创建函数除了返回action对象外，还可以返回函数，我们需要引用redux-thunk。</p>
+
+<p>npm install –save redux-thunk</p>
+
+<p>这里涉及到redux中间件middleware，我后面会讲到的。你也可以读这里Middleware。</p>
+
+<p>简单的说，中间件就是action在到达reducer，先经过中间件处理。我们之前知道reducer能处理的action只有这样的{type:xxx}，所以我们使用中间件来处理
+函数形式的action，把他们转为标准的action给reducer。这是redux-thunk的作用。
+使用redux-thunk中间件</p>
+
+<p>我们来引入redux-thunk中间件</p>
+
+<p>src/redux/store.js</p>
+
+<p>import {createStore, applyMiddleware} from ‘redux’;
+import thunkMiddleware from ‘redux-thunk’;
+import combineReducers from ‘./reducers.js’;</p>
+
+<p>let store = createStore(combineReducers, applyMiddleware(thunkMiddleware));</p>
+
+<p>export default store;</p>
+
+<p>到这里，redux这边OK了，我们来写个组件验证下。</p>
+
+<p>cd src/pages
+mkdir UserInfo
+cd UserInfo
+touch UserInfo.js</p>
+
+<p>src/pages/UserInfo/UserInfo.js</p>
+
+<p>import React, {Component} from ‘react’;
+import {connect} from ‘react-redux’;
+import {getUserInfo} from “actions/userInfo”;</p>
+
+<p>class UserInfo extends Component {</p>
+
+<pre><code>render() {
+    const {userInfo, isLoading, errorMsg} = this.props.userInfo;
+    return (
+        &lt;div&gt;
+            {
+                isLoading ? '请求信息中......' :
+                    (
+                        errorMsg ? errorMsg :
+                            &lt;div&gt;
+                                &lt;p&gt;用户信息：&lt;/p&gt;
+                                &lt;p&gt;用户名：{userInfo.name}&lt;/p&gt;
+                                &lt;p&gt;介绍：{userInfo.intro}&lt;/p&gt;
+                            &lt;/div&gt;
+                    )
+            }
+            &lt;button onClick={() =&gt; this.props.getUserInfo()}&gt;请求用户信息&lt;/button&gt;
+        &lt;/div&gt;
+    )
+} }
+</code></pre>
+
+<p>export default connect((state) =&gt; ({userInfo: state.userInfo}), {getUserInfo})(UserInfo);</p>
+
+<p>这里你可能发现connect参数写法不一样了，mapStateToProps函数用了es6简写，mapDispatchToProps用了react-redux提供的简单写法。</p>
+
+<p>增加路由
+src/router/router.js</p>
+
+<p>import React from ‘react’;</p>
+
+<p>import {BrowserRouter as Router, Route, Switch, Link} from ‘react-router-dom’;</p>
+
+<p>import Home from ‘pages/Home/Home’;
+import Page1 from ‘pages/Page1/Page1’;
+import Counter from ‘pages/Counter/Counter’;
+import UserInfo from ‘pages/UserInfo/UserInfo’;</p>
+
+<p>const getRouter = () =&gt; (
+    <Router>
+        &lt;div&gt;
+            &lt;ul&gt;
+                &lt;li&gt;<link to="/" />首页&lt;/Link&gt;&lt;/li&gt;
+                &lt;li&gt;<link to="/page1" />Page1&lt;/Link&gt;&lt;/li&gt;
+                &lt;li&gt;<link to="/counter" />Counter&lt;/Link&gt;&lt;/li&gt;
+                &lt;li&gt;<link to="/userinfo" />UserInfo&lt;/Link&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+            <Switch>
+                &lt;Route exact path="/" component={Home}/&gt;
+                &lt;Route path="/page1" component={Page1}/&gt;
+                &lt;Route path="/counter" component={Counter}/&gt;
+                &lt;Route path="/userinfo" component={UserInfo}/&gt;
+            </Switch>
+        &lt;/div&gt;
+    </Router>
+);</p>
+
+<p>export default getRouter;</p>
+
+<p>现在你可以执行npm start去看效果啦！</p>
+
+<p>https://doc.webpack-china.org/guides/</p>
+
+<p>Redux 中文文档
+http://cn.redux.js.org/index.html</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/managing-oneself.html" title="【转】你事业的上限究竟在哪里？">&larr; Older</a></li> 
+         <li class="next"><a href="/post/json-web-token-introduce.html" title="JWT 简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1518364800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/react-environment-introduce_init.html" data-title="Hello World !!!" data-url="/post/react-environment-introduce_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

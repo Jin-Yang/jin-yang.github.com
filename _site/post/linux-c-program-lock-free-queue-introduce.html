@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>lock-free 编程|JinYang's Blog</title>
+  <meta name="keywords" content="lock free,queue">
+  <meta name="description" content="简单介绍下无锁编程 (Lock Free) 的概念，并实现一个基本的 Queue 。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>lock-free 编程</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2018-12-09 Sunday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  program  
+      
+    </div>
+  </div>
+  <hr>
+  <p>简单介绍下无锁编程 (Lock Free) 的概念，并实现一个基本的 Queue 。</p>
+
+<!-- more -->
+
+<h2 id="cas">CAS</h2>
+
+<p>在开始说无锁队列或者无锁编程之前，首先需要知道一个很重要的 CAS 操作，也就是 <code>Compare &amp; Set</code> 或者 <code>Compare &amp; Swap</code> 的简称，现在几乎所有的 CPU 都支持 CAS 的原子操作，其中 x86 下对应的是 <code>CMPXCHG</code> 汇编指令。</p>
+
+<p>一般来说，会在一个循环中重复地执行 CAS 操作以完成一个事务操作，这个过程分为 3 步：</p>
+
+<ul>
+  <li>从指定的内存位置读取原始的值；</li>
+  <li>根据读取到的原始的值计算出新的值；</li>
+  <li>检测如果内存位置仍然是原始的值时，则将新值写入该内存位置；</li>
+</ul>
+
+<p>如下是一个简单示例，检查内存中的 <code>*mem</code> 的值是否为 <code>oldval</code> ，如果是则对其赋值 <code>newval</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">compare_and_swap</span> <span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">mem</span><span class="p">,</span> <span class="kt">int</span> <span class="n">oldval</span><span class="p">,</span> <span class="kt">int</span> <span class="n">newval</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">oldmem</span> <span class="o">=</span> <span class="o">*</span><span class="n">mem</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">oldmem</span> <span class="o">==</span> <span class="n">oldval</span><span class="p">)</span>
+		<span class="o">*</span><span class="n">mem</span> <span class="o">=</span> <span class="n">newval</span><span class="p">;</span>
+	<span class="k">return</span> <span class="n">oldmem</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="添加节点">添加节点</h2>
+
+<p>添加节点时分成了两步操作：A) 将新 <code>node</code> 添加到最后节点的下个位置；B) 修改 <code>root</code> 中 <code>tail</code> 指针的指向。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">while (1) {
+	n = root-&gt;tail;
+	if (CAS(&amp;(n-&gt;next), NULL, node))
+		break;
+}
+CAS(&amp;(root-&gt;tail), n, node);</code></pre></figure>
+
+<p>如上实际上是一个死循环处理，也就是说在准备在队列尾加入结点时，可能别的线程已经加成功了，于是原保存的 <code>tail</code> 指针就不再是 <code>NULL</code> 了，那么此时的 <code>CAS</code> 操作就会返回 <code>false</code> ，于是程序会一直重试直到成功。</p>
+
+<p>另外，也可以看到，在处理 <code>root-&gt;tail</code> 指针时，实际上并没有判断是否成功，这是因为：</p>
+
+<ol>
+  <li>线程 A 在 CAS 操作中更新成功，那么所有的其它线程都会操作失败，然后再进入循环；</li>
+  <li>此时 <code>tail-&gt;next</code> 指向的已经不再是 NULL 了，那么其它线程会一直失败并陷入到死循环中；</li>
+  <li>直到 A 线程更新完 <code>root-&gt;tail</code> 指针，于是其它的线程中的某个线程就可以再次更新 tail 指针，然后继续往下处理。</li>
+</ol>
+
+<p>注意，这里还会有个问题，假设线程 A 在更新 <code>root-&gt;tail</code> 前线程挂掉了，那么此时其它线程就会进入到死循环。</p>
+
+<h3 id="优化">优化</h3>
+
+<p>接上，假设在线程 B 中当发现 CAS 失败了，那么会执行如下 <code>2</code> 中的 CAS 操作，也即是如果此时的 <code>root-&gt;tail</code> 与 <code>n</code> 相同，会自动更新 <code>tail</code> 。</p>
+
+<p>实际上，这一步与在线程 A 中执行 <code>3</code> 操作的结果相同，不过这时在线程 A 中 <code>3</code> 操作就会直接失败掉，当然，没有对返回结果进行判断，自然也不影响程序的正确性。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">while (1) {
+	n = root-&gt;tail;
+	if (CAS(&amp;(n-&gt;next), NULL, node)) // 1
+		break;
+	else
+		CAS(&amp;(root-&gt;tail), n, node); // 2
+}
+CAS(&amp;(root-&gt;tail), n, node); // 3</code></pre></figure>
+
+<h2 id="获取节点">获取节点</h2>
+
+<p>示例代码如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">while (1) {
+	n = root-&gt;head;
+	if (n-&gt;next == NULL)
+		return NULL;
+	if (CAS(&amp;(root-&gt;head), n, n-&gt;next)
+		break;
+}
+return n-&gt;next-&gt;data;</code></pre></figure>
+
+<p>实际上可以看到，这里返回的实际上是 <code>head-&gt;next</code> 中的数据，而非 <code>head</code> 中保存的数据。</p>
+
+<p>这里主要是为了处理一个边界条件，这里通过一个哨兵 (Sentinel) 节点来处理链表中只有一个元素时的问题，同时简化了添加、获取时的操作。</p>
+
+<h2 id="aba-问题">ABA 问题</h2>
+
+<p>ABA 问题，简单来说，就是如果一个线程修改 V 值，假设原来是 A，先修改成 B，再修改回成 A，当前线程的 CAS 操作无法分辨当前 V 值是否发生过变化。</p>
+
+<p>在 Lock-Free 编程中，ABA 问题是最容易发生的，尤其是在使用 CAS 操作时。因为 CAS 判断的是指针操作，如果这个地址被重用那么就会引起异常，实际上，在内存被释放再分配时，很容易被复用，尤其是对于相同大小的内存，可能会被认为一种优化策略。</p>
+
+<p>尤其是对于没有垃圾回收机制的内存模型，例如 C/C++ ，假设有如下事件序列：</p>
+
+<ol>
+  <li>线程 A 从内存位置 M 中取出 PTR 指针，PTR 指向内存位置 VAL 含有 V1 值。</li>
+  <li>线程 B 从位置 M 中取出 PTR ，并进行一系列操作后释放了 PTR 指向内存 VAL 中 V1 值。</li>
+  <li>线程 B 重新申请内存，并恰好得到了原内存位置 VAL ，然后将 V2 写入到 VAL 中。</li>
+  <li>线程 B 将内存指针 PTR 更新到 M 。</li>
+  <li>线程 A 进行 CAS 操作，发现位置 M 中仍然是 PTR 指向的内存位置 VAL ，操作成功。</li>
+</ol>
+
+<p>也就是说，线程 A 无法感知到线程 B 的修改；如果线程 B 只是释放了内存，而线程 A 在 CAS 之前还要访问 PTR 中得内容，那么线程 A 将会访问到一个野指针。</p>
+
+<!--
+### 队列问题
+
+如上介绍的是 ABA 的基本概念，那么在这里实现的无锁队列又是什么样的场景。
+
+--allmatches
+
+关于 ABA 问题的讨论
+https://github.com/mulle-c/mulle-aba
+
+
+## 关于线程操作
+
+pthread_cond_signal() 感觉这个函数中会有一个缓存队列
+
+注意，
+
+1. 条件信号是没有缓存队列的，如果发送信号时有线程阻塞，那么该线程就会收到信号。例如，在队列中，只有当队列中无元素时，才需要阻塞。
+2. 通过signal发送信号时，只会触发一个线程，除非使用 broadcast ，不过此时需要处理惊群的问题。
+3. 如果消费者会将多个消息合并进行发送，例如监控数据为了高效利用带宽，那么完全使用阻塞方式实际上是不合理的，有可能会由于线程一直没有被唤醒，导致数据发送延迟。
+
+在示例 1 中，以阻塞方式消费信息，每拿到一条记录后直接消费处理。
+
+1. 首先启动消费者，阻塞等待接收消息。
+2. 启动生产者，开始方式消息。
+3. 等待生产者数据生成。
+4. 休眠10秒，等待所有的消息都被消费。(因为消费者是阻塞等待，不确定何时完全消费完成)
+5. 发送停止消息，停止任务，并退出。
+
+这里对每个消费者消费的信息数进行了统计，用于查看消费者的负载情况，可以发现，负载是真心不均衡的。
+
+在示例 2 中，为了提高效率将多个消息合并发送，这里同时会涉及到两种策略：A) 尽量提高带宽；B) 尽量减小延迟。
+
+1. 对于 A 来说，如果消费者中发现没有足够的报文，那么本次的数据将会缓存，直到有足够的数据，也就意味着这里的缓存等待时间不可控，无法保证实时。
+2. 对于 B 来说，可以做到的是尽量利用带宽，当消息不足以填充一次报文的时候就直接发送，而不是继续缓存。
+
+
+https://github.com/darkautism/lfqueue
+https://github.com/haipome/lock_free_queue
+https://github.com/rmind/ringbuf
+https://github.com/supermartian/lockfree-queue
+https://github.com/chaoran/fast-wait-free-queue
+http://kaiyuan.me/2017/09/22/memory-barrier/
+http://dreamrunner.org/blog/2014/06/28/qian-tan-memory-reordering/
+https://blog.csdn.net/hairetz/article/details/18233935
+http://chenyufei.info/blog/2013-03-10/memory-consistency-model/
+http://www.rdrop.com/users/paulmck/scalability/paper/whymb.2010.07.23a.pdf
+https://www.cnblogs.com/gaochundong/p/lock_free_programming.html
+https://preshing.com/20120612/an-introduction-to-lock-free-programming/
+https://github.com/kumpera/Lock-free-hastable
+https://github.com/xant/libhl
+
+http://valleylord.github.io/post/201606-memory-model/
+https://blog.csdn.net/dd864140130/article/details/56494925
+
+https://tour.golang.org/concurrency/2
+
+
+在C中实现无锁编程需要考量的东西
+https://www.reddit.com/r/C_Programming/comments/6k1ix6/how_to_write_a_lock_free_queue_in_c/
+http://codemacro.com/2015/05/03/hazard-pointer/
+https://www.schneems.com/2017/06/28/how-to-write-a-lock-free-queue/
+https://github.com/mulle-concurrent/mulle-concurrent
+-->
+
+<h2 id="参考">参考</h2>
+
+<p><a href="http://people.cs.pitt.edu/~jacklange/teaching/cs2510-f12/papers/implementing_lock_free.pdf">Implementing Lock-Free Queues</a> John D. Valois 在 1994.10 拉斯维加斯的并行和分布系统系统国际大会上的一篇论文及其相关的实现 <a href="https://github.com/supermartian/lockfree-queue">Github</a> 。</p>
+
+<p><a href="https://github.com/chaoran/fast-wait-free-queue">Fast Wait Free Queue</a> 除了无锁编程还包括了压测。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-bash-auto-completion-introduce.html" title="Linux Bash 自动补全">&larr; Older</a></li> 
+         <li class="next"><a href="/post/docker-basic-introduce.html" title="Docker 使用简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1544284800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-c-program-lock-free-queue-introduce.html" data-title="lock-free 编程" data-url="/post/linux-c-program-lock-free-queue-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

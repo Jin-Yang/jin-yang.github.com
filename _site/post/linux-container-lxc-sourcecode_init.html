@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>LXC 源码解析|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>LXC 源码解析</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-03-27 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <!-- more -->
+
+<p>在之前的 <a href="/blog/linux-lxc-introduce.html">LXC 简介</a> 中介绍了如何搭建 CentOS 7 容器，在此介绍如何单独启动 sshd 这一个进程。</p>
+
+<p>LXC 的源码可以直接从 <a href="https://linuxcontainers.org/lxc/downloads/">linuxcontainers.org</a> 上下载。</p>
+
+<h1 id="lxc-start">lxc-start</h1>
+
+<p>启动很简单，实际是执行 init 命令，而对于比较简单的容器，如单独启动 sshd 进程，则实际上会执行 /sbin/init.lxc 命令，其源码可以参考 src/lxc_init.c 文件。</p>
+
+<p>如下是容器启动过程：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">main()                                                   # lxc_start.c
+ |-lxc_list_init()                                       # 初始化配置(-s 指定)的列表
+ |-lxc_caps_init()                                       # 以root或者程序的uid、gid启动程序
+ |-lxc_arguments_parse()                                 # 解析传入的参数
+ |-lxc_log_init()                                        # log初始化操作
+ |-lxc_container_new()                                   # 初始化container实例，包括调用的函数
+ |-c-&gt;load_config()                                      # 加载配置文件
+ |
+ |-do_lxcapi_start()                                     # 代码中通过c-&gt;start()调用
+ | |-ongoing_create()                                    # 判断是否在创建镜像时失败了，失败则退出
+ | |-daemonize?                                          # 是否后台运行
+ | |-lxc_check_inherited()                               # 如果后台执行，需要关闭部分文件描述符
+ | |-__lxc_start()                                       # 尝试启动容器，实际调用该函数
+ | | |-lxc_init()
+ | | | |-lsm_init()
+ | | | |-lxc_cmd_init()                            // LSM安全模块初始化
+ | | | |-lxc_read_seccomp_config()
+ | | | |-lxc_set_state()
+ | | | |-run_lxc_hooks()
+ | | | |-lxc_create_tty()                          // 创建伪终端设备
+ | | | |-setup_signal_fd()
+ | | | |-lxc_console_create()
+ | | | | |-openpty()
+ | | | |-ttys_shift_ids()
+ | | |
+ | | |-must_drop_cap_sys_boot()                     // 判断是否支持ctrl-alt-del重启，支持会新建进程
+ | | |
+ | | |-lxc_spawn()                                       # 此时会创建多个子进程
+ | | | |-lxc_sync_init()                                 # 创建sock对，用于通讯
+ | | | |-resolve_clone_flags()                           # 设置flags
+ | | | |-cgroup_init()
+ | | | |-cgroup_create()
+ | | | |-preserve_ns()
+ | | | |-attach_ns()
+ | | | |-lxc_clone(do_start, ...)                        # 在新的NS中创建进程
+ | | | | |-clone(do_clone, ...)                          # 系统调用，外面加了一个壳，实际调用do_start
+ | | | |-lxc_sync_fini_child()
+ | | |
+ | | |-get_netns_fd()
+ | | |
+ | | |-lxc_poll()                                   // 等待程序结束
+ | | |  |-lxc_mainloop_open()
+ | | |  |-lxc_mainloop_add_handler()
+ | | |  |-lxc_console_mainloop_add()
+ | | |  |-lxc_cmd_mainloop_add()
+ | | |  |  |-lxc_cmd_accept()
+ | | |  |     |-lxc_cmd_handler()
+ | | |  |        |-lxc_cmd_process()                // 设置一系列的回调函数
+ | | |  |           |-lxc_cmd_console_callback()
+ | | |  |-lxc_mainloop()
+ | | |
+ | | |-waitpid()
+ | |
+ | |-free_init_cmd()                                    # 清空之前申请的资源
+ |
+ |-lxc_container_put()                                   // 清理
+
+
+# 新创建的进程
+do_start()
+ |-lxc_setup()                                          # 设置容器、ip、utsname等
+ | |-do_rootfs_setup()                                  // 设置根目录
+ | |  |-mount()
+ | |  |-remount_all_slave()                             // 删除
+ | |  |-run_lxc_hooks()
+ | |  |-setup_rootfs()                                  // 挂载根目录
+ | |
+ | |-setup_utsname()                                    // 设置主机名
+ | |
+ | |-setup_network()                                    // 设置网络端口eth0
+ | |  |-setup_netdev()
+ | |
+ | |-check_autodev()                                    // 设置init命令等
+ | |
+ | |-setup_mount()                                      // 设置配置文件中的挂载点
+ | |  |-setmntent()
+ | |  |-setup_mount_entries()
+ | |  |  |-mount_entry_on_relative_rootfs()
+ | |  |-endmntent()
+ | |
+ | |-lxc_mount_auto_mounts()                            // 自动挂载一些主要目录，如proc、sys
+ | |
+ | |-setup_console()
+ | |-setup_tty()
+ | |-setup_dev_symlinks()
+ | |-tmp_proc_mount()
+ | |
+ | |-setup_pivot_root()
+ | |  |-setup_rootfs_pivot_root()
+ | |
+ | |-setup_pts()
+ |
+ |-lxc_sync_barrier_parent()
+ |
+ |-handler-&gt;ops-&gt;start()                                # 最后调用init，调用start()@start.c
+
+
+  lxc_console_allocate()
+   |-lxc_console_peer_proxy_alloc()
+      |-openpty()</code></pre></figure>
+
+<h1 id="数据结构">数据结构</h1>
+
+<h2 id="lxc_handler">lxc_handler</h2>
+
+<p>这个结构体种保存了核心的内容，通过 lxc_init() 进行初始化。</p>
+
+<h1 id="调试">调试</h1>
+
+<h2 id="gdb">GDB</h2>
+
+<p>对一些常见的问题我们可以直接通过 GDB 进行调试。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># cd src/lxc                        // 跳转到含有编译后二进制文件的目录下
+# gdb lxc-start                     // 开始调试lxc-start
+... ...
+Reading symbols from src/lxc/lxc-start...done.
+(gdb) set args -n sshd -F -l DEBUG -o /tmp/1
+(gdb) b main
+Breakpoint 1 at 0x400f20: file lxc_start.c, line 205.
+(gdb) run
+Starting program: src/lxc/lxc-start -n sshd -l DEBUG -o /tmp/1
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &quot;/lib64/libthread_db.so.1&quot;.
+
+Breakpoint 1, main (argc=7, argv=0x7fffffffdb88) at lxc_start.c:205
+205     {</code></pre></figure>
+
+<h2 id="修改日志级别">修改日志级别</h2>
+
+<p>为了方便调试我们可以设置日志级别，默认日志级别为 ERROR，需要注意的是，因为在打印日志前需要做一系列的初始化操作，所以即使设置为 DEBUG 日志级别，开始的部分也无法输出。</p>
+
+<p>在调试启动时，可以在命令行后面添加 -l DEBUG -o /tmp/1 用于调试，也即 --logfile、--logpriority，这两个参数需要同时指定，否则无法打印，例如：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># ./lxc-start -n sshd -l DEBUG -o /tmp/lxc-start.log</code></pre></figure>
+
+<h1 id="其它">其它</h1>
+
+<h2 id="问题排查">问题排查</h2>
+
+<p>在调试源码时，如果安装的 lxc 版本与编译源码的版本不同，那么有可能会报如下的错误。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">./lxc-start: symbol lookup error: ./lxc-start: undefined symbol: current_config</code></pre></figure>
+
+<p>这主要时由于动态库的版本不同导致的，通过 ldd 查看时会发现，加载的库时 /lib64/liblxc.so.1 的库。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># ldd lxc-start
+    linux-vdso.so.1 =&gt;  (0x00007fffae967000)
+    liblxc.so.1 =&gt; /lib64/liblxc.so.1 (0x00007f8c1c7ea000)
+    libselinux.so.1 =&gt; /lib64/libselinux.so.1 (0x00007f8c1c5c5000)
+    libutil.so.1 =&gt; /lib64/libutil.so.1 (0x00007f8c1c3c1000)
+    libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x00007f8c1c1a5000)
+    libc.so.6 =&gt; /lib64/libc.so.6 (0x00007f8c1bde4000)
+    libcap.so.2 =&gt; /lib64/libcap.so.2 (0x00007f8c1bbde000)
+    libseccomp.so.2 =&gt; /lib64/libseccomp.so.2 (0x00007f8c1b9b2000)
+    libgcc_s.so.1 =&gt; /lib64/libgcc_s.so.1 (0x00007f8c1b79c000)
+    /lib64/ld-linux-x86-64.so.2 (0x00007f8c1ca79000)
+    libpcre.so.1 =&gt; /lib64/libpcre.so.1 (0x00007f8c1b53a000)
+    liblzma.so.5 =&gt; /lib64/liblzma.so.5 (0x00007f8c1b315000)
+    libdl.so.2 =&gt; /lib64/libdl.so.2 (0x00007f8c1b111000)
+    libattr.so.1 =&gt; /lib64/libattr.so.1 (0x00007f8c1af0b000)</code></pre></figure>
+
+<p>这主要是由于动态库的查找顺序导致的，更改查找顺序有很多种方法，在此简单使用如下的方法。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 修改配置文件，将本地目录添加到开始位置
+# cat /etc/ld.so.conf
+.
+/lib64
+/usr/lib64
+
+----- 直接加载更新配置缓存
+# ldconfig
+
+----- 建立liblxc.so.1的符号链接
+$ ln -s liblxc.so liblxc.so.1</code></pre></figure>
+
+<h1 id="源码解析">源码解析</h1>
+
+<p>直接从官方网站 <a href="https://linuxcontainers.org/" title="LXC 官方网站">linuxcontainers.org</a> 下载源码，然后通过如下方式编译。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 如下方式安装会有部分文件在/share目录下
+$ ./configure --exec_prefix=/usr --prefix=</code></pre></figure>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/python-curses-stuff.html" title="Python 与 Curses">&larr; Older</a></li> 
+         <li class="next"><a href="/post/network-dns-resolv-conf-usage-introduce.html" title="resolv.conf 简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1427385600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-container-lxc-sourcecode_init.html" data-title="LXC 源码解析" data-url="/post/linux-container-lxc-sourcecode_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

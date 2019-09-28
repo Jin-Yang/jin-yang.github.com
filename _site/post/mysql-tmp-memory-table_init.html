@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL 临时表和内存表|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL 临时表和内存表</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-10-08 Saturday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>MySQL 在处理一些语句时，会自动创建临时表，当然这是客户端无法控制的。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>会话使用到临时表时，会自动分配，最大使用内存是 <code>min(tmp_table_size, max_heap_table_size)</code> ，如果内存中超出了限制，就会自动将内存中的数据转化到磁盘，存储在 tmpdir 目录下。</p>
+
+<p>首先看下内存表的使用。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- TRANS A -------------------------------------+----- TRANS B --------------------------------
+CREATE TABLE tmp_mem (i INT) ENGINE = memory;
+Query OK, 0 rows affected (0.00 sec)
+
+INSERT INTO tmp_mem VALUES(1);
+Query OK, 1 row affected (0.00 sec)
+                                                     CREATE TABLE tmp_mem (i INT) ENGINE = memory;
+                                                     ERROR 1050 (42S01): Table &#39;tmp_mem&#39; already exists
+
+                                                     SELECT * FROM tmp_mem;
+                                                     +------+
+                                                     | i    |
+                                                     +------+
+                                                     | 1    |
+                                                     +------+
+                                                     1 row in set (0.00 sec)</code></pre></figure>
+
+<p>内存表会将表结构信息 tmp_mem.frm 保存在磁盘上，而数据则保存在内存中，所以有如下特性：</p>
+
+<ol>
+  <li>由于会在磁盘上保存表结构信息，所以多个会话，创建表的名字不能一样；</li>
+  <li>一个会话创建表，写入数据之后，对其它会话也是可见的；</li>
+  <li>服务器重启后内存表里的数据会丢失，但是表结构仍然存在；</li>
+  <li>可以创建、删除索引，支持唯一索引；</li>
+  <li>不影响主备复制，主库上插入的数据，备库也可以查到；</li>
+  <li>可以通过 <code>SHOW TABLES</code> 查看表。</li>
+</ol>
+
+<p>下面来看看临时表。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- TRANS A -------------------------------------+----- TRANS B --------------------------------
+CREATE TEMPORARY TABLE tmp_tbl (i INT);
+Query OK, 0 rows affected (0.00 sec)
+
+INSERT INTO tmp_tbl VALUES(1);
+Query OK, 1 row affected (0.00 sec)
+
+SELECT * FROM tmp_tbl;
++------+
+| i    |
++------+
+| 1    |
++------+
+1 row in set (0.00 sec)
+                                                     CREATE TEMPORARY TABLE tmp_tbl (i INT);
+                                                     Query OK, 0 rows affected (0.00 sec)
+
+                                                     INSERT INTO tmp_tbl VALUES(2);
+                                                     Query OK, 1 row affected (0.00 sec)
+
+                                                     SELECT * FROM tmp_mem;
+                                                     +------+
+                                                     | i    |
+                                                     +------+
+                                                     | 2    |
+                                                     +------+
+                                                     1 row in set (0.00 sec)</code></pre></figure>
+
+<p>可以看出来，临时表的表结构和数据都保存在内存中，有如下特性：</p>
+
+<ol>
+  <li>不同的会话创建的表名可以相同；</li>
+  <li>会话消失表结构和数据都消失；</li>
+  <li>可以创建、删除索引；</li>
+  <li>主库创建的表，备库查不到；</li>
+  <li>通过 <code>SHOW TABLES</code> 无法看到表。</li>
+</ol>
+
+<h3 id="配置参数">配置参数</h3>
+
+<p>max_tmp_tables 一个客户能同时保持打开的临时表的最大数量，这个值默认32，可以根据需要调整此值</p>
+
+<p>在某些场景下，服务器会创建内部临时表，当然，这一行为用户是无法控制的，其中常见的场景如下：</p>
+
+<ul>
+  <li>UNION 查询，部分不使用的场景后面介绍；</li>
+  <li>一些视图相关的使用，例如使用到了 TEMPTABLE、UNION、聚合；</li>
+  <li>处理衍生表时，也就是子查询在 FROM 中；</li>
+  <li>对于子查询或者 semi-join 时创建的表，可查看 <a href="https://dev.mysql.com/doc/refman/en/subquery-optimization.html">Optimizing Subqueries</a>；</li>
+  <li>ORDER BY 和 GROUP BY 子句不同，ORDER BY 和 GROUP BY 的列不是第一个表中列；</li>
+  <li>DISTINCT 查询并且加上 ORDER BY 可能需要临时表；</li>
+</ul>
+
+<!--
+* 使用了 SQL_SMALL_RESULT ???????
+* 表连接中，ORDER BY 的列不是驱动表中的；
+* SQL中用到SQL_SMALL_RESULT选项时；
+-->
+
+<h3 id="临时表">临时表</h3>
+
+<p>它规定了内部内存临时表的最大值，每个线程都要分配。（实际起限制作用的是tmp_table_size和max_heap_table_size的最小值。）如果内存临时表超出了限制，MySQL就会自动地把它转化为基于磁盘的MyISAM表，存储在指定的tmpdir目录下，默认:</p>
+
+<p>mysql&gt; show variables like “tmpdir”;
++—————+——-+
+| Variable_name | Value |
++—————+——-+
+| tmpdir        | /tmp/ |
++—————+——-+</p>
+
+<p>优化查询语句的时候，要避免使用临时表，如果实在避免不了的话，要保证这些临时表是存在内存中的。如果需要的话并且你有很多group by语句，并且你有很多内存，增大tmp_table_size(和max_heap_table_size)的值。这个变量不适用与用户创建的内存表(memory table).</p>
+
+<p>你可以比较内部基于磁盘的临时表的总数和创建在内存中的临时表的总数（Created_tmp_disk_tables和Created_tmp_tables），一般的比例关系是:</p>
+
+<p>Created_tmp_disk_tables/Created_tmp_tables&lt;5%</p>
+
+<p>max_heap_table_size</p>
+
+<p>这个变量定义了用户可以创建的内存表(memory table)的大小.这个值用来计算内存表的最大行数值。这个变量支持动态改变，即set @max_heap_table_size=#</p>
+
+<p>,但是对于已经存在的内存表就没有什么用了，除非这个表被重新创建(create table)或者修改(alter table)或者truncate table。服务重启也会设置已经存在的内存表为全局max_heap_table_size的值。</p>
+
+<p>这个变量和tmp_table_size一起限制了内部内存表的大小。</p>
+
+<p>如果想知道更详细的信息，请参考“MySQL是怎样使用内部临时表的？”和“内存存储引擎”</p>
+
+<h2 id="临时表-1">临时表</h2>
+
+<p>内存表：</p>
+<ol>
+  <li>参数控制：max_heap_table_size</li>
+  <li>到达上线后报错。</li>
+  <li>表定义保存在磁盘上，数据和索引保存在内存里面。</li>
+  <li>不能包含TEXT,BLOB等字段。</li>
+</ol>
+
+<p>临时表：</p>
+<ol>
+  <li>参数控制：tmp_table_size。</li>
+  <li>到达上线后创建文件在磁盘上。</li>
+  <li>表定义和数据都在内存里。</li>
+  <li>可以包含TEXT, BLOB等字段。</li>
+</ol>
+
+<p>1、heap对所有用户的连接是可见的，这使得它非常适合做缓存。</p>
+
+<p>2、仅适合使用的场合。heap不允许使用xxxTEXT和xxxBLOB数据类型；只允许使用=和&lt;=&gt;操作符来搜索记录（不允许&lt;、&gt;、&lt;=或&gt;=）；不支持auto_increment；只允许对非空数据列进行索引（not null）。
+注：操作符 “&lt;=&gt;” 说明：NULL-safe equal.这个操作符和“=”操作符执行相同的比较操作，不过在两个操作码均为NULL时，其所得值为1而不为NULL，而当一个操作码为NULL时，其所得值为0而不为NULL。</p>
+
+<p>3、一旦服务器重启，所有heap表数据丢失，但是heap表结构仍然存在，因为heap表结构是存放在实际数据库路径下的，不会自动删除。重启之后，heap将被清空，这时候对heap的查询结果都是空的。</p>
+
+<p>4、如果heap是复制的某数据表，则复制之后所有主键、索引、自增等格式将不复存在，需要重新添加主键和索引，如果需要的话。</p>
+
+<p>5、对于重启造成的数据丢失，有以下的解决办法：
+　a、在任何查询之前，执行一次简单的查询，判断heap表是否存在数据，如果不存在，则把数据重新写入，或者DROP表重新复制某张表。这需要多做一次查询。不过可以写成include文件，在需要用该heap表的页面随时调用，比较方便。
+　b、对于需要该heap表的页面，在该页面第一次且仅在第一次查询该表时，对数据集结果进行判断，如果结果为空，则需要重新写入数据。这样可以节省一次查询。
+　c、更好的办法是在mysql每次重新启动时自动写入数据到heap，但是需要配置服务器，过程比较复杂，通用性受到限制。</p>
+
+<p>有这么几种情况会出现临时内存表：</p>
+
+<pre><code>包含 UNION 的query；
+使用了 UNION 或者聚合运算的视图，有个算法专门用于判定一个视图是不是会使用临时表： http://dev.mysql.com/doc/refman/5.0/en/view-algorithms.html ；
+如果query包含 order by 和 group by 子句，并且两个子句中的字段不一样；或者 order by 或者 group by 中包含除了第一张表中的字段；
+query中同时包含 distinct 和 order by 。
+</code></pre>
+
+<p>如果一个query的explain结果中的extra字段包含 using temporary ，说明这个query使用了临时表。</p>
+
+<p>使用explain的时候extra里面如果输出 using temporary; 说明需要使用临时表，但是这里无论如何都看不出来是不是使用了磁盘临时表（因为是不是使用磁盘临时表要根据query结果的大小来判定，在SQL分析阶段是无法判定的）， using filesort 是说没办法使用索引进行排序（ order by 和 group by 都需要排序），只能对输出结果进行quicksort，参考 http://www.mysqlperformanceblog.com/2009/03/05/what-does-using-filesort-mean-in-mysql/</p>
+
+<p>当MySQL处理query是创建了一个临时表（不论是内存临时表还是磁盘临时表）， created_tmp_tables 变量都会增加1。如果创建了一个磁盘临时表， created_tmp_disk_tables 会增加1。</p>
+
+<p>可以通过 show session status like ‘Created_tmp_%’; 来查看，如果要查看全局的临时表使用次数，将其中的 session 改为 global 即可。</p>
+
+<p>一般磁盘临时表会比内存临时表慢，因此要尽可能避免出现磁盘临时表。下面几种情况下，MySQL会直接使用磁盘内存表，要尽可能避免：</p>
+
+<pre><code>表中包含了 BLOB 和 TEXT 字段（MEMORY引擎不支持这两种字段）；
+group by 和 distinct 子句中的有超过512字节的字段；
+UNION 以及 UNION ALL 语句中，如果 SELECT 子句中包含了超过512（对于binary string是512字节，对于character是512个字符）的字段。
+</code></pre>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://dev.mysql.com/doc/refman/en/internal-temporary-tables.html">MySQL Reference Manual - Internal Temporary Table Use in MySQL</a> 。</p>
+
+<p>http://www.open-open.com/lib/view/open1436690608048.html</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/theme-language-ccpp.html" title="【专题】C/C++ 编程语言">&larr; Older</a></li> 
+         <li class="next"><a href="/post/theme-linux-kenerl-monitor.html" title="【专题】Linux 监控专题">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1475856000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-tmp-memory-table_init.html" data-title="MySQL 临时表和内存表" data-url="/post/mysql-tmp-memory-table_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

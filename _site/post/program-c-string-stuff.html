@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>C 语言的字符串|JinYang's Blog</title>
+  <meta name="keywords" content="linux,c,cpp,c++,program,string">
+  <meta name="description" content="简单介绍下 C 语言中与字符串操作相关的函数。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>C 语言的字符串</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-09-16 Wednesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  program  
+      
+    </div>
+  </div>
+  <hr>
+  <p>简单介绍下 C 语言中与字符串操作相关的函数。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>C 语言中通过双引号表示字符串，与字符串操作相关的函数可以通过 <code>man 3 string</code> 查看帮助文档。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="s">&quot;Hello world&quot;</span><span class="p">;</span>
+	<span class="n">puts</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>可以理解为，双引号做了 3 件事：</p>
+
+<ol>
+  <li>在只读常量区申请空间存放了字符串；</li>
+  <li>在字符串尾添加了 <code>'\0'</code>；</li>
+  <li>返回字符串开始地址。</li>
+</ol>
+
+<p>注意，可以把字符串赋值给字符指针 <code>char *ptr</code>，而不能把字符串赋值给一个字符数组。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">char</span> <span class="n">a</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;hello&quot;</span><span class="p">;</span> <span class="c1">// 支持初始化方式</span>
+<span class="n">a</span> <span class="o">=</span> <span class="s">&quot;hello&quot;</span><span class="p">;</span>          <span class="c1">// 此时错误</span></code></pre></figure>
+
+<p><code>"hello"</code> 返回的是一个地址，而 a 虽然也有地址，但是这与指针是不一样的，指针的值是地址，而数组的值虽然也是地址，但是却是一个常量，所以不能给常量赋值；此时需要通过 <code>strncpy()</code> 复制。</p>
+
+<p>另外，数组会分配存储空间，而 <code>char *</code> 实际上只是一个指针，当尝试复制到只读数据区时，那么此时就会导致 <code>"Segmentation fault"</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="c1">// 如下代码会出现&quot;Segmentation fault&quot;</span>
+	<span class="c1">//char *ptr = &quot;Hello world&quot;;</span>
+	<span class="c1">//memcpy(ptr, &quot;Hi foobar&quot;, strlen(ptr));</span>
+
+	<span class="kt">char</span> <span class="n">ptr</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;Hello world&quot;</span><span class="p">;</span>
+
+	<span class="n">memcpy</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="s">&quot;Hey foobar!!!!!!!&quot;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ptr</span><span class="p">));</span>
+	<span class="n">ptr</span><span class="p">[</span><span class="k">sizeof</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+	<span class="n">puts</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="检查宏">检查宏</h3>
+
+<p>对于字符串操作，在 gcc 中，可以通过 <code>#define _FORTIFY_SOURCE 2</code> 宏定义，对一些常见内存以及字符串处理函数 (<code>memcpy</code> <code>strcpy</code> 等) 的安全检查，详细可以查看 <code>man 7 feature_test_macros</code> 。</p>
+
+<p>下面以字符串拼接函数为例。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#inclue &lt;string.h&gt;</span>
+<span class="kt">char</span> <span class="o">*</span> <span class="nf">strncat</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">dest</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">);</span></code></pre></figure>
+
+<p>将 src 中开始的 n 个字符复制到 dest 的结尾，也就是将 dest 字符串最后的 <code>'\0'</code> 覆盖掉，字符追加完成后，再追加 <code>'\0'</code>；所以需要保证 dest 最小为 <code>strlen(dest)+n+1</code> 。</p>
+
+<!--
+BAD: strncat(buffer,charptr,sizeof(buffer))
+GOOD: strncat(buffer,charptr,sizeof(buffer)-strlen(buffer)-1)
+-->
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="n">site</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;http://www.douniwai.com&quot;</span><span class="p">;</span>
+	<span class="kt">char</span> <span class="n">uri</span><span class="p">[</span><span class="mi">300</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;/c/strncatiii&quot;</span><span class="p">;</span>
+	<span class="n">strncat</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>  <span class="c1">// BAD, 1000远远超过path的长度，那么可能会导致segment fault</span>
+	<span class="n">strncat</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">site</span><span class="p">)</span><span class="o">-</span><span class="n">strlen</span><span class="p">(</span><span class="n">site</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// GOOD</span>
+	<span class="n">puts</span><span class="p">(</span><span class="n">site</span><span class="p">);</span>
+	<span class="k">return</span>  <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>可以通过 <code>gcc -Wall -D_FORTIFY_SOURCE=2 -O2 main.c</code> 命令编译测试。</p>
+
+<h2 id="内存申请">内存申请</h2>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">free</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">calloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">nmemb</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">realloc</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span></code></pre></figure>
+
+<p>malloc() 申请 size 字节大小大内存，内存空间未初始化，如果 size 是 0 可能会返回 NULL 或者一个后续可以 free 的指针；分配内存失败则返回 NULL；calloc() 为申请数组空间，会自动初始化为 0 。</p>
+
+<p>realloc() 的功能比较复杂，可以实现内存分配、释放，会将 ptr 所指向的内存块的大小修改为 size，并将新的内存指针返回，注意，不会保证返回的指针不变，会保证内存地址连续。注意，使用 malloc() 替换 realloc() 。</p>
+
+<ul>
+  <li>如果 ptr 和 size 均不为 0 时，会调整内存大小，返回新的开始指针，并保证源 size 内容不变；</li>
+  <li>如果 ptr 为 NULL 而 size 不为 0 ，那么等同于 malloc(size)；</li>
+  <li>如果 size = 0，那么相当于调用 free(ptr)。</li>
+</ul>
+
+<p>一般来说，一个函数只提供一个功能，如上的函数却赋予了好几个功能，这并不是良好的函数设计，估计也是为了兼容性，才容忍这个函数一直在 C 库中。</p>
+
+<p>另外，根据 C 的标准 <a href="http://www.open-std.org/JTC1/SC22/wg14/www/docs/n1124.pdf">ISO-IEC 9899 7.20.3.2/2</a>：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">void free(void *ptr);
+  If ptr is a null pointer, no action occurs.</code></pre></figure>
+
+<p>所以，在执行 free() 时，不需要检查是否为 NULL，因此可以实现一个 sfree() 宏。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define sfree(m) do { \</span>
+<span class="cp">    free(m);          \</span>
+<span class="cp">    m = NULL;         \</span>
+<span class="cp">} while(0);</span></code></pre></figure>
+
+<h3 id="注意事项">注意事项</h3>
+
+<p>realloc()有可能操作失败，返回NULL，所以不要把它的返回值直接赋值给原来的指针变量，以免原值丢失：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// 错误处理，返回失败时，原指针丢失，导致内存泄露</span>
+<span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">realloc</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">new_size</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">ptr</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+<span class="c1">// 正确使用方法</span>
+<span class="kt">void</span> <span class="o">*</span><span class="n">new_ptr</span> <span class="o">=</span> <span class="n">realloc</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">new_size</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">new_ptr</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+<span class="n">ptr</span> <span class="o">=</span> <span class="n">new_ptr</span></code></pre></figure>
+
+<p>一般 malloc(0) 和 calloc(0) 是合法的语句，会返还一个合法的指针，且该指针可以通过 free() 去释放；而对于 realloc() 则有不同的行为，如果为 0 ，那么最后再次 free() 时，就会导致重复释放。</p>
+
+<h3 id="示例">示例</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+  <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">NULL</span> <span class="o">==</span> <span class="n">p</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Can&#39;t get memory!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">memset</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+  <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
+  <span class="n">free</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+
+  <span class="cp">#define SIZE 5</span>
+  <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">calloc</span><span class="p">(</span><span class="n">SIZE</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">NULL</span> <span class="o">==</span> <span class="n">p</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Can&#39;t get memory!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;p[%d]=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="字符串格式化">字符串格式化</h2>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="kt">int</span> <span class="nf">printf</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
+<span class="kt">int</span> <span class="nf">fprintf</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="n">stream</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
+<span class="kt">int</span> <span class="nf">sprintf</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">str</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
+<span class="kt">int</span> <span class="nf">snprintf</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">str</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">format</span><span class="p">,</span> <span class="p">...);</span></code></pre></figure>
+
+<p>除了上述一类的格式化函数之外，还有一类是上述函数添加了 v 开头的函数，如 <code>vprintf()</code>、<code>vfprintf()</code> 等；区别是后或者可以用户自定义打印函数，示例如下：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">error</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">result</span><span class="p">;</span>
+    <span class="kt">va_list</span> <span class="n">args</span><span class="p">;</span>
+    <span class="n">va_start</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">fmt</span><span class="p">);</span>
+    <span class="n">fputs</span><span class="p">(</span><span class="s">&quot;Error: &quot;</span><span class="p">,</span> <span class="n">stderr</span><span class="p">);</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">vfprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+    <span class="n">va_end</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>其中 <code>printf()</code> 和 <code>fprintf()</code> 输出到缓冲区，所以不需要考虑溢出，对于 <code>sprintf()</code> 和 <code>snprintf()</code> 建议使用后者；后者最多从源串中拷贝 n-1 个字符到目标串中，然后再在字符串后面添加 <code>'\0'</code> 。</p>
+
+<p>若成功则返回存入数组的字符数(不含<code>'\0'</code>)；如果空间不足，则返回 “如果有足够空间存储，所应能输出的字符数(不含’\0’)”，所以可以通过判断返回值是否大于 n 决定是否有溢出；若编码出错则返回负值。</p>
+
+<p>如下是一个简单的示例。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>
+  <span class="kt">int</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="k">for</span> <span class="p">(</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">offset</span> <span class="o">+=</span> <span class="n">snprintf</span><span class="p">(</span><span class="n">buffer</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="mi">255</span> <span class="o">-</span> <span class="n">offset</span><span class="p">,</span> <span class="s">&quot;:%x</span><span class="se">\0</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">printf</span> <span class="p">(</span><span class="s">&quot;buffer: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">buffer</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="示例-1">示例</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="kt">char</span> <span class="n">str</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+  <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+  <span class="c1">// 超过10个字符，返回应该使用的strlen()，也就是12</span>
+  <span class="n">ret</span> <span class="o">=</span> <span class="n">snprintf</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">str</span><span class="p">),</span> <span class="s">&quot;Hey %s !&quot;</span><span class="p">,</span> <span class="s">&quot;foobar&quot;</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&quot;snprintf&quot;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&gt;=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">str</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;no enough buffer</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s, ret %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">str</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s, ret %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">str</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="字符串整形转换">字符串整形转换</h2>
+
+<p>将字符串转换为长整型数，会扫描参数 nptr 字符串，跳过前面的空白字符 (如空格、tab等)，直到遇上数字或正负符号才开始做转换，然后再遇到非数字或字符串结束符(<code>'\0'</code>)结束转换，并将结果返回。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">#include &lt;stdlib.h&gt;
+long int strtol (const char *nptr, char **endptr, int base);
+long long int strtoll(const char *nptr, char **endptr, int base);
+
+参数：
+  str    : 要转换的字符串；
+  endstr : 第一个不能转换的字符的指针，非NULL传回不符合条件而终止的字符串指针；
+  base   : 字符串str所采用的进制，范围从2~36，也可以为0(默认为10进制；遇到0x/0X前置采用16进制；遇到0前置采用8进制) 。
+返回值：
+  转换后的长整型数；如果不能转换或者nptr为空字符串，返回 0(0L)；
+  如果转换得到的值超出long int所能表示的范围，函数将返回LONG_MAX或LONG_MIN (在limits.h中定义)，并将errno设置为ERANGE。</code></pre></figure>
+
+<p>ANSI C 规范定义了 <code>stof()</code>、<code>atoi()</code>、<code>atol()</code>、<code>strtod()</code>、<code>strtol()</code>、<code>strtoul()</code> 共 6 个可以将字符串转换为数字的函数；在 C99/C++11 规范中又新增了 5 个函数，分别是 <code>atoll()</code>、<code>strtof()</code>、<code>strtold()</code>、<code>strtoll()</code>、<code>strtoull()</code>。</p>
+
+<p><code>atoi()</code> 和 <code>strtol()</code> 的区别在于，前者无法判断转换是否成功，后者可以通过返回指针以及 errno 判断是否转换成功。</p>
+
+<!-- 如何通过宏定义判断是否支持后面的函数。-->
+
+<h3 id="strtod">strtod</h3>
+
+<p>在比较浮点数时，可以使用 <code>float.h</code> 中的几个相关的宏定义，包括了 <code>FLT_EPSILON</code>、<code>DBL_EPSILON</code>、<code>LDBL_EPSILON</code> ，另外还有 MAX 和 MIN 的值。</p>
+
+<p>实际上 MAX 和 MIN 的值在 <code>limits.h</code> 文件中也存在，不过这个是 Linux 扩展头文件。</p>
+
+<p>对于浮点数的最大最小值，最好通过科学表达式表示，例如对于 double 类型来说，最大最小值分别对应了 <code>1.79769e+308</code> <code>2.225074e-308</code> 。</p>
+
+<p>如果溢出 (包括向上或者向下)，返回的 ptr 仍然会向前移动，此时会将 errno 设置为 <code>ERANGE(34)</code> 。</p>
+
+<p>需要注意的是，如果转换成功，实际上是不会将 errno 设置为 0 的，所以如果要通过 errno 判断是否转换成功，应该在调用函数之前将 errno 设置为 0 。</p>
+
+<p>另外，需要注意的是，如果是 <code>nan(12)</code> 则会整体转换为 <code>nan</code> ，不过括号里只能由数字、拉丁字母和下划线构成。</p>
+
+<h4 id="总结">总结</h4>
+
+<p>对于 <code>strtof()</code> <code>strtod()</code> <code>strtold()</code> 类型的转换，实际上可以直接通过 <code>buff == ptr || errno == ERANGE</code> 来判断异常，前者表示无合法字符，后者表示超过范围。</p>
+
+<h3 id="示例-2">示例</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;      </span><span class="cm">/* printf */</span><span class="cp"></span>
+<span class="cp">#include &lt;stdlib.h&gt;     </span><span class="cm">/* strtol */</span><span class="cp"></span>
+<span class="cp">#include &lt;errno.h&gt;      </span><span class="cm">/* errno */</span><span class="cp"></span>
+<span class="cp">#include &lt;limits.h&gt;     </span><span class="cm">/* LONG_MAX, LONG_MIN */</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">numbers</span> <span class="o">=</span> <span class="s">&quot;2001 60c0c0 0351 -1101110100110100100000 0x6fffff&quot;</span><span class="p">;</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">endptr</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">int</span> <span class="n">li1</span><span class="p">,</span> <span class="n">li2</span><span class="p">,</span> <span class="n">li3</span><span class="p">,</span> <span class="n">li4</span><span class="p">,</span> <span class="n">li5</span><span class="p">;</span>
+
+	<span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">li1</span> <span class="o">=</span> <span class="n">strtol</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">endptr</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">((</span><span class="n">errno</span> <span class="o">==</span> <span class="n">ERANGE</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">li1</span> <span class="o">==</span> <span class="n">LONG_MAX</span> <span class="o">||</span> <span class="n">li1</span> <span class="o">==</span> <span class="n">LONG_MIN</span><span class="p">))</span> <span class="o">||</span> <span class="p">(</span><span class="n">errno</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">li1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+		<span class="n">perror</span><span class="p">(</span><span class="s">&quot;strtol&quot;</span><span class="p">);</span>
+		<span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">endptr</span> <span class="o">==</span> <span class="n">numbers</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// || *pEend != &#39;\0&#39;</span>
+		<span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;No digits were found</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+		<span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">endptr</span> <span class="o">!=</span> <span class="sc">&#39;\0&#39;</span><span class="p">)</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Further characters after number: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">endptr</span><span class="p">);</span>
+
+	<span class="n">li2</span> <span class="o">=</span> <span class="n">strtol</span><span class="p">(</span><span class="n">endptr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">endptr</span><span class="p">,</span> <span class="mi">16</span><span class="p">);</span>
+	<span class="n">li3</span> <span class="o">=</span> <span class="n">strtol</span><span class="p">(</span><span class="n">endptr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">endptr</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
+	<span class="n">li4</span> <span class="o">=</span> <span class="n">strtol</span><span class="p">(</span><span class="n">endptr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">endptr</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+	<span class="n">li5</span> <span class="o">=</span> <span class="n">strtol</span><span class="p">(</span><span class="n">endptr</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="n">printf</span> <span class="p">(</span><span class="s">&quot;The decimal equivalents are: %ld, 0x%lX, 0%lo, %ld and 0x%lX.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">li1</span><span class="p">,</span> <span class="n">li2</span><span class="p">,</span> <span class="n">li3</span><span class="p">,</span> <span class="n">li4</span><span class="p">,</span> <span class="n">li5</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>另外是浮点数的转换。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">double strtod (const char* str, char** endptr);</code></pre></figure>
+
+<p>会自动扫描参数 <code>str</code> 字符串，并跳过空白字符 (通过 isspace 函数检测)，直到遇上数字或正负符号才开始做转换，当出现非数字时停止转换，其中 <code>endptr</code> 返回第一个不能转换的字符指针。</p>
+
+<p>当 <code>endptr</code> 为 <code>NULL</code> 或者 等于 <code>str</code> 时表示转换失败。</p>
+
+<!--
+
+
+#define IS_NAN    1024
+#define IS_INF    1025
+        struct {
+                const char *str;
+                double result;
+                int offset;
+                int flag;
+        } cases[] = { {
+                .str = " ++++ Your data",
+                .result = 0,
+                .offset = 0,
+                .flag = 0,
+        }, {
+                .str = " Your data",
+                .result = 0,
+                .offset = 0,
+                .flag = 0,
+        }, {
+                .str = " 12.3 Your data",
+                .result = 12.3,
+                .offset = sizeof("12.3"), /* including head space */
+                .flag = 0,
+        }, {
+                .str = " 12e3 Your data",
+                .result = 12000,
+                .offset = sizeof("12e3"),
+                .flag = 0,
+        }, {
+                .str = " 1.79769e+408 Your data", /* MAX: 1.79769e+308 */
+                .result = 0,
+                .offset = sizeof("1.79769e+308"),
+                .flag = ERANGE,
+        }, {
+                .str = " 1.79769e-408 Your data", /* MIN: 2.225074e-308 */
+                .result = 0,
+                .offset = sizeof("1.79769e-408"),
+                .flag = ERANGE,
+        }, {
+                .str = " NAN Your data",
+                .result = 0,
+                .offset = sizeof("NAN"),
+                .flag = IS_NAN,
+        }, {
+                .str = " NAN(xx) Your data",
+                .result = 0,
+                .offset = sizeof("NAN(xx)"),
+                .flag = IS_NAN,
+        }, {
+                .str = " INF Your data",
+                .result = 0,
+                .offset = sizeof("INF"),
+                .flag = IS_INF,
+        }, {
+                .str = " INFINITY Your data",
+                .result = 0,
+                .offset = sizeof("INFINITY"),
+                .flag = IS_INF,
+        },
+        // 0X1.BC70A3D70A3D7P+6 also works.
+        }, *c;
+
+        for (i = 0; i < (int)(sizeof(cases)/sizeof(cases[0])); i++) {
+                c = &cases[i];
+                errno = 0;
+                res = strtod(c->str, &ptr);
+#if 0
+                if (ptr == c->str || errno) { }
+                printf("result errno %d, ptr %p, res %p(%f), distance %ld, len %d\n", 
+                                errno, ptr, c->str, res, ptr - c->str, c->offset);
+#endif
+                if (c->flag > 0) {
+                        if (c->flag == IS_NAN) {
+                                assert(isnan(res));
+                        } else if (c->flag == IS_INF) {
+                                assert(isinf(res));
+                        } else {
+                                assert(errno == c->flag);
+                        }
+                } else {
+                        assert(abs(res - c->result) < DBL_EPSILON);
+                }
+                assert(c->str + c->offset == ptr);
+        }
+
+        return 0;
+-->
+
+<h2 id="字符串查找">字符串查找</h2>
+
+<p>简单介绍下常见的字符串操作函数。</p>
+
+<h3 id="strtok">strtok()</h3>
+
+<p>可以参考如下的示例，在 <code>strtok()</code> 代码中，会保存上次查询的状态，就导致不可以重入以及线程不安全。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="n">str</span><span class="p">[</span><span class="mi">1024</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Fred male 25,John male 62,Anna female 16&quot;</span><span class="p">;</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">token</span><span class="p">,</span> <span class="o">*</span><span class="n">subtoken</span><span class="p">;</span>
+
+	<span class="k">for</span><span class="p">(</span><span class="n">token</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="s">&quot;,&quot;</span><span class="p">);</span> <span class="n">token</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="n">token</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="s">&quot;,&quot;</span><span class="p">))</span> <span class="p">{</span>
+		<span class="n">printf</span><span class="p">(</span> <span class="s">&quot; %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">token</span> <span class="p">);</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">subtoken</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">);</span> <span class="n">subtoken</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="n">subtoken</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">))</span>
+			<span class="n">printf</span><span class="p">(</span> <span class="s">&quot;  -&gt; %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">subtoken</span> <span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如上的代码中，实际只提取了第一个人的信息，而非我们所预想的会提取所有代码。</p>
+
+<p>原因是，在第一次外循环中，<code>strtok()</code> 将 <code>Fred male 25,</code> 后的逗号，改为了 <code>'\0'</code>，这时 <code>strtok()</code> 内部的指针指向的是逗号的后一个字符 <code>'J'</code>，经过第一次的内循环，分别提取出了 <code>"Fred"</code>、 <code>"male"</code>、 <code>"25"</code>，而且在提取完 <code>"25"</code> 之后，函数内部的指针被修改指向了 <code>"25"</code> 后面的 <code>'\0'</code> 。</p>
+
+<p>内循环结束后开始第二次的外循环，而此时 <code>strtok()</code> 函数内部的指针已经指向了 <code>NULL</code> ，所以，当执行第二次的循环时会直接退出而不再执行。</p>
+
+<h4 id="strtok_r">strtok_r()</h4>
+
+<p><code>strtok_r()</code> 是 Linux 平台下 <code>strtok()</code> 的线程安全版，<code>saveptr</code> 参数是一个指向 <code>char *</code> 的指针变量，用来在 <code>strtok_r()</code> 内部保存切分时的上下文，以应对连续调用分解相同源字符串。</p>
+
+<p>第一次调用 <code>strtok_r()</code> 时，<code>str</code> 参数必须指向待提取的字符串，<code>saveptr</code> 参数的值可以忽略；后续调用时，<code>str</code> 赋值为 <code>NULL</code>，<code>saveptr</code> 为上次调用后返回的值，不要修改。</p>
+
+<p>关于示例程序可以查看 <a href="https://linux.die.net/man/3/strtok_r">man 3 strtok_r</a> ，如下是一个 GUN C 的实现程序。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cm">/* Parse S into tokens separated by characters in DELIM.</span>
+<span class="cm">   If S is NULL, the saved pointer in SAVE_PTR is used as</span>
+<span class="cm">   the next starting point.  For example:</span>
+<span class="cm">        char s[] = &quot;-abc-=-def&quot;;</span>
+<span class="cm">        char *sp;</span>
+<span class="cm">        x = strtok_r(s, &quot;-&quot;, &amp;sp);      // x = &quot;abc&quot;, sp = &quot;=-def&quot;</span>
+<span class="cm">        x = strtok_r(NULL, &quot;-=&quot;, &amp;sp);  // x = &quot;def&quot;, sp = NULL</span>
+<span class="cm">        x = strtok_r(NULL, &quot;=&quot;, &amp;sp);   // x = NULL</span>
+<span class="cm">                // s = &quot;abc\0-def\0&quot;</span>
+<span class="cm">*/</span>
+<span class="kt">char</span> <span class="o">*</span><span class="nf">strtok_r</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">delim</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">save_ptr</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">token</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+		<span class="n">s</span> <span class="o">=</span> <span class="o">*</span><span class="n">save_ptr</span><span class="p">;</span>
+
+	<span class="cm">/* Scan leading delimiters.  */</span>
+	<span class="n">s</span> <span class="o">+=</span> <span class="n">strspn</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">delim</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">s</span> <span class="o">==</span> <span class="sc">&#39;\0&#39;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+
+	<span class="cm">/* Find the end of the token.  */</span>
+	<span class="n">token</span> <span class="o">=</span> <span class="n">s</span><span class="p">;</span>
+	<span class="n">s</span> <span class="o">=</span> <span class="n">strpbrk</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">delim</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+		<span class="cm">/* This token finishes the string.  */</span>
+		<span class="o">*</span><span class="n">save_ptr</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="sc">&#39;\0&#39;</span><span class="p">);</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="cm">/* Terminate the token and make *SAVE_PTR point past it.  */</span>
+		<span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+		<span class="o">*</span><span class="n">save_ptr</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">token</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>简单示例如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span><span class="p">,</span> <span class="o">*</span><span class="n">saveptr</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+        <span class="kt">char</span> <span class="n">tags</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;tag1=value1,tag2=value2.tag3=value3&quot;</span><span class="p">;</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">tags</span><span class="p">;</span>
+        <span class="k">while</span> <span class="p">((</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">strtok_r</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s">&quot;.,&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">saveptr</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+                <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Got %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">ptr</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="strchr">strchr()</h3>
+
+<p>该函数是字符查找，找到则返回第一个字符的地址，否则返回 NULL 。如下是一个简单的程序，用来分割一个字符串，类似与 <code>/etc/shadow</code> 中保存的密码。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">encrypted</span> <span class="o">=</span> <span class="n">strdup</span><span class="p">(</span><span class="s">&quot;$1$test$justfortest&quot;</span><span class="p">);</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">id</span><span class="p">,</span> <span class="o">*</span><span class="n">salt</span><span class="p">,</span> <span class="o">*</span><span class="n">passwd</span><span class="p">;</span>
+
+	<span class="n">id</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">encrypted</span><span class="p">,</span> <span class="sc">&#39;$&#39;</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">id</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+		<span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+	<span class="o">*</span><span class="n">id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">id</span><span class="o">++</span><span class="p">;</span>
+
+	<span class="n">salt</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="sc">&#39;$&#39;</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">salt</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+		<span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+	<span class="o">*</span><span class="n">salt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">salt</span><span class="o">++</span><span class="p">;</span>
+
+	<span class="n">passwd</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">salt</span><span class="p">,</span> <span class="sc">&#39;$&#39;</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">passwd</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+		<span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+	<span class="o">*</span><span class="n">passwd</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">passwd</span><span class="o">++</span><span class="p">;</span>
+
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;id: %s salt: %s password: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">salt</span><span class="p">,</span> <span class="n">passwd</span><span class="p">);</span>
+	<span class="n">free</span><span class="p">(</span><span class="n">encrypted</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="其它">其它</h3>
+
+<h4 id="字符串查找-1">字符串查找</h4>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;string.h&gt;</span>
+<span class="kt">char</span> <span class="o">*</span><span class="nf">strstr</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">haystack</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">needle</span><span class="p">);</span></code></pre></figure>
+
+<p>也就是从 <code>haystack</code> (干草堆) 中找到 <code>needle</code> (针) 第一次出现的位置，不包括 <code>needle</code> 中的串结束符；如找不到，返回空指针。</p>
+
+<h2 id="字符串复制">字符串复制</h2>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;string.h&gt;</span>
+<span class="kt">char</span> <span class="o">*</span><span class="nf">strcpy</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">dest</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">src</span><span class="p">);</span>
+<span class="kt">char</span> <span class="o">*</span><span class="nf">strncpy</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">dest</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">);</span></code></pre></figure>
+
+<p>前者会将 src 复制到 dest ，包括 <code>'\0'</code> 字符，需要保证 dest 有足够的空间，否则可能会发生溢出。而后者最多复制 n 个字符串到 dest ，注意，如果这 n 个字符中没有 <code>'\0'</code> 那么需要手动添加。</p>
+
+<p>返回字符串 dest 。</p>
+
+<h3 id="strdup">strdup()</h3>
+
+<p>该函数会通过 <code>malloc()</code> 申请内存，然后将字符串复制过去，所以需要调用者手动释放内存。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">src</span> <span class="o">=</span><span class="s">&quot;This is the jibo&quot;</span><span class="p">;</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">dest</span><span class="p">;</span>
+
+	<span class="n">dest</span> <span class="o">=</span> <span class="n">strdup</span><span class="p">(</span><span class="n">src</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;the dest %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">dest</span><span class="p">);</span>
+	<span class="n">free</span><span class="p">(</span><span class="n">dest</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如果不通过 <code>free()</code> 释放内存，那么会导致内存泄露，可以通过 valgrind 命令检查，如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ valgrind --tool=memcheck --leak-check=yes ./test</code></pre></figure>
+
+<h3 id="memcpy-vs-memmove">memcpy VS. memmove</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="n">str</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;memmove can be very useful......&quot;</span><span class="p">;</span>
+
+	<span class="n">memmove</span><span class="p">(</span><span class="n">str</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span> <span class="n">str</span> <span class="o">+</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">11</span><span class="p">);</span>
+	<span class="n">puts</span><span class="p">(</span><span class="n">str</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>注意，即使替换为 <code>memcpy()</code> 上述的代码仍有可能是正确的，这主要是由于编译器的优化所致，详细可以反汇编查看。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;string.h&gt;</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">memcpy</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">dest</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">memmove</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">dest</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">);</span></code></pre></figure>
+
+<p>两者都是将 N 个字节的源内存地址的内容拷贝到目标内存地址中，需要保证 dest 有足够的空间；区别是后者可以有效处理重叠区域<!--，首先会将 src 的内容复制到临时缓存区，然后再复制到 dest 中-->，其处理措施如下：</p>
+
+<ul>
+  <li>当源内存的首地址等于目标内存的首地址时，不进行任何拷贝；</li>
+  <li>当源内存的首地址大于目标内存的首地址时，实行正向拷贝；</li>
+  <li>当源内存的首地址小于目标内存的首地址时，实行反向拷贝；</li>
+</ul>
+
+<p>更详细的场景可以分为如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">内存低端 &lt;-----s-----&gt; &lt;-----d-----&gt; 内存高端 start at end of s
+内存低端 &lt;-----s--&lt;==&gt;--d-----&gt;      内存高端 start at end of s
+内存低端 &lt;-----sd-----&gt;              内存高端 do nothing
+内存低端 &lt;-----d--&lt;==&gt;--s-----&gt;      内存高端 start at beginning of s
+内存低端 &lt;-----d-----&gt; &lt;-----s-----&gt; 内存高端 start at beginning of s</code></pre></figure>
+
+<p>如下是两者的实现代码：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span><span class="o">*</span> <span class="nf">memcpy</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">dest</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span> <span class="n">dest</span><span class="p">;</span>
+	<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span> <span class="n">src</span><span class="p">;</span>
+
+	<span class="k">while</span><span class="p">(</span><span class="n">n</span><span class="o">--</span><span class="p">)</span>
+		<span class="o">*</span><span class="n">d</span><span class="o">++</span> <span class="o">=</span> <span class="o">*</span><span class="n">s</span><span class="o">++</span><span class="p">;</span>
+
+	<span class="k">return</span> <span class="n">dest</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="nf">memmove</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">dest</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span> <span class="n">dest</span><span class="p">;</span>
+	<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span> <span class="n">src</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="o">&gt;</span><span class="n">d</span><span class="p">)</span> <span class="p">{</span>        <span class="c1">// start at beginning of s</span>
+		<span class="k">while</span> <span class="p">(</span><span class="n">n</span><span class="o">--</span><span class="p">)</span>
+		<span class="o">*</span><span class="n">d</span><span class="o">++</span> <span class="o">=</span> <span class="o">*</span><span class="n">s</span><span class="o">++</span><span class="p">;</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="o">&lt;</span><span class="n">d</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// start at end of s</span>
+		<span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">+</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+		<span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">+</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+		<span class="k">while</span> <span class="p">(</span><span class="n">n</span><span class="o">--</span><span class="p">)</span>
+			<span class="o">*</span><span class="n">d</span><span class="o">--</span> <span class="o">=</span> <span class="o">*</span><span class="n">s</span><span class="o">--</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">dest</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>与之相关的还有 <code>memccpy()</code>、<code>mempcpy()</code> 以及 <code>bcopy()</code> 函数：</p>
+
+<ul>
+  <li><code>memccpy()</code> 将 src 指向内存的前 n 个字节复制到 dest ，期间在遇到某个特定值 (int c) 就立即停止复制。</li>
+  <li><code>mempcpy()</code> 类似于 <code>memcpy()</code> ，不同的是该函数返回复制到最后地址的下一个地址，而非返回 dest，通常用于流式的复制。</li>
+</ul>
+
+<h2 id="其它-1">其它</h2>
+
+<p>添加格式化字符串。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="cp">#define BUFFER_ADD(...) do {                                 \</span>
+<span class="cp">        int rc_;                                             \</span>
+<span class="cp">        rc_ = snprintf(buff + off, size - off, __VA_ARGS__); \</span>
+<span class="cp">        if (rc_ &lt; 0) {                                       \</span>
+<span class="cp">                fprintf(stderr, &quot;format buffer error.\n&quot;);   \</span>
+<span class="cp">                return -1;                                   \</span>
+<span class="cp">        } else if (rc_ &gt;= size - off) { </span><span class="cm">/* including NULL */</span><span class="cp"> \</span>
+<span class="cp">                fprintf(stderr, &quot;buffer overflow.\n&quot;);       \</span>
+<span class="cp">                return -2;                                   \</span>
+<span class="cp">        } else {                                             \</span>
+<span class="cp">                off += rc_;                                  \</span>
+<span class="cp">        }                                                    \</span>
+<span class="cp">} while (0)</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+        <span class="kt">int</span> <span class="n">off</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+
+        <span class="c1">//BUFFER_ADD(&quot;123456789012345&quot;);</span>
+        <span class="c1">//BUFFER_ADD(&quot;1234567890123456&quot;); /* overflow */</span>
+        <span class="n">BUFFER_ADD</span><span class="p">(</span><span class="s">&quot;1234567890&quot;</span><span class="p">);</span>
+        <span class="n">BUFFER_ADD</span><span class="p">(</span><span class="s">&quot;12345&quot;</span><span class="p">);</span>
+
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;offset=%d string=%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">off</span><span class="p">,</span> <span class="n">buff</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/program-c-load-process.html" title="C 加载过程">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-systemd.html" title="systemd 使用简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1442332800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/program-c-string-stuff.html" data-title="C 语言的字符串" data-url="/post/program-c-string-stuff.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

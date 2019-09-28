@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux 硬件启动|JinYang's Blog</title>
+  <meta name="keywords" content="linux,内核,kernel,编译,启动流程">
+  <meta name="description" content="从内核加电之后，简单介绍如何从硬件加载启动。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux 硬件启动</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2014-02-25 Tuesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>从内核加电之后，简单介绍如何从硬件加载启动。</p>
+
+<!-- more -->
+
+<h2 id="bootstrap">Bootstrap</h2>
+
+<p>这里的 <a href="http://en.wiktionary.org/wiki/bootstrap">Bootstrap</a> 通常是指 “鞋子后边的背带”，通常也表示不需要别人的 帮助就能够自己处理事情的情形。这来自于一句常用的谚语 <code>"pull oneself up by one's bootstraps"</code> 。</p>
+
+<p>这句话最早出现于 《The Surprising Adventures of Baron Munchausen》，这本书里的一个故事：主人公 Baron Munchausen 不小心掉进了一片沼泽，他通过自己的 bootstraps 将自己拉了出来，Magic :-)</p>
+
+<p>其实在 19 世纪初美国也有 <code>"pull oneself over a fence by one's bootstraps"</code> 的说法，意思是 “做荒谬不可能完成的事情” 。可参考 <a href="http://en.wikipedia.org/wiki/Bootstrapping">Bootstrapping</a> 。</p>
+
+<p>最早的时候，工程师们用它来比喻计算机启动是一个很矛盾的过程：必须先运行程序，然后计算机才能启动，但是计算机不启动就无法运行程序！</p>
+
+<p>早期真的是这样，必须想尽各种办法，把一小段程序装进内存，然后计算机才能正常运行。所以，工程师们把这个过程叫做”拉鞋带”，久而久之就简称为 boot 了。</p>
+
+<p>接下来主要介绍的是现在最常用的 PC 启动方法，也即采用 BIOS 启动，通常还有其它的启动方式，如 EFI、UEFI 等。</p>
+
+<blockquote>
+  <p>可扩展固件接口 (Extensible Firmware Interface，EFI) 是 Intel 为全新类型的 PC 固件的体系结构、接口和服务提出的建议标准。主要目的是为了提供一组在 OS 加载之前（启动前）在所有平台上一致的、正确指定的启动服务，被看做是有近 20 多年历史的 PC BIOS 的继任者。</p>
+
+  <p>统一的可扩展固件接口 (Unified Extensible Firmware Interface，UEFI)，是一种详细描述全新类型接口的标准，由 EFI 1.10 为基础发展起来的，它的所有者已不再是 Intel，而是一个称作 Unified EFI Form 的国际组织，是 open source 的。这种接口用于操作系统自动从预启动的操作环境，加载到一种操作系统上，从而使开机程序化繁为简，节省时间。</p>
+</blockquote>
+
+<h2 id="主板介绍">主板介绍</h2>
+
+<p>在介绍之前首先了解一下主板的情况。现在主板大致如下所示，在主板上主要有两大主要部分：北桥 (North Bridge 或 Host Bridge) 和南桥 (South Bridge) 。</p>
+
+<p>北桥主要负责 CPU 和内存、显卡这些部件的数据传送，而南桥主要负责 I/O 设备、外部存储设备以及 BIOS 之间的通信。现在有些芯片厂商为了加快数据的传输速度，已经把北桥所负责的功能直接集成到 CPU 中了，因此有些主板已经没有北桥了。</p>
+
+<p><img src="/images/linux/kernel/hardware_motherboard_diagram.png" alt="hardware materboard diagram" title="hardware materboard diagram" class="pull-center" /></p>
+
+<p>CPU 通过管脚与外界相连，但是它不知道与之相连的是什么，可能是主板、路由、测试工具等。 CPU 主要通过三种方式与外界通讯：内存地址空间、I/O地址空间和中断。在主板中， CPU 通过前端总线 (Front Side Bus) 与北桥相连，其中包括了地址总线和数据总线。对于 Intel Core 2 QX6600 而言，有 33 针地址总线，64 针数据总线，因此 CPU 可访问的地址空间有 64GB = 2^33 * 8B ，实际使用只是其中一部分。</p>
+
+<p>在访问上述的地址空间时，需要通过北桥与其他设备进行通讯，这种通讯方式称为内存映射 ( <a href="http://en.wikipedia.org/wiki/Memory-mapped_IO">Memory Mapped I/O, MMIO</a> ) 。若要使 MMIO 空间可用于 32 位操作系统，MMIO 空间必须驻留在前 4GB 地址空间内。这些地址空间一部分会映射到 RAM ，还有其他的设备，如显卡、PCI 设备、BIOS 等。在 Linux 中，可以通过 /proc/iomem 查看，其分布大致如下。</p>
+
+<p><img src="/images/linux/kernel/hardware_memory_layout.png" alt="hardware materboard diagram" title="hardware materboard diagram" class="pull-center" /></p>
+
+<h3 id="启动流程">启动流程</h3>
+
+<p>操作系统启动大致过程如下图所示，总共经过了四步：BIOS、MBR、Bootloader 和 操作系统初始化。</p>
+
+<p><img src="/images/linux/kernel/hardware_boot_steps.png" alt="hardware boot step" title="hardware boot step" class="pull-center" /></p>
+
+<h2 id="第一阶段bios">第一阶段：BIOS</h2>
+
+<p>当按下开关时主板会按照一定的顺序启动各个芯片，当然不同的主板启动的顺序会不一样。刚开始时电压还不太稳定，主板上的控制芯片组会向 CPU 发出并保持一个 RESET 信号，让 CPU 内部自动恢复到初始状态，此时 CPU 在此刻不会马上执行指令。当芯片组检测到电源已经开始稳定供电了，它便撤去 RESET 信号（如果是手工按下计算机面板上的 Reset 按钮来重启机器，那么松开该按钮时芯片组就会撤去 RESET 信号），然后 CPU 开始运行。</p>
+
+<p><img src="/images/linux/kernel/hardware_bios_hardware.jpg" alt="hardware bios hardware" title="hardware bios hardware" class="pull-center" /></p>
+
+<blockquote>
+  <p>上个世纪70年代初，”只读内存” (read-only memory，ROM) 发明，开机程序被刷入 ROM 芯片，计算机通电后，第一件事就是读取它。这块芯片里的程序叫做 “基本输入输出系統” (Basic Input/Output System) ，简称为 <a href="http://en.wikipedia.org/wiki/BIOS">BIOS</a> 。</p>
+</blockquote>
+
+<p>如果是多处理器，通常会动态选择一个 Bootstrap Processors(BSP) ，该 CPU 会执行所有的 BIOS 和内核初始化函数。其他的处理器 Application Processors (AP) 会一直等到内核明确激活之后才会运行。</p>
+
+<blockquote>
+  <p>在 8086 的那个时代，采用的是实模式(Real Mode)， CPU 寻址时采用 Segment:Offset 模式，物理地址为 Address = Segment * 16 + Offset ，此时段的大小固定为 2^16=64K ，最大的寻址为 0x00000 ~ 0xFFFFF ，即 1MBytes 。</p>
+
+  <p>80386 之后产生了保护模式 (Protect Mode) ，虚拟地址到物理地址转换时需要通过两步进行，即段机制 + 页机制，其中段转换机制是必须的。段机制在转换时采用段描述符，使用 64bits 而不是 16bits 来描述一个段，包括了段基址、段长、属性等，此时段的大小是可变的。</p>
+
+  <p>在保护模式中，可以单独使用段机制；也可以使用页机制，此是会分为两步，首先经过段机制然后是分页机制。</p>
+
+  <p>DMI/QPI (Quick Path Interconnect，快速通道互联)，是 Intel 用来取代 FSB 的新一代高速总线，对于 CPU 与 CPU 之间或者 CPU 与北桥芯片之间的通讯都可以使用 QPI 相连。</p>
+</blockquote>
+
+<p>在 8086 初始化时 <code>CS:IP=F000h:FFF0h</code> ， 因此将会从 <code>FFFF0h</code> 开始执行。 80386 之后采用了一种 hack 的方式 (与实模式和保护模式都不太一样) ，此时 <code>CR0:PE</code> 没有置 1 ，因此不是保护模式，该模式被称为 Big Real Mode。</p>
+
+<p>在初始化时 EIP 仍然为 <code>0000FFF0h</code>， CS 的 <code>Selector=F000h</code>， <code>Base=FFFF0000h</code>， <code>Limit=FFFFh</code>， <code>AR=Present, R/W, Accessed</code> ，此时 GTD 还没有建立，Selector 没有使用，相应的读取地址为 <code>CS:Base+EIP=FFFFFFF0h</code> 。</p>
+
+<p>接下来不同的厂商做法就不太一样了，主要是 Intel 设计的 EFI(Extensible Firmware Interface) 的做法和传统的 Legacy BIOS 。</p>
+
+<ul>
+  <li>
+    <p>Legacy BIOS<br />放在 0xFFFFFFF0 的第一条指令一般是一个远跳转指令 (Far Jump) ，也就是说 CPU 在执行 Legacy BIOS 时，会直接从 0xFFFFFFF0 跳回 F Segment ，回到 1MB 以下这个 Legacy BIOS 的老巢里去。此时重装 CS 后，上述的 hack 将无效，也就是到了 8086 时的实模式。此时可以访问的地址范围还和 A0 有关，没有详细了解 :(</p>
+  </li>
+  <li>
+    <p>EFI BIOS<br />第一条指令是 wbinvd(清除 CPU 高速缓存)，之后做一些设定之后，会直接进入保护模式。所以 EFI BIOS 是从南桥 Region 4G 通过，并不需要 Legacy Region 。</p>
+  </li>
+</ul>
+
+<p>下面仅对 Legacy BIOS 进行介绍。</p>
+
+<p>对于传统的 “CPU + 北桥 + 南桥” 类型的主板来说，CPU 的地址请求通过 FSB (Front Side BUS, 前端总线) 到达北桥，北桥通过判断这个地址范围在南桥，因此将这个请求送到南桥。</p>
+
+<p>对于最新的主板芯片组来说，北桥和 CPU 封装在一颗芯片里面，所以会看到这个请求通过 DMI/QPI 被送到南桥。请求到达南桥后，南桥根据目前的地址映射表的设置决定是否将请求转发到 SPI(Serial Peripheral Interface) 或者 LPC(Low Pin Count)。</p>
+
+<p>简单说就是南桥芯片拥有一张地址映射表，当有地址解析的请求到来时，南桥查看这张表决定将地址解析到何处去。这张表里有两个特殊区域，一个是从地址空间 4G 向下，大小从 4MB 到 16MB 不等的一个区域，我们以 4MB 为例，地址空间从 <code>FFFC00000h~FFFFFFFFh</code> 。称之为 Range 4G 。第二个区域一般是是从 1MB 向下 128KB 的范围，即 E Segment 和 F Segment ，从 <code>E0000~FFFFF</code> ，称之为 Legacy Range ，也就是说， <code>FFFC00000h~FFFFFFFFh</code> 之间和 <code>E0000~FFFFF</code> 之间的寻址请求都会被导向到 SPI/LPC ，最终指向了 BIOS 。</p>
+
+<h3 id="硬件自检-post-power-on-self-test">硬件自检 POST (Power On Self Test)</h3>
+
+<p>BIOS 程序首先检查，计算机硬件能否满足运行的基本条件，这叫做”硬件自检”（Power On Self Test），缩写为 <a href="http://en.wikipedia.org/wiki/Power-on_self-test">POST</a> 。</p>
+
+<p>POST 的主要任务是检测系统中的一些关键设备 (电源、CPU 芯片、BIOS 芯片、定时器芯片、数据收发逻辑电路、DMA 控制 器、中断控制器以及基本的 640K 内存和内存刷新电路等) 是否存在和能否正常工作。</p>
+
+<p>由于 POST 是最早进行的检测过程，此时显卡还没有初始化，如果系统 BIOS 在进行 POST 的过程中发现了一些致命错误，例如没有找到内存或者内存有问题 （此时只会检查640K常规内存），那么系统 BIOS 就会直接控制喇叭发声来报告错误，声音的长短和次数代表了错误的类型。</p>
+
+<!--
+接着系统 BIOS 将查找显示卡的 BIOS ，由显卡 BIOS 来完成显示卡的初始化，存放显卡 BIOS 的 ROM 芯片的起始地址通常设在 C0000H 处，系统 BIOS 在这个地方找到显卡 BIOS 之后就调用它的初始化代码，由显卡 BIOS 来初始化显卡，此时多数显卡都会在屏幕上显示出一些初始化信息，介绍生产厂 商、图形芯片类型等内容，不过这个画面几乎是一闪而过。自此，系统就具备了最基本的运行条件，可以对主板上的其它部分进行诊断和测试。再发现故障时，屏幕上会有提示，但一般不死机。
+
+系统 BIOS 接着会查找其它设备的 BIOS 程序，找到之后同样要调用这些 BIOS 内部的初始化代码来初始化相关的设备。 查找完所有其它设备的 BIOS 之后，系统 BIOS 将显示出它自己的启动画面，其中包括有系统 BIOS 的类型、序列号和版本号等内容。
+
+接着，系统 BIOS 将检测 CPU 的类型和工作频率，然后开始测试主机所有的内存容量，并同时在屏幕上显示内存测试的进度，我们可以在 CMOS 设置中自行决定使用简单耗时少或者详细耗时多的测试方式。
+
+内存测试通过之后，系统 BIOS 将开始检测系统中安装的一些标准硬件设备，这些设备包括：硬盘、CD－ROM、软驱、串行接口和并行接口等连接的设备，大多数新版本的系统 BIOS 在这一过程中还要自动检测和设置内存的相关参数、硬盘参数和访问模式等。
+
+标准设备检测完毕后，系统 BIOS 内部的“支持即插即用的代码”将开始检测和配置系统中已安装的即插即用设备。每找到一个设备之后，系统 BIOS 都会在屏幕上显示出设备的名称和型号等信息，同时为该设备分配中断、DMA 通道和 I/O 端口等资源。
+
+到这一步为止，所有硬件都已经检测配置完毕了，多数系统 BIOS 会重新清屏并在屏幕上方显示出一个表格，其中概略地列出了系统中安装的各种标准硬件设备，以及它们使用的资源和一些相关工作参数。
+-->
+
+<p>接下来系统 BIOS 将更新 ESCD（Extended System Configuration Data，扩展系统配置数据）。ESCD 是系统 BIOS 用来与操作系统交换硬件配置信息的一种手段，这些数据被存放在 CMOS (一小块特殊的RAM，由主板上的电池来供电) 之中。</p>
+
+<!--
+通常 ESCD 数据只在系统硬件配置发生改变后才会更新，所以不是每次启动机器时我们都能够看到 “Update ESCD… Success” 这样的信息，不过，某些主板的系统 BIOS 在保存 ESCD 数据时使用了与 Windows 9x 不相同的数据格式，于是 Windows 9x 在它自己的启动过程中会把 ESCD 数据修改成自己的格式，但在下一次启动机器时，即使硬件配置没有发生改变，系统 BIOS 也会把 ESCD 的数据格式改 回来，如此循环，将会导致在每次启动机器时，系统 BIOS 都要更新一遍 ESCD ，这就是为什么有些机器在每次启动时都会显示出相关信息的原因。
+-->
+
+<p>ESCD 数据更新完毕后，系统 BIOS 的启动代码将进行它的最后一项工作，即根据用户指定的启动顺序从软盘、硬盘或光驱启动。</p>
+
+<!--
+上面介绍的便是计算机在打开电源开关 (或按 Reset 键) 进行冷启动时所要完成的各种初始化工作，如果我们在 DOS 下按 Ctrl＋Alt＋Del 组合键 (或从 Windows 中选择重新启动计算机) 来进行热启动，那么 POST 过程将被跳过去，直接从第三步开始，另外第五步的检测 CPU 和内存测试也不会再进行。
+-->
+
+<p><img src="/images/linux/kernel/hardware_bios_post.png" alt="hardware bios post" title="hardware bios post" class="pull-center" /></p>
+
+<h3 id="启动设备顺序">启动设备顺序</h3>
+
+<p>硬件自检完成后，BIOS 把控制权转交给下一阶段的启动程序。</p>
+
+<p>这时，BIOS 需要知道，”下一阶段的启动程序” 具体存放在哪一个设备。也就是说，BIOS需要有一个外部储存设备的排序，排在前面的设备就是优先转交控制权的设备。这种排序叫做”启动顺序” (Boot Sequence)。</p>
+
+<p>打开 BIOS 的操作界面，里面有一项就是”设定启动顺序”。</p>
+
+<p><img src="/images/linux/kernel/hardware_bios_bootseq.jpg" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<p>此时， POST 完成了一系列测试和初始化，并将所有的资源整理，包括了中断、RAM 范围、I/O 端口等。现在的很多 BIOS 会根据 <a href="http://en.wikipedia.org/wiki/ACPI">Advanced Configuration and Power Interface (ACPI)</a> 保存一系列设备列表，这些列表会被 Kernel 使用。</p>
+
+<h2 id="第二阶段主引导记录">第二阶段：主引导记录</h2>
+
+<p>BIOS 按照”启动顺序”，把控制权转交给排在第一位的储存设备。这时，计算机读取该设备的 <a href="http://en.wikipedia.org/wiki/Master_boot_record">“主引导记录”</a> (Master boot record，缩写为 MBR) ，对于硬盘是第一个扇区 (0头0道1扇区，也就是 Boot Sector)，也即读取存储设备最前面的 512 个字节，读入内存地址 <code>0000:7c00~0000:7e00(+200)</code> 处。</p>
+
+<p>如果这 512 个字节的最后两个字节是否为 0x55 和 0xAA (即检查 (WORD)0000:7dfe 是否等于 0xaa55) ，表明这个设备可以用于启动，于是跳转到 0x7C00 并执行；如果不是，表明设备不能用于启动，控制权于是被转交给”启动顺序”中的下一个设备。</p>
+
+<blockquote>
+  <p>硬盘有很多盘片组成，每个盘片的每个面都有一个读写磁头，如果有 N 个盘片，则有 2N 个面，对应 2N 个磁头 (Heads) 。每个盘片以电机为圆心，半径为固定值 R 的同心圆，在逻辑上形成了一个柱面 (Cylinders) 。每个盘片上的每个磁道又分为几个扇区 (Sector) ，通常每个扇区的容量为 512Bytes 。因此总共 Heads×Cylinders×Sector 个扇区，其编号均从 0 开始。</p>
+
+  <p>在读取第一个扇区的时候， BIOS 是通过 INT 13 读取。</p>
+</blockquote>
+
+<p><img src="/images/linux/kernel/hardware_linux_boot_hard.jpg" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<p>最终的结果是， POST 之后会跳转到 <strong>0000:7c00</strong> 处执行 MBR 中的程序，将控制权交给 MBR 中的 Bootloader 程序(通常为grub)；以上是由 BIOS 的引导程序完成；下面是由 MBR 中的引导程序完成。</p>
+
+<h3 id="主引导记录">主引导记录</h3>
+
+<p>每个操作系统的 Bootloader 通常不一样，因此，在硬盘中，每个文件系统或者分区都会保留一个引导扇区 (Boot Sector) 来为操作系统安装 Bootloader 。其格式大致如下。</p>
+
+<p><img src="/images/linux/kernel/hardware_mbr_boot_sector.gif" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<blockquote>
+  <p>每个操作系统在安装时会将 Bootloader 安装到该分区的 Boot Sector 中去。在 Linux 中可以选择是否安装到 MBR 中，如果是，会在 MBR 和分区的 Boot Sector 中都保留一份 Bootloader 。而 Windows 则会主动将 MBR 和 Boot Sector 安装上 Bootloader 。</p>
+
+  <p>Linux 的 Bootloader 在安装时可以自动搜索其它的 Bootloader ，而 Windows 的却不可以，因此在安装双系统时，最好先安装 Windows 然后安 Linux 。</p>
+</blockquote>
+
+<p>主引导扇区 MBR 和操作系统无关，单就功能来说可以将其设置为一个通用的模块。其主要功能是用来查找活动分区，并将控制权交给相应分区的引导扇区 (第一个扇区) ，也即告诉计算机到硬盘的哪一个位置去找操作系统。</p>
+
+<p>该扇区的是和操作系统有关的，操作系统的引导是由它来完成的，而 MBR 并不负责，MBR 和操作系统无关。引导扇区的任务是把控制权转交给操作系统的引导程序。</p>
+
+<p>如果使用多系统那么 MBR 通常也就是 Grub 或这 Lilo 的一部分程序，在安装时存放在 MBR。Bootloader 中的 MBR 主要操作步骤为：</p>
+
+<ol>
+  <li>
+    <p>MBR 先将自己的程序代码由 <strong>0000:7C00h 移动到 0000:0600h</strong> ，然后继续执行。(注，BIOS 把 MBR 放在 0000:7C00h处)。</p>
+  </li>
+  <li>
+    <p>扫描分区表，找到一个激活(可引导)分区。在主分区表中搜索标志为活动的分区，即 80h 标志(详见分区表，通常为boot分区)。如果发现没有活动分区或者不止一个活动分区，则停止，通常为失败：跳入 ROM BASIC、无效分区表：<code>goto 5 &lt;1&gt;</code>。</p>
+  </li>
+  <li>
+    <p>找到激活分区的起始扇区；读引导扇区(Boot Sector)，将活动分区的第一个扇区读入内存地址 0000:7c00 处。失败：goto 5。注意: 此时读取的是此扇区的第一个 Sector ，而非 MBR 。</p>
+  </li>
+  <li>
+    <p>验证引导扇区最后是否为 55AAh，即检查(WORD)0000:7dfe 是否等于 0xaa55，若不等于则 <code>goto 5 &lt;2/4&gt;</code> 。</p>
+  </li>
+  <li>打印错误进入无穷循环，通常的错误有：
+    <ol>
+      <li>No active partition.</li>
+      <li>Invalid partition table.</li>
+      <li>Error loading operating system.</li>
+      <li>Missing operating system.</li>
+    </ol>
+  </li>
+  <li>跳转到 0000:7c00 处继续执行特定系统的启动程序，将控制权交给引导扇区代码，启动系统。</li>
+</ol>
+
+<p><img src="/images/linux/kernel/hardware_mster_boot_record_0.png" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<p>另一种表示方法，</p>
+
+<p><img src="/images/linux/kernel/hardware_master_boot_record_1.png" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<p>如上图所示主引导记录由三个部分组成。</p>
+
+<p><img src="/images/linux/kernel/hardware_marster_records.png" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<!--
+<center><table align="center" style = "font-size: small;" bgcolor="lightyellow" border="2" cellpadding="3" cellspacing="0" width="70%"><tbody>
+<tr bgcolor="lightblue"><td align="center">地址</td><td align="center">注释</td><td align="center">格式</td></tr>
+<tr><td align="center">0000-01BD</td><td>Master Boot Record，Bootloader 机器码，446 个字节</td><td>程序</td></tr>　
+<tr><td align="center">01BE-01CD</td><td>分区项1，16 个字节</td><td rowspan="4">分区表(Partition Table)</td></tr>　
+<tr><td align="center">01CE-01DD</td><td>分区项2，16 个字节</td></tr>　
+<tr><td align="center">01DE-01ED</td><td>分区项3，16 个字节</td></tr>　
+<tr><td align="center">01EE-01FD</td><td>分区项4，16 个字节</td></tr>
+<tr><td align="center">01FE</td><td>0x55</td><td rowspan="2">结束标志</td></tr>　
+<tr><td align="center">01FF</td><td>0xAA</td></tr>
+</tbody></table></center><br>
+-->
+
+<p>其中，第二部分”分区表”的作用，是将硬盘分成若干个区。</p>
+
+<h3 id="分区表">分区表</h3>
+
+<p>硬盘分区有很多 <a href="http://en.wikipedia.org/wiki/Disk_partitioning">分区</a> ，考虑到每个分区可以安装不同的操作系统，因此 “主引导记录MBR” 必须知道将控制权转交给哪个区。</p>
+
+<p>分区表的长度只有64个字节，里面又分成四项，每项 16 个字节。所以，一个硬盘最多只能分四个一级分区，又叫做”主分区”。</p>
+
+<p>每个主分区的 16 个字节，由 6 个部分组成：</p>
+
+<p><img src="/images/linux/kernel/hardware_marster_records_details.png" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<!--
+<center><table align="center" style = "font-size: small;" bgcolor="lightyellow" border="2" cellpadding="3" cellspacing="0" width="70%"><tbody>
+<tr bgcolor="lightblue"><td align="center" width="75">地址</td><td align="center">注释</td></tr>
+<tr><td align="center">0</td><td>0x80 - 活动分区，0x00 - 非活动分区；控制权会交给活动分区。四个主分区里面有且只只能有一个是活动分区。</td></tr>　
+<tr><td align="center">1-3</td><td>主分区第一个扇区的物理位置，磁头(第1个字节)、扇区号(第2字节低6位)、柱面(第2字节高2位+第3字节)。</td></tr>　
+<tr><td align="center">4</td><td><a href="http://en.wikipedia.org/wiki/Partition_type"> 主分区类型 </a>：
+<ul><li>
+    00h 该分区未使用。</li><li>
+    05h 扩展分区。</li><li>
+    06h FAT16 基本分区。</li><li>
+    07h NTFS 分区。</li><li>
+    0Bh FAT32 基本分区。</li><li>
+    0Fh 扩展分区。
+</li></ul></td></tr>　
+<tr><td align="center">5-7</td><td>主分区最后一个扇区的物理位置，磁头(第1个字节)、扇区号(第2字节低6位)、柱面(第2字节+第3字节)。</td></tr>　
+<tr><td align="center">8-11</td><td>该分区起始扇区号。</td></tr>
+<tr><td align="center">12-15</td><td>该分区的扇区总数。</td></tr>　
+</tbody></table></center><br>
+-->
+
+<p>最后的四个字节 (“主分区的扇区总数”)，决定了这个主分区的长度。也就是说，一个主分区的扇区总数最多不超过 2 的 32 次方。</p>
+
+<p>如果每个扇区为 512 个字节，就意味着单个分区最大不超过 2TB 。再考虑到扇区的逻辑地址也是 32 位，所以单个硬盘可利用的空间最大也不超过 2TB 。如果想使用更大的硬盘，只有 2 个方法：一是提高每个扇区的字节数，二是增加 <a href="http://en.wikipedia.org/wiki/GUID_Partition_Table">扇区总数</a> 。</p>
+
+<blockquote>
+  <p>硬盘的分区规则：一个分区的所有扇区必须连续，硬盘可以有最多 4 个物理上的分区，这 4 个物理分区可以时个主分区或者 3 个主分区加 1 个扩展分区，只能由一个扩展分区。在扩展分区里，可以而且必须再继续划分逻辑分区(逻辑盘)，可以有任意多个。</p>
+
+  <p>扩展分区的信息位于硬盘分区表(DPT)中，而逻辑驱动器的信息则位于扩展分区的起始扇区，即该分区的起始地址(面/扇区/磁道)所对应的扇区，该扇区中的信息与硬盘主引导扇区的区别是不包含 MBR ，而 16 字节的分区信息则表示的是逻辑驱动器的起始和结束地址等。</p>
+</blockquote>
+
+<p>对于主引导扇区最多可以识别 4 个主分区，为了可以使用更多的分区，引入了扩展分区。扩展分区中的逻辑驱动器引导记录采用链式结构。每一个逻辑分区都有一个和 MBR 分区表类似的扩展引导记录 EBR 。该分区表的第一项指向该逻辑分区本身的引导扇区，第二项指向下一个逻辑驱动器的 EBR ，其格式如下所示。</p>
+
+<p><img src="/images/linux/kernel/hardware_ebr_1.gif" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /> <img src="/images/linux/kernel/hardware_ebr_2.gif" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<p><img src="/images/linux/kernel/hardware_ebr_3.png" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<!--
+<center><a href="http://en.wikipedia.org/wiki/Extended_boot_record">扩展引导记录</a><table align="center" style = "font-size: small;" bgcolor="lightyellow" border="2" cellpadding="3" cellspacing="0" width="70%"><tbody>
+<tr bgcolor="lightblue"><td align="center">地址</td><td align="center">注释</td><td align="center">格式</td></tr>
+	<tr><td align="center">0000-01BD</td><td>通常没有使用，一般为 0 。</td><td>空闲</td></tr>　
+	<tr><td align="center">01BE-01CD</td><td>分区项1，16 个字节。本扩展分区。</td><td rowspan="4">分区表(Partition Table)</td></tr>　
+	<tr><td align="center">01CE-01DD</td><td>分区项2，16 个字节。下一个扩展分区。</td></tr>　
+	<tr><td align="center">01DE-01ED</td><td>分区项3，16 个字节。未使用。</td></tr>　
+	<tr><td align="center">01EE-01FD</td><td>分区项4，16 个字节。未使用。</td></tr>
+	<tr><td align="center">01FE</td><td>0x55</td><td rowspan="2">结束标志</td></tr>　
+	<tr><td align="center">01FF</td><td>0xAA</td></tr>
+</tbody></table></center>
+-->
+
+<h3 id="mbr-操作">MBR 操作</h3>
+
+<p>在 Linux 中可以通过如下的命令对 MBR 进行操作，包括备份、删除等。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># fdisk -l                                   // 查看硬盘，假设为 /dev/sda
+# dd if=/dev/sda of=mbr.bak bs=512 count=1   // 备份 MBR
+# dd if=mbr.bak of=/dev/sda bs=512 count=1   // 恢复 MBR
+# dd if=/dev/zero of=/dev/sda bs=446 count=1 // 删除 MBR
+
+# vim mbr.bak -b                             // 以二进制打开
+:%!xxd                                       // 切换为十六进制显示</code></pre></figure>
+
+<h2 id="第三阶段硬盘启动">第三阶段：硬盘启动</h2>
+
+<p>这时，计算机的控制权就要转交给硬盘的某个分区了，这里又分成三种情况。</p>
+
+<h3 id="情况a卷引导记录">情况A：卷引导记录</h3>
+
+<p>上一节提到，四个主分区里面，只有一个是激活的。计算机会读取激活分区的第一个扇区，叫做 <a href="http://en.wikipedia.org/wiki/Volume_Boot_Record">卷引导记录</a> (Volume boot record，缩写为VBR) 。</p>
+
+<p>“卷引导记录”的主要作用是，告诉计算机，操作系统在这个分区里的位置。然后，计算机就会加载操作系统了。</p>
+
+<h3 id="情况b扩展分区和逻辑分区">情况B：扩展分区和逻辑分区</h3>
+
+<p>随着硬盘越来越大，四个主分区已经不够了，需要更多的分区。但是，分区表只有四项，因此规定有且仅有一个区可以被定义成”扩展分区” (Extended partition)。</p>
+
+<p>所谓”扩展分区”，就是指这个区里面又分成多个区。这种分区里面的分区，就叫做”逻辑分区” (logical partition)。</p>
+
+<p>计算机先读取扩展分区的第一个扇区，叫做 <a href="http://en.wikipedia.org/wiki/Extended_partition">扩展引导记录</a> （Extended boot record，缩写为EBR）。它里面同样也包含一张 64 字节的分区表，但是只有前两项是有效的，分别指向当前分区的磁盘地址，以及下一个逻辑分区的磁盘地址，从而形成了一个有序的链表。直到某个逻辑分区的分区表只包含它自身为止 (即只有一个分区项)。因此，扩展分区可以包含无数个逻辑分区。<br /><br /></p>
+
+<p>但是，似乎很少通过这种方式启动操作系统。如果操作系统确实安装在扩展分区，一般采用下一种方式启动。</p>
+
+<h3 id="情况c启动管理器">情况C：启动管理器</h3>
+
+<p>在这种情况下，计算机读取”主引导记录”前面 446 字节的机器码之后，不再把控制权转交给某一个分区，而是运行事先安装的 <a href="http://en.wikipedia.org/wiki/Boot_loader">启动管理器</a> (boot loader)，由用户选择启动哪一个操作系统。</p>
+
+<p>Linux环境中，目前最流行的启动管理器是 <a href="http://en.wikipedia.org/wiki/GNU_GRUB">Grub</a> 。</p>
+
+<p><img src="/images/linux/kernel/hardware_boot_grub.png" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<h3 id="x86-bootloader-设计">X86 Bootloader 设计</h3>
+
+<p>Linux 运行在保护模式下，但是当机器启动复位的时候却处于实模式下，所以 Bootloader 做的工作也是在实模式之下的，使用低端的 640k 内存。</p>
+
+<p>早期的磁盘，每个磁道有 63 个扇区，硬盘在使用中，0 面的 0 磁道的所有扇区即前 63 个扇区做为特殊用途，BIOS 和操作系统不放置任何数据于此，一般做为 bootloader 使用，这也是为什么 GRUB 必须使用 stage1.5 的原因（因为其大小一般为 100KB 左右，超出了 62 个扇区的限制）。</p>
+
+<!--
+grub 引导的 linux 的过程不太清楚，有待添加。？？？？？？？？？？？？？？？？
+2)       BIOS -> MBR(GRUB2 boot.img)
+此场景中MBR引导代码即GRUB2的boot/i386/pc/boot.S编译出来的代码，称为boot.img；代码执行位置即0x7C00，主要行为：设置堆栈指针为0x2000处，探测硬盘CHS/LBA工作模式，并加载第二个扇区最终至0x8000处，并跳至0x8000执行；
+-->
+
+<h3 id="grub-stage2">Grub Stage2</h3>
+
+<p>当 Grub-Stage2 被载入内存执行时，它首先会去解析 grub 的配置文件 <code>/boot/grub/grub.conf</code> ，然后加载内核镜像到内存中，并将控制权转交给内核。控制权转交给操作系统后，操作系统的内核首先被载入内存。</p>
+
+<p>bootloader 执行完成后内存的分布如下图所示，详见 <a href="https://www.kernel.org/doc/Documentation/i386/boot.txt">Documentation/i386/boot.txt</a> Linux-x86 的启动协议。</p>
+
+<p><img src="/images/linux/kernel/hardware_memory_after_bootloader.png" alt="hardware bios bootseq" title="hardware bios bootseq" class="pull-center" /></p>
+
+<p>现在 Linux 的镜像已经加载到了内存中，主要包括了两部分：A) 运行在实模式中，加载到了 640K 以下的内存；B) 运行在保护模式的内核，加载到了 1M+ 。</p>
+
+<!--
+通常从系统上电到运行到linux kenel这部分的任务是由boot loader来完成。Boot loader在跳转到kernel之前要完成一些限制条件:
+1、CPU必须处于SVC(supervisor)模式,并且IRQ和FIQ中断必须是禁止的；
+2、MMU(内存管理单元)必须是关闭的, 此时虚拟地址对应物理地址；
+3、数据cache(Data cache)必须是关闭的；
+4、指令cache(Instruction cache)没有强制要求；
+5、CPU通用寄存器0(r0)必须是0;
+6、CPU通用寄存器1(r1)必须是ARM Linux machine type；
+7、CPU通用寄存器2(r2)必须是kernel parameter list的物理地址；
+-->
+
+<p>上图所示的 real-mode kernel header 之上的内容在 Linux boot protocol 中定义，主要用来 Bootloader 和 Linux Kernel 之间进行通讯。其中包括了 Bootloader 运行时写入的内容，如果内核版本、内核参数的地址等。当完成了一系列初始化之后，那么就会跳转到 Linux Kernel 中执行。</p>
+
+<p>首先加载的是 setup.bin，其中包括了开始的 512(0x200)bytes 的 bootsector 用于兼容之前的版本，正常应该不会执行的，如果执行会输出错误信息。可以通过 vim+%!xxd 打开 setup.bin 文件查看，0x200 处为 eb 也就是一个调转指令，也就是入口 _start。</p>
+
+<p>其实在 GRUB 等 bootloader 将内核的 setup.bin 读到 0x90000 处，将 vmlinux 读到 0x100000 处(grub拷贝时会打开保护模式,然后关闭)，然后跳转到 0x90200 开始执行，恰好跳过了 512 字节的 bootsector。</p>
+
+<p>那么接下来就将 CPU 的执行权限交给了 Linux 。</p>
+
+<h2 id="参考">参考</h2>
+
+<p>介绍开关键按下到 BIOS 启动，含有硬件的介绍，可以参考 <a href="/reference/linux/kernel/CPU_Reset.pdf">CPU Reset</a>；以及 <a href="/reference/linux/kernel/Introduction_to_Big_Real_Mode.pdf">Big Real Mode 的介绍</a> 。</p>
+
+<p><a href="http://thestarman.pcministry.com/asm/mbr/index.html">All the Details of many versions of both MBR and OS Boot Records</a> 对各个版本 MBR 的介绍，含有 Windows 下的工具，十分详细。</p>
+
+<!--
+<a href="http://www.ibm.com/developerworks/cn/linux/embed/l-bootloader/"> Linux bootloader 编写方法 [Web] </a> IBM 介绍如何编写 Bootloader </li><li>
+<a href="reference/lfs/linux_x86_boot_protocol.org.txt"> THE LINUX/x86 BOOT PROTOCOL [local] </a> 原版，摘自 Linux-3.4.48 源码 Documentation/x86/boot.txt </li><li>
+<a href="reference/lfs/linux_x86_boot_protocol.txt"> THE LINUX/x86 BOOT PROTOCOL [local]</a> 中文翻译版</li><li>
+<a href="http://blog.csdn.net/yunsongice/article/category/759408">系统初始化 [Web]</a> 内核编译、初始化过程，以及其它的一些操作，介绍比较详细
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/kernel-compile.html" title="Linux 内核编译">&larr; Older</a></li> 
+         <li class="next"><a href="/post/kernel-bootstrap.html" title="Linux 启动过程">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1393257600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/kernel-hardware-startup.html" data-title="Linux 硬件启动" data-url="/post/kernel-hardware-startup.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

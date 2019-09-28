@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Hello World !!!|JinYang's Blog</title>
+  <meta name="keywords" content="hello world,示例,sample,markdown">
+  <meta name="description" content="简单记录一下一些与 Markdown 相关的内容，包括了一些使用模版。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Hello World !!!</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2012-03-06 Tuesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>MySQL 5.6.2 引入了一个新的后台线程 page_cleaner，将之前主线程中的 adaptive flushing、前端线程触发的 async flushing、空闲时的刷新、关闭刷新都是在这个线程完成；目前只有同步刷新放在了前台的用户查询线程中。</p>
+
+<p>同时，引入了多个计数器。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SELECT name, comment FROM information_schema.innodb_metrics WHERE name LIKE &#39;buffer_flush_%&#39;;
++---------------------------------------+-----------------------------------------------------------------+
+| name                                  | comment                                                         |
++---------------------------------------+-----------------------------------------------------------------+
+| buffer_flush_batch_scanned            | Total pages scanned as part of flush batch                      |
+| buffer_flush_batch_num_scan           | Number of times buffer flush list flush is called               |
+| buffer_flush_batch_scanned_per_call   | Pages scanned per flush batch scan                              |
+| buffer_flush_batch_total_pages        | Total pages flushed as part of flush batch                      |
+| buffer_flush_batches                  | Number of flush batches                                         |
+| buffer_flush_batch_pages              | Pages queued as a flush batch                                   |
+| buffer_flush_neighbor_total_pages     | Total neighbors flushed as part of neighbor flush               |
+| buffer_flush_neighbor                 | Number of times neighbors flushing is invoked                   |
+| buffer_flush_neighbor_pages           | Pages queued as a neighbor batch                                |
+| buffer_flush_n_to_flush_requested     | Number of pages requested for flushing.                         |
+| buffer_flush_n_to_flush_by_age        | Number of pages target by LSN Age for flushing.                 |
+| buffer_flush_adaptive_avg_time_slot   | Avg time (ms) spent for adaptive flushing recently per slot.    |
+| buffer_flush_adaptive_avg_time_thread | Avg time (ms) spent for adaptive flushing recently per thread.  |
+| buffer_flush_adaptive_avg_time_est    | Estimated time (ms) spent for adaptive flushing recently.       |
+| buffer_flush_avg_time                 | Avg time (ms) spent for flushing recently.                      |
+| buffer_flush_adaptive_avg_pass        | Numner of adaptive flushes passed during the recent Avg period. |
+| buffer_flush_avg_pass                 | Number of flushes passed during the recent Avg period.          |
+| buffer_flush_avg_page_rate            | Average number of pages at which flushing is happening          |
+| buffer_flush_lsn_avg_rate             | Average redo generation rate                                    |
+| buffer_flush_pct_for_dirty            | Percent of IO capacity used to avoid max dirty page limit       |
+| buffer_flush_pct_for_lsn              | Percent of IO capacity used to avoid reusable redo space limit  |
+| buffer_flush_sync_waits               | Number of times a wait happens due to sync flushing             |
+| buffer_flush_adaptive_total_pages     | Total pages flushed as part of adaptive flushing                |
+| buffer_flush_adaptive                 | Number of adaptive batches                                      |
+| buffer_flush_adaptive_pages           | Pages queued as an adaptive batch                               |
+| buffer_flush_sync_total_pages         | Total pages flushed as part of sync batches                     |
+| buffer_flush_sync                     | Number of sync batches                                          |
+| buffer_flush_sync_pages               | Pages queued as a sync batch                                    |
+| buffer_flush_background_total_pages   | Total pages flushed as part of background batches               |
+| buffer_flush_background               | Number of background batches                                    |
+| buffer_flush_background_pages         | Pages queued as a background batch                              |
++---------------------------------------+-----------------------------------------------------------------+
+31 rows in set (0.01 sec)</code></pre></figure>
+
+<p>page_cleaner线程负责刷脏，基本上是基于如下的两个因素：</p>
+<ol>
+  <li>没有空闲缓存页，需要按照LRU规则将最近最少使用的页(the least recently used pages)从LRU_list上移除，因此也被称为LRU_list刷新；</li>
+  <li>需要重用redo log的空间，现在多数(包括InnoDB)数据库都是循环使用redo空间，如果要重用，只有保证redo对应的脏页已经刷新到磁盘才可以，也就是将the oldest modified non-flushed pages从flush_list上移除，被称之为flush_list；</li>
+</ol>
+
+<p>在进行刷脏时，会导致IO出现尖刺，进而影响到redo log的刷盘，从而影响到系统的性能；为了解决这一问题，引入了 adaptive flushing 策略，这一策略主要作用于 flush_list 的刷脏，当然对 LRU_list 的刷脏也有一些影响。</p>
+
+<h2 id="page-cleaner">Page Cleaner</h2>
+
+<p>为了提升刷脏效率，在 MySQL 5.7.4 版本里引入了多个 page cleaner 线程，从而可以达到并行刷脏的效果。采用协调线程+工作线程模式，协调线程本身也是工作线程，可通过 <code>innodb_page_cleaners</code> 变量设置，例如设置为 8 时就是一个协调线程，加 7 个工作线程。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">buf_flush_page_cleaner_coordinator()         该函数基本上由page_cleaner每隔1s调用一次
+ |-buf_flush_page_cleaner_set_priority()     设置线程的优先级，默认为-20
+ |-page_cleaner_flush_pages_recommendation()
+ | |-af_get_pct_for_dirty()                  需要刷新多个页
+ | | |-buf_get_modified_ratio_pct()
+ | |   |-buf_get_total_list_len()
+ | |
+ | |-af_get_pct_for_lsn()                    计算是否需要进行异步刷redo log
+ |   |-log_get_max_modified_age_async()
+ |
+ |-pc_request()
+ |-pc_flush_slot()                           协调线程同时也处理请求
+ |-pc_wait_finished()                        等待刷新完成
+
+buf_flush_page_cleaner_worker
+ |-my_thread_init()
+ |-buf_flush_page_cleaner_set_priority()     设置线程的优先级，默认为-20
+ | ###BEGIN###while
+ |-os_event_wait()                           等待page_cleaner-&gt;is_requested事件
+ |-pc_flush_slot()                           刷新
+ | ###BEGIN###end</code></pre></figure>
+
+<p>在启动时会初始化一个slot数组，大小为buffer pool instance的个数(buf_flush_page_cleaner_init)。</p>
+
+<p>协调线程在决定了需要flush的page数和lsn_limit后，会设置slot数组，将其中每个slot的状态设置为PAGE_CLEANER_STATE_REQUESTED, 并设置目标page数及lsn_limit，然后唤醒worker线程 (pc_request)</p>
+
+<p>worker线程被唤醒后，从slot数组中取一个未被占用的slot，修改其状态，表示已被调度，然后对该slot所对应的buffer pool instance进行操作。</p>
+
+<p>为了支持对单个bp instance进行LRU/FLUSH_LIST的刷新，对原有代码做了大量的改动，worker线程可以直接调用buf_flush_LRU_list 及buf_flush_do_batch 指定buffer pool进行flush操作。 互相之间不干扰，因此可以并行刷脏。 改动整体而言比较简单。</p>
+
+<p>page_cleaner线程负责刷脏，基本上是基于如下的两个因素：</p>
+<ol>
+  <li>最近最少(the least recently used pages )使用的页将会从LRU_list上移除；</li>
+  <li>the oldest modified non-flushed pages从flush_list上移除；</li>
+</ol>
+
+<p>https://blogs.oracle.com/mysqlinnodb/entry/data_organization_in_innodb ***</p>
+
+<p>https://blogs.oracle.com/mysqlinnodb/entry/mysql_5_6_multi_threaded</p>
+
+<p>https://blogs.oracle.com/mysqlinnodb/entry/mysql_5_5_innodb_adaptive</p>
+
+<p>https://blogs.oracle.com/mysqlinnodb/entry/introducing_page_cleaner_thread_in</p>
+
+<p>buf_flush_wait_batch_end()</p>
+
+<p>#define PCT_IO(p) ((ulong) (srv_io_capacity * ((double) (p) / 100.0)))</p>
+
+<p>af_get_pct_for_lsn()计算方法涉及变量
+srv_adaptive_flushing_lwm</p>
+
+<p>srv_flushing_avg_loops</p>
+
+<p>storage/innobase/log/log0log.cc</p>
+
+<p>max_modified_age_sync</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>log_write_up_to()</td>
+    </tr>
+    <tr>
+      <td>-log_write_flush_to_disk_low()</td>
+    </tr>
+    <tr>
+      <td>-fil_flush()</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>#####FLUSH_LRU_LIST Checkpoint
+srv_LRU_scan_depth</p>
+
+<p>#####Async/Sync Flush Checkpoint
+log_free_check() 用户线程调用
+ |-log_check_margins()
+   |-log_flush_margin()
+   | |-log_write_up_to()
+   |-log_checkpoint_margin() 执行sync操作，尝试空出足够的redo空间，避免checkpoint操作，可能会执行刷脏操作
+     |-log_buf_pool_get_oldest_modification() 获取BP中最老的lsn，也就是LSN4
+     | |-buf_pool_get_oldest_modification() 遍历各个BP实例，找出最大lsn，如果刚初始化完成则返回sys-&gt;lsn
+     | 计算log-&gt;lsn-oldest_lsn，如果超过了max_modified_age_sync值，则执行sync操作</p>
+
+<p>log_checkpoint_margin 核心函数，用于判断当前age情况，是否需要执行异步甚至是同步刷新。</p>
+
+<p>buff async/sync是在前面，因为redo的刷新成本更低</p>
+
+<p>buf_pool_resize() BP调整大小时的操作
+ |-buf_pool_withdraw_blocks()</p>
+
+<p>innodb_adaptive_flushing
+innodb_adaptive_flushing_lwm 百分比，配置自适应flush机制的低水位(low water mark)，超过该限制之后，即使没有通过上述参数开启AF，仍然执行AF
+innodb_io_capacity
+innodb_io_capacity_max redo 刷盘的最大值，如果刷盘落后很多，那么IO可能会超过innodb_io_capacity而小于max
+innodb_max_dirty_pages_pct 刷脏时，需要保证没有超过该值；注意，该值是一个目标，并不会影响刷脏的速率。
+innodb_max_dirty_pages_pct_lwm 脏页的低水位，用于决定什么时候开启pre-flush操作，从而保证不会超过上面配置的百分比
+innodb_flushing_avg_loops 决定了利用上述的值循环多少次之后重新计算dirty page和LSN，次数越少对外部的动态变化就越敏感</p>
+
+<p>要刷新多少page和lsn主要代码在af_get_pct_for_dirty()和af_get_pct_for_lsn()中，其中主要控制adaptive flush的代码位于后者函数中。</p>
+
+<p>http://www.cnblogs.com/Amaranthus/p/4450840.html</p>
+
+<p>1.先判断redo log的容量是否到了innodb_adaptive_flushing_lwm低水位阀值。
+2.是否配置了adaptive flush或者age超过了异步刷新的阀值。
+3.lsn_age_factor=age占异步刷新阀值的比例。
+4.要被刷新的比率=innodb_io_capacity_max/innodb_io_capacity<em>lsn_age_factor</em> sqrt(innodb_io_capacity)/7.5</p>
+
+<p>https://www.percona.com/blog/2013/10/30/innodb-adaptive-flushing-in-mysql-5-6-checkpoint-age-and-io-capacity/  <strong>**</strong>**</p>
+
+<p>https://blogs.oracle.com/mysqlinnodb/entry/redo_logging_in_innodb  ***</p>
+
+<p>https://yq.aliyun.com/articles/64677</p>
+
+<p>http://mysql.taobao.org/monthly/2015/06/01/</p>
+
+<p>https://blogs.oracle.com/mysqlinnodb/entry/data_organization_in_innodb ***</p>
+
+<p>https://blogs.oracle.com/mysqlinnodb/entry/mysql_5_6_multi_threaded</p>
+
+<p>https://blogs.oracle.com/mysqlinnodb/entry/mysql_5_5_innodb_adaptive</p>
+
+<p>MySQL buffer pool里的三种链表和三种page</p>
+
+<p>buffer pool是通过三种list来管理的</p>
+
+<p>1) free list
+2) lru list
+3) flush list</p>
+
+<p>Buffer Pool 中的最小单位是 page，总共分为三种类型，包括了：</p>
+
+<ul>
+  <li>free page<br />预分配，此类 page 未被使用，位于 free 链表中；</li>
+  <li>clean page<br />该类型的 page 对应数据文件中的一个页面，但是页面没有被修改，位于 lru 链表中；</li>
+  <li>dirty page<br />对应数据文件中的一个页面，但是页面已经被修改过，此种类型 page 位于 lru 链表和 flush 链表中。</li>
+</ul>
+
+<p>在 flush list 中存在的页只能是脏页，而且最近修改的页保存在链表头部，当页面修改时，都会被封装为一个 mtr ，在提交的时候，则 mtr 涉及到的页面就会添加到 flush 链表的头部。</p>
+
+<!--
+这样当flush链表做flush动作时，从flush链表的尾部开始scan，写出一定数量的dirty page到磁盘，推荐checkpoint点，使恢复的时间尽可能的短。除了flush链表本身的flush操作可以把dirty page从flush链表删除外，lru链表的flush操作也会让dirty page从flush链表删除。
+-->
+
+<p>buffer pool lru list的工作原理</p>
+
+<p>总的来说每当一个新页面被读取buffer pool之后，MySQL数据库InnoDB存储引擎都会判断当前buffer pool的free page是否足够，若不足，则尝试flush LRU链表。</p>
+
+<p>在MySQL 5.6.2之前，用户线程在读入一个page (buf_read_page)、新建一个page(buf_page_create)、预读page(buf_read_ahead_linear) 等等操作时，都会在操作成功之后，调用buf_flush_free_margin函数，判断当前buffer pool是否有足够的free pages，若free pages不足，则进行LRU list flush，释放出足够的free pages，保证系统的可用性。</p>
+
+<p>通过判断当前buf pool中需要flush多少dirty pages，才能够预留出足够的可被替换的页面(free pages or clean pages in LRU list tail)。</p>
+
+<p>说明：
+可用pages由以下两部分组成：</p>
+<ol>
+  <li>buf pool free list中的所有page，都是可以立即使用的。</li>
+  <li>buf pool LRU list尾部(5+2*BUF_READ_AHEAD_AREA)所有的clean pages。
+其中：BUF_READ_AHEAD_AREA为64，是一个linear read ahead读取的大小，1 extent</li>
+</ol>
+
+<p>由于buf_flush_free_margin函数是在用户线程中调用执行的，若需要flush LRU list，那么对于用户的响应时间有较大的影响。因此，在MySQL 5.6.2之后，InnoDB专门开辟了一个page cleaner线程，处理dirty page的flush动作(包括LRU list flush与flush list flush)，降低page flush对于用户的影响。</p>
+
+<p>在MySQL 5.6.2前后的版本中，LRU list flush的不同之处在于是由用户线程发起，还是有后台page cleaner线程发起。但是，无论是用户线程，还是后台page cleaner线程，再决定需要进行LRU list flush之后，都会调用buf_flush_LRU函数进行真正的flush操作。</p>
+
+<p>不同之处在于，MySQL 5.6.2之前，用户线程调用的buf_flush_free_margin函数，在判断是否真正需要进行LRU list flush时，将LRU list tail部分的clean pages也归为可以被replace的pages，不需要flush。而在page cleaner线程中，每隔1s，无论如何都会进行一次LRU list flush调用，无论LRU list tail中的page是否clean。这也可以理解，用户线程，需要尽量降低flush的概率，提高用户响应；而后台线程，尽量进行flush尝试，释放足够的free pages，保证用户线程不会堵塞。</p>
+
+<p>Buffer Pool LRU/Flush List flush对比</p>
+
+<p>1).LRU list flush，由用户线程触发(MySQL 5.6.2之前)；而Flush list flush由MySQL数据库InnoDB存储引擎后台srv_master线程处理。(在MySQL 5.6.2之后，都被迁移到page cleaner线程中)</p>
+
+<p>2).LRU list flush，其目的是为了写出LRU 链表尾部的dirty page，释放足够的free pages，当buf pool满的时候，用户可以立即获得空闲页面，而不需要长时间等待；Flush list flush，其目的是推进Checkpoint LSN，使得InnoDB系统崩溃之后能够快速的恢复。</p>
+
+<p>3).LRU list flush，其写出的dirty page，需要移动到LRU链表的尾部(MySQL 5.6.2之前版本)；或者是直接从LRU链表中删除，移动到free list(MySQL 5.6.2之后版本)。Flush list flush，不需要移动page在LRU链表中的位置。</p>
+
+<p>4).LRU list flush，由于可能是用户线程发起，已经持有其他的page latch，因此在LRU list flush中，不允许等待持有新的page latch，导致latch死锁；而Flush list flush由后台线程发起，未持有任何其他page latch，因此可以在flush时等待page latch。</p>
+
+<p>5).LRU list flush，每次flush的dirty pages数量较少，基本固定，只要释放一定的free pages即可；Flush list flush，根据当前系统的更新繁忙程度，动态调整一次flush的dirty pages数量，量很大。</p>
+
+<p>buffer pool free list工作原理</p>
+
+<p>free链表里存放的是空闲页面，初始化的时候申请一定数量的page，在使用的过程中，每次成功load页面到内存后，都会判断free page是否够用，如果不够用的话，就flush lru链表和flush链表来释放free page，这就可以满足其他进程在申请页面，使系统可用。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii_init.html" title="Kernel 内存映射">&larr; Older</a></li> 
+         <li class="next"><a href="/post/awesome-stuff.html" title="Awesome Stuff">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1330963200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-page-cleaner_init.html" data-title="Hello World !!!" data-url="/post/mysql-page-cleaner_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

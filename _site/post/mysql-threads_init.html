@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL 线程简介|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,杂项">
+  <meta name="description" content="简单记录下 MySQL 常见的一些操作。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL 线程简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-01-27 Wednesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>我们知道，MySQL 采用的是线程模型，在此主要列举出 MySQL 可能存在的线程，一些常见的操作命令如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ pstack `pgrep mysqld`       打印所有线程的堆栈</code></pre></figure>
+
+<p>在源码中，主要通过 <code>mysql_thread_create()</code> 函数创建线程。</p>
+
+<h2 id="同步机制">同步机制</h2>
+
+<p>InnoDB 中有多种类型的处理线程，通常是采用一个协调线程 + 多个工作线程，例如 page cleaner 线程，可以通过 innodb_page_cleaners 变量设置。</p>
+
+<p>当将 innodb_page_cleaners 变量设置为 7 时，会包含一个协调线程以及 6 个工作线程，</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">pc_request()                              协调线程，设置slots
+ |-os_event_set()                         通知等待的工作线程
+   |-os_event_t::set()
+     |-os_event_t::broadcast()
+       |-mysql_cond_broadcast()
+         |-inline_mysql_cond_broadcast()
+           |-native_cond_broadcast()</code></pre></figure>
+
+<h2 id="主库线程">主库线程</h2>
+
+<p>主要在链接主库时，会调用如下函数，执行主库的 dump 操作。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql_binlog_send()</code></pre></figure>
+
+<h2 id="备库线程">备库线程</h2>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">start_slave_threads()
+ |-handle_slave_io()
+ |-handle_slave_sql()</code></pre></figure>
+
+<!--
+IO 线程，innodb<br>
+主要是 innodb 的线程。
+
+Monitor 监控线程，innodb<br>
+innodb 的监控线程，监控其状态。
+<pre style="font-size:0.8em; face:arial;">
+Thread 13 (Thread 0x7f166cffd700 (LWP 3859)):
+#0  pthread_cond_timedwait@@GLIBC_2.3.2 () at pthread_cond_timedwait.S:238
+#1  0x0000000000bf4593 in os_cond_wait_timed (...) at storage/innobase/os/os0sync.cc:177
+#2  0x0000000000bf4d72 in os_event_wait_time_low (...) at storage/innobase/os/os0sync.cc:705
+#3  0x0000000000cb1aa9 in <font color="red">srv_monitor_thread (arg=0x0)</font> at storage/innobase/srv/srv0srv.cc:1914
+#4  0x00007f1688089dc5 in start_thread (arg=0x7f166cffd700) at pthread_create.c:308
+#5  0x00007f1686f5421d in clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S:113
+</pre>
+-->
+
+<h2 id="innodb">InnoDB</h2>
+
+<p>在 InnoDB 中，线程的创建都是通过 <code>DECLARE_THREAD()</code> 声明函数。</p>
+
+<h3 id="并发控制">并发控制</h3>
+
+<p>在 InnoDB 中，与并发控制相关的有 innodb_thread_concurrency、innodb_thread_sleep_delay、innodb_concurrency_tickets 三个参数，下面解释一下他们是如何工作的。</p>
+
+<p>MySQL 的各个模块包括了解析、优化和存储引擎，而存储采用插件式存储引擎，对应 class handler 基类，常见的调用接口包括了 read_row()、index_read()等。<br /><br /></p>
+
+<!--
+这样的方法有好几个，例如：read by index(有序读）sequential read（连续读）random read（随机读）
+write_row;
+update_row;
+delete_row; 具体函数参见源码。
+-->
+
+<p>在调用上述的这些 API 时，InnoDB 需要先检查内部的线程计数，如果内部线程计数超过了 innodb_thread_concurrency 就等待 innodb_thread_sleep_delay 变量设置的微妙后再尝试进入；如果第二次仍然不成功，则进入线程队列 sleep (FIFO)。之所以尝试两次，主要是为了减少线程等待计数和降低上下文切换。<br /><br /></p>
+
+<p>一但线程进入，就会得到 innodb_concurrency_tickets 票数，以便以后的 innodb_concurrency_tickets 次线程都不会再次检测，可以免 check 进入。<br /><br /></p>
+
+<p>当读写记录结束后退出 InnoDB 层时会将当前并发线程数减 1，并检查其是否低于 innodb_thread_concurrency，如果是的话，则从 FIFO 中唤醒一个等待的线程，保证并发线程不会超过 innodb_thread_concurrency 参数。<br /><br /></p>
+
+<!--
+2、当线程进入InnoDB层后，但在获取数据时由于锁请求无法得到满足而需要挂起时，线程将强制退出InnoDB层，当锁请求满足后，线程继续运行并强制进入到InnoDB层，这会导致实际并发线程数不是严格控制在innodb_thread_concurrency之内
+-->
+
+<p>从 5.6 开始，如果使用了 GCC Build-in 的原子操作，在进入 Innodb 层的线程并发控制走与之前不同的逻辑，5.5也可以调用通过原子操作进行并发控制的逻辑，但需要打开只读选项innodb_thread_concurrency_timer_based来控制.</p>
+<pre style="font-size:0.8em; face:arial;">
+ha_innobase::index_read()
+  |-innobase_srv_conc_enter_innodb()
+  |   |-srv_conc_enter_innodb()
+  |       |-srv_conc_enter_innodb_with_atomics()      如果使用了GCC Build-in的原子操作
+  |
+  |-row_search_for_mysql()
+  |-innobase_srv_conc_exit_innodb()
+</pre>
+<p>在 5.6 引入了 adaptive sleep 方法，可以根据系统的负载做一些自适应调整，且新增了 innodb_adaptive_max_sleep_delay 参数。<br /><br /></p>
+
+<p>当 innodb_adaptive_max_sleep_delay&gt;0 时，innodb_thread_sleep_delay 则会动态调整，以前者为上限。
+&lt;!–
+  如果sleep了当前值以后还是不能进入，就把sleep时间+1；
+  如果还有线程在sleep时，已经有了空闲线程，就把当前值的sleep 时间减半。
+innodb_thread_sleep_delay降低比增加的更快，这样在并发线程数很高时，当限制并发数早就达到，其他线程的每次sleep时间会缓慢拉长。而当Innodb层很空闲时，sleep时间又会快速降到非常低
+调整sleep到一个优化值的目的是，过小的sleep值可能会产生太多的线程切换，但过长的sleep时间，在并发比较空闲的时候又会影响性能。新的并发控制策略有利于随着负载的变化而做自适应调整。</p>
+
+<p>Innodb_thread_concurrency不足</p>
+
+<p>1线程因为锁等待而退出innodb层，当获取锁时可以直接重入innodb(跳过此参数检查)，因此系统并发执行的线程数可能大于此参数值。</p>
+
+<p>2代码路径靠后，此时线程已经开始执行命令，进入到ha_innobase，应该在mysql_start_query前限制即thread_running。</p>
+
+<p>为此好多技术高手开发了相应patch，从server层控制并发执行的线程数，下文将做描述。</p>
+
+<p>当线程能够进入Innodb层时：
+a.如果当前线程之前sleep过一次，并且当前innodb_thread_sleep_delay&gt;20，将innodb_thread_sleep_delay减1
+b.如果当前没有等待的线程，将innodb_thread_sleep_delay除以2
+如果线程目前因并发控制无法进入Innodb层：
+a.如果当前innodb_thread_sleep_delay&gt;innodb_adaptive_max_sleep_delay
+，将innodb_thread_sleep_delay的值设置为innodb_adaptive_max_sleep_delay
+b.sleep  innodb_thread_sleep_delay毫秒
+c.如果该线程已经sleep了超过1次，将innodb_thread_sleep_delay++
+可以看到innodb_thread_sleep_delay降低比增加的更快。这样在并发线程数很高时，当限制并发数早就达到，其他线程的每次sleep时间会缓慢拉长。而当Innodb层很空闲时，sleep时间又会快速降到非常低</p>
+
+<p>调整sleep到一个优化值的目的是，过小的sleep值可能会产生太多的线程切换，但过长的sleep时间，在并发比较空闲的时候又会影响性能。新的并发控制策略有利于随着负载的变化而做自适应调整。</p>
+
+<p>另外注意，在使用原子操作进行并发控制后，就再也没有使用信号量让线程进行等待了。</p>
+
+<p>这种自适应调整策略的效率依然有待于评估，也不确定其对某些工作负载是否存在不利影响。合适的参数配置应当由性能测试来给出。</p>
+
+<p>那么什么是innodb_thread_concurrency最佳值？
+这个值依赖许多因素，包括你的负载量，跑在什么样的硬件的软件上。如果你有1-2个CPU，你经常能做的很好，可以禁用它（innodb_thread_concurrency=0，从5.0.19开始还有更多的默认值）。多个CPU（4+CPU）的情况又有所不同。</p>
+
+<p>MYSQL5.1以后对多核CPU支持改进了很多，将该值设置为0，或者2*CPU是一个比较好的注意。</p>
+
+<p>waiting in InnoDB queue状态频繁出现，说明数据库并发太大，需要分析引起并发太大的原因或者增加数据库服务器（假设你根据硬件精确计算了该值）。</p>
+
+<p>理论上你可以使用2*（NUMCPU+NUMDISKS)计算值以便能够激活2倍于CPU加磁盘的资源。然后在实际环境中，实践被证明，这个值并不是最优的。</p>
+
+<p>如果正在使用innodb，这个值设置的小于CPU数量，mysql将不会利用到所有的CPU资源。</p>
+
+<p>关于innodb_commit_concurrency</p>
+
+<p>如你所见innodb_commit_concurrency仅用来保护行访问，使用内部结构和锁定分阶段提交，他仍是为保护变量。他限制innodb内核激活线程的commit。一个最佳的值也依赖很多其他因素。但是从5.1.36开始mysql不允许将该值设置为非0，该值只能为默认值0，mysql不限制并发提交。</p>
+
+<p>如果没有电池保护，设置为innodb_flush_logs_at_trx_commit=1，但你可能想使用2或0。如果二进制日志被开启，他通常不重要，innodb会进行同步操作。</p>
+
+<p>在unix平台测试的结果：
+日志刷新方法设置为O_DIRECT
+innodb_flush_logs_at_trx_commit 改参数的调整对性能和崩溃恢复数据丢失至关重要
+1                       2                              0
+                    提升130%                       提升10%
+一般设置为2是一种平衡的方法，崩溃丢失1-2秒的数据，1是默认的，但是十分影响性能，如果是在要求十分安全的应用中，建议为1，并且设置日志同步sync_log。</p>
+
+<p>http://www.gpfeng.com/?p=451      Pthread mutex与GCC atomic性能测试
+–&gt;
+&lt;/p&gt;</p>
+
+<p>https://my.oschina.net/realfighter/blog/363853
+http://blog.itpub.net/15480802/viewspace-1067518/</p>
+
+<h3 id="主线程">主线程</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">srv_master_thread()
+  作用：</code></pre></figure>
+
+<p>主线程的当前状态可以通过 <code>SHOW ENGINE INNODB STATUS\G</code> 命令查看。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SHOW ENGINE INNODB STATUS\G
+... ...
+-----------------
+BACKGROUND THREAD
+-----------------
+srv_master_thread loops: 1 srv_active, 0 srv_shutdown, 78844 srv_idle
+srv_master_thread log flush and writes: 78845
+... ...
+--------------
+ROW OPERATIONS
+--------------
+... ...
+Main thread process no. 6432, id 140497645459200, state: sleeping
+... ...</code></pre></figure>
+
+<p>如下是该线程的主要处理流程。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">srv_master_thread()
+ |-srv_get_activity_count()         ← 初始化时获取活跃事件计数
+ |
+ |  ###BEGIN while
+ |-srv_master_sleep()               ← 休眠1秒
+ |-srv_check_activity()             ← 查看是否有活跃的事件，也就是比较当前值与历史值
+ |
+ |-srv_get_activity_count()         ← 有活跃事件，则更新历史值old_activity_count
+ |-srv_master_do_active_tasks()     ← 处理活跃的事件
+ | |-row_drop_tables_for_mysql_in_background()  ← 在没有查询时延迟删除表
+ | |-log_free_check()                      ← 确保仍有足够的redo log空间
+ | |-ibuf_merge_in_background()            ← 做insert buffer的合并操作
+ | |-srv_sync_log_buffer_in_background()   ← 刷redo日志
+ | |-srv_master_evict_from_table_cache()   ← 检查dict cache
+ | |-log_checkpoint()
+ |
+ |-srv_master_do_idle_tasks()       ← 没有活跃事件
+ | |-row_drop_tables_for_mysql_in_background()  ← 在没有查询时延迟删除表
+ | |-log_free_check()                      ← 确保仍有足够的redo log空间
+ | |-ibuf_merge_in_background()            ← 做insert buffer的合并操作
+ | |-srv_master_evict_from_table_cache()   ← 检查dict cache
+ | |-srv_sync_log_buffer_in_background()   ← 刷redo日志
+ |   |-log_buffer_sync_in_background()     ← 根据innodb_flush_log_at_timeout参数判断刷新时间
+ |     |-log_write_up_to()
+ | |-log_checkpoint()
+ |  ###END while</code></pre></figure>
+
+<p>http://mysqllover.com/?p=636
+http://www.penglixun.com/tech/database/innodb_master_thread.html</p>
+
+<p>在 srv_check_activity() 函数中，实际会比较 <code>srv_sys-&gt;activity_count</code> 与历史记录的值，srv_inc_activity_count</p>
+
+<p>从如上代码逻辑基本可以看出，实际上 idle 和 active 的时候，所做的事情几乎是一样的，不同的是，在 active 状态下，每 47 秒才检查 dict cache，每 7 秒才做一次 check point ；因此，在 idle 状态下，master 线程可能会更加繁忙。</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">os_thread_ret_t</span>
+<span class="n">DECLARE_THREAD</span><span class="p">(</span><span class="n">srv_master_thread</span><span class="p">)(</span>
+    <span class="kt">void</span><span class="o">*</span>   <span class="n">arg</span> <span class="n">MY_ATTRIBUTE</span><span class="p">((</span><span class="n">unused</span><span class="p">)))</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">srv_shutdown_state</span> <span class="o">==</span> <span class="n">SRV_SHUTDOWN_NONE</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="n">srv_master_sleep</span><span class="p">();</span>
+
+        <span class="n">MONITOR_INC</span><span class="p">(</span><span class="n">MONITOR_MASTER_THREAD_SLEEP</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">srv_check_activity</span><span class="p">(</span><span class="n">old_activity_count</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">old_activity_count</span> <span class="o">=</span> <span class="n">srv_get_activity_count</span><span class="p">();</span>
+            <span class="n">srv_master_do_active_tasks</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">srv_master_do_idle_tasks</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="n">srv_shutdown_state</span> <span class="o">!=</span> <span class="n">SRV_SHUTDOWN_EXIT_THREADS</span>
+           <span class="o">&amp;&amp;</span> <span class="n">srv_master_do_shutdown_tasks</span><span class="p">(</span><span class="o">&amp;</span><span class="n">last_print_time</span><span class="p">))</span> <span class="p">{</span>
+
+        <span class="cm">/* Shouldn&#39;t loop here in case of very fast shutdown */</span>
+        <span class="n">ut_ad</span><span class="p">(</span><span class="n">srv_fast_shutdown</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">my_thread_end</span><span class="p">();</span>
+    <span class="n">os_thread_exit</span><span class="p">();</span>
+    <span class="n">DBUG_RETURN</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/sqlite-introduce.html" title="SQLite 使用简介">&larr; Older</a></li> 
+         <li class="next"><a href="/post/logrotate-usage.html" title="logrotate 使用方法">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1453824000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-threads_init.html" data-title="MySQL 线程简介" data-url="/post/mysql-threads_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

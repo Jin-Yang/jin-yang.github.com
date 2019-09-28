@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>内存-内核空间|JinYang's Blog</title>
+  <meta name="keywords" content="linux,内存,kernel,内存空间">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>内存-内核空间</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2014-10-21 Tuesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>线性地址到物理地址的映射是通过 page table 完成的，内核会在启动分页机制前完成初始化；而且内核会将 A) 不可用物理地址空间，B) 内核代码以及内核初始数据结构对应的地址空间保留。</p>
+
+<p>接下来，看看内核中是如何管理内存的。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>系统启动时，BIOS 会自动发现当前物理内存的地址，而 Linux 内核会在启动时 (还在实地址模式) 通过 e820 BIOS 系统调用获取当前系统的物理内存地址，当然还有 IO 的映射地址等；开始内核会初始化部分内存供内核使用，然后调用 Bootmem 系统。</p>
+
+<p>Linux 将内存分为不同的 Zone 管理，每个 Zone 中通过一个 buddy 系统分配内存，每次分配内存都是以页的 2 指数倍分配，例如内核页大小为 4K(<code>getconf PAGE_SIZE</code>)，那么分配的页为 4K, 8K, 16K, …, 128K，一般系统最大为 128K 。</p>
+
+<p>Buddy Allocator 最大的问题就是碎片，所以一般系统不会直接使用，通常其上层还包括了 Page Cache、Slab Allocator 。</p>
+
+<p><img src="/images/linux/kernel/memory-managment-overview.jpg" alt="memory managment overview" title="memory managment overview" class="pull-center" width="70%" /></p>
+
+<h3 id="地址空间">地址空间</h3>
+
+<p>虚拟地址空间分成了两部分：A) 用户进程，使用的是地址空间的低地址部分 <code>0~TASK_SIZE</code>；B) 内核空间，地址空间的高地址部分。</p>
+
+<!--
+PAGE_OFFSET：内核虚拟地址空间中低端内存的起始地址
+PHYSICAL_START：内核物理地址的起始地址
+MEMORY_START：内核低端内存的物理起始地址
+-->
+
+<h2 id="物理内存探测">物理内存探测</h2>
+
+<p>Linux 被 bootloader 加载到内存后，首先执行的是 <code>_start()@arch/x86/boot/header.S/header.S</code>，该函数在做了一些准备工作后会跳转到 boot 目录下的 <code>main()@main.c</code> 函数执行，第一次内存相关的调用是在实模式时，通过调用 <code>detect_memory()</code> 实现。</p>
+
+<p>如下是该函数的实现。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">detect_memory</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">err</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">detect_memory_e820</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">detect_memory_e801</span><span class="p">())</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">detect_memory_88</span><span class="p">())</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>该函数会依次尝试调用 <code>detect_memory_e820()</code>、<code>detect_memory_e801()</code>、<code>detect_memory_88()</code> 获得系统物理内存布局，这三个函数都在 memory.c 中实现。</p>
+
+<p>其内部都会以内联汇编的形式调用 bios 中断以取得内存信息，该中断调用形式为 <code>int 0x15</code>，同时调用前分别把 <code>AX</code> 寄存器设置为 <code>E820h</code>、<code>E801h</code>、<code>88h</code>，该功能分别用于获取系统内存布局、获取内存大小、获取扩展内存大小，关于 <code>0x15</code> 号中断详细信息可以去查询相关手册。</p>
+
+<p>在 x86 中，IO 设备也会映射到内存空间，也就是说系统使用的物理内存空间是不连续的，被分成了很多段，而且每段的属性也不一样。通过 <code>int 0x15</code> 查询物理内存时，每次返回一个内存段的信息，因此要想返回系统中所有的物理内存，必须以迭代的方式去查询。</p>
+
+<h3 id="内存查询">内存查询</h3>
+
+<p>目前使用较多的是 <code>e820</code> ，可以通过 <code>dmesg</code> 查看内核启动输出，一般有类似 <code>e820: BIOS-provided physical RAM map</code> 的输出，下面以 <code>e820</code> 为例。</p>
+
+<blockquote>
+  <p>e820 是和 BIOS 的 int 0x15 中断相关的，之所以叫 e820 是因为在用这个中断时 AX 必须是 0xe820。</p>
+</blockquote>
+
+<p>其中，与次相关的结构体如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">e820entry</span> <span class="p">{</span>
+    <span class="n">__u64</span> <span class="n">addr</span><span class="p">;</span>             <span class="cm">/* start of memory segment */</span>
+    <span class="n">__u64</span> <span class="n">size</span><span class="p">;</span>             <span class="cm">/* size of memory segment */</span>
+    <span class="n">__u32</span> <span class="n">type</span><span class="p">;</span>             <span class="cm">/* type of memory segment */</span>
+<span class="p">}</span> <span class="n">__attribute__</span><span class="p">((</span><span class="n">packed</span><span class="p">));</span>
+
+<span class="k">struct</span> <span class="n">e820map</span> <span class="p">{</span>
+    <span class="n">__u32</span> <span class="n">nr_map</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">e820entry</span> <span class="n">map</span><span class="p">[</span><span class="n">E820_X_MAX</span><span class="p">];</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>在 <code>detect_memory_e820()</code> 函数中，把 <code>int 0x15</code> 放到一个 do-while 循环里，将每次得到的内存段放到 <code>struct e820entry</code> 里。像其它启动时获得的结果一样，最终都会被放到 <code>boot_params</code> 里，探测到的各个内存段情况被放到了 <code>boot_params.e820_map</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">main()@arch/x86/boot/main.c
+ |-detect_memory()                 ← 探测物理内存
+   |-detect_memory_e820()
+   |-detect_memory_e801()
+   |-detect_memory_88()
+
+start_kernel()
+ |-setup_arch()                    ← 完成与体系结构相关的初始化工作
+   |-setup_memory_map()
+     |-e820_print_map()</code></pre></figure>
+
+<p>Linux 物理内存管理区会在 <code>start_kernel()</code> 函数中进行初始化，此时启动分配器已经建立，所以可以从bootmem中分配需要的内存。</p>
+
+<p>在 <code>e820_print_map()</code> 函数中，会打印如下内容。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">[    0.000000] e820: BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x0000000000057fff] usable
+[    0.000000] BIOS-e820: [mem 0x0000000000058000-0x0000000000058fff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000059000-0x000000000009cfff] usable
+[    0.000000] BIOS-e820: [mem 0x000000000009d000-0x00000000000fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x00000000cc8e2fff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000cc8e3000-0x00000000cc8e3fff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x00000000cc8e4000-0x00000000cc90dfff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000cc90e000-0x00000000d6202fff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000d6203000-0x00000000d7f52fff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000d7f53000-0x00000000d7fa2fff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x00000000d7fa3000-0x00000000d7ffefff] ACPI data
+[    0.000000] BIOS-e820: [mem 0x00000000d7fff000-0x00000000d7ffffff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000d8000000-0x00000000d80fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000d8200000-0x00000000db7fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000f80fa000-0x00000000f80fafff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000f80fd000-0x00000000f80fdfff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fe000000-0x00000000fe010fff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000100000000-0x00000002237fffff] usable</code></pre></figure>
+
+<!--
+http://tomhibolu.iteye.com/blog/1214876
+-->
+
+<h2 id="内存初始化">内存初始化</h2>
+
+<p>通过 BIOS 取得所有的内存布局之后，Linux 会对所获取的内存块做相关的检查并保存对其处理后的区域，也就是内存活动区域，会保存在 <code>struct node_active_region</code> 中。</p>
+
+<p>另外，在 <code>arch/x86/kernel/x86_init.c</code> 中，维护了一个 <code>x86_init</code> 变量，用于保存常见的初始化函数，如页表的初始化函数 <code>pagetable_init()</code>，实际指向的是 <code>paging_init()</code> 函数。</p>
+
+<p>接着会对 zones 进行初始化，设置最终的分页机制等；系统的内存信息保存在 <code>/proc/meminfo</code> 中，内核实现可以参考 <code>fs/proc/meminfo.c</code> 。</p>
+
+<blockquote>
+  <p>MTRR (Memory Type Range Register) 用来确定系统内存中一段物理内存的类型，进而可以控制处理器对内存区域的访问，也就是告诉 CPU 在解析或者说操作内存的时候应该用什么手段，常见的有 Write Through(WT)、Write Back(WB)、Write Protected(WP)等。</p>
+
+  <p>系统当前的 mtrr 信息保存在 /proc/mtrr 中。</p>
+</blockquote>
+
+<p>如下，详细介绍 Linux 中内存的初始化过程，首先需要注意的是，64-bits 没有 HIGH 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">start_kernel()@init/main.c
+ |-setup_arch()                           ← 完成与体系结构相关的初始化工作
+ | |-setup_memory_map()                   ← 建立内存图
+ | | |-x86_init.resources.memory_setup()
+ | | | |-sanitize_e820_map()              ← 消除内存重叠部分
+ | | | |-append_e820_map()                ← 将内存配置从boot_params.e820_map拷贝到e820中
+ | | |   |-e820_add_region()              ← 将内存段的信息保存到e820的map数组中
+ | | |-e820_print_map()                   ← 打印出物理内存的分布
+ | |
+ | |-e820_end_of_ram_pfn()                ← 找出最大的可用页帧号，后面会找出低端内存的最大页面号
+ | | |-e820_end_pfn()                     ← 会打印last_pfn、max_arch_pfn
+ | |
+ | |-mtrr_bp_init()                       ← 设置MTRR
+ | |-init_mem_mapping()                   ← 设置最终的内存映射机制
+ | | |-probe_page_size_mask()
+ | | |  |-init_gbpages()
+ | | |-init_memory_mapping()              ← 入参是(0,0x100000)，该函数中会打印一系列的mapping信息
+ | | | |-split_mem_range()
+ | | | |-kernel_physical_mapping_init()   ← 完成虚拟地址到物理地址的映射
+ | | | | |-pgd_populate()
+ | | | | |-__flush_tlb_all()
+ | | | |-add_pfn_range_mapped()
+ | | |-load_cr3()
+ | | |-__flush_tlb_all()
+ | | |-early_memtest()
+ | |
+ | |-early_trap_pf_init()
+ | |-setup_real_mode()
+ | |-memblock_set_current_limit()
+ | |-reserve_initrd()                     ← 设置RADDISK
+ | |-acpi_boot_table_init()               ← ACPI设置
+ | |
+ | |-initmem_init()                       ← 初始化内存分配器
+ | |-x86_init.paging.pagetable_init()     ← 建立完整的页表，实际调用paging_init()
+ |   |-sparse_init()
+ |   |-node_clear_state()
+ |   |-zone_sizes_init()                  ← 在此设置各个区，可以查看/proc/meminfo
+ |     |-free_area_init_nodes()           ← 打印Zone ranges信息
+ |
+ |-build_all_zonelists()                  ← 区域链表设置
+ |-page_alloc_init()</code></pre></figure>
+
+<!--
+page_table_range_init()
+kmem_cache_init()   # 打印SLUB相关信息
+-->
+
+<p>在设置内存时，首先会打印出系统的物理内存分布，然后找出最大物理页面帧号 <code>max_pfn</code>，低端内存的最大页面号 <code>max_low_pfn</code> 。</p>
+
+<h3 id="页表初始化">页表初始化</h3>
+
+<p>在 2.6.11 后，Linux 采用四级分页模型：1) 页全局目录 (Page Global Directory, PGD)；2) 页上级目录 (Page Upper Directory, PUD)；3) 页中间目录 (Page Middle Directory, PMD)；4) 页表 (Page Table, PT)。</p>
+
+<p>对于没有启动 PAE 的 32 位系统，实际上只用到了两级分页，将 PUD、PMD 设置为 0 达到使用两级分页的目的，但为了保证程序能 32 位和 64 系统上都能运行，内核保留了页上级目录和页中间目录在指针序列中的位置。</p>
+
+<h2 id="内存结构">内存结构</h2>
+
+<p><img src="/images/linux/kernel/memory-architecture-zone-page.png" alt="memory architecture node zone page" title="memory architecture node zone page" class="pull-center" width="70%" /></p>
+
+<p>为了实现了良好的可伸缩性，Linux 采用了与具体架构不相关的设计模型，由内存节点 node、内存区域 zone 和物理页框 page 三级架构组成。</p>
+
+<h4 id="node">NODE</h4>
+
+<p>一个总线设备访问位于同一个节点中的任意内存单元所花的代价相同，而访问任意两个不同节点中的内存单元所花的代价不同，也就是对于 UMA 只有一个节点，对于 NUMA 则会有多个节点。</p>
+
+<p>内核中使用 <code>struct pg_data_t</code> 来表示内存节点 node 。</p>
+
+<!-- Uniform Memory Architecture, UMA -->
+
+<h4 id="zone">ZONE</h4>
+
+<p>同一个内存节点内，由于各种原因它们的用途和使用方法可能并不一样，如 IA32，由于历史原因使得 ISA 设备只能使用最低 16MB 来进行 DMA 传输。</p>
+
+<p>一般来说，分为了 <code>ZONE_DMA</code>、<code>ZONE_DMA32</code>、<code>ZONE_NORMAL</code>、<code>ZONE_HIGHMEM</code> 几种，不同的平台会有所区别，例如 64 位中有 <code>ZONE_DMA32</code> ，而没有 <code>ZONE_HIGHMEM</code> 。</p>
+
+<h4 id="page">PAGE</h4>
+
+<p>内存管理的最小单元是 Page ，这也就意味着在一页内的线性地址和物理地址是连续的。另外，需要注意 page 与 page frame 的区别，后者是物理内存的分割单元；前者包含数据，可能保存在 page frame 中，也可能保存在磁盘上。</p>
+
+<p>详细参见下面的介绍。</p>
+
+<p><img src="/images/linux/kernel/memory-node-zone-page-layout.jpg" alt="memory node zone page layout" title="memory node zone page layout" class="pull-center" width="90%" /></p>
+
+<h2 id="页相关操作">页相关操作</h2>
+
+<p>如下，是用户空间和内核空间中创建内存的流程。</p>
+
+<p><img src="/images/linux/kernel/memory-kernel-userspace-management.jpg" alt="memory kernel userspace management" title="memory kernel userspace management" class="pull-center" width="80%" /></p>
+
+<p>不管是内核还是还是用户空间，分配内存时，底层都是以 page 为单位分配内存，这个 page 可以作为：</p>
+
+<ol>
+  <li>页缓存使用 (mapping域指向address_space对象)<!--这个东西主要是用来对磁盘数据进行缓存，我们平时监控服务器时，经常会用top/free看到cached参数，这个参数其实就是页缓存(page cache)，一般如果这个值很大，就说明内核缓冲了许多文件，读IO就会较小--></li>
+  <li>作为私有数据 (由private域指向)<!--可以是作为块冲区中所用，也可以用作swap，当是空闲的page时，那么会被伙伴系统使用。--></li>
+  <li>作为进程页表中的映射<!--映射到进程页表后，我们用户空间的malloc才能获得这块内存--></li>
+</ol>
+
+<p>page 的所有信息通过 <code>struct page</code> 表示，该结构体在 <code>include/linux/mm_types.h</code> 中定义：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">page</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">flags</span><span class="p">;</span>                  <span class="c1">// 是否脏、锁定，可以查看page-flags.h</span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="n">mapping</span><span class="p">;</span>
+        <span class="kt">void</span> <span class="o">*</span><span class="n">s_mem</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="kt">atomic_t</span> <span class="n">_count</span><span class="p">;</span>                      <span class="c1">// 页引用计数，-1表示未使用</span>
+    <span class="kt">atomic_t</span> <span class="n">_mapcount</span><span class="p">;</span>                   <span class="c1">// 页映射计数</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">virtual</span><span class="p">;</span>                        <span class="c1">// 页在虚拟内存中的地址</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>内核通过 <code>struct page</code> 表示每个物理页，占用 40 个字节，假定系统物理页大小为 4KB 。</p>
+
+<p>在 <code>include/asm-x86/page.h</code> 中定义了内核中和 page 相关的一些常量：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define PAGE_SHIFT  12</span>
+<span class="cp">#define PAGE_SIZE   (_AC(1,UL) &lt;&lt; PAGE_SHIFT)</span>
+<span class="cp">#define PAGE_MASK   (~(PAGE_SIZE-1))</span></code></pre></figure>
+
+<p>可以看出一个 page 所对应的物理块的大小 (PAGE_SIZE) 是 4096 ；内核会将所有 <code>struct page* </code> 放到一个全局数组 (mem_map) 中，而内核中常会看到的页帧号 (pfn)，也就是该数组的 index 。</p>
+
+<p>在 <code>arch/x86/kernel/e820.c</code> 文件中，定义了最大的 pfn 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#ifdef CONFIG_X86_32</span>
+<span class="cp"># ifdef CONFIG_X86_PAE</span>
+<span class="cp">#  define MAX_ARCH_PFN      (1ULL&lt;&lt;(36-PAGE_SHIFT))</span>
+<span class="cp"># else</span>
+<span class="cp">#  define MAX_ARCH_PFN      (1ULL&lt;&lt;(32-PAGE_SHIFT))</span>
+<span class="cp"># endif</span>
+<span class="cp">#else </span><span class="cm">/* CONFIG_X86_32 */</span><span class="cp"></span>
+<span class="cp"># define MAX_ARCH_PFN MAXMEM&gt;&gt;PAGE_SHIFT</span>
+<span class="cp">#endif</span></code></pre></figure>
+
+<p>这里的 <code>MAX_ARCH_PFN</code> 就是系统的最大页帧号，但这个只是理论上的最大值，在 <code>e820_end_pfn()</code> 函数中，会计算最终的 <code>max_pfn</code>，可以通过 <code>dmesg | grep max_arch_pfn</code> 命令查看 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">start_kernel()
+ |-setup_arch()
+   |-e820_end_of_ram_pfn()
+     |-e820_end_pfn()</code></pre></figure>
+
+<p>接着看下与 page 结构的相关宏以及函数。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// include/asm-generic/memory_model.h</span>
+<span class="cp">#define page_to_pfn __page_to_pfn</span>
+<span class="cp">#define pfn_to_page __pfn_to_page</span></code></pre></figure>
+
+<p>如上宏定义的作用是将 <code>struct page*</code> 和前面提到的 <code>pfn</code> 页帧号之间相互转换。</p>
+
+<p>根据在内核编译时的不同参数，那么对应的 <code>__page_to_pfn()</code> 和 <code>__pfn_to_page()</code> 函数也不相同，可以通过如下命令查看当前发行版本所使用的宏定义。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ grep -E &#39;(\&lt;CONFIG_FLATMEM\&gt;|\&lt;CONFIG_DISCONTIGMEM\&gt;|\&lt;CONFIG_SPARSEMEM_VMEMMAP\&gt;|\&lt;CONFIG_SPARSEMEM\&gt;)&#39; \
+    /boot/config-$(uname -r)
+CONFIG_SPARSEMEM=y
+CONFIG_SPARSEMEM_VMEMMAP=y</code></pre></figure>
+
+<h3 id="页分配与释放">页分配与释放</h3>
+
+<p>如果一个模块需要分配大块的内存，最好使用面向页的分配技术，下面列举所有的页为单位进行连续物理内存分配，也称为低级页分配器：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">alloc_pages(gfp_mask, order)
+    分配2^order个页，返回指向第一页的指针
+alloc_pages(gfp_mask)
+    分配一页，返回指向页的指针
+__get_free_pages(gfp_mask, order)
+    分配2^order个连续页，返回指向其逻辑地址的指针
+__get_free_pages(gfp_mask)
+    分配一页，返回指向其逻辑地址的指针，未清零
+get_zeroed_page(gfp_mask)
+    分配一页，并填充内容为0，返回指向其逻辑地址的指针
+
+__free_pages(page, order)
+    从page开始，释放2^order个页
+free_pages(addr, order)
+    从地址addr开始，释放2^order个页
+free_page(addr)
+    释放addr所在的那一页</code></pre></figure>
+
+<!--
+get_zeroed_page：对于用户空间，这个方法能保障系统敏感数据不会泄露
+page_address: 把给定的页转换成逻辑地址
+-->
+
+<h3 id="字节分配与释放">字节分配与释放</h3>
+
+<p><code>kmalloc()</code>、<code>vmalloc()</code> 分配都是以字节为单位，所分配到的内存在物理内存中连续且保持原有的数据不清零。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">#include &lt;linux/slab.h&gt;
+void * kmalloc(size_t size, gfp_t flags);
+  返回内存块的指针，其内存块大小至少为size，分配内存在物理内存中连续，数据不清零
+size  : 申请内存大小。
+flags : 取值说明。
+  GFP_USER  : 用户空间的分配内存，可能休眠；
+  GFP_KERNEL: 内核空间的内存分配，当空闲内存较少时可能休眠等待一个页面，休眠时内核会用适当的动作获取空闲页；
+  GFP_ATOMIC: 原子性的内存分配，内核会预留部分空闲页，不会休眠，如中断处理程序、软中断、tasklet等；
+  __GFP_DMA : 要求分配可用于DMA的内存。</code></pre></figure>
+
+<p><code>kmalloc()</code> 最终调用 <code>__get_free_pages()</code> 来分配内存，故前缀都是 <code>GFP_</code> 开头，最多只能分配 32 个 page 大小的内存，也就是 <code>32*page=32*4K=128K</code> 大小，其中 16 个字节用来记录页描述结构。</p>
+
+<!-- kmalloc分配的是常驻内存，不会被交换到文件中。最小分配单位是32或64字节。-->
+
+<p><code>kzalloc()</code> 等价于先用 <code>kmalloc()</code> 申请空间，再初始化，所有申请的元素都被初始化为 0 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">kzalloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="kt">gfp_t</span> <span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">kmalloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">flags</span> <span class="o">|</span> <span class="n">__GFP_ZERO</span><span class="p">);</span>  <span class="c1">// 通过标志位表示初始化元素为0</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><code>vmalloc()</code> 是一个基本的 Linux 内存分配机制，在虚拟内存空间分配一块连续的内存区，尽管这些页在物理内存中不连续 (使用单独的 <code>alloc_page()</code> 来获得每个页) ，但内核认为它们地址是连续的，也就是说所分配的内存是逻辑上连续的。</p>
+
+<p>另外，需要注意的是，在内核中，<code>vmalloc()</code> 在大部分情况下不推荐使用，因为在某些体系上留给 <code>vmalloc()</code> 的地址空间相对小，且效率不高，默认是可以休眠。</p>
+
+<p>简言之，<code>vmalloc()</code> 返回一个指向内存块的指针，其内存块大小至少为 size，函数允许休眠。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">#include &lt;linux/vmalloc.h&gt;
+void * vmalloc(unsigned long size);
+void vfree(void * addr);</code></pre></figure>
+
+<p><code>vmalloc()</code> 使用虚拟地址，每次分配都要通过适当地设置页表来建立 (虚拟) 内存区域，其分配范围是 <code>VMALLOC_START~VAMLLOC_END</code> 。</p>
+
+<!--
+vmalloc分配的地址只在处理器有MMU之上才有意义。当驱动需要真正的物理地址时，就不能使用vmalloc。调用vmalloc的正确场合是分配一个大的、只存在于软件中的、用于缓存的内存区域时。注意：vamlloc比__get_free_pages要更多开销，因为它必须即获取内存又建立页表。因此，调用vmalloc 来分配仅仅一页是不值得的。vmalloc的一个小的缺点在于它无法在原子上下文中使用。因为它内部使用kmalloc(GFP_KERNEL) 来获取页表的存储空间，因此可能休眠。vmalloc是面向页的 (它们会修改页表) ，重定位的或分配的空间都会被上调到最近的页边界。
+-->
+
+<!--
+kmalloc     内核空间    物理地址连续    最大值128K-16   kfree   性能更佳
+vmalloc     内核空间    虚拟地址连续    更大            vfree   更易分配大内存
+malloc      用户空间    虚拟地址连续    更大            free
+-->
+
+<h3 id="slab">SLAB</h3>
+
+<p>内核的驱动程序常常需要反复分配许多相同大小内存块，为此增加了一些特殊的内存池，称为高速缓存。而 Linux 内核的高速缓存也被称为 “SLAB 分配器”，对应了 <code>kmem_cache_t</code> 类型，相关函数有：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 创建可容纳任意数目内存区域的、大小都相同的高速缓存对象
+kmem_cache_t *kmem_cache_create(const char *name, size_t size,size_t offset, unsigned long flags,
+    void (*constructor)(void *, kmem_cache_t *,unsigned long flags),
+    void (*destructor)(void *, kmem_cache_t *, unsigned long flags));
+
+----- 调用如下函数从已创建的后备高速缓存中分配对象，flags和kmalloc的相同
+void *kmem_cache_alloc(kmem_cache_t *cache, int flags);
+
+----- 使用如下函数释放一个对象
+void kmem_cache_free(kmem_cache_t *cache, const void *obj);
+
+----- 当驱动用完这个高速缓存时，一般在当模块被卸载时释放缓存
+int kmem_cache_destroy(kmem_cache_t *cache);</code></pre></figure>
+
+<p>slab 分配器的特点有：</p>
+
+<ul>
+  <li>对于频繁地分配和释放的数据结构，会缓存；</li>
+  <li>为了避免由于频繁分配和回收导致内存碎片，会通过空闲链表进行缓存；</li>
+  <li>部分缓存专属单个处理器，分配和释放操作可以不加 SMP 锁；</li>
+</ul>
+
+<p>slab 层把不同的对象划分为高速缓存组，每个高速缓存组都存放不同类型的对象，每个对象类型对应一个高速缓存，每个高速缓存都是用 <code>kmem_cache</code> 结构来表示。</p>
+
+<!--
+kmem_cache_crreate：创建高速缓存
+kmem_cache_destroy: 撤销高速缓存
+kmem_cache_alloc: 从高速缓存中返回一个指向对象的指针
+kmem_cache_free：释放一个对象
+-->
+
+<p>例如在内核初始化时，通过 <code>fork_init()</code> 中会创建一个名为 <code>struct task_struct</code> 的高速缓存，每当进程调用 <code>fork()</code> 时，会通过 <code>dup_task_struct()</code> 创建一个新的进程描述符，并调用 <code>do_fork()</code>，完成从高速缓存中获取对象。</p>
+
+<!--
+1.6 栈的静态分配
+
+当设置单页内核栈，那么每个进程的内核栈只有一页大小，这取决于编译时配置选项。 好处：
+
+    可以减少每个进程内存的消耗；
+    随着机器运行时间的增加，寻找两个未分配的、连续的页越来越困难，物理内存碎片化不断加重，那么给每个新进程分配虚拟内存的压力也增大；
+    每个进程的调用链在自己的内核栈中，当单页栈选项被激活时，中断处理程序可获得自己的栈；
+
+任意函数必须尽量节省栈资源， 方法就是所有函数让局部变量所占空间之和不要超过几百字节。
+1.7 高端内存的映射
+
+高端内存中的页不能永久地映射到内核地址空间。
+
+    kmap：把给定page结构映射到内核地址空间；
+        当page位于低端内存，函数返回该页的虚拟地址
+        当page位于高端内存，建立一个永久映射，再返回地址
+    kunmap: 永久映射的数量有限，应通过kunmap及时解除映射
+    kmap_atomic: 临时映射
+    kunmap_atomic: 解除临时映射
+
+1.8 每个CPU数据
+
+    alloc_percpu: 给系统的每个处理器分配一个指定类型对象的实例，以单字节对齐；
+    free_percpu: 释放每个处理器的对象实例；
+    get_cpu_var: 返回一个执行当前处理器数据的特殊实例，同时会禁止内核抢占
+    put_cpu_var: 会重新激活内核抢占
+
+使用每个CPU数据好处：
+
+    减少了数据锁定，每个CPU访问自己CPU数据
+    大大减少缓存失效，失效往往发生在一个处理器操作某个数据，而其他处理器缓存了该数据，那么必须清理或刷新缓存。持续不断的缓存失效称为缓存抖动。
+
+1.9 小结
+
+分配函数选择：
+
+    连续的物理页，使用低级页分配器 或kmalloc();
+    高端内存分配，使用alloc_pages(),返回page结构指针； 想获取地址指针，应使用kmap(),把高端内存映射到内核的逻辑地址空间；
+    仅仅需要虚拟地址连续页，使用vmalloc()，性能有所损失；
+    频繁创建和撤销大量数据结构，考虑建立slab高速缓存。
+-->
+
+<!--
+为了确保在内存分配不允许失败情况下成功分配内存，内核提供了称为内存池( "mempool" )的抽象，它其实是某种后备高速缓存。它为了紧急情况下的使用。所以使用时必须注意：mempool会分配一些内存块，使其空闲而不真正使用，所以容易消耗大量内存。而且不要使用mempool处理可失败的分配。应避免在驱动代码中使用mempool。对应的函数有：
+mempool_t *mempool_create(int min_nr,mempool_alloc_t *alloc_fn,mempool_free_t *free_fn,void *pool_data);
+/*min_nr 参数是内存池应当一直保留的最小数量的分配对象，实际的分配和释放对象由alloc_fn和free_fn处理*/
+typedef void *(mempool_alloc_t)(int gfp_mask, void *pool_data);
+typedef void (mempool_free_t)(void *element, void *pool_data);
+/*给 mempool_create 最后的参数 *pool_data 被传递给 alloc_fn 和 free_fn */
+      创建内存池后，分配和释放对象：
+void *mempool_alloc(mempool_t *pool, int gfp_mask);
+void mempool_free(void *element, mempool_t *pool);
+     若不再需要内存池，则返回给系统：
+void mempool_destroy(mempool_t *pool);
+/*在销毁 mempool 之前，必须返回所有分配的对象，否则会产生 oops*/
+-->
+
+<h3 id="内存模型">内存模型</h3>
+
+<p>在 Linux 内核中支持 3 种不同的内存模型：Flat Memory Model、Discontiguous Memory Model 和 Sparse Memory Model；所
+谓的 Memory Model 其实就是从 CPU 的角度看，其物理内存的分布情况。</p>
+
+<!--
+Linux内存模型
+http://www.wowotech.net/memory_management/memory_model.html
+-->
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define VMEMMAP_START    _AC(0xffffea0000000000, UL)</span>
+<span class="cp">#define vmemmap ((struct page *)VMEMMAP_START)</span>
+<span class="cp">#define __pfn_to_page(pfn)  (vmemmap + (pfn))</span>
+<span class="cp">#define __page_to_pfn(page) (unsigned long)((page) - vmemmap)</span></code></pre></figure>
+
+<!--
+linux内核研究笔记(一）内存管理 – page介绍
+http://blogread.cn/it/article/6619
+-->
+
+<h2 id="kswapd">kswapd</h2>
+
+<p>该内核守护进程，通过 <code>module_init(kswapd_init)@mm/vmscan.c</code> 初始化，然后通过 <code>kthread_run()</code> 启动 <code>kswapd()</code> 。该线程会维护一个 LRU 队列，会将最近没有被访问过的 (PG_referenced) 的页放入到 inactive 队列中；否则放置到 active 队列中。</p>
+
+<p>当系统中可用内存很少时，内核线程 kswapd 被唤醒，开始回收释放 page，通过 <code>pages_min</code>、<code>pages_low</code>、<code>pages_high</code> 这些阈值确定 Zone 的内存使用压力状态；注意，最新内核中这三个变量变成了 <code>watermark[]</code> 的成员，分别对应于 <code>WMARK_MIN</code>，<code>WMARK_LOW</code> 和 <code>WMARK_HIGH</code>。</p>
+
+<p><img src="/images/linux/kernel/memory-watermark.png" alt="memory watermark" title="memory watermark" class="pull-center" width="70%" /></p>
+
+<p>各个状态如下：</p>
+
+<ul>
+  <li>page_min：如果空闲页数目小于该值，则该zone非常缺页，页面回收压力很大。</li>
+  <li>page_low: 如果空闲页数目小于该值，kswapd线程将被唤醒，并开始释放回收页面。</li>
+  <li>page_high: 如果空闲页面的值大于该值，则该zone的状态很完美, kswapd线程将重新休眠。</li>
+</ul>
+
+<p>内核在计算上述的几个值之前会首先计算一个关键参数 <code>min_free_kbytes</code>，它是为关键性分配保留的内存空间的最小值。</p>
+
+<!--
+该关键参数有一个约束：不能小于128k，不能大于64M。其计算公式：
+
+lowmem_kbytes = nr_free_buffer_pages() * (PAGE_SIZE >> 10);
+min_free_kbytes = int_sqrt(lowmem_kbytes * 16);
+
+阈值的计算由init_per_zone_pages_min（ 最新内核中是init_per_zone_wmark_min）完成。该函数还会完成每个zone的lowmem_reserve的计算，该数组用于为不能失败的关键分配预留的内存页。
+-->
+
+<h2 id="参考">参考</h2>
+
+<!--
+Linux内核中内存相关的操作函数-1
+http://blog.chinaunix.net/uid-27123777-id-3279787.html
+
+Linux内核内存管理学习之一（基本概念，分页及初始化）
+http://blog.csdn.net/goodluckwhh/article/details/9970845
+
+
+http://www.tldp.org/LDP/khg/HyperNews/get/memory/linuxmm.html
+
+-->
+
+<p>关于 Linux 内存介绍可以查看 <a href="https://www.halobates.de/memory.pdf">Where is the memory going?</a> 以及 <a href="https://www.halobates.de/memorywaste.pdf">相关 PDF</a> 。</p>
+
+<p>另外，关于 Linux 内核中内存相关的介绍可以查看 <a href="http://duartes.org/gustavo/blog/post/page-cache-the-affair-between-memory-and-files/">Page Cache, the Affair Between Memory and Files</a> 等一系列的文章。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/network-route-table_init.html" title="Linux 路由表">&larr; Older</a></li> 
+         <li class="next"><a href="/post/network-speedup_init.html" title="Linux 网络加速">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1413820800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/kernel-memory-management-from-kernel-view.html" data-title="内存-内核空间" data-url="/post/kernel-memory-management-from-kernel-view.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux 常用技巧|JinYang's Blog</title>
+  <meta name="keywords" content="linux,bash,技巧,经典">
+  <meta name="description" content="简单记录下在 Linux 下常用的一些技巧，以方便查询使用，例如 生成随机字符串，特殊字符文件的处理， sudo 和 su 两个命令的区别等等。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux 常用技巧</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2013-03-09 Saturday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>简单记录下在 Linux 下常用的一些技巧，以方便查询使用，例如 生成随机字符串，特殊字符文件的处理， sudo 和 su 两个命令的区别等等。</p>
+
+<!-- more -->
+
+<h2 id="随机内容">随机内容</h2>
+
+<p>在 Linux 中 <code>/dev/urandom</code> 可以用来产生真随机的内容，然后直接读取字符串的内容，从而生成随机的字符串。</p>
+
+<p>如下的命令中，C 表示生成的字符串的字符数；L 表示要生成多少行随机字符。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 生成全字符随机的字串
+$ cat /dev/urandom | strings -n C | head -n L
+
+----- 生成数字加字母的随机字串
+$ cat /dev/urandom | sed &#39;s/[^a-zA-Z0-9]//g&#39; | strings -n C | head -n L
+
+----- 也可以直接通过Base64转换
+$ head -c 32 /dev/random | base64</code></pre></figure>
+
+<p>注意，如上的方式中会存在换行符，只有在出现长度是 <code>C</code> 的字符串时才打印，会导致打印速度很慢；所以，最好是通过如下方式生成，然后手动截取。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cat /dev/urandom | sed &#39;s/[^a-zA-Z0-9]//g&#39; | strings | tr -d &#39;\n\r&#39;</code></pre></figure>
+
+<p>如果要生成随机整数，可以通过 shell 中的一个环境变量 <code>RANDOM</code>，它的范围是 <code>0~32767</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 生成 [0, 25] 的随机数
+$ echo $(($RANDOM%26))
+
+----- 生成 [6, 100] 的随机数
+$ echo $(($RANDOM%95+6))</code></pre></figure>
+
+<p>另外，<code>/dev/</code> 目录下存在两个相关的随机数发生器，也就是 <code>random</code> 和 <code>urandom</code> ，后者也就是 <code>unblocked random</code> ，可以通过如下方式测试其速度。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ dd if=/dev/random of=random.dat bs=512 count=5
+$ dd if=/dev/urandom of=urandom.dat bs=512 count=5</code></pre></figure>
+
+<p>相比来说，前者在内核中熵不足时会阻塞，而后者则不会，详细可以查看 <a href="https://www.2uo.de/myths-about-urandom/">Myths about /dev/urandom</a> 。</p>
+
+<!--
+可以参考本地文档Myths about /dev/urandom
+/reference/linux/kernel/myths_about_dev_urandom.maff
+
+
+Linux 中的随机数可从 /dev/{random,urandom} 两个特殊的设备文件中产生，会利用当前系统的熵池计算出一定数量的随机比特，然后将这些比特作为字节流返回。熵池就是当前系统的环境噪音，可以通过很多参数来评估，如内存、文件的使用、不同类型的进程数量等等。
+
+如果当前环境噪音变化的不是很剧烈或者当前环境噪音很小，比如刚开机的时候，而当前需要大量的随机比特，这时产生的随机数的随机效果就不是很好了。
+
+这也就是上述两个文件的区别，前者不能产生新的随机数时会阻塞，直到根据熵池产生新的随机字节之后才返回；而后者不会阻塞，只是此时产生的可能是伪随机数，对加密解密这样的应用来说就不是一种很好的选择。
+
+所以使用 `/dev/random` 比使用 `/dev/urandom` 产生大量随机数的速度要慢。
+
+$ dd if=/dev/random of=random.dat bs=1024b count=1
+0+1 records in
+0+1 records out
+128 bytes (128 B) copied, 0.000169 seconds, 757 kB/s
+
+$ dd if=/dev/urandom of=random.dat bs=1024b count=1
+1+0 records in
+1+0 records out
+524288 bytes (524 kB) copied, 0.091297 seconds, 5.7 MB/s
+-->
+
+<h2 id="特殊字符文件处理">特殊字符文件处理</h2>
+
+<p>在 Linux 中，文件名的长度最大可以达到 256 个字符，可以使用字符有：字母、数字、<code>'.'</code>(点)、<code>'_'</code>(下划线)、<code>'-'</code>(连字符)、<code>' '</code>(空格)，其中开始字符不建议使用 <code>'_'</code>、<code>'-'</code>、<code>' '</code> 字符。<code>'/'</code>(反斜线) 用于标示目录，不能用作文件或者文件夹名称。</p>
+
+<p>另外，在 shell 中，<code>'?'</code>(问号)、<code>'*'</code>(星号)、<code>'&amp;'</code> 字符有特殊含义，同样不建议使用。</p>
+
+<p>在 shell 中，将 <code>--</code> 之后的内容当作文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd .&gt;-a                             ← 创建一个文件，或者 &gt;-a
+$ vi -- -a                            ← 编辑，或者 echo &quot;&quot;&gt;-a
+$ rm -- -a                            ← 删除，或者 rm ./-a
+$ touch &#39;&gt;&lt;!*&#39;                        ← 创建
+$ touch &#39;?* $&amp;&#39;                       ← 创建</code></pre></figure>
+
+<p>对于这样的文件，可以执行如下操作。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 将非乱码的文件移出到某个目录下
+$ find . -name &quot;[a-z|A-Z]*&quot; | xargs -I {} mv {} /somepath
+
+----- 也可以通过inode删除
+$ ls -i
+$ find -inum XXX | xargs -I {} rm {}
+$ find -inum XXX -delete</code></pre></figure>
+
+<p>如果文件的文件名含有终端无法正确显示的字符，那么可以通过 inode 来删除，处理命令如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看文件innode
+# ls -li
+total 0
+358315 -rw-r--r-- 1 root root 0 Apr 6 23:13 ???}
+
+----- 通过inode删除文件，如下两种方式相同
+# find . -inum 358315 -delete
+# rm -i `find . -maxdepth 1 -inum 358315 -print`</code></pre></figure>
+
+<h2 id="sudo-vs-su">sudo VS. su</h2>
+
+<p>在切换时实际上是两种策略：1) su 切换到相应的用户，所以需要切换用户的密码；2) sudo 不知道 root 密码的时候执行一些 root 的命令，需要在 suders 中配置+自己用户密码。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ sudo su root                        ← 需要用户的密码+sudoers配置
+$ su root                             ← 需要root用户密码</code></pre></figure>
+
+<p>注意，之所以使用 <code>sudo su root</code> 这种方式，可能是 btmp 等类似的文件，只有 root 可以写入，否则会报 Permission Denied，此时可以通过 strace 查看报错的文件。</p>
+
+<h2 id="文本替换">文本替换</h2>
+
+<p>命令行批量替换多文件中的字符串，常用有三种方法：Mahuinan 法、Sumly 法和 30T 法。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看所匹配的字符串
+$ sed -n &#39;/orig/&#39;p *.txt 
+
+----- Mahuinan法，用sed命令批量替换多个文件中的字符串
+$ sed -i &quot;s/orig/sub/g&quot; &quot;`grep orig -rl directory`&quot;
+解读：
+    sed -i 选项表示原地替换，若只显示结果则用-e替换；
+    g 表示全局，否则只替换第一个匹配字符串；
+    grep -r 表示对目录递归调用；-l(L小写)列出匹配的文件。
+
+----- Sumly法
+$ perl -pi -e &quot;s/China/Sumly/g&quot; /www/*.htm /www/*.txt
+解读：
+    将www文件夹下所有的htm和txt文件中的&quot;China&quot;都替换为&quot;Sumly&quot;
+
+----- 30T法
+$ perl -pi -e &#39;s/baidu/30T/g&#39; `find /www -type f`
+解读：
+　　将www文件夹下所有文件，不分扩展名，所有的&quot;baidu&quot;都替换为&quot;30T&quot;</code></pre></figure>
+
+<p>注意，在 Mahuinan 中，为了防止文件名中存在空格，所以使用引号包裹。</p>
+
+<!--
+splint替换，首先通过 $ sed -n "/\/\*@[a-z]\{4,20\}@\*\//p" null1.c进行测试，然后对grep进行测试
+$ grep "\/\*@[a-z]\{1,\}@\*\/" -lr .  为防止文件名之间由空格，将其由双引号包裹。 最后的实际命令为：
+$ sed -i "s/\/\*@[a-z]\{1,\}@\*\/ //g"  "`grep "\/\*@[a-z]\{1,\}@\*\/" -lr .` "
+-->
+
+<h2 id="install-和-cp-命令">install 和 cp 命令</h2>
+
+<p>两者都可以将文件/目录拷贝到指定的目录，不过 install 允许你控制目标文件的属性，常用于程序的 Makefile 文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">install [OPTION]... SOURCE DIRECTORY
+常用参数：
+    -m, --mode=0700
+        设定权限；
+    -v, --verbose
+        打印处理的每个文件/目录名称；
+    -d, --directory
+        所有参数都作为目录处理，而且会创建指定目录；
+    -g, --group=mysql
+        设定所属组，而不是进程目前的所属组；
+    -o, --owner=mysql
+        设定所有者，只适用于超级用户；
+    -s, --strip
+        使用strip命令删除文件中的符号表 (symbol table)；
+    -S, --suffix=exe
+        指定安装文件的后缀；
+    -p, --preserve-timestamps
+        以源文件的访问/修改时间作为相应的目的地文件的时间属性；
+    -t, --target-directory
+        如果最后一个文件是一个目录并且没有使用-T,--no-target-directory选项，
+        则将每个源文件拷贝到指定的目录，源和目标文件名相同；</code></pre></figure>
+
+<!--
+--backup[=CONTROL]：为每个已存在的目的地文件进行备份。 -b：类似 --backup，但不接受任何参数。
+-->
+
+<p>使用 -d 选项时，如果指定安装位置为 /usr/local/foo/bar，一般 /usr/loacal 已存在，install 会直接创建 foo/bar 目录，并把程序安装到指定位置。</p>
+
+<p>如果指定了两个文件名，则将第一个文件拷贝到第二个,</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 安装目录，等价于mkdir /tmp/bin
+$ install --verbose -d -m 0755 /tmp/bin
+
+----- 安装文件，等价于cp a/e c
+$ install -v -m 0755 a/e c
+
+----- 安装文件，等价于mkdir -p a/b &amp;&amp; cp x a/b/c
+$ install -v -m 0755 -D x a/b/c</code></pre></figure>
+
+<h2 id="here-document">Here Document</h2>
+
+<p>可以使用 echo 添加到文件，不过这样会比较麻烦，可以使用如下方式；不过 <code>$</code> 需要做转义，或者使用 <code>"EOF"</code> 也可以。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cat &lt;&lt; EOF &gt;&gt; /tmp/foobar.conf
+net.core.rmem_default = 262144
+net.core.rmem_max = 262144
+net.core.wmem_default = 262144
+net.core.wmem_max = 262144
+export PATH=\$PATH:\$HOME/bin
+EOF</code></pre></figure>
+
+<p>在此使用的就是 Here Document，这是一种在 Linux Shell 中的一种特殊的重定向方式，它的基本的形式如下，通常 delimiter 使用 EOF ：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">cmd &lt;&lt; delimiter
+  Here Document Content
+delimiter</code></pre></figure>
+
+<p>也可以在终端中输入 <code>cat &lt;&lt; EOF</code> ，然后输入多行信息，最终以 EOF 结束，其中间输入的信息将会回显在屏幕上。</p>
+
+<p>另外，可以通过 <code>&lt;&lt;-</code> 删除 Here Document 的内容部分每行前面的 tab (制表符) ， 这种用法是为了编写 Here Document 的时候可以将内容部分进行缩进，方便阅读代码。</p>
+
+<h2 id="避免误删目录">避免误删目录</h2>
+
+<p>今天就来聊聊 linux 下一个常见的问题：如何避免误删目录。下文会详细的讲述不同的场景下误删目录，以及相应的解决方案。</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c">#--- 1. 变量为空导致误删文件，如果file为空或命令返回空</span>
+rm -rf /usr/sbin/<span class="nv">$file</span>
+<span class="c">#--- 使用变量扩展功能，变量为空使用默认值或抛出异常退出</span>
+rm -rf /usr/sbin/<span class="k">${</span><span class="nv">file</span><span class="p">:?var is empty</span><span class="k">}</span>
+<span class="c">#--- 人肉判断变量是否为空</span>
+<span class="o">[[</span> <span class="k">${</span><span class="nv">file</span><span class="k">}</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo </span>1
+<span class="o">[[</span> -z <span class="k">${</span><span class="nv">file</span><span class="k">}</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo </span>1
+
+<span class="c">#--- 2. 路径含有空格导致误删文件</span>
+<span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/usr/local /sbin&quot;</span>
+rm -rf <span class="nv">$path</span>
+<span class="c">#--- 变量加引号防止扩展</span>
+rm -rf <span class="s2">&quot;$path&quot;</span>
+
+<span class="c">#--- 3. 目录或文件含有特殊字符导致误删文件，例如 &quot;~&quot;</span>
+<span class="c">#--- 变量加引号防止扩展</span>
+rm -rf <span class="s2">&quot;~&quot;</span>
+
+<span class="c">#--- 4. cd切换目录失败，导致文件被误删</span>
+<span class="c">#--- 使用逻辑短路操作</span>
+<span class="nb">cd </span>path <span class="o">&amp;&amp;</span> rm -rf *.exe
+<span class="c">#--- 检测path是否存在</span>
+<span class="o">[[</span> -d path <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo </span>1</code></pre></figure>
+
+<h2 id="man">man</h2>
+
+<p>Linux 上的 manpage 是用 groff 语法编写的，实际上可以通过如下的命令查看：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">zcat man.1.gz | groff -man -Tascii | more</code></pre></figure>
+
+<p>其查找路径可以通过 <code>man -w</code> 命令查看，或者查看配置文件 /etc/man.config；很多帮助文档保存在 /usr/share/man/ 目录下，又按照不同类型保存不同的子目录下，例如 /usr/share/man/man1/mysqlshow.1.gz 。</p>
+
+<p>如下是常见的查看命令：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看搜索路径
+$ man -w
+----- 显示man命令搜索到的第一个文件路径
+$ man -w passwd
+----- 显示所有匹配的man文档
+$ man -aw passwd
+
+----- 指定领域限制
+$ man 5 passwd
+$ man -S 1:2 passwd
+
+----- 同命令whatis ，将在whatis数据库查找以关键字开同的帮助索引信息
+$ man -f httpd
+----- 同命令apropos 将搜索whatis数据库，模糊查找关键字
+$ man -k httpd</code></pre></figure>
+
+<h2 id="备份脚本">备份脚本</h2>
+
+<p>如下是一个备份用的脚本，不过 email 没有调试使用过，暂时记录下。</p>
+
+<ul>
+  <li><code>~/.backuprc</code> 配置文件，列举出那些文件需要备份，使用 <code>#</code> 做注释；</li>
+  <li>使用 <code>~/tmp</code> 作为临时目录；</li>
+</ul>
+
+<p>另外，在使用 tar 备份打包+解压时，默认为相对路径，为了使用绝对路径可以在压缩+解压时都使用 <code>-P</code> 参数，这样直接解压即可覆盖原有文件。</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c">#!/bin/bash</span>
+<span class="c"># mybackup - Backup selected files &amp; directories and email them as .tar.gz file to</span>
+<span class="c"># your email account.</span>
+<span class="c"># List of BACKUP files/dirs stored in file ~/.mybackup</span>
+
+<span class="nv">FILE</span><span class="o">=</span>~/.backuprc
+<span class="nv">NOW</span><span class="o">=</span><span class="sb">`</span>date +<span class="s2">&quot;%d-%m-%Y&quot;</span><span class="sb">`</span>
+<span class="nv">OUT</span><span class="o">=</span><span class="s2">&quot;`echo $USER.$HOSTNAME`.$NOW.tar.gz&quot;</span>
+<span class="nv">TAR</span><span class="o">=</span>/usr/bin/tar
+
+<span class="c">## mail setup</span>
+<span class="c">#MTO=&quot;nixbackup@somedom.com&quot;</span>
+<span class="c">#MSUB=&quot;Backup (`echo $USER @ $HOSTNAME`) as on `date`&quot;</span>
+<span class="c">#MES=~/tmp/mybackup.txt</span>
+<span class="c">#MATT=~/tmp/$OUT</span>
+
+<span class="c"># make sure we put backup in our own tmp and not in /tmp</span>
+<span class="o">[</span> ! -d ~/tmp <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/tmp <span class="o">||</span> :
+<span class="k">if</span> <span class="o">[</span> -f <span class="nv">$FILE</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nv">IN</span><span class="o">=</span><span class="s2">&quot;`cat $FILE | grep -E -v &quot;</span>^#<span class="s2">&quot;`&quot;</span>
+<span class="k">else</span>
+    <span class="nb">echo</span> <span class="s2">&quot;File $FILE does not exists&quot;</span>
+    <span class="nb">exit </span>3
+<span class="k">fi</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;$IN&quot;</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;$FILE is empty, please add list of files/directories to backup&quot;</span>
+    <span class="nb">exit </span>2
+<span class="k">fi</span>
+
+<span class="nv">$TAR</span> -zcPf ~/tmp/<span class="nv">$OUT</span> <span class="nv">$IN</span> &gt;/dev/null
+
+<span class="c">## create message for mail</span>
+<span class="c">#echo &quot;Backup successfully done. Please see attached file.&quot; &gt; $MES</span>
+<span class="c">#echo &quot;&quot; &gt;&gt; $MES</span>
+<span class="c">#echo &quot;Backup file: $OUT&quot; &gt;&gt; $MES</span>
+<span class="c">#echo &quot;&quot; &gt;&gt; $MES</span>
+<span class="c">#</span>
+<span class="c">## bug fix, we can&#39;t send email with attachment if mutt is not installed</span>
+<span class="c">#which mutt &gt; /dev/null</span>
+<span class="c">#if [ $? -eq 0 ]; then</span>
+<span class="c">#    # now mail backup file with this attachment</span>
+<span class="c">#    mutt -s &quot;$MSUB&quot; -a &quot;$MATT&quot; $MTO &lt; $MES</span>
+<span class="c">#else</span>
+<span class="c">#    echo &quot;Command mutt not found, cannot send an email with attachment&quot;</span>
+<span class="c">#fi</span>
+<span class="c">#</span>
+<span class="c">## clean up</span>
+<span class="c">#/bin/rm -f $MATT</span>
+<span class="c">#/bin/rm -f $MES</span></code></pre></figure>
+
+<p>如下，是一个配置文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">/home/foobar/.vimrc
+/home/foobar/.tmux
+/home/foobar/.tmux.conf</code></pre></figure>
+
+<h2 id="日志清理脚本">日志清理脚本</h2>
+
+<p>在 Linux 中可以通过 logrotate 对日志进行归档，如下是一个日志清理的脚本。</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c">#!/bin/sh</span>
+<span class="c"># log cleaner.</span>
+
+<span class="c"># location of logs lies</span>
+<span class="nv">LOGPATH</span><span class="o">=</span><span class="k">${</span><span class="nv">1</span><span class="k">:-</span><span class="s2">&quot;/var/log/appname/&quot;</span><span class="k">}</span>
+
+<span class="c"># days to expire, logs older than ${EXPIRE} days will be removed</span>
+<span class="nv">EXPIRE</span><span class="o">=</span><span class="k">${</span><span class="nv">2</span><span class="k">:-</span><span class="nv">10</span><span class="k">}</span>
+<span class="nv">TMPFILE</span><span class="o">=</span><span class="s2">&quot;/tmp/old_log_files&quot;</span>
+
+<span class="nb">echo</span> <span class="s2">&quot;log=$LOGPATH, expire=${EXPIRE}&quot;</span>
+find <span class="k">${</span><span class="nv">LOGPATH</span><span class="k">}</span> -regextype posix-basic -regex <span class="s2">&quot;${LOGPATH}[a-z]\+.log.[0-9]\+&quot;</span> -a -mtime <span class="s2">&quot;+${EXPIRE}&quot;</span> &gt; <span class="k">${</span><span class="nv">TMPFILE</span><span class="k">}</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> -ne <span class="m">0</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+  <span class="nb">echo</span> <span class="s2">&quot;find older log files failed&quot;</span>
+  <span class="nb">exit </span>1
+<span class="k">fi</span>
+
+<span class="k">for</span> f in <span class="sb">`</span>cat <span class="k">${</span><span class="nv">TMPFILE</span><span class="k">}</span><span class="sb">`</span>
+<span class="k">do</span>
+  /usr/sbin/lsof<span class="p">|</span>grep -q <span class="nv">$f</span>
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;$f is still open&quot;</span>
+  <span class="k">else</span>
+    <span class="nb">echo</span> <span class="s2">&quot;deleteing file:$f&quot;</span>
+    rm -f <span class="nv">$f</span>
+  <span class="k">fi</span>
+<span class="k">done</span></code></pre></figure>
+
+<h2 id="换行处理">换行处理</h2>
+
+<p>*nix 系统里，每行结尾只有 <code>"&lt;换行&gt;"</code>，即 <code>"\n"</code> ；Windows 系统里面，每行结尾是 <code>"&lt;换行&gt;&lt;回车&gt;"</code> ，即 <code>"\n\r"</code> 。</p>
+
+<p>如果不进行转换，那么 *nix 系统下的文件在 Windows 里打开所有文字会变成一行；而 Windows 里的文件在 *nix 下打开的话，在每行的结尾可能会多出一个 <code>^M</code> 符号。</p>
+
+<p>要把文件转换一下，有两种方法：</p>
+
+<ol>
+  <li>命令 <code>dos2unix test.file</code>；</li>
+  <li>去掉 <code>"\r"</code> ，用命令 <code>sed -i 's/\r//' test.file</code> 。</li>
+</ol>
+
+<h2 id="字符集设置">字符集设置</h2>
+
+<p>程序运行时需要使用一套语言环境，包括了：字符集 (数据) 和字体 (显示)，在 Linux 中通过 locale 来设置程序运行的不同语言环境，locale 由 ANSI C 提供支持，可以根据不同的国家地区设置不同的语言环境。</p>
+
+<p>locale 的命名规则为 <code>&lt;语言&gt;_&lt;地区&gt;.&lt;字符集编码&gt;</code> ，例如 <code>zh_CN.UTF-8</code> 中 <code>zh</code> 代表中文，<code>CN</code> 代表大陆地区，<code>UTF-8</code> 表示字符集。另外，在 locale 会通过一组环境变量，针对不同场景配置。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">LC_COLLATE
+  定义该环境的排序和比较规则
+LC_CTYPE
+  用于字符分类和字符串处理，控制所有字符的处理方式，包括字符编码，字符是单字节还是
+  多字节，如何打印等，是最重要的一个环境变量。
+LC_MONETARY
+  货币格式。
+LC_NUMERIC
+  非货币的数字显示格式。
+LC_TIME
+  时间和日期格式。
+LC_MESSAGES
+  提示信息的语言，与之详细的还有LANGUAGE参数，当LANGUAGE设置后LC_MESSAGES将会失效，
+  而且可同时设置多种语言信息，如LANGUANE=&quot;zh_CN.GB18030:zh_CN.GB2312:zh_CN&quot;。
+LANG
+  LC_*的默认值，是最低级别的设置，如果LC_*没有设置，则使用该值。
+LC_ALL
+  一个宏，如果该值设置了，则该值会覆盖所有LC_*的设置值。注意，LANG的值不受该宏影响。</code></pre></figure>
+
+<p>简单介绍下常见的操作。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 设置成中文环境
+export LANG=&quot;zh_CN.UTF-8&quot;
+export LANGUAGE=&quot;zh_CN:zh:en_US:en&quot;
+
+----- 设置成英文环境
+export LANG=&quot;en_US.UTF-8&quot;
+export LANGUAGE=&quot;en_US:en&quot;
+
+----- 查看现有语言环境
+$ locale
+
+----- 所有可用语言环境
+$ locale -a</code></pre></figure>
+
+<p>注意，图形界面可能需要更多的设置，暂时先不讨论了。</p>
+
+<h2 id="历史命令">历史命令</h2>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 去除重复命令，包括不连续的命令，通过ignoredups去除连续重复的命令
+export HISTCONTROL=erasedups</code></pre></figure>
+
+<!--
+https://linuxtoy.org/archives/history-command-usage-examples.html
+-->
+
+<h2 id="异常处理">异常处理</h2>
+
+<h3 id="text-file-busy">Text file busy</h3>
+
+<p>执行复制时可能会报如上的错误，处理方式如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看文件被那个进程占用
+# fuser youfile</code></pre></figure>
+
+<p>如果有进程占用，确保进程无用直接 <code>kill</code> 掉。</p>
+
+<h2 id="杂项">杂项</h2>
+
+<h3 id="目录合并">目录合并</h3>
+
+<p>可以将两个目录通过 <code>cp -r dir1/* dir2/* merged/</code> 进行合并，由于是复制，对于较大的文件会导致速度较慢。如果通过 <code>mv</code> 则会报 <code>Directory not empty</code> 的错误。</p>
+
+<p>可以通过如下命令采用硬链接的方式进行复制，通过 <code>tree --inodes</code> 命令查看文件的 inode 号。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cp -r --link dir1/* dir2/* merged/</code></pre></figure>
+
+<h3 id="shell-操作">shell 操作</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看当前所有shell
+$ chsh -l
+$ cat /etc/shells</code></pre></figure>
+
+<p>查看当前的 Shell ，可以查看 <code>SHELL</code> 变量，不过如果是通过 bash dash sh 等直接运行的话，那么 SHELL 不变，可以通过如下方式查看。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ps | grep $$ | awk &#39;{print $4}&#39;
+$ echo $0
+$ tom                                # 输入没有的命令</code></pre></figure>
+
+<p><code>chsh -s /bin/dash</code> 实际修改的是 <code>/etc/passwd</code> 文件里和你的用户名相对应的那一行，重启 Shell 后即可。</p>
+
+<h3 id="符号链接">符号链接</h3>
+
+<p>当读取符号链接文件时，默认会重定向到指定的文件，可以通过 C 中的 <code>readlink()</code> 或者 <code>readlink</code> 命令查看符号链接文件中的内容。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 建立测试用符号链接
+$ echo &quot;just for test&quot; &gt; original.txt
+$ ln -s original.txt symbol.txt
+
+----- 读取并解析出源文件的绝对路径
+$ readlink -f symbol.txt
+----- 直接查看符号链接的内容
+$ readlink symbol.txt
+
+----- 复制时保持符号链接内容
+$ cp -d symbol.txt copy.txt</code></pre></figure>
+
+<h3 id="硬链接">硬链接</h3>
+
+<p>通过 <code>ls -l</code> 可以查看符号链接所引用的原文件，而对于硬链接则不能通过上述命令查看，可以通过如下方式查看所有的硬链接文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查找文件对应的inode信息，包括其引用计数
+$ ls -il
+
+----- 根据inode信息找到所有的文件
+$ find / -inum 33582147</code></pre></figure>
+
+<p>注意：软链接能够跨越文件系统 (分区)，硬链接不可以。</p>
+
+<h3 id="其它">其它</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 生成随机文件
+$ head -c 10M &lt; /dev/random &gt; /tmp/foobar.txt
+
+----- 日期转换
+$ date +%s -d &quot;04/24/2014 15:30:00&quot;         // 将日期转换成时间戳
+$ date -d @1398324600                       // 将时间戳转换成日期
+$ date +%s                                  // 将当前日期转换成时间戳
+$ date -d &quot;1970-01-01 UTC `echo &quot;$(date +%s)-$(cat /proc/uptime|cut -f 1 -d&#39; &#39;)+12288812.926194&quot;|bc ` seconds&quot;</code></pre></figure>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/english-stuff.html" title="英语的杂七杂八">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-lvs-introduce.html" title="Linux LVS">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1362758400',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-tips.html" data-title="Linux 常用技巧" data-url="/post/linux-tips.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

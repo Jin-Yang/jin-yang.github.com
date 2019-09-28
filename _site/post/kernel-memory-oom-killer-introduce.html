@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux OOM 简介|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux OOM 简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2018-08-01 Wednesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>Linux 内核为了提高内存的使用效率采用过度分配内存 Over Commit Memory 的办法，当造成物理内存过度紧张后进而触发 OOM 机制来杀死一些进程回收内存。</p>
+
+<h2 id="其它">其它</h2>
+
+<h3 id="防止被杀">防止被杀</h3>
+
+<p>为了防止进程被杀，可以将 <code>/proc/&lt;PID&gt;/oom_adj</code> 设置为 <code>-17</code> ，详细可以参考 <code>linux/oom.h</code> 中关于 <code>OOM_DISABLE</code> 宏的定义。</p>
+
+<p>例如，对于一些常用的系统进程可以通过如下的方式设置，也可以添加到启动脚本里，或者是添加到 crontab 中。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">pgrep -f &quot;/usr/sbin/sshd&quot; | while read PID;do echo -17 &gt; /proc/$PID/oom_adj;done</code></pre></figure>
+
+<!--
+## OOM
+
+1. 原理以及可配置参数是什么？
+2. 内存的计算方式？
+3. cgroup 中内存计算方式，感觉应该不是RSS？
+4. OOM之后如何判断是怎么引起的？
+5. 与ulimit限制的关系是什么？
+
+
+## 简述
+
+系统中的物理内存都会有个可用的上限，为了防止系统不可用，Linux 内核会通过
+
+Linux 内核有个机制叫 OOM killer（Out-Of-Memory killer），该机制会监控那些占用内存过大，尤其是瞬间很快消耗大量内存的进程，为了防止内存耗尽而内核会把该进程杀掉。典型的情况是：某天一台机器突然ssh远程登录不了，但能ping通，说明不是网络的故障，原因是sshd进程被OOM killer杀掉了（多次遇到这样的假死状况）。重启机器后查看系统日志/var/log/messages会发现Out of Memory: Kill process 1865（sshd）类似的错误信息。
+
+
+防止重要的系统进程触发(OOM)机制而被杀死：可以设置参数/proc/PID/oom_adj为-17，可临时关闭linux内核的OOM机制。内核会通过特定的算法给每个进程计算一个分数来决定杀哪个进程，每个进程的oom分数可以/proc/PID/oom_score中找到。我们运维过程中保护的一般是sshd和一些管理agent。
+
+
+当物理内存和交换空间都被用完时，如果还有进程来申请内存，内核将触发 OOM Killer 。
+
+### 行为
+
+OOM 操作时的行为与两个参数相关，也就是 `/proc/sys/vm/{panic_on_oom,oom_kill_allocating_task}` 两个文件。
+
+#### 选择进程
+
+> Linux 中在出现了一些无法处理的场景时会触发 `Kernel Panic` ，类似于 Windows 中的蓝屏，此时只能重启服务器。
+https://www.52os.net/articles/linux-force-kernel-panic-1.html
+http://www.hulkdev.com/posts/oom_killer
+http://blog.51cto.com/laoxu/1267097
+http://hongjiang.info/tag/oom-killer/
+http://blog.chinaunix.net/uid-29242873-id-3942763.html
+https://segmentfault.com/a/1190000008268803
+https://segmentfault.com/a/1190000008125359
+https://blog.csdn.net/liukuan73/article/details/43238623
+https://blog.csdn.net/kris_fei/article/details/8859854
+https://www.kernel.org/doc/gorman/html/understand/understand007.html
+https://lwn.net/Articles/529927/
+https://github.com/torvalds/linux/blob/master/Documentation/cgroup-v1/memcg_test.txt
+其行为如下：
+
+1.检查文件/proc/sys/vm/panic_on_oom，如果里面的值为2，那么系统一定会触发panic
+2.如果/proc/sys/vm/panic_on_oom的值为1，那么系统有可能触发panic（见后面的介绍）
+3.如果/proc/sys/vm/panic_on_oom的值为0，或者上一步没有触发panic，那么内核继续检查文件/proc/sys/vm/oom_kill_allocating_task
+3.如果/proc/sys/vm/oom_kill_allocating_task为1，那么内核将kill掉当前申请内存的进程
+4.如果/proc/sys/vm/oom_kill_allocating_task为0，内核将检查每个进程的分数，分数最高的进程将被kill掉（见后面介绍）
+
+进程被kill掉之后，如果/proc/sys/vm/oom_dump_tasks为1，且系统的rlimit中设置了core文件大小，将会由/proc/sys/kernel/core_pattern里面指定的程序生成core dump文件，这个文件里将包含
+pid, uid, tgid, vm size, rss, nr_ptes, nr_pmds, swapents, oom_score_adj
+score, name等内容，拿到这个core文件之后，可以做一些分析，看为什么这个进程被选中kill掉。
+
+这里可以看看ubuntu默认的配置：
+
+## 源码分析
+
+mem_cgroup_oom_synchronize() cgroup中可能触发的OOM的入口
+ |-mem_cgroup_out_of_memory()
+   |-oom_kill_process() 
+   | |-dump_header() 对应了invoked oom-killer    
+
+正常的入口应该是 `out_of_memory()`
+
+当然，本文所述的也不是所有的cache不能被释放的情形。那么，在你的应用场景下，还有那些cache不能被释放的场景呢？
+
+mincore 
+fincore
+
+Documentation/cgroups/memory.txt
+https://lwn.net/Articles/529927/
+OOM日志分析
+https://blog.csdn.net/kickxxx/article/details/50337647
+
+业务进程使用的内存主要有以下几种情况：
+
+1. 用户空间的匿名映射页 (（Anonymous pages in User Mode address spaces），比如调用malloc分配的内存，以及使用MAP_ANONYMOUS的mmap；当系统内存不够时，内核可以将这部分内存交换出去；
+2. 用户空间的文件映射页（Mapped pages in User Mode address spaces），包含map file和map tmpfs；前者比如指定文件的mmap，后者比如IPC共享内存；当系统内存不够时，内核可以回收这些页，但回收之前可能需要与文件同步数据；
+3. 文件缓存（page in page cache of disk file）；发生在程序通过普通的read/write读写文件时，当系统内存不够时，内核可以回收这些页，但回收之前可能需要与文件同步数据；
+4. buffer pages，属于page cache；比如读取块设备文件。
+
+其中（1）和（2）是算作进程的RSS，（3)和（4)属于page cache。
+
+按照 [Memory Types](https://techtalk.intersec.com/2013/07/memory-part-1-memory-types/) 中的分类
+
+
+可以通过 `systemd-cgtop -m` 查看，这里内存读取的实际上就是 `memory.usage_in_bytes` 中的内容。
+
+很多的使用特性实际上可以参考 [Memory Resource Controller Implementation Memo](https://github.com/torvalds/linux/blob/master/Documentation/cgroup-v1/memcg_test.txt) 中的介绍。
+
+很不错的文章，包括了Linux相关的内容
+https://segmentfault.com/u/wuyangchun
+关于cgroup内存相关的介绍
+https://segmentfault.com/a/1190000008125359
+
+
+插件进程ID、父进程ID、进程组ID、会话ID、用户名、组名、有效用户名、有效组名、SUID等信息，建议在测试时使用会话 ID。
+
+ps -eo pid,ppid,pgid,tid,tgid,sid,user,group,euser,egroup,suid,cmd | grep 43430
+
+当脚本 fork 了很多子进程之后(`sleep 1000&`)，如果直接 kill 对应的脚本，那么子进程实际上可能无法退出。实际上，在 `kill(3)` 中有如下的介绍:
+
+If pid is negative, but not -1, sig shall be sent to all processes (excluding an unspecified set of system processes) whose process group ID is equal to the absolute value of pid, and for which the process has permission to send a signal.
+
+也就是说在 `fork()` 出来子进程后，需要设置进程组 ID 信息，可以通过 `setpgrp()` 或者 `setpgid()` 进行设置。
+
+#include <unistd.h>
+pid_t setpgrp(void);
+int setpgid(pid_t pid, pid_t pgid);
+
+实测，如果通过 `kill(-PGID)` 方式，对于后台运行的任务实际上并未退出，使用 `killpg(PGID)` 接口一样。即使注册了 `SIGCHLD` 处理函数，实际上也只能接收到其直接的子进程，而对于孙子进程也是束手无策。
+
+当然，也可以在脚本中将信号传递给对应的子进程，可以参考 [如何将SIGTERM信号传播到Bash脚本中的子进程](https://www.jianshu.com/p/603c08eab77b) 。
+
+
+在 libev 中，如果要使用自己的 `SIGCHLD` 需要确保 `EV_CHILD_ENABLE` 关闭掉。
+
+
+所以，对于像 [github tini](https://github.com/krallin/tini) 这样的进程，需要确保其以 `PID 1` 的方式启动，这样对于 Zombies 进程会自动被 tini 托管。
+
+也可以通过注册一个 subreaper 的方式 (Linux >= 3.4) ，即使其运行的 PID 不是 1 也会收到相关的信号。
+
+## 孤儿进程
+
+当子进程还在运行时，如果其父进程被 `kill` 掉，那么这个子进程会变成孤儿进程 (Orphaned Process)，然后它会被 init 进程接管。
+
+其它的一些场景，例如容器、DevOps的Agent，一般并非是 init 进程，对于容器一般是其主进程。
+
+那么对于这些场景，如果出现了孤儿进程，那么谁会来接管这个进程？
+
+### 内核处理
+
+在 Linux 内核中，通过 `find_new_reaper()` 函数完成，其中的注释介绍了其处理方式，接管过程分为了三步：
+
+1. 找到相同线程组里其它可用的线程，注意，是线程而非进程。
+2. 如果没有找到则处理 subreaper 处理，下面详解。
+3. 最后，使用 PID 为 1 的进程来接管孤儿进程。
+
+其实这里的 subreaper 会比较复杂一些，下面简单介绍。
+
+### SubReaper
+
+可以参考 `prctl(2)` 中关于 `PR_SET_CHILD_SUBREAPER` 参数的介绍，其中 `prctl` 是内核暴露的函数用来查看或者修改进程的信息。
+
+当进程被标记为 `subreaper` 之后，其创建的子进程，包括子进程的子进程都会标记为拥有一个 subreaper。
+
+Upon termination of a process that is orphaned (i.e., its immediate parent has already terminated)
+and marked as having a subreaper, the nearest still living ancestor subreaper will receive a SIGCHLD
+signal and be able to wait(2) on the process to discover its termination status.
+
+https://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/
+http://adoyle.me/blog/orphaned-process-and-zombie-process-and-docker.html
+
+简单来说，有一台 Windows 机器(B)可以连接到外网，同时可以连接到一台私有网段机器(A)。
+
+----- 在(A)创建git代码仓库
+cd /codes/project
+git init
+touch README.md
+git add -A .
+git commit -m "create project"
+
+----- 切换到project父目录，并创建一个project-bare目录
+cd ..
+mkdir project-bare
+cd project-bare
+
+------ 从原仓库创建bare仓库，并以此作为"中央"仓库，其它机器(含本地)会往这里push/pull
+git clone --bare ../project .
+
+------ 在本地将project-bare添加为remote
+cd ../project
+git remote add origin ../project-bare
+git branch --set-upstream-to=origin/master master
+
+然后在机器 B 上连接机器 A 。
+
+git clone ssh://<username>@<ip>:<port>:/codes/project-bare/project-bare.git project
+git clone ssh://jinyang@10.120.185.240:/home/jinyang/experiment/project-bare project
+
+clone 下来之后，在机器 B 上做修改，然后 commit/push 之后，在机器 A 上就可以 pull 到了；反之亦然。
+
+那么，在机器 B 上对应了两个远端，包括了从 github 上下载，以及私网上的代码。
+
+### 多个远端
+
+这里会设置别名。
+
+git remote add github https://github.com/Jin-Yang/MiniAgent.git
+
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+
+
+
+为减少日志文件占用的空间，很多情况下会将日志文件以天或周为周期打包成 `tar.gz` 包保存，但这样会导致压缩包不方便查看，在不解压可以通过 `zutils` 工具查看，例如 `zcat` `zcmp` `zdiff` `zgrep`。
+
+
+----- 直接查看压缩包
+$ zcat xxx.tar.gz
+$ zgrep 'xxx' xxx.tar.gz
+
+如果出现 `Binary file (standard input) matches` 类似的内容，可以添加 `--binary-files=text` 参数。主要是因为压缩使用的是 `tar czvf` 参数打包，实际上经过 `tar` 与 `gzip` 两层压缩，导致其直接不能管道。
+
+可以通过 `tar tvf xxx.tar.gz` 不解压查看所包含的文件。
+
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-c-mock-wrap-unit-test.html" title="Linux C Mock Wrap">&larr; Older</a></li> 
+         <li class="next"><a href="/post/kernel-cgroup-memory-introduce.html" title="Kernel Cgroup Memory Introduce">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1533052800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/kernel-memory-oom-killer-introduce.html" data-title="Linux OOM 简介" data-url="/post/kernel-memory-oom-killer-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

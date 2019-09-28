@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>PG 备份|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>PG 备份</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-10-05 Wednesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  sql  
+      
+    </div>
+  </div>
+  <hr>
+  <!-- more -->
+
+<h1 id="dump">Dump</h1>
+
+<p>通过 pg_dump 导出数据时，需要读权限，dump 时不会阻塞其它操作，当然不包括需要排他锁的操作，如 ALTER TABLE 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 可以按照不同的级别备份
+$ pg_dump -U postgres dbname &gt; outfile.sql
+$ pg_dump -U postgres -n schema-name &gt; outfile.sql
+$ pg_dump -U postgres -t table-name &gt; outfile.sql
+
+----- 在一个事务中恢复，如果出错则退出
+$ psql --single-transaction --set ON_ERROR_STOP=on dbname &lt; infile.sql
+
+----- 重新生成统计数据
+postgres=# ANALYZE
+
+----- 将数据导出到另外一个数据库
+$ pg_dump -h host1 dbname | psql -h host2 dbname</code></pre></figure>
+
+<p>pg_dump 只会备份一个数据库，不会备份 roles、tablespaces 等信息，为此可以通过 pg_dumpall 导出。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 全部备份
+$ pg_dumpall &gt; outfile
+----- 只备份全局数据
+$ pg_dumpall --globals-only &gt; outfile
+
+----- 恢复数据
+$ psql -f infile postgres</code></pre></figure>
+
+<h1 id="pitr-point-in-time-recovery">PITR (Point In Time Recovery)</h1>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 1. 创建表，并插入100W条记录
+postgres=# CREATE TABLE foobar(id INT);
+CREATE TABLE
+postgres=# INSERT INTO foobar VALUES(generate_series(1, 1000000));
+INSERT 0 1000000
+
+----- 2. 通过如下两种方式可以查看现在数据库的大小
+postgres=# SELECT oid FROM pg_database WHERE datname=&#39;postgres&#39;;
+  oid
+-------
+ 13294
+(1 row)
+postgres=# SELECT pg_size_pretty(pg_database_size(&#39;postgres&#39;));
+ pg_size_pretty
+----------------
+ 42 MB
+(1 row)
+$ cd $PGDATA/base/13294 &amp;&amp; du -sh
+42M    .
+
+----- 3. 在$PGDATA/postgresql.conf配置文件中添加如下内容，设置日志归档
+wal_level = archive
+archive_mode = on
+archive_timeout = 300   # 单位是秒，5分钟强制归档
+archive_command = &#39;cp %p /tmp/archive/%f&#39;</code></pre></figure>
+
+<p>archive_command 会在每次 WAL 日志 16MB 段满的时候才执行，即把其拷贝到 /tmp/archive 目录下，或者是超时同样会做归档。配置完后重启服务器，使各个参数生效，然后开始准备实验。</p>
+
+<h3 id="1-做一次基础备份">1. 做一次基础备份</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 建立一个目录用于存储基础备份
+$ mkdir -p /tmp/backup
+
+----- 执行SQL，开始备份，在archive目录下生成00000001000000000000000B.00000028.backup文件
+postgres=# SELECT pg_start_backup(&#39;bak20160824&#39;);
+ pg_start_backup
+-----------------
+ 0/B000028
+(1 row)
+
+----- 将$PGDATA/base目录下的数据保存
+$ tar -czvf /tmp/backup/base.tar.gz /var/lib/pgsql/data
+
+----- 执行如下SQL
+postgres=# SELECT pg_stop_backup();
+NOTICE:  pg_stop_backup complete, all required WAL segments have been archived
+ pg_stop_backup
+----------------
+ 0/B0000C0
+(1 row)
+
+----- 切换日志，可以多执行几次
+postgres=# SELECT pg_switch_xlog();
+ pg_switch_xlog
+----------------
+ 0/C0000B0
+(1 row)</code></pre></figure>
+
+<p>正常来说，现在已经备份成功，可以查看 /tmp/archive 目录中已经有了备份的 wal 日志段。</p>
+
+<p>接下来进行测试，在原表中再次插入 100W 条记录，并假设此时由于某种原因数据库出问题了，现在的问题是，能否利用之前的“基础备份”+“新产生的WAL日志”恢复数据库。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 原表中再次插入100W条记录
+postgres=# INSERT INTO foobar VALUES(generate_series(1, 1000000));
+INSERT 0 1000000
+
+----- 关闭数据库，并将$PGDATA/data目录改名，模拟故障
+# mv /var/lib/pgsql/{data,data.bak}
+
+----- 使用postgres用户，尝试将之前的基础备份拷贝到$PGDATA/base目录下，并解压
+$ cp /tmp/backup/base.tar.gz /var/lib/pgsql/base
+$ tar -xzvf base.tar.gz
+
+----- 进入解压得到的data目录，删除pg_xlog文件夹，创建pg_xlog/archive_status文件夹
+$ rm -rf pg_xlog
+$ mkdir -p pg_xlog/archive_status
+
+----- 删除data下的postmaster.pid文件：
+$ rm -rf postmaster.pid
+
+----- 从安装的postgresql95-server的包中复制一份recovery.conf
+$ cp /usr/pgsql-9.5/share/recovery.conf.sample recovery.conf
+
+----- 修改recovery.conf，添加如下内容
+restore_command =  &#39;cp /tmp/archive/%f %p&#39;</code></pre></figure>
+
+<p>然后启动数据库，查看表中的数据确实已经恢复了。</p>
+
+<h1 id="recoveryconf">recovery.conf</h1>
+
+<p>这个文件是在恢复的时候使用的，一旦开始恢复便不能使用。可以直接从安装的 postgresql95-server 包中复制一份 recovery.conf 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cp /usr/pgsql-9.5/share/recovery.conf.sample recovery.conf</code></pre></figure>
+
+<p>如下的配置参数，用于恢复过程中每个阶段的 HOOK 调用函数。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">restore_command = &#39;cp /mnt/server/archivedir/%f &quot;%p&quot;&#39;
+    获取归档文件的 shell 命令，其中归档恢复 (archive recovery) 必须，流复制 (streaming replication) 可选。
+      %f : 需要获取的归档文件名。
+      %p : 目的地的路径名+文件名，路径为当前工作目录 (PGDATA) 的相对路径。
+      %r : 包含最近一次重启点，也就是能够恢复的最早的文件，可以用来清除多余数据。
+
+archive_cleanup_command ( string )
+    这是一个可选配置，用在每次重启点 (restartpoint) 执行。主要用于像 standby 服务器清除不需要的 WAL 文件，
+    所有 %r 之前的文件都可以删除，通常用于温备。需要注意的是，如果是多个 standby，需要确保所有的服务器都不
+    需要才可以删除。
+
+recovery_end_command ( string )
+    可选，用于恢复后需要执行的命令。</code></pre></figure>
+
+<p>PG 默认会恢复到最后的 WAL 日志，当然也可以通过如下的参数指定想要恢复到的日志点，如果配置了多个，那么会选择最新的日志点。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">recovery_target = ’immediate’
+    目前只有一个值，表示恢复到最新的一致日志点。
+
+recovery_target_name ( string )
+    恢复到通过 pg_create_restore_point() 函数指定的时间点。
+
+recovery_target_time ( timestamp )
+    指定恢复到的时间点，与 recovery_target_inclusive 配合使用。
+
+recovery_target_xid ( string )
+    指定恢复到的事务 ID，不过需要注意的是，事务 ID 是在开始的赋予的，而保存的顺序可能有所不同，同样
+    需要与 recovery_target_inclusive 配合使用。</code></pre></figure>
+
+<p>如下的选项，可以与上述的方式配合使用。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">recovery_target_inclusive ( boolean )
+    用于指定到了指定的对象后，需要恢复(true)，还是忽略该值 (false)，默认是 true 。
+
+recovery_target_timeline ( string )
+    指定恢复的时间线，默认采用与基础备份相同的时间线。
+
+recovery_target_action ( enum )
+    指定恢复完成之后采取的操作，默认为 pause 。
+      pause :  暂停
+      promote : 恢复完成后准备接收新连接
+      shutdown : 恢复完后停止</code></pre></figure>
+
+<p>对于 standby 模式的参数如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">standby_mode ( boolean )
+    指定是否作为 standby 模式，为 on 时，当恢复到了归档 WAL 日志之后仍然会尝试获取新的日志进行恢复。
+    获取可以通过 restore_command 或者 primary_conninfo 的配置。
+
+primary_conninfo ( string )
+    指定连接到主服务器的连接方式。
+
+primary_slot_name ( string )
+    当通过流复制方式连接到主使用的 slot，如果 primary_conninfo 设置了则该配置是无效的。
+
+trigger_file ( string )
+
+recovery_min_apply_delay ( integer )
+    默认standby会收到 WAL 后立即恢复，也可以通过该参数添加延迟时间。</code></pre></figure>
+
+<h1 id="warm-backup">Warm-Backup</h1>
+
+<p>为 了简化本文，关于HA的基础就到此为止，下面看看如何使用warm-standby（基于拷贝WAL文件的方法）来实施HA。首先我们来看看warm- standby的含义，根据http://www.postgresql.org/docs/9.1/interactive/high- availability.html，其中的一段话：</p>
+
+<p>Servers that can modify data are called read/write, master or primary servers. Servers that track changes in the master are called standby or slave servers. A standby server that cannot be connected to until it is promoted to a master server is called a warm standby server, and one that can accept connections and serves read-only queries is called a hot standby server.</p>
+
+<p>从中我们知道，warm-standby在系统出现fault的时候，可以提升为master，即可以接受客户端的connect连接，并提供数据库的读写，角色如同一个master一样。而根据25.5的说明（如下），hot-standby则在为archive recovery 或 standby mode时，只能接受可读的query。</p>
+
+<p>Hot Standby is the term used to describe the ability to connect to the server and run read-only queries while the server is in archive recovery or standby mode. This is useful both for replication purposes and for restoring a backup to a desired state with great precision（这一句什么意思？）.</p>
+
+<h1 id="参考">参考</h1>
+
+<p><a href="http://blog.sciencenet.cn/home.php?mod=space&amp;uid=419883&amp;do=blog&amp;quickforward=1&amp;id=539178">PostgreSQL9.1 Warm-Standby —之基于拷贝WAL文件的方法</a></p>
+
+<h2 id="pg_standby">pg_standby</h2>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-d   打印详细的调试信息到stderr。
+-s   每隔几秒查看归档目录中是否已经准备好。
+-t   指定trigger file，当该文件出现时会进入 failover 。</code></pre></figure>
+
+<p>restore_command = ‘pg_standby -d -s 2 -t /tmp/pgsql.trigger.5442 /tmp/archive %f %p %r 2»standby.log’</p>
+
+<p>如果没有 recovery.conf 文件，则表示 PG 没有处于 standby 模式。</p>
+
+<h1 id="warm-standby">Warm-Standby</h1>
+
+<h2 id="基于拷贝wal文件的方法">基于拷贝WAL文件的方法</h2>
+
+<p>可以分别通过 pg_controldata 命令查看 master 和 standby 的状态，如果正常，则这两者会分别处于 in production 和 in archive recovery 状态。</p>
+
+<p>可以在 master 里插入一些新的数据，然后检验 standby 服务端是否是几乎同时在用 WAL 日志恢复。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">CREATE TABLE foobar (id INT);
+INSERT INTO foobar VALUES(generate_series(1, 1000000));</code></pre></figure>
+
+<h3 id="failover-阶段">Failover 阶段</h3>
+
+<p>在 Failover 时，master 由于某种原因宕掉。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">pg_ctl stop -m fast -D /var/lib/pgsql/master</code></pre></figure>
+
+<p>确定 master 关机后，需要首先在提升 standby 为 master 之前做一些准备，即修改 standby 的主配置文件中的三个参数，一定要注意新增了 archive_failover 目录。此时配置的目的是让后面 Switchover 阶段时，原来的 master 可以使用新 master 的日志。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">wal_level = archive
+archive_mode = on
+archive_command = &#39;cp %p /tmp/archive_failover/%f&#39;</code></pre></figure>
+
+<p>结下来通过如下方式提升 standby 为 master 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 1. 创建上述指定的trigger文件，可以为空或者&quot;smart&quot;
+$ &gt; /tmp/pgsql.trigger.5433
+
+----- 2. 发送promote命令，通产需要十几秒钟才能切换成master
+$ pg_ctl promote -D /var/lib/pgsql/standby</code></pre></figure>
+
+<p>然后重新启动新的 master 库，让 postgresql.conf 生效。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ pg_ctl restart -D /var/lib/pgsql/standby</code></pre></figure>
+
+<p>最后需要维护原 master 库，把 fault 修正后，进入下一阶段。</p>
+
+<h3 id="switchover">Switchover</h3>
+
+<p>这个阶段是将原来的 master 重新启动为 standby 模式。</p>
+
+<!--
+把新master做一次基础备份（基础备份data目录）：
+[postgres@localhost pgsql]$ /home/postgres/db/standby/pgsql/bin/createdb mydb --port=6432
+
+    mydb=# SELECT pg_start_backup('bak20120220');
+    [postgres@localhost pgsql]$ cd /home/postgres/db/standby/pgsql/
+    [postgres@localhost pgsql]$ tar czvf /home/postgres/base/base_data_switchover.tar.gz data/
+    mydb=# SELECT pg_stop_backup();
+    mydb=# select pg_switch_xlog();
+
+然后拷贝到老master那里：
+
+    [postgres@localhost pgsql]$ cd /home/postgres/db/master/pgsql/
+    [postgres@localhost pgsql]$ mv data data_bk
+    [postgres@localhost pgsql]$ tar -xzvf /home/postgres/base/base_data_switchover.tar.gz
+    [postgres@localhost pgsql]$ rm -r data/pg_xlog/
+    [postgres@localhost pgsql]$ mkdir -p data/pg_xlog/archive_status
+    [postgres@localhost pgsql]$ rm data/postmaster.pid
+    [postgres@localhost pgsql]$ cp /home/postgres/db/master/pgsql/data_bk/postgresql.conf /home/postgres/db/master/pgsql/data/postgresql.conf
+
+然后把postgresql.conf下面的几行都注释掉：
+
+    #wal_level = archive
+    #archive_mode = on
+    #archive_command = 'cp %p /home/postgres/archive_failover/%f'
+
+并为原有的master新建recovery.conf文件，内容和原来的standby的recovery.conf文件类似（只是使用不同的/home/postgres/archive_failover/目录,trigger也变为 /home/postgres/trigger/pgsql.trigger.5432）：
+
+    standby_mode = on
+    restore_command = '/home/postgres/db/master/pgsql/bin/pg_standby -d -s 2 -t /home/postgres/trigger/pgsql.trigger.5432 /home/postgres/archive_failover %f %p %r'
+    recovery_end_command = 'rm -f /home/postgres/trigger/pgsql.trigger.5432'
+
+然后启动原master，此时以standby模式运行：
+[postgres@localhost develop]$ /home/postgres/db/master/pgsql/bin/postmaster -D /home/postgres/db/master/pgsql/data
+查看是否一切正常。即你在新的master里做DML如插入新数据操作时，在新的standby里是否看到在用日志恢复。
+
+（D）如果有必要，我们再来一次主库和备库角色切换的操作（推荐，但此处不再演示）。即关闭新主库，激活老主库。
+
+写到这里你可能还有一些疑问，应用服务器有什么机制可以探测master down掉？有没自动化工具来对Failover和Switchover阶段自动执行？PostgreSQL9.1的25.3. Failover中只是简单的说明了一下，本身不是很详细，本文不再讨论，有兴趣的朋友可以专门写写。
+至此完毕。
+
+-->
+
+<h2 id="基于流复制的方法">基于流复制的方法</h2>
+
+<h2 id="基于同步复制的方法">基于同步复制的方法</h2>
+
+<p>PostgreSQL standby 可以通过两种方法来激活成为主库：</p>
+
+<p>trigger file，配置在recovery.conf中。
+pg_ctl promote发送SIGUSR1信号给postmaster进程。</p>
+
+<p>同时，PostgreSQL支持快速激活（fast promote）和非快速激活(fallback promote)：</p>
+
+<p>fast promote 开启数据库读写前，不需要做检查点。而是推到开启读写之后执行一个CHECKPOINT_FORCE检查点。</p>
+
+<p>pg_ctl promote发送SIGUSR1信号给postmaster进程。</p>
+
+<h1 id="hot-standby">Hot-Standby</h1>
+
+<h1 id="何时做归档">何时做归档</h1>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">wal_level = archive
+archive_mode = on
+archive_command = &#39;cp %p /tmp/archive/%f&#39;</code></pre></figure>
+
+<p>归档的隐含前提是，WAL 中仍有未归档的日志，通常有三种方式：</p>
+
+<ol>
+  <li>
+    <p>执行 SELECT pg_switch_xlog() 。</p>
+  </li>
+  <li>
+    <p>日志写满 16M，可以在编译的时候修改。</p>
+  </li>
+  <li>
+    <p>超过了 archive_command 设置的时间。</p>
+  </li>
+</ol>
+
+<h1 id="流复制">流复制</h1>
+
+<p>PG 9.0 引入了主备流复制机制，备库不断的从主库同步相应的数据，并在备库 apply 每个 WAL record，这里的流复制每次传输单位是WAL日志的record。而PostgreSQL9.0之前提供的方法是主库写完一个WAL日志文件后，才把WAL日志文件传送到备库，这样的方式导致主备延迟特别大。同时PostgreSQL9.0之后提供了Hot Standby，备库在应用WAL record的同时也能够提供只读服务，大大提升了用户体验。</p>
+
+<h2 id="主备总体结构">主备总体结构</h2>
+
+<p>PG 主备流复制的核心部分由 walsender、walreceiver 和 startup 三个进程组成。</p>
+
+<p>walsender 进程在主库中，用来发送 WAL 日志记录的，执行顺序如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">PostgresMain()
+ |-exec_replication_command()
+   |-StartReplication()
+     |-WalSndLoop()
+       |-XLogSendPhysical()</code></pre></figure>
+
+<p>walreceiver 进程是用来接收 WAL 日志记录的，执行顺序如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">sigusr1_handler()
+ |-StartWalReceiver()
+   |-AuxiliaryProcessMain()
+     |-WalReceiverMain()
+       |-walrcv_receive()</code></pre></figure>
+
+<p>startup进程是用来apply日志的，执行顺序如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">PostmasterMain()
+ |-StartupDataBase()
+   |-AuxiliaryProcessMain()
+     |-StartupProcessMain()
+       |-StartupXLOG()</code></pre></figure>
+
+<p><img src="/images/databases/postgresql/streaming-replication-architecture.png" alt="streaming replication architecture" class="pull-center" width="800" /></p>
+
+<p>walsender 和 walreceiver 交互主要分为以下几个步骤。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">                                WalReceiverMain()
+                                 |-walrcv_connect()
+                                 |                             for()
+                                 |-walrcv_identify_system()            # 执行
+                                 |-WalRcvFetchTimeLineHistoryFiles()
+
+XLogPageRead()
+ |-WaitForWALToBecomeAvailable()
+   |-RequestXLogStreaming()         # 启动walreceiver进程</code></pre></figure>
+
+<p>walreceiver启动后通过recovery.conf文件中的primary_conninfo参数信息连向主库，主库通过连接参数replication=true启动walsender进程；</p>
+
+<p>walreceiver执行identify_system命令，获取主库systemid/timeline/xlogpos等信息，执行TIMELINE_HISTORY命令拉取history文件；</p>
+
+<p>执行wal_startstreaming开始启动流复制，通过walrcv_receive获取WAL日志，期间也会回应主库发过来的心跳信息(接收位点、flush位点、apply位点)，向主库发送feedback信息(最老的事务id)，避免vacuum删掉备库正在使用的记录；</p>
+
+<p>执行walrcv_endstreaming结束流复制，等待startup进程更新receiveStart和receiveStartTLI，一旦更新，进入步骤2。</p>
+
+<p>startup进程进入standby模式和apply日志主要过程：</p>
+
+<p>读取pg_control文件，找到redo位点;读取recovery.conf，如果配置standby_mode=on则进入standby模式。</p>
+
+<p>如果是Hot Standby需要初始化clog、subtrans、事务环境等。初始化redo资源管理器，比如Heap、Heap2、Database、XLOG等。
+读取WAL record，如果record不存在需要调用XLogPageRead-&gt;WaitForWALToBecomeAvailable-&gt;RequestXLogStreaming唤醒walreceiver从walsender获取WAL record。</p>
+
+<p>对读取的WAL record进行redo，通过record-&gt;xl_rmid信息，调用相应的redo资源管理器进行redo操作。比如heap_redo的XLOG_HEAP_INSERT操作，就是通过record的信息在buffer page中增加一个record：</p>
+
+<h1 id="pg_basebackup">pg_basebackup</h1>
+
+<p>通常在搭建备库时，需要执行如下的步骤：</p>
+
+<ol>
+  <li>select pg_start_backup();</li>
+  <li>复制 $PGDATA</li>
+  <li>select pg_end_backup();</li>
+</ol>
+
+<p>如果利用 pg_basebackup，可以直接一步搞定。</p>
+
+<h1 id="pg_restore">pg_restore</h1>
+
+<!--
+SimianArmy+Chaos Monkey
+What if I were a cloud?
+asciimatics
+man 7 signal
+
+
+建议重新再看一遍
+http://blog.sciencenet.cn/home.php?mod=space&uid=419883&do=blog&quickforward=1&id=539178
+-->
+
+<h1 id="参考-1">参考</h1>
+<p><a href="/reference/databases/postgresql/gearman">gearman 搭建主备的测试脚本</a></p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/jquery-introduce_init.html" title="jquery 使用">&larr; Older</a></li> 
+         <li class="next"><a href="/post/theme-language-ccpp.html" title="【专题】C/C++ 编程语言">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1475596800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/postgresql-backup_init.html" data-title="PG 备份" data-url="/post/postgresql-backup_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

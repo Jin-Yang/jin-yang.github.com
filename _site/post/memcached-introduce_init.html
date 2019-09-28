@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>分布式缓存 memcached|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>分布式缓存 memcached</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-03-12 Saturday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  network  
+      
+    </div>
+  </div>
+  <hr>
+  <p>通常 Web 应用的数据都会持久化到数据库中，随着应用数据量以及访问量的增加，就会导致数据库负担加重，从而导致网站的延迟。</p>
+
+<p>Memcached 是一个高性能的分布式内存缓存服务器，用于缓存数据库的查询结果，从而减少数据库的访问次数，提高动态 Web 应用的速度、提高扩展性。</p>
+
+<!-- more -->
+
+<h1 id="简介">简介</h1>
+
+<p>分布式缓存在设计时需要考虑几点常见的原则：A) 缓存本身的水平线性扩展；B) 缓存大并发下本身的性能问题，包括内存的管理问题，如内存的分配、管理、回收机制；C) 避免缓存的单点故障问题，以及分布式系统常见的多副本和副本一致性问题。</p>
+
+<p><img src="/images/linux/memcached-logo.png" alt="memcached logo" title="memcached logo" class="pull-center" /></p>
+
+<p>memcached 采用基于文本的简单通讯协议，可以直接通过 telnet 进行操作；其事件处理是基于 libevent；虽然，我们说 memcached 是分布式缓存服务器，但实际上各个服务器之间并不通讯，其分布式主要是通过客户端实现。</p>
+
+<h2 id="安装使用">安装、使用</h2>
+
+<p>在 CentOS 上可以通过 yum 简单安装，或者直接通过源码安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum install memcached                                # 直接安装
+# systemctl start memcached                            # 启动
+# ./configure &amp;&amp; make &amp;&amp; make test &amp;&amp; make install     # 通过源码编译
+
+$ memcached -p 11211 -m 64m -d                         # 后台启动
+$ telnet 127.1 11211                                   # 通过telnet链接
+add foobar 0 60 5                                      # 添加，由重复则失败
+get foobar                                             # 获取foobar的值
+set foobar 0 60 5                                      # 存在则更新，否则添加
+delete foobar                                          # 删除
+stats                                                  # 查看状态，也可以使用memcached-tool</code></pre></figure>
+
+<p>对于 add 和 set 命令，其中 0 为标志，60 表示数据存放 60s，5 表示放入多大数据。</p>
+
+<p>上述是简单的启动和使用方式，常见的启动选项可以参考如下，详细内容查看 man 1 memcached 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">memcached [options]
+   -p [num]
+       指定 TCP 的监听端口，默认使用 11211。
+   -c [num]
+       可以同时处理的最大链接数，默认是 1024 。
+   -b [num]
+       设置 backlog 队列的大小，默认是 1024 。
+   -m [num]
+       用户可以使用多少MB的内存，默认是 64M 。
+   -d
+       后台运行。
+   -P [filename]
+       后台启动时指定 pidfile 的路径。</code></pre></figure>
+
+<h1 id="链接线程处理">链接、线程处理</h1>
+
+<p>线程通过 LIBEVENT_THREAD *threads 表示，</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">main()
+  |-... ...                               # 设置进程打开文件个数限制等
+  |-daemonize()                           # 如果需要后台运行
+  | |-fork()
+  |-mlockall()                            # 锁定内存，保证内存不会换出
+  |
+  |-event_init()                          # 1. 初始化主线程的event_base，也就是libevent实例
+  |-stats_init()                          # 统计状态的初始化
+  |-assoc_init()                          # hash表的初始化
+  |-conn_init()                           # 连接初始化
+  |-slabs_init()                          # slabs结构的初始化
+  |-sigignore()                           # 忽略SIGPIPE信号
+  |-memcached_thread_init()               # 2. 创建工作线程，默认是4个，可以通过pstree -p PID查看
+  | |
+  | |-pipe()                              # 3. 创建pipe用于主线程和工作线程通讯
+  | |
+  | |-setup_thread()                      # 创建每个线程自己的libevent的event_base
+  | | |-event_init()                      # 每个独立的线程都包含独立的event_base
+  | | |-event_set()                       # 创建pipe的读事件监听，回调thread_libevent_process方法
+  | | |-event_base_set()
+  | | |-event_add()                       # 添加事件操作
+  | | |-cq_init()                         # 4. 初始化每个工作线程的队列
+  | | |-pthread_mutex_init()              # 初始化线程池
+  | | |-cache_create()
+  | |
+  | |-create_worker()                     # 循环创建线程，真正的创建工作线程，实际是worker_libevent()
+  |   |-pthread_attr_init()               # 属性初始化
+  |   |-pthread_create()                  # 5. 创建线程worker_libevent()，直接启动
+  |
+  |-start_assoc_maintenance_thread()      # 启动
+  |-start_item_crawler_thread()
+  |-start_lru_maintainer_thread()
+  |-start_slab_maintenance_thread()
+  |
+  |-clock_handler()                       # 初始化时间设置
+  |
+  |-server_sockets()                      # 6. 创建socket，绑定地址，设置非阻塞模式，包括TCP/UDP
+  | |-server_socket()                     # 实际的绑定函数
+  |   |-conn_new()                        # 7. 将监听socket添加到main_base的libevent的事件队列中
+  |
+  |-save_pid()                            # 保存PID到一个文件中
+  |-event_base_loop()                     # 8. 启动主线程的libevetn循环
+
+worker_libevent()                         # 新建的子线程，会初始化子线程的libevent
+  |-register_thread_initialized()
+  |-event_base_loop()                     # 开启事件循环，每个线程有自己的事件处理机制，启动libevent
+
+event_handler()                           # Master/Worker线程libevent回调函数，此时有网络事件到达
+  |-drive_machine()                       # 进入业务处理状态机
+
+thread_libevent_process()                 # pipe接收回调函数
+  |-read()                                # 读取pipe中的信息</code></pre></figure>
+
+<p>主线程中如果有新的连接，会向其中一个线程的 pipe 中写入 1，子线程读取 pipe 中的数据，如果为 1，则说明从 pipe 中获取的数据是正确的。</p>
+
+<p>在初始化完成之后，会忽略 SIGPIPE 信号，其中 PIPE 信号是当网络连接一端已经断开，这时发送数据，会发送 RST 包，当再次发送数据，会触发 PIPE 信号，而 PIPE 信号的默认动作是退出进程，因此忽略。</p>
+
+<h2 id="数据结构">数据结构</h2>
+
+<p>CQ_ITEM 是主线程 accept() 后返回的已建立连接的 fd 的封装，而 CQ 是一个管理 CQ_ITEM 的单向链表。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cm">/* An item in the connection queue. */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">conn_queue_item</span> <span class="n">CQ_ITEM</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">conn_queue_item</span> <span class="p">{</span>
+    <span class="kt">int</span>               <span class="n">sfd</span><span class="p">;</span>
+    <span class="k">enum</span> <span class="n">conn_states</span>  <span class="n">init_state</span><span class="p">;</span>
+    <span class="kt">int</span>               <span class="n">event_flags</span><span class="p">;</span>
+    <span class="kt">int</span>               <span class="n">read_buffer_size</span><span class="p">;</span>
+    <span class="k">enum</span> <span class="n">network_transport</span>     <span class="n">transport</span><span class="p">;</span>
+    <span class="n">CQ_ITEM</span>          <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/* A connection queue. */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">conn_queue</span> <span class="n">CQ</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">conn_queue</span> <span class="p">{</span>
+    <span class="n">CQ_ITEM</span> <span class="o">*</span><span class="n">head</span><span class="p">;</span>
+    <span class="n">CQ_ITEM</span> <span class="o">*</span><span class="n">tail</span><span class="p">;</span>
+    <span class="kt">pthread_mutex_t</span> <span class="n">lock</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">pthread_t</span> <span class="n">thread_id</span><span class="p">;</span>               <span class="cm">/* unique ID of this thread */</span>
+    <span class="k">struct</span> <span class="n">event_base</span> <span class="o">*</span><span class="n">base</span><span class="p">;</span>           <span class="cm">/* libevent handle this thread uses */</span>
+    <span class="k">struct</span> <span class="n">event</span> <span class="n">notify_event</span><span class="p">;</span>         <span class="cm">/* listen event for notify pipe */</span>
+    <span class="kt">int</span> <span class="n">notify_receive_fd</span><span class="p">;</span>             <span class="cm">/* receiving end of notify pipe */</span>
+    <span class="kt">int</span> <span class="n">notify_send_fd</span><span class="p">;</span>                <span class="cm">/* sending end of notify pipe */</span>
+    <span class="k">struct</span> <span class="n">thread_stats</span> <span class="n">stats</span><span class="p">;</span>         <span class="cm">/* Stats generated by this thread */</span>
+    <span class="k">struct</span> <span class="n">conn_queue</span> <span class="o">*</span><span class="n">new_conn_queue</span><span class="p">;</span> <span class="cm">/* queue of new connections to handle */</span>
+    <span class="kt">cache_t</span> <span class="o">*</span><span class="n">suffix_cache</span><span class="p">;</span>             <span class="cm">/* suffix cache */</span>
+<span class="p">}</span> <span class="n">LIBEVENT_THREAD</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">conn</span> <span class="n">conn</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">conn</span> <span class="p">{</span>
+    <span class="kt">int</span>    <span class="n">sfd</span><span class="p">;</span>
+    <span class="kt">sasl_conn_t</span> <span class="o">*</span><span class="n">sasl_conn</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">authenticated</span><span class="p">;</span>
+    <span class="k">enum</span> <span class="n">conn_states</span>  <span class="n">state</span><span class="p">;</span>
+    <span class="k">enum</span> <span class="n">bin_substates</span> <span class="n">substate</span><span class="p">;</span>
+    <span class="kt">rel_time_t</span> <span class="n">last_cmd_time</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">event</span> <span class="n">event</span><span class="p">;</span>
+    <span class="kt">short</span>  <span class="n">ev_flags</span><span class="p">;</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>LIBEVENT_THREAD 是 memcached 里的线程结构封装，如上所示，每个线程都包含一个 CQ 队列，一条通知管道 pipe，一个 libevent 的实例 event_base 以及线程的状态。</p>
+
+<p>另外一个重要的结构是对每个网络连接的封装 conn，这个结构体的成员变量比较多，暂时只列举了部分。</p>
+
+<h2 id="线程交互">线程交互</h2>
+
+<p>memcached 采用典型的 Master-Worker 线程模型，其模型很简单，Master 监听网络链接，接受链接请求之后通过线程间通讯来唤醒 Worker 线程，后续的读写操作都是通过 Worker 完成。</p>
+
+<p>主线程和各个线程的处理都是通过 libevent 处理，通过实例化多个 libevent 实例实现，分别对应了一个主线程和 N 个 workers 线程。Master 线程和 Workers 线程全部都是通过 libevent 管理网络事件，也就是说实际上每个线程都是一个单独的 libevent 实例。</p>
+
+<p>主线程的 libevent 实例在主线程初始化时设置，工作线程则在 setup_thread() 中建立 libevent 实例。</p>
+
+<p>Master 线程负责监听客户端的建立连接请求，并 accept 连接，Workers 线程负责处理已经建立好的连接的读写等事件。</p>
+
+<p><img src="/images/linux/memcached-threads.png" alt="memcached threads" title="memcached threads" class="pull-center" /></p>
+
+<h3 id="master-thread">Master Thread</h3>
+
+<p>首先看看主线程是如何通知 workers 线程处理新连接的，在初始化时会添加监听事件。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="k">struct</span> <span class="n">event_base</span> <span class="o">*</span><span class="n">main_base</span><span class="p">;</span>           <span class="c1">// 主libevent</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">server_socket</span><span class="p">(...)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">next</span><span class="o">=</span> <span class="n">ai</span><span class="p">;</span> <span class="n">next</span><span class="p">;</span> <span class="n">next</span><span class="o">=</span> <span class="n">next</span><span class="o">-&gt;</span><span class="n">ai_next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">...</span> <span class="p">...</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">listen_conn_add</span> <span class="o">=</span> <span class="n">conn_new</span><span class="p">(</span><span class="n">sfd</span><span class="p">,</span> <span class="n">conn_listening</span><span class="p">,</span>
+                                         <span class="n">EV_READ</span> <span class="o">|</span> <span class="n">EV_PERSIST</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+                                         <span class="n">transport</span><span class="p">,</span> <span class="n">main_base</span><span class="p">)))</span> <span class="p">{</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;failed to create listening connection</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+            <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="p">...</span> <span class="p">...</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>主线程的 libevent 注册的是监听 socket 描述字的可读事件，就是说当有建立连接请求时，主线程会处理，新建监听端口是通过 conn_new() 初始化，其回调的函数是 event_handler() 。</p>
+
+<p>对于主线程来说，会进入到 conn_listening 分支，也就是调用 dispatch_conn_new() 函数；在该函数中，会创建一个新的 CQ_ITEM，然后通过 round robin 策略选择了一个 thread，并通过 cq_push 将这个 CQ_ITEM 放入了该线程的 CQ 队列里。</p>
+
+<p>最后通过 write() 向该线程管道写了 1 字节数据，则该线程的 libevent 立即回调 thread_libevent_process() 函数进行处理。</p>
+
+<h3 id="worker-thread">Worker Thread</h3>
+
+<p>当 memcached 刚启动时，也就是当刚初始化完成之后，每个 workers 线程只有在自己线程管道的读端有数据时触发调用 thread_libevent_process() 方法，而主线程在有链接时会写入数据，该函数处理的就是主线程新建链接的请求。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">thread_libevent_process</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">short</span> <span class="n">which</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">settings</span><span class="p">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Can&#39;t read from libevent pipe</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+    <span class="k">switch</span> <span class="p">(</span><span class="n">buf</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="sc">&#39;c&#39;</span><span class="o">:</span>
+    <span class="n">item</span> <span class="o">=</span> <span class="n">cq_pop</span><span class="p">(</span><span class="n">me</span><span class="o">-&gt;</span><span class="n">new_conn_queue</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">NULL</span> <span class="o">!=</span> <span class="n">item</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">conn</span> <span class="o">*</span><span class="n">c</span> <span class="o">=</span> <span class="n">conn_new</span><span class="p">(</span><span class="n">item</span><span class="o">-&gt;</span><span class="n">sfd</span><span class="p">,</span> <span class="n">item</span><span class="o">-&gt;</span><span class="n">init_state</span><span class="p">,</span> <span class="n">item</span><span class="o">-&gt;</span><span class="n">event_flags</span><span class="p">,</span>
+                           <span class="n">item</span><span class="o">-&gt;</span><span class="n">read_buffer_size</span><span class="p">,</span> <span class="n">item</span><span class="o">-&gt;</span><span class="n">transport</span><span class="p">,</span> <span class="n">me</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">);</span>
+        <span class="p">...</span> <span class="p">...</span>
+    <span class="p">}</span>
+    <span class="k">break</span><span class="p">;</span>
+
+    <span class="cm">/* we were told to pause and report in */</span>
+    <span class="k">case</span> <span class="sc">&#39;p&#39;</span><span class="o">:</span>
+    <span class="n">register_thread_initialized</span><span class="p">();</span>
+    <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>入参的 fd 是这个线程的管道读端的描述符，在上述的函数中，首先将管道的 1 个字节通知信号读出。需要注意的是，在水平触发模式下如果不处理该事件，则会被循环通知，直到该事件被处理。</p>
+
+<p>cq_pop() 会从该线程的 CQ 队列中取队列头的一个 CQ_ITEM，这个 CQ_ITEM 是被主线程丢到这个队列里的，item-&gt;sfd 是已建立的连接的描述符，然后会调用 conn_new() 函数。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">conn</span> <span class="o">*</span><span class="nf">conn_new</span><span class="p">(...)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">event_set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">event</span><span class="p">,</span> <span class="n">sfd</span><span class="p">,</span> <span class="n">event_flags</span><span class="p">,</span> <span class="n">event_handler</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">c</span><span class="p">);</span>
+    <span class="n">event_base_set</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">event</span><span class="p">);</span>
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">ev_flags</span> <span class="o">=</span> <span class="n">event_flags</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">event_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">event</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">perror</span><span class="p">(</span><span class="s">&quot;event_add&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在 conn_new() 中，为 sfd 描述符注册 libevent 的读事件，接着会调用 event_add() 函数，也就是对该描述符的事件处理交给当前这个 workers 线程处理。</p>
+
+<p>可以看到新的连接被注册了一个事件，实际上是 EV_READ|EV_PERSIST 事件，当该连接有可读数据时会调用函数 event_handler()，实际上 event_handler() 里主要是调用 memcached 的核心方法 drive_machine() 。</p>
+
+<p>而 Worker 线程最终会走到 conn_read 分支，可以参考如下从网上找的工作流程。</p>
+
+<p><img src="/images/linux/memcached-master-workers.jpg" alt="memcached master workers" title="memcached master workers" class="pull-center" /></p>
+
+<p>也就是说，实际上，Master/Worker 线程的 libevent 实例都会调用 event_handler() 函数，而在该函数中的核心处理为其状态机的处理。</p>
+
+<h2 id="状态机">状态机</h2>
+
+<p>Worker 线程在处理 libevent 的事件时，会进入状态机处理不同的逻辑，详细的调用逻辑如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">event_handler()                           # libevent回调函数，此时有网络事件到达
+  |-drive_machine()                       # 进入业务处理状态机</code></pre></figure>
+
+<p>drive_machine() 就是通过当前连接的 state 来判断该进行何种处理，Master 和 Workers 的 libevent 事件处理都会调用该函数，其链接的状态是通过一个 enum 声明。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">enum</span> <span class="n">conn_states</span> <span class="p">{</span>
+    <span class="n">conn_listening</span><span class="p">,</span>  <span class="c1">// 主线程listen的主要状态，其工作就是把接到连接分发到worker子线程</span>
+    <span class="n">conn_new_cmd</span><span class="p">,</span>    <span class="c1">// 将链接设置为初始态，准备接收下个命令，会清空读写buffer</span>
+    <span class="n">conn_waiting</span><span class="p">,</span>    <span class="c1">// 等待读取socket，实际上就是挂起该链接，等待新的链接到来</span>
+    <span class="n">conn_read</span><span class="p">,</span>       <span class="c1">// 从客户端读取信息，也就是命令信息</span>
+    <span class="n">conn_parse_cmd</span><span class="p">,</span>  <span class="c1">// 尝试从读取的buffer中解析命令</span>
+    <span class="n">conn_write</span><span class="p">,</span>      <span class="c1">// 主要是out_string()函数，一般都是提示信息和返回的状态信息</span>
+    <span class="n">conn_nread</span><span class="p">,</span>      <span class="c1">// 读取固定大小的数据，会更新到item、hash、lru中，并调转到conn_write</span>
+    <span class="n">conn_swallow</span><span class="p">,</span>    <span class="c1">// 忽略不需要的数据</span>
+    <span class="n">conn_closing</span><span class="p">,</span>    <span class="c1">// 服务端主动调用close()关闭链接，并把conn结构体放到空闲队列</span>
+    <span class="n">conn_mwrite</span><span class="p">,</span>     <span class="c1">// 将这个链接中的msglist返回给客户端，可能会返回多个</span>
+    <span class="n">conn_closed</span><span class="p">,</span>     <span class="c1">// 链接已经被关闭</span>
+    <span class="n">conn_max_state</span>   <span class="c1">// 由于assert判断</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>首先着重说一下 conn_swallow 状态，对于像 update 操作，如果分配 item 失败，显然后面读取的数据是无效的，不过客户端是不知道的，客户端会继续发送特定的数量的数据，就需要把读到的这些数据忽略掉。</p>
+
+<p><img src="/images/linux/memcached-states.jpg" alt="memcached states" title="memcached sates" class="pull-center" width="600" /></p>
+
+<p>接下来详细查看 drive_machine() 函数的处理流程，首先查看下主线程 conn_listening 状态的处理。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">drive_machine</span><span class="p">(</span><span class="n">conn</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="nl">conn_listening</span><span class="p">:</span>
+            <span class="n">addrlen</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span>
+            <span class="n">sfd</span> <span class="o">=</span> <span class="n">accept</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">sfd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">addrlen</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">sfd</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="p">...</span> <span class="p">...</span>         <span class="c1">// 多种的错误处理</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">use_accept4</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 设置为非阻塞</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">fcntl</span><span class="p">(</span><span class="n">sfd</span><span class="p">,</span> <span class="n">F_SETFL</span><span class="p">,</span> <span class="n">fcntl</span><span class="p">(</span><span class="n">sfd</span><span class="p">,</span> <span class="n">F_GETFL</span><span class="p">)</span> <span class="o">|</span> <span class="n">O_NONBLOCK</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">perror</span><span class="p">(</span><span class="s">&quot;setting O_NONBLOCK&quot;</span><span class="p">);</span>
+                    <span class="n">close</span><span class="p">(</span><span class="n">sfd</span><span class="p">);</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">settings</span><span class="p">.</span><span class="n">maxconns_fast</span> <span class="o">&amp;&amp;</span>
+                <span class="n">stats</span><span class="p">.</span><span class="n">curr_conns</span> <span class="o">+</span> <span class="n">stats</span><span class="p">.</span><span class="n">reserved_fds</span> <span class="o">&gt;=</span> <span class="n">settings</span><span class="p">.</span><span class="n">maxconns</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="p">...</span> <span class="p">..</span> <span class="c1">// 超过了设置的最大链接数</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>   <span class="c1">// OK，分发给Worker线程，初始化状态为conn_new_cmd</span>
+                <span class="n">dispatch_conn_new</span><span class="p">(</span><span class="n">sfd</span><span class="p">,</span> <span class="n">conn_new_cmd</span><span class="p">,</span> <span class="n">EV_READ</span> <span class="o">|</span> <span class="n">EV_PERSIST</span><span class="p">,</span>
+                                     <span class="n">DATA_BUFFER_SIZE</span><span class="p">,</span> <span class="n">tcp_transport</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="n">stop</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="conn_new_cmd">conn_new_cmd</h3>
+
+<p>子线程最初进入的状态就是 conn_new_cmd 状态，这个状态主要是做一些清理。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">drive_machine</span><span class="p">(</span><span class="n">conn</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">...</span> <span class="p">...</span>
+        <span class="k">case</span> <span class="nl">conn_new_cmd</span><span class="p">:</span>
+            <span class="o">--</span><span class="n">nreqs</span><span class="p">;</span>     <span class="c1">// 记录每个工作线程处理，记录每个libevent实例处理的事件，通过初始启动参数配置</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">nreqs</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>                      <span class="c1">// 还可以处理请求</span>
+                <span class="n">reset_cmd_handler</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>              <span class="c1">// 清空缓冲区</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>     <span class="c1">// 拒绝请求</span>
+                <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+                <span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">conn_yields</span><span class="o">++</span><span class="p">;</span>    <span class="c1">// 更新统计数据</span>
+                <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">rbytes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="c1">// 已经将数据读取到了buffer中，因此需要发送一个event</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">update_event</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">EV_WRITE</span> <span class="o">|</span> <span class="n">EV_PERSIST</span><span class="p">))</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">settings</span><span class="p">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Couldn&#39;t update event</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+                        <span class="n">conn_set_state</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">conn_closing</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="n">stop</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="p">...</span> <span class="p">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">reset_cmd_handler</span><span class="p">(</span><span class="n">conn</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">substate</span> <span class="o">=</span> <span class="n">bin_no_state</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">item</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">item_remove</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">item</span><span class="p">);</span>  <span class="c1">// 如果有item，则直接删除</span>
+        <span class="n">c</span><span class="o">-&gt;</span><span class="n">item</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">conn_shrink</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>            <span class="c1">// 整理缓冲区，暂不分析</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">rbytes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>       <span class="c1">// 如果缓冲区还有数据，则直接到conn_parse_cmd中继续处理</span>
+        <span class="n">conn_set_state</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">conn_parse_cmd</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>   <span class="c1">// 否则进入等待状态，状态机没有数据要处理，就进入这个状态</span>
+        <span class="n">conn_set_state</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">conn_waiting</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>根据是否有数据，分别会进入不同的状态，如果没有数据则会进入 conn_waiting 等待接收数据。</p>
+
+<h3 id="conn_waitingconn_read">conn_waiting、conn_read</h3>
+
+<p>接下来主要是处理数据报文的接收，包括了 conn_waiting、conn_read 两个状态。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">drive_machine</span><span class="p">(</span><span class="n">conn</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">...</span> <span class="p">...</span>
+        <span class="k">case</span> <span class="nl">conn_waiting</span><span class="p">:</span>
+            <span class="c1">// 更新libevent状态，也就是删除libevent事件后，重新注册libevent事件</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">update_event</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">EV_READ</span> <span class="o">|</span> <span class="n">EV_PERSIST</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">settings</span><span class="p">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Couldn&#39;t update event</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+                <span class="n">conn_set_state</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">conn_closing</span><span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="n">conn_set_state</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">conn_read</span><span class="p">);</span> <span class="c1">// 进入读数据状态</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="nl">conn_read</span><span class="p">:</span>
+            <span class="c1">// 判断采用UDP协议还是TCP协议</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">IS_UDP</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">transport</span><span class="p">)</span> <span class="o">?</span> <span class="n">try_read_udp</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">:</span> <span class="n">try_read_network</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+
+            <span class="k">switch</span> <span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="nl">READ_NO_DATA_RECEIVED</span><span class="p">:</span> <span class="c1">// 未读取到数据</span>
+                <span class="n">conn_set_state</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">conn_waiting</span><span class="p">);</span>    <span class="c1">// 则继续等待</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="nl">READ_DATA_RECEIVED</span><span class="p">:</span>    <span class="c1">// 已经读取到数据</span>
+                <span class="n">conn_set_state</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">conn_parse_cmd</span><span class="p">);</span>  <span class="c1">// 开始解析命令</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="nl">READ_ERROR</span><span class="p">:</span>            <span class="c1">// 读取发生错误</span>
+                <span class="n">conn_set_state</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">conn_closing</span><span class="p">);</span>    <span class="c1">// 直接关闭链接</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="nl">READ_MEMORY_ERROR</span><span class="p">:</span>     <span class="c1">// 申请内存发生错误，则继续尝试</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">...</span> <span class="p">...</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如果采用 TCP 协议则会调用 try_read_network() 从网络读取数据；对于 UDP 则比较简单，因为是数据报，读取到一个，就是一个完整的数据报，所以其处理过程简单。</p>
+
+<h3 id="conn_parse_cmd">conn_parse_cmd</h3>
+
+<p>从网络读取了数据之后，则会进入该状态，按协议来解析读取到的网络数据。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">drive_machine</span><span class="p">(</span><span class="n">conn</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">...</span> <span class="p">...</span>
+        <span class="k">case</span> <span class="nl">conn_parse_cmd</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">try_read_command</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>     <span class="c1">// 尝试解析命令</span>
+                <span class="c1">// 如果读取到的数据不够，则继续等待</span>
+                <span class="n">conn_set_state</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">conn_waiting</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">...</span> <span class="p">...</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">try_read_command</span><span class="p">(</span><span class="n">conn</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">binary_prot</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">...</span> <span class="p">...</span>
+        <span class="n">dispatch_bin_command</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="p">...</span> <span class="p">...</span>
+        <span class="n">process_command</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">rcurr</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>命令解析包括了文本协议和二进制协议，其命令的处理分别调用不同的命令处理函数。</p>
+
+<h1 id="内存管理">内存管理</h1>
+
+<p>对于 memcached 内存高效管理是其最重要的任务之一，为了减小内存碎片的产生，采用 slab 管理其内存。简单来说，就是分配一块大内存，然后按照不同的块切分这些内存，存储业务数据时，按需选择合适的内存空间存储数据。</p>
+
+<p>默认分配 64M 内存，之后所有的数据都是在这 64M 空间进行存储，在启动之后，不会释放这些内存，直到进程退出。</p>
+
+<p><img src="/images/linux/memcached-02-01.png" alt="memcached memory structure" title="memcached memory structure" class="pull-center" /></p>
+
+<p>在 memcached 中，与内存相关的配置参数包括了设置内存大小、内存的增长因子，会在 slabs_init() 初始化的时候作为入参传入函数。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">slabclass_t</span> <span class="n">slabclass</span><span class="p">[</span><span class="n">MAX_NUMBER_OF_SLAB_CLASSES</span><span class="p">];</span>   <span class="c1">// 定义slab class最大值，64个</span>
+<span class="k">static</span> <span class="kt">size_t</span> <span class="n">mem_limit</span>     <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>      <span class="c1">// 总的内存大小</span>
+<span class="k">static</span> <span class="kt">size_t</span> <span class="n">mem_malloced</span>  <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>      <span class="c1">// 初始化内存的大小</span>
+<span class="k">static</span> <span class="kt">void</span>  <span class="o">*</span><span class="n">mem_base</span>      <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>   <span class="c1">// 指向总的内存的首地址</span>
+<span class="k">static</span> <span class="kt">void</span>  <span class="o">*</span><span class="n">mem_current</span>   <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>   <span class="c1">// 当前分配到的内存地址</span>
+<span class="k">static</span> <span class="kt">size_t</span> <span class="n">mem_avail</span>     <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>      <span class="c1">// 当前可用的内存大小</span>
+
+<span class="kt">void</span> <span class="nf">slabs_init</span><span class="p">(</span><span class="k">const</span> <span class="kt">size_t</span> <span class="n">limit</span><span class="p">,</span> <span class="k">const</span> <span class="kt">double</span> <span class="n">factor</span><span class="p">,</span> <span class="k">const</span> <span class="kt">bool</span> <span class="n">prealloc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">POWER_SMALLEST</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="c1">//size表示申请空间的大小，其值由配置的chunk_size和单个item的大小来指定</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">+</span> <span class="n">settings</span><span class="p">.</span><span class="n">chunk_size</span><span class="p">;</span>
+
+    <span class="n">mem_limit</span> <span class="o">=</span> <span class="n">limit</span><span class="p">;</span>   <span class="c1">// 设置入参设置的内存上限</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">prealloc</span><span class="p">)</span> <span class="p">{</span>      <span class="c1">// 是否要预先分配设置的内存</span>
+        <span class="n">mem_base</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">mem_limit</span><span class="p">);</span>  <span class="c1">// 通过malloc()申请内存，并将内存基址指向mem_base</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">mem_base</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">mem_current</span> <span class="o">=</span> <span class="n">mem_base</span><span class="p">;</span>    <span class="c1">// mem_current指向当前地址</span>
+            <span class="n">mem_avail</span> <span class="o">=</span> <span class="n">mem_limit</span><span class="p">;</span>     <span class="c1">// 可用内存大小为mem_limit</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>         <span class="c1">// 预分配失败</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Warning: Failed to allocate requested memory in&quot;</span>
+                    <span class="s">&quot; one large chunk.</span><span class="se">\n</span><span class="s">Will allocate in smaller chunks</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">memset</span><span class="p">(</span><span class="n">slabclass</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">slabclass</span><span class="p">));</span> <span class="c1">// 置空slab class数组</span>
+
+    <span class="c1">// 开始分配，i&lt;200 &amp;&amp; 单个chunk的size&lt;单个item最大大小/内存增长因子</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">++</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">POWER_LARGEST</span> <span class="o">&amp;&amp;</span> <span class="n">size</span> <span class="o">&lt;=</span> <span class="n">settings</span><span class="p">.</span><span class="n">item_size_max</span> <span class="o">/</span> <span class="n">factor</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">%</span> <span class="n">CHUNK_ALIGN_BYTES</span><span class="p">)</span>   <span class="c1">// 将size按照8byte对齐</span>
+            <span class="n">size</span> <span class="o">+=</span> <span class="n">CHUNK_ALIGN_BYTES</span> <span class="o">-</span> <span class="p">(</span><span class="n">size</span> <span class="o">%</span> <span class="n">CHUNK_ALIGN_BYTES</span><span class="p">);</span>
+
+        <span class="n">slabclass</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span><span class="p">;</span>       <span class="c1">// slab对应chunk的大小</span>
+        <span class="n">slabclass</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">perslab</span> <span class="o">=</span> <span class="n">settings</span><span class="p">.</span><span class="n">item_size_max</span> <span class="o">/</span> <span class="n">slabclass</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="p">;</span> <span class="c1">// slab对应的chunk的个数</span>
+        <span class="n">size</span> <span class="o">*=</span> <span class="n">factor</span><span class="p">;</span>                 <span class="c1">// size下一个值为按增长因子的倍数增长</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">settings</span><span class="p">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>     <span class="c1">// 如果有打开调试信息，则输出调试信息</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;slab class %3d: chunk size %9u perslab %7u</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                    <span class="n">i</span><span class="p">,</span> <span class="n">slabclass</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="p">,</span> <span class="n">slabclass</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">perslab</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">power_largest</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>   <span class="c1">// size已经增长到1M，再增加一个slab</span>
+    <span class="n">slabclass</span><span class="p">[</span><span class="n">power_largest</span><span class="p">].</span><span class="n">size</span> <span class="o">=</span> <span class="n">settings</span><span class="p">.</span><span class="n">item_size_max</span><span class="p">;</span>  <span class="c1">// slab的size为item_size_max</span>
+    <span class="n">slabclass</span><span class="p">[</span><span class="n">power_largest</span><span class="p">].</span><span class="n">perslab</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>                    <span class="c1">// chunk个数为1</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">settings</span><span class="p">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;slab class %3d: chunk size %9u perslab %7u</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">slabclass</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="p">,</span> <span class="n">slabclass</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">perslab</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">prealloc</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 在每个slab class中都先预分配一个1M的内存</span>
+        <span class="n">slabs_preallocate</span><span class="p">(</span><span class="n">power_largest</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="hash表">Hash表</h2>
+
+<p>在 memcached 中，其采用链接法来处理 Hash 冲突，如果冲突太高，则会导致链表过长，从而会导致查找时的耗时变长。</p>
+
+<p>为次当表中元素的个数超过 Hash 容量的 1.5 倍时就进行扩容，扩容过程由独立的线程来完成，扩容过程中会采用 2 个 Hash 表，将老表中的数据通过 Hash 算法映射到新表中，每次移动的桶的数目可以配置，默认是每次移动老表中的 1 个桶。</p>
+
+<p>在启动时，会通过 start_assoc_maintenance_thread() 函数启动一个线程，正常如果不需要扩容，则实际会调用 pthread 的 cond_wait() 函数一直等待。</p>
+
+<p>首先看下如何在 hash 表中添加元素。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// 在hash表中增加元素，不同于assoc_update，需要先确保没有相应的数据</span>
+<span class="kt">int</span> <span class="nf">assoc_insert</span><span class="p">(</span><span class="n">item</span> <span class="o">*</span><span class="n">it</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint32_t</span> <span class="n">hv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">oldbucket</span><span class="p">;</span>
+    <span class="c1">// 如果正在扩容且目前进行扩容还没到需要插入元素的桶，则将元素添加到旧桶中</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">expanding</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">oldbucket</span> <span class="o">=</span> <span class="p">(</span><span class="n">hv</span> <span class="o">&amp;</span> <span class="n">hashmask</span><span class="p">(</span><span class="n">hashpower</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&gt;=</span> <span class="n">expand_bucket</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">it</span><span class="o">-&gt;</span><span class="n">h_next</span> <span class="o">=</span> <span class="n">old_hashtable</span><span class="p">[</span><span class="n">oldbucket</span><span class="p">];</span>  <span class="c1">// 添加元素</span>
+        <span class="n">old_hashtable</span><span class="p">[</span><span class="n">oldbucket</span><span class="p">]</span> <span class="o">=</span> <span class="n">it</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>  <span class="c1">// 如果没扩容，或者扩容已经到了新的桶中，则添加元素到新表中</span>
+        <span class="n">it</span><span class="o">-&gt;</span><span class="n">h_next</span> <span class="o">=</span> <span class="n">primary_hashtable</span><span class="p">[</span><span class="n">hv</span> <span class="o">&amp;</span> <span class="n">hashmask</span><span class="p">(</span><span class="n">hashpower</span><span class="p">)];</span>
+        <span class="n">primary_hashtable</span><span class="p">[</span><span class="n">hv</span> <span class="o">&amp;</span> <span class="n">hashmask</span><span class="p">(</span><span class="n">hashpower</span><span class="p">)]</span> <span class="o">=</span> <span class="n">it</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hash_items_counter_lock</span><span class="p">);</span>
+    <span class="n">hash_items</span><span class="o">++</span><span class="p">;</span>
+    <span class="c1">// 还没开始扩容，但是表中元素个数已经超过Hash表容量的1.5倍，触发开始扩容</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">expanding</span> <span class="o">&amp;&amp;</span> <span class="n">hash_items</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">hashsize</span><span class="p">(</span><span class="n">hashpower</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">assoc_start_expand</span><span class="p">();</span>  <span class="c1">// 唤醒扩容线程</span>
+    <span class="p">}</span>
+    <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hash_items_counter_lock</span><span class="p">);</span>
+
+    <span class="n">MEMCACHED_ASSOC_INSERT</span><span class="p">(</span><span class="n">ITEM_key</span><span class="p">(</span><span class="n">it</span><span class="p">),</span> <span class="n">it</span><span class="o">-&gt;</span><span class="n">nkey</span><span class="p">,</span> <span class="n">hash_items</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">assoc_start_expand</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>   <span class="c1">// 唤醒对应的扩容线程</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">started_expanding</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">;</span>
+
+    <span class="n">started_expanding</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="n">pthread_cond_signal</span><span class="p">(</span><span class="o">&amp;</span><span class="n">maintenance_cond</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="cas">CAS</h2>
+
+<p>CAS 也即 Compare And Set 或 Compare And Swap，实现的是一中无锁方法，或者说是乐观锁的一种技术，过程中会使用 CPU 提供的原子操作指令，可以提高系统的并发性能，在 Memcached 中用来保证数据的一致性，不是为了实现严格的锁。</p>
+
+<p>当多个应用尝试修改同一个数据时，会出现相互覆盖的情况，此时使用 CAS 版本号验证，可以有效的保证数据的一致性。每次存储数据时，都会将生成的 CAS 值和 item 一起存储，后续的 get 会返回对应的 CAS 值，执行 set 等操作时，需要将 CAS 值传入。</p>
+
+<p>其处理函数为 do_store_item() 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">enum</span> <span class="n">store_item_type</span> <span class="nf">do_store_item</span><span class="p">(</span><span class="n">item</span> <span class="o">*</span><span class="n">it</span><span class="p">,</span> <span class="kt">int</span> <span class="n">comm</span><span class="p">,</span> <span class="n">conn</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint32_t</span> <span class="n">hv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">comm</span> <span class="o">==</span> <span class="n">NREAD_CAS</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* validate cas operation */</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">old_it</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// LRU expired</span>
+            <span class="n">stored</span> <span class="o">=</span> <span class="n">NOT_FOUND</span><span class="p">;</span>
+            <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+            <span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">cas_misses</span><span class="o">++</span><span class="p">;</span>
+            <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ITEM_get_cas</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="o">==</span> <span class="n">ITEM_get_cas</span><span class="p">(</span><span class="n">old_it</span><span class="p">))</span> <span class="p">{</span>  <span class="c1">// CAS值一致</span>
+            <span class="c1">// cas validates</span>
+            <span class="c1">// it and old_it may belong to different classes.</span>
+            <span class="c1">// I&#39;m updating the stats for the one that&#39;s getting pushed out</span>
+            <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+            <span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">slab_stats</span><span class="p">[</span><span class="n">ITEM_clsid</span><span class="p">(</span><span class="n">old_it</span><span class="p">)].</span><span class="n">cas_hits</span><span class="o">++</span><span class="p">;</span>
+            <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+
+            <span class="n">item_replace</span><span class="p">(</span><span class="n">old_it</span><span class="p">,</span> <span class="n">it</span><span class="p">,</span> <span class="n">hv</span><span class="p">);</span>   <span class="c1">// 执行存储逻辑</span>
+            <span class="n">stored</span> <span class="o">=</span> <span class="n">STORED</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>   <span class="c1">// CAS值不一致，不进行实际的存储</span>
+            <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+            <span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">slab_stats</span><span class="p">[</span><span class="n">ITEM_clsid</span><span class="p">(</span><span class="n">old_it</span><span class="p">)].</span><span class="n">cas_badval</span><span class="o">++</span><span class="p">;</span>
+            <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+
+            <span class="k">if</span><span class="p">(</span><span class="n">settings</span><span class="p">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 打印错误日志</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;CAS:  failure: expected %llu, got %llu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                        <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">)</span><span class="n">ITEM_get_cas</span><span class="p">(</span><span class="n">old_it</span><span class="p">),</span>
+                        <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">)</span><span class="n">ITEM_get_cas</span><span class="p">(</span><span class="n">it</span><span class="p">));</span>
+            <span class="p">}</span>
+            <span class="n">stored</span> <span class="o">=</span> <span class="n">EXISTS</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">uint64_t</span> <span class="n">get_cas_id</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="c1">// 为新的item生成cas值</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">uint64_t</span> <span class="n">cas_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">return</span> <span class="o">++</span><span class="n">cas_id</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h1 id="参考">参考</h1>
+
+<p>详细内容以及最新的版本可以查看官方网站 <a href="https://memcached.org/">www.memcached.org</a> 。</p>
+
+<!--
+http://blog.csdn.net/column/details/lc-memcached.html        Memcached源码分析
+http://kenby.iteye.com/blog/1423989                          Memcached源码分析之内存管理篇
+-->
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/mysql-innodb-redo-log.html" title="InnoDB Redo Log">&larr; Older</a></li> 
+         <li class="next"><a href="/post/memcached-reprinted_init.html" title="memcached 完全剖析【转载】">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1457712000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/memcached-introduce_init.html" data-title="分布式缓存 memcached" data-url="/post/memcached-introduce_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

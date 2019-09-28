@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux 内核编译|JinYang's Blog</title>
+  <meta name="keywords" content="linux,内核,kernel,编译">
+  <meta name="description" content="现在安装时，一般是发行版本已经编译创建好的通用内核，对于一些特定的需求，如嵌入式设置，那么可能就需要手动编译内核镜像。这里简单介绍如何手动编译内核。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux 内核编译</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2014-02-23 Sunday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>现在安装时，一般是发行版本已经编译创建好的通用内核，对于一些特定的需求，如嵌入式设置，那么可能就需要手动编译内核镜像。</p>
+
+<p>这里简单介绍如何手动编译内核。</p>
+
+<!-- more -->
+
+<h2 id="内核镜像介绍">内核镜像介绍</h2>
+
+<p>通常 Unix 平台下的内核镜像称为 unix，Linux 也与之相似，不过随着虚拟内存 (Virtual Memory) 的发展，于是支持虚拟内存的内核在前面添加了 vm，其中 vmlinux 源自 vmunix 。现在 Linux 支持虚拟内存，不再像老的操作系统比如 DOS 会有 640KB 内存的限制。</p>
+
+<blockquote>
+  <p>在 DOS 的时代，采用的是 16 位段寻址方式，因此只能访问 1M 的空间。在这 1M 的 RAM 空间里，段址从 A000 起，被分配给了显示缓存、外部设备 ROM、BIOS ROM 等等。因此，一般情况下， dos 可供自己分配的也就是段 A000 之前的那部分了，这部分的大小为 640K 。</p>
+</blockquote>
+
+<p>一般来说，一个可启动的内核镜像 (bootable kernel image) 是经过 zlib 算法压缩的，2.6.30 之后采用 LZMA 或者 BZIP2，vmlinuz 最后的 z 表示内核是压缩的，这也意味着内核中会有一段解压程序。</p>
+
+<p>内核中包含了各种内核镜像的格式，如 vmlinux、zImage、bzImage、uImage 等，首先介绍一下内核中的常见内核文件。</p>
+
+<ul>
+  <li>
+    <p>vmlinux 是静态编译出来的最原始的 ELF 文件，包括了内核镜像、调试信息、符号表等内容；其中 “vm” 代表 “Virtual Memory”，现在一般都是虚拟内存模式，这个是相对于 8086 的实地址而言。</p>
+  </li>
+  <li>
+    <p>bzImage 是 vmlinux 经过 gzip 压缩后的文件，适用于大内核，”bz” 表示 “big zImage”。</p>
+  </li>
+  <li>
+    <p>uImage 是 uboot 专用的镜像文件，它是在 zImage 之前加上一个长度为 0x40 的头信息，包括了该镜像文件的类型、加载位置、生成时间、大小等信息。</p>
+  </li>
+</ul>
+
+<p>在发行版本中，通常使用 vmlinuz 标示，而实际上是 bzImage 格式，可以通过 file 命令查看。</p>
+
+<p>zImage、bzImage 中均包含一个微型的 gzip 用于解压缩内核并引导，两者的不同之处在于： zImage 解压缩内核到低端内存 (第一个640K)，bzImage 解压缩内核到高端内存 (1M以上)。也就是，它们之间最大的差别是对于内核体积大小的限制。</p>
+
+<p>由于 zImage 内核需要放在实模式 1MB 的内存之内，所以其体积受到了限制，目前采用的内核格式大多采用的是 bzImage ，这种格式没有 1MB 内存限制。arm 中常用的是 zImage，而 x86 中常用的是 bzImage 。</p>
+
+<p>本文以下部分主要以 bzImage 为例进行分析。</p>
+
+<h2 id="内核镜像生成">内核镜像生成</h2>
+
+<p><a href="http://en.wikipedia.org/wiki/Vmlinux">vmlinux</a> 是一个静态链接的可执行文件，是 Linux 支持的目标文件格式 (Object File Format) ，如 ELF、COFF 和 a.out ，一般为 ELF ，也是编译后最原始的文件。通常用于调试，产生符号表等，如果要做成可启动的内核，需要添加 multiboot header、bootsector、setup routines 等模块。</p>
+
+<p>可启动的镜像文件常被称为 vmlinuz 或 zImage ，对于 x86 平台而言，其生成的镜像默认会保存在 <code>arch/x86/boot/bzImage</code> 路径下。</p>
+
+<p>镜像的创建过程如下。</p>
+
+<p><img src="/images/linux/kernel/bootstap_anatomy_of_bzimage.png" alt="bootstrap anatomy of bzimage" title="bootstrap anatomy of bzimage" class="pull-center" width="60%" /></p>
+
+<p>bzImage 从前向后分为 3 个部分，前 512 字节为 bootsect ，这就是软盘引导 Linux 时用到的 bootloader，现在不在用软盘了，所以这部分就没有用，其中存储了一些编译时生成的内核启动选项的默认值。</p>
+
+<p>从 512 个字节开始的 512xN 个字节称为 setup部 分，这是 Linux 内核的实模式部分，这部分在实模式下运行，主要功能是为保护模式的 Linux 内核启动准备环境。这个部分最后会切换进入保护模式，跳转到保护模式的内核执行。最后的部分就是保护模式的内核，也就是真正意义上的 Linux 内核。其中 N 的大小可以从 bootsect 后半部得到，详细地址可以参阅 linux boot protocol。</p>
+
+<p>bzImage (big zImage) 包含了 bootsect.o + setup.o + misc.o + piggy.o ，上述的源码都在 arch/i386/boot/ 目录下。需要注意的是，bzImage 不是用 bzip2 压缩的，bz 表示 “big zImage” 。</p>
+
+<p>zImage 是 vmlinux 经过压缩后的文件，适用于小内核，小于 512KB ，bzImage 适用于大内核，大于 512KB 。两者的不同之处在于，老的 zImage 解压缩内核到低端内存 (第一个640K) ， bzImage 解压缩内核到高端内存 (1M以上) 。</p>
+
+<p>下面介绍一下 zImage 的加载过程。</p>
+
+<p><img src="/images/linux/kernel/bootstrap_vmlinux.png" alt="bootstrap vmlinux" title="bootstrap vmlinux" class="pull-center" width="60%" /></p>
+
+<p>现在的加载器 (例如grub)，在加载的时候会直接跳过 bootsect 部分，然后加载 setup 对应的部分到 <code>9020H:0(0x90200)</code> 内存处，并将保护模式的内核拷贝到 1MB 开始的地方。</p>
+
+<p>启动时，会根据 <a href="https://www.kernel.org/doc/Documentation/x86/boot.txt">Linux Boot Protocol 2.03</a> 的内容设定参数区的内容，基地址就是 <code>9000H:0</code>，最后使用一条 <code>ljmp $0x9020,$0</code> 跳转到 setup 段，剩下的事情就是 Linux 自己的了。</p>
+
+<p>也就是上述会直接跳过 bootsect 部分,在 setup 中,会做一些初始化，如设置 Video (video.S) 等。</p>
+
+<h3 id="bzimage-分析">bzImage 分析</h3>
+
+<p>在源码的根目录下，可以通过 <code>cat .vmlinux.cmd</code> 查看 vmlinux 的链接文件。同样， bzImage 可以查看 <code>arch/x86/boot/.bzImage.cmd</code> ，实际是通过 build 将 <code>setup.bin</code> 和 <code>vmlinux.bin</code> 的内容直接写入一个文件；build 的源码为 <code>arch/x86/boot/tools/build.c</code> 。</p>
+
+<p>对于 <code>setup.bin</code> 和 <code>vmlinux.bin</code> 同样可以在 <code>arch/x86/boot/</code> 目录下查看 <code>.setup.bin.cmd</code> 和 <code>.vmlinux.bin.cmd</code> 。可知，两者分别由 <code>setup.elf</code> 和 <code>vmlinux</code> 生成。</p>
+
+<p>在生成 <code>setup.elf</code> 时是使用 <code>setup.ld</code> 链接脚本文件进行链接。通过该脚本可以发现，最早的是 <code>.bstext</code> 段，位于 <code>arch/x86/boot/head.S</code> 。</p>
+
+<p>最初执行时是将内核的前 512bytes 加载到 0x7c00 ，然后将控制权交给 Kernel 。为了兼容，现在只会输出 <code>"Direct booting from floppy is no longer supported. Please use a boot loader program instead. Remove disk and press any key to reboot..."</code> 。在前 512bytes 中还会包含一个 Header ，同样也是为了兼容设置的。</p>
+
+<p>现在 Bootloader 会直接跳转到第二个 512bytes ，也即链接脚本指定的入口 <code>_start()@head.S</code>；第一条指令是跳转到 <code>start_of_setup</code> ，然后紧跟着是 63Bytes 的 Header ，详见 <a href="https://www.kernel.org/doc/Documentation/x86/boot.txt">boot.txt</a> 。</p>
+
+<h2 id="kbuildkernel-build-system">KBuild，Kernel Build System</h2>
+
+<p>从 2.6 开始，内核编译时采用 Kbuild 系统，会两次扫描 Linux 的 Makefile：首先编译系统会读取 Linux 内核顶层的 Makefile；然后根据读到的内容第二次读取 Kbuild 的 Makefile 来编译 Linux 内核。</p>
+
+<p>Kbuild 是建立在 GUN make 机制上的一种编译体系，可以参考 <a href="https://www.kernel.org/doc/Documentation/kbuild.txt">kbuild.txt</a> 文档，分为 5 步：</p>
+
+<ol>
+  <li>
+    <p>顶层 Makefile，主要用于指定编译 Linux Kernel 目标文件 vmlinux 和模块，编译时该文件会被首先读取，并根据读到的内容配置编译环境变量，如内核版本、include路径、编译参数。</p>
+  </li>
+  <li>
+    <p><code>.config</code>，内核配置文件，通过 <code>make xxxxconfig</code> 生成。</p>
+  </li>
+  <li>
+    <p><code>arch/$(ARCH)/Makefile</code>，根据具体架构的 Makefile，顶层 Makefile 会包含这个文件来指定平台相关信息。</p>
+  </li>
+  <li>
+    <p><code>scripts/{Makefile.*,Kbuild.include}</code>，通用的规则等，面向所有的 Kbuild Makefiles，包含了所有的定义、规则等信息。</p>
+  </li>
+  <li>
+    <p><code>kbuild Makefiles</code>，一般是每个目录有一个 <code>Makefile/Kconfig</code>，内核源码中大约有 500 个这样的文件，用来执行从上层传递下来的命令。</p>
+  </li>
+</ol>
+
+<p>其执行过程大致可以分为如下的几个步骤：</p>
+
+<ol>
+  <li>
+    <p><code>make menuconfig</code>，根据内核配置生成文件 <code>.config</code> 。</p>
+  </li>
+  <li>
+    <p>将内核的版本号存储在 <code>include/linux/version.h</code> 。</p>
+  </li>
+  <li>
+    <p>生成指向 <code>include/asm-$(ARCH)</code> 的符号链接 。</p>
+  </li>
+  <li>
+    <p>更新所有编译所需的文件： 附加的文件由 <code>arch/$(ARCH)/Makefile</code> 指定。</p>
+  </li>
+  <li>
+    <p>递归向下访问所有在下列变量中列出的目录： <code>init-*</code> <code>core*</code> <code>drivers-*</code> <code>net-*</code> <code>libs-*</code>，并编译生成目标文件。这些变量的值可以在 <code>arch/$(ARCH)/Makefile</code> 中扩充。</p>
+  </li>
+  <li>
+    <p>联接所有的目标文件，在源代码树顶层目录中生成 <code>vmlinux</code>。最先联接是在 <code>head-y</code> 中列出的文件，该变量由 <code>arch/$(ARCH)/Makefile</code> 赋值。</p>
+  </li>
+  <li>
+    <p>最后完成具体架构的特殊要求，并压缩 vmlinux 生成最终的内核镜像。</p>
+  </li>
+</ol>
+
+<p>对于 KBuild 可以参考本地文档 <a href="/reference/linux/kernel/KBUILD_system.pdf">KBUILD系统原理分析</a> 。</p>
+
+<h3 id="make-menuconfig">make menuconfig</h3>
+
+<p>当执行 <code>make xxxconfig</code> 时，实际会匹配顶层 <code>Makefile</code> 的 <code>%config</code> 规则，% 采用的是模式规则，所有以 config 结尾的目标都采用这个规则，如：<code>menuconfig</code> <code>xconfig</code> <code>gconfig</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">%config</span><span class="o">:</span> <span class="n">scripts_basic</span> <span class="n">outputmakefile</span> <span class="n">FORCE</span>
+    <span class="k">$(</span>Q<span class="k">)</span>mkdir -p include/linux include/config
+    <span class="k">$(</span>Q<span class="k">)$(</span>MAKE<span class="k">)</span> <span class="k">$(</span>build<span class="k">)</span><span class="o">=</span>scripts/kconfig <span class="nv">$@</span></code></pre></figure>
+
+<p><code>FORCE</code> 实际用来确保，<code>%config</code> 规则下的命令总能执行。首先看 <code>scripts_basic</code> 这个依赖的规则。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">scripts_basic</span><span class="o">:</span>
+    <span class="k">$(</span>Q<span class="k">)$(</span>MAKE<span class="k">)</span> <span class="k">$(</span>build<span class="k">)</span><span class="o">=</span>scripts/basic
+    <span class="k">$(</span>Q<span class="k">)</span>rm -f .tmp_quiet_recordmcount</code></pre></figure>
+
+<p>其中 build 这个变量的定义在 include 的 <code>scripts/kbuild.include</code> 文件中。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nv">build</span> <span class="o">:=</span> -f <span class="k">$(if</span> <span class="k">$(</span>KBUILD_SRC<span class="k">)</span>,<span class="k">$(</span>srctree<span class="k">)</span>/<span class="k">)</span>scripts/Makefile.build obj</code></pre></figure>
+
+<p>KBUILD_SRC 是当前目录，所以 srctree 参数也是当前目录，上面的规则可写成如下形式。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">scripts_basic</span><span class="o">:</span>
+    @make -f scripts/Makefile.build <span class="nv">obj</span><span class="o">=</span>scripts/basic</code></pre></figure>
+
+<p>这个规则的命令最终会进入 scripts 目录，执行 Makefile.build 文件，也就是传说中的 Kbuild 脚本，并传递参数 <code>obj=scripts/basic</code> 。</p>
+
+<p>对于 outputmakefile 规则。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">outputmakefile</span><span class="o">:</span>
+<span class="cp">ifneq ($(KBUILD_SRC),)</span>
+       <span class="k">$(</span>Q<span class="k">)</span>ln -fsn <span class="k">$(</span>srctree<span class="k">)</span> <span class="nb">source</span>
+       <span class="k">$(</span>Q<span class="k">)$(</span>CONFIG_SHELL<span class="k">)</span> <span class="k">$(</span>srctree<span class="k">)</span>/scripts/mkmakefile <span class="se">\</span>
+           <span class="k">$(</span>srctree<span class="k">)</span> <span class="k">$(</span>objtree<span class="k">)</span> <span class="k">$(</span>VERSION<span class="k">)</span> <span class="k">$(</span>PATCHLEVEL<span class="k">)</span>
+<span class="cp">endif</span></code></pre></figure>
+
+<p>这个规则的命令实际运行一个 shell 脚本 <code>scripts/mkmakefile</code>，并传递四个参数，这个脚本主要是在 <code>$(objtree)</code> 参数指定的目录中生成一个 Makefile 文件。由于这里 <code>KBUILD_SRC</code> 为空，所以这个脚本并不会被执行。</p>
+
+<p><code>$(Q)</code> 根据 <code>KBUILD_VERBOSE</code> 是否设置而定义，可以为空或 <code>'@'</code>，当为 <code>'@'</code> 时，<code>$(Q)$(MAKE)</code> 就相当于 <code>@make</code>，就是不把命令详细信息打印出来。</p>
+
+<p>所以 <code>make menuconfig</code> 最终会运行 <code>@make $(build)=scripts/kconfig menuconfig</code> 命令，<code>$@</code> 就是指目标 <code>menuconfig</code> 。</p>
+
+<p><code>$(build)</code> 为 <code>-f scripts/Makefile.build obj</code>，因此最后扩展为 <code>@make -f scripts/Makefile.build obj=scripts/kconfig menuconfig</code> 。这个命令执行 <code>scripts/Makefile.build</code> 这个 <code>makefile</code> 文件，并传递参数 <code>obj=scripts/kconfig</code> 和 <code>menuconfig</code> 。</p>
+
+<p>因此实际调用的是 <code>scripts/kconfig/Makefile</code> 中的 <code>menuconfig</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">menuconfig</span><span class="o">:</span> <span class="k">$(</span><span class="nv">obj</span><span class="k">)</span>/<span class="n">mconf</span>
+    <span class="nv">$&lt;</span> <span class="k">$(</span>Kconfig<span class="k">)</span></code></pre></figure>
+
+<p>也就是，最终会以 <code>arch/x86/Kconfig</code> 为参数运行 <code>scripts/kconfig/mconf</code> 脚本，出现配置界面。</p>
+
+<p>其中 <code>mconf</code> 是个 <code>ncurse</code> 的 C 程序，提供图形配置界面；<code>arch/x86/Kconfig</code> 记录了各个 x86 的内核配置选项，在 <code>make menuconfig</code> 或者 <code>make xconfig</code> 时显示的菜单项和帮助信息，都是从这个文件中读出来的。</p>
+
+<p>配置完成之后会生成一个 <code>.config</code> 文件，接下来通过 <code>make bzImage</code> 编译内核。</p>
+
+<h3 id="生成-vmlinux">生成 vmlinux</h3>
+
+<p>默认会直接选择第一个目标，不过发现该依赖下面为空。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nv">PHONY</span> <span class="o">:=</span> _all
+<span class="nf">_all</span><span class="o">:</span></code></pre></figure>
+
+<p>实际上在 <code>make</code> 中，如果有重复的目标，则会执行最后的目标和依赖。在 <code>Makefile</code> 中，有一行 <code>include $(srctree)/arch/$(SRCARCH)/Makefile</code>，也就是实际包含的是 <code>arch/x86/Makefile</code>，在该文件中定义了如下的依赖。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">all</span><span class="o">:</span> <span class="n">bzImage</span>
+
+<span class="nf">bzImage</span><span class="o">:</span> <span class="n">vmlinux</span>
+    <span class="k">$(</span>Q<span class="k">)$(</span>MAKE<span class="k">)</span> <span class="k">$(</span>build<span class="k">)</span><span class="o">=</span><span class="k">$(</span>boot<span class="k">)</span> <span class="k">$(</span>KBUILD_IMAGE<span class="k">)</span>
+    <span class="k">$(</span>Q<span class="k">)</span>mkdir -p <span class="k">$(</span>objtree<span class="k">)</span>/arch/<span class="k">$(</span>UTS_MACHINE<span class="k">)</span>/boot
+    <span class="k">$(</span>Q<span class="k">)</span>ln -fsn ../../x86/boot/bzImage <span class="k">$(</span>objtree<span class="k">)</span>/arch/<span class="k">$(</span>UTS_MACHINE<span class="k">)</span>/boot/<span class="nv">$@</span>
+
+    @make -f ./scripts/Makefile.build <span class="nv">obj</span><span class="o">=</span>arch/x86/boot arch/x86/boot/bzImage   <span class="c"># 等价于</span></code></pre></figure>
+
+<p>也就是最后会依赖于 vmlinux，实际上该依赖位于顶层 Makefile，对于可执行文件会查看是否存在该文件，而不会执行。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">vmlinux</span><span class="o">:</span> <span class="n">scripts</span>/<span class="n">link</span>-<span class="n">vmlinux</span>.<span class="n">sh</span> <span class="k">$(</span><span class="nv">vmlinux</span>-<span class="nv">deps</span><span class="k">)</span> <span class="n">FORCE</span>
+    +<span class="k">$(</span>call if_changed,link-vmlinux<span class="k">)</span>
+
+<span class="nv">vmlinux-deps</span> <span class="o">:=</span> <span class="k">$(</span>KBUILD_LDS<span class="k">)</span> <span class="k">$(</span>KBUILD_VMLINUX_INIT<span class="k">)</span> <span class="k">$(</span>KBUILD_VMLINUX_MAIN<span class="k">)</span>
+
+<span class="k">export </span><span class="nv">KBUILD_VMLINUX_INIT</span> <span class="o">:=</span> <span class="k">$(</span>head-y<span class="k">)</span> <span class="k">$(</span>init-y<span class="k">)</span>
+<span class="k">export </span><span class="nv">KBUILD_VMLINUX_MAIN</span> <span class="o">:=</span> <span class="k">$(</span>core-y<span class="k">)</span> <span class="k">$(</span>libs-y<span class="k">)</span> <span class="k">$(</span>drivers-y<span class="k">)</span> <span class="k">$(</span>net-y<span class="k">)</span>
+<span class="k">export </span><span class="nv">KBUILD_LDS</span>          <span class="o">:=</span> arch/<span class="k">$(</span>SRCARCH<span class="k">)</span>/kernel/vmlinux.lds</code></pre></figure>
+
+<p><code>head-y</code> 的依赖保存在<code>$(srctree)/arch/$(SRCARCH)/Makefile</code> 中，剩余的保存在顶层的<code>Makefile</code> 中，有些变量也会在 arch 目录下添加，如 <code>init-y := $(patsubst %/, %/built-in.o, $(init-y))</code> ，此时会将 <code>init/</code> 转换为 <code>init/build-in.o</code> ，其它类似。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nv">head-y</span> <span class="o">:=</span> arch/x86/kernel/head_<span class="k">$(</span>BITS<span class="k">)</span>.o
+<span class="nv">head-y</span> <span class="o">+=</span> arch/x86/kernel/head<span class="k">$(</span>BITS<span class="k">)</span>.o
+<span class="nv">head-y</span> <span class="o">+=</span> arch/x86/kernel/head.o</code></pre></figure>
+
+<p>此时会在目录下 <strong>生成了一系列的 build-in.o 文件</strong>，这些目录实际是通过 <code>${vmlinux-deps}</code> 定义，然后根据 vmlinux 的生成规则，会执行 <code>+$(call if_changed,link-vmlinux)</code> 。</p>
+
+<p><code>if_changed</code> 定义在 <code>scripts/Kbuild.include</code> 中，与 <code>if_changed_rule</code> 的作用相似既检查依赖的更新也检查命令行参数的更新，如果有更新则会执行后面的命令，在此执行的是 <code>cmd_linux-vmlinux</code> 命令，具体的命令会保存在 <code>.xxx.cmd</code> 文件中，在此为 <code>.vmlinux.cmd</code> 。</p>
+
+<p>也就是调用 <code>scripts/link-vmlinux.sh</code>，最后会生成 <code>vmlinux</code> 以及 <code>System.map</code> 等文件。</p>
+
+<!-- 输出打印变量值的方法是$(warning  $(XXX))，http://coolshell.cn/articles/3790.html -->
+
+<p><code>link-vmlinux.sh</code> 文件执行流程为。</p>
+
+<ol>
+  <li>
+    <p>通过 <code>modpost_link()</code> 函数链接生成<code>vmlinux.o</code> 文件，就是将各个目录下的 <code>build-in.o</code> 链接在一起，该文件为 ELF 格式。</p>
+  </li>
+  <li>
+    <p>通过 <code>kallsyms()</code> 生成内核的符号，用于调试。</p>
+  </li>
+  <li>
+    <p>通过 <code>vmlinux_link()</code> 生成静态文件 <code>vmlinux</code>，与 <code>vmlinux.o</code> 的区别是指定了链接脚本 <code>arch/x86/kernel/vmlinux.lds</code>。</p>
+  </li>
+  <li>
+    <p>通过 <code>mksysmap()</code> 生成 <code>System.map</code> 文件。</p>
+  </li>
+</ol>
+
+<p><code>vmlinux</code> 是 64 位的程序，其中入口为 <code>arch/x86/kernel/{head_64.o,head64.o,head.o}</code>，这个文件可以视为 C 程序，查看函数可以通过 <code>nm vmlinux | grep " _text"</code> 。</p>
+
+<p>vmlinux 程序的入口通过 <code>ENTRY(phys_startup_64)</code> 指定，实际为 <code>startup_64</code>，随后 <code>.=0xxxxxx</code> 指明代码段起始虚拟地址； <code>.text : { ....}</code> 表示从该位置开始放置所有目标文件的代码段，里面又分几个小区段。</p>
+
+<p>现在已经生成了第一个位于顶层的 vmlinux。</p>
+
+<h3 id="生成-bzimage">生成 bzImage</h3>
+
+<p><strong>vmlinux 的入口函数是 startup_64()，而该函数工作在 64-bit 段寻址的保护模式</strong>，但问题是系统自加电那一刻起，就运行于 16-bit 实模式，因此需要一些辅助程序从 16-bit 实模式转到 64-bit 保护模式。</p>
+
+<p>设置好必须的参数后才能开启分页模式转到 64-bit 分页保护模式，其中前半部分是由 <code>arch/x86/boot/setup.bin</code> 实现的，后半部分则是由 <code>arch/x86/kernel/head.o</code> 实现的。</p>
+
+<p>接着查看 bzImage 是如何生成的，在 <code>arch/x86/Makefile</code> 中，实际有效的命令，以及扩展后的命令如下。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">bzImage</span><span class="o">:</span> <span class="n">vmlinux</span>
+    <span class="k">$(</span>Q<span class="k">)$(</span>MAKE<span class="k">)</span> <span class="k">$(</span>build<span class="k">)</span><span class="o">=</span><span class="k">$(</span>boot<span class="k">)</span> <span class="k">$(</span>KBUILD_IMAGE<span class="k">)</span>
+    @make -f scripts/Makefile.build <span class="nv">obj</span><span class="o">=</span>arch/x86/boot arch/x86/boot/bzImage    // 等价于</code></pre></figure>
+
+<p>在 <code>Makefile.build</code> 中，<code>include $(kbuild-file)</code> 实际会包含 <code>arch/x86/boot/Makefile</code>，也就是实际执行的是。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">$(obj)/bzImage</span><span class="o">:</span> <span class="k">$(</span><span class="nv">obj</span><span class="k">)</span>/<span class="n">setup</span>.<span class="n">bin</span> <span class="k">$(</span><span class="nv">obj</span><span class="k">)</span>/<span class="n">vmlinux</span>.<span class="n">bin</span> <span class="k">$(</span><span class="nv">obj</span><span class="k">)</span>/<span class="n">tools</span>/<span class="n">build</span> <span class="n">FORCE</span></code></pre></figure>
+
+<p>实际上需要依赖 <code>setup.bin</code>、<code>vmlinux.bin</code>，首先查看一下 <code>setup.bin</code> 的生成。在 <code>arch/x86/boot/Makefile</code> 中，可以看到 <code>setup.bin</code> 目标的生成规则链为。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">$(obj)/setup.bin</span><span class="o">:</span> <span class="k">$(</span><span class="nv">obj</span><span class="k">)</span>/<span class="n">setup</span>.<span class="n">elf</span> <span class="n">FORCE</span>            <span class="c"># 通过objcopy -O binary生成</span>
+    <span class="k">$(</span>call if_changed,objcopy<span class="k">)</span>
+
+<span class="nv">LDFLAGS_setup.elf</span>   <span class="o">:=</span> -T
+<span class="nf">$(obj)/setup.elf</span><span class="o">:</span> <span class="k">$(</span><span class="nv">src</span><span class="k">)</span>/<span class="n">setup</span>.<span class="n">ld</span> <span class="k">$(</span><span class="nv">SETUP_OBJS</span><span class="k">)</span> <span class="n">FORCE</span>
+    <span class="k">$(</span>call if_changed,ld<span class="k">)</span></code></pre></figure>
+
+<p>也就是会根据 <code>arch/x86/boot/setup.ld</code> 编译生成 <code>setup.elf</code>，包含了那些文件可以参考 <code>.setup.elf.cmd</code> 文件，也就是 **bootloader 的入口函数为 _start()``` 。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">$(obj)/vmlinux.bin</span><span class="o">:</span> <span class="k">$(</span><span class="nv">obj</span><span class="k">)</span>/<span class="n">compressed</span>/<span class="n">vmlinux</span> <span class="n">FORCE</span>
+    <span class="k">$(</span>call if_changed,objcopy<span class="k">)</span></code></pre></figure>
+
+<p>接下来看看 <code>vmlinux.bin</code>，其生成规则链为。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nv">OBJCOPYFLAGS_vmlinux.bin</span> <span class="o">:=</span> -O binary -R .note -R .comment -S
+<span class="nf">$(obj)/vmlinux.bin</span><span class="o">:</span> <span class="k">$(</span><span class="nv">obj</span><span class="k">)</span>/<span class="n">compressed</span>/<span class="n">vmlinux</span> <span class="n">FORCE</span>
+    <span class="k">$(</span>call if_changed,objcopy<span class="k">)</span>
+
+<span class="nf">$(obj)/compressed/vmlinux</span><span class="o">:</span> <span class="n">FORCE</span>
+    <span class="k">$(</span>Q<span class="k">)$(</span>MAKE<span class="k">)</span> <span class="k">$(</span>build<span class="k">)</span><span class="o">=</span><span class="k">$(</span>obj<span class="k">)</span>/compressed <span class="nv">$@</span></code></pre></figure>
+
+<p>而 <code>arch/x86/boot/compressed/Makefile</code> 中 vmlinux 规则为。</p>
+
+<figure class="highlight"><pre><code class="language-makefile" data-lang="makefile"><span class="nf">$(obj)/vmlinux</span><span class="o">:</span> <span class="k">$(</span><span class="nv">vmlinux</span>-<span class="nv">objs</span>-<span class="nv">y</span><span class="k">)</span> <span class="n">FORCE</span>
+    <span class="k">$(</span>call if_changed,ld<span class="k">)</span>
+    @:                                             <span class="c"># 无操作，相当于nop</span>
+
+<span class="nv">targets</span> <span class="o">+=</span> piggy.S
+<span class="nf">$(obj)/piggy.S</span><span class="o">:</span> <span class="k">$(</span><span class="nv">obj</span><span class="k">)</span>/<span class="n">vmlinux</span>.<span class="n">bin</span>.<span class="k">$(</span><span class="nv">suffix</span>-<span class="nv">y</span><span class="k">)</span> <span class="k">$(</span><span class="nv">obj</span><span class="k">)</span>/<span class="n">mkpiggy</span> <span class="n">FORCE</span>
+    <span class="k">$(</span>call if_changed,mkpiggy<span class="k">)</span>
+
+<span class="nf">$(obj)/vmlinux.bin.gz</span><span class="o">:</span> <span class="k">$(</span><span class="nv">vmlinux</span>.<span class="nv">bin</span>.<span class="nv">all</span>-<span class="nv">y</span><span class="k">)</span> <span class="n">FORCE</span>  <span class="c"># 将vmlinux.bin压缩</span>
+    <span class="k">$(</span>call if_changed,gzip<span class="k">)</span>
+
+<span class="nv">vmlinux.bin.all-y</span> <span class="o">:=</span> <span class="k">$(</span>obj<span class="k">)</span>/vmlinux.bin            <span class="c"># 将顶层的vmliunux复制，去除注释</span>
+<span class="nv">OBJCOPYFLAGS_vmlinux.bin</span> <span class="o">:=</span>  -R .comment -S
+<span class="nf">$(obj)/vmlinux.bin</span><span class="o">:</span> <span class="n">vmlinux</span> <span class="n">FORCE</span>
+    <span class="k">$(</span>call if_changed,objcopy<span class="k">)</span></code></pre></figure>
+
+<p>此时会在 <code>arch/x86/boot/</code> 目录下生成 <code>vmlinux.bin</code> 文件，大致步骤是：</p>
+
+<ol>
+  <li>
+    <p>通过编译 <code>vmlinux.lds.S</code> 生成链接脚本 <code>vmlinux.lds</code> 。</p>
+  </li>
+  <li>
+    <p>使用 objcopy 从顶层目录拷贝刚刚生成的 vmlinux 到 <code>arch/x86/boot/compressed/vmlinux.bin</code>，并删除其中的 <code>.comment</code> 段，此时大小为 20M。</p>
+  </li>
+  <li>
+    <p>根据编译选项，选择一个压缩程序，对上一步的 <code>vmlinux.bin</code> 进行压缩，默认配置是 <code>CONFIG_KERNEL_GZIP</code>，也就是生成 <code>vmlinux.bin.gz</code>，大小为 5.6M。</p>
+  </li>
+  <li>
+    <p>通过 <code>mkpiggyy</code> 生成 <code>piggy.S</code>，其中通过 <code>.incbin</code> 包含 <code>vmlinux.bin.gz</code> 文件。</p>
+  </li>
+  <li>
+    <p>编译生成 <code>head_64.o</code>、<code>misc.o</code>、<code>string.o</code>、<code>cmdline.o</code>、<code>piggy.o</code>、<code>cpuflags.o</code> 等。</p>
+  </li>
+  <li>
+    <p>使用 <code>arch/x86/boot/compressed/vmlinux.lds</code> 链接脚本将上述的文件链接生成 <code>vmlinux</code> 。</p>
+  </li>
+  <li>
+    <p>去除 <code>vmlinux</code> 中的调试信息、注释、符号表等内容，生成 <code>arch/x86/boot/vmlinux.bin</code> 。</p>
+  </li>
+</ol>
+
+<p>目前已经 <strong>生成了 vmlinux.bin 和 setup.bin</strong> ，接下来就开始链接 bzImage 了。</p>
+
+<p>其中 <code>arch/x86/boot/tools/build</code> 脚本是用于构建最终 bzImage 的程序，他的作用是把 <code>setup.bin</code> 和 <code>vmlinux.bin</code> 连接到一起，可以简单查看 <code>.bzImage.cmd</code> 命令。</p>
+
+<p><code>if_changed</code> 定义在 <code>scripts/Kbuild.include</code> 中，与 <code>if_changed_rule</code> 的作用相似既检查依赖的更新也检查命令行参数的更新，实际执行的命令可以查看 <code>.setup.elf.cmd</code> 文件。</p>
+
+<h2 id="总结">总结</h2>
+<p>总结一下执行的流程为：</p>
+
+<ol>
+  <li>
+    <p>在根目录生成的第一个 vmlinux，大小约为 24M<br />
+在 <code>scripts/link-vmlinux.sh</code> 脚本中，根据 <code>arch/x86/kernel/vmlinux.lds</code> 链接脚本文件，由 LD 链接而成 ELF 格式的静态文件，该文件属于未压缩、带调试信息、符号表的最初的内核。<br />
+该文件包括了 <code>arch/x86/kernel/{head_64.o,head64.o,head.o}</code>，以及相关目录下的 <code>build-in.o</code> 文件。</p>
+  </li>
+  <li>
+    <p>去除注释信息，生成 vmlinux.bin，大小约为 20M<br />
+objcopy 将 vmlinux 转成二进制的 <code>arch/x86/boot/compressed/vmlinux.bin</code>，删除 <code>.comment</code> 字段。</p>
+  </li>
+  <li>
+    <p>压缩为 vmlinux.bin.gz，大小约为 5.6M<br />
+通过一个压缩程序压缩内核，默认使用 gzip，将 <code>vmlinux.bin</code> 压缩成 <code>arch/x86/boot/compressed/vmlinux.bin.gz</code> 。</p>
+  </li>
+  <li>
+    <p>通过 mkpiggy 生成 piggy.S<br />
+通过一定的规则生成 <code>piggy.S</code>，该文件最后通过 <code>.incbin</code> 包含了 <code>vmlinux.bin.gz</code>，然后编译生成 piggy.o 后实际包括了上述的压缩包。</p>
+  </li>
+  <li>
+    <p>在 arch/x86/boot/compressed 目录下生成第二个 vmlinux，大小约为 7.6M<br />
+将 <code>head_64.o</code>、<code>misc.o</code>、<code>string.o</code>、<code>piggy.o</code> 等文件编译成 <code>vmlinux</code>，详细命令可以查看 <code>.vmlinux.cmd</code>，此时包含了解压的程序，以及压缩的内核。</p>
+  </li>
+  <li>
+    <p>生成 bootloader 的入口引导程序，setup.bin，大小约为 16k<br />
+<code>arch/x86/boot/</code> 目录下是 bootloader 执行后的入口函数，首先生成 <code>setup.elf</code>，然后生成 <code>setup.bin</code> 文件。</p>
+  </li>
+  <li>
+    <p>生成 vmlinux.bin，大小约为 5.6M<br />
+将 <code>arch/x86/boot/compressed/vmlinux</code> 去除 ELF header、note 等信息生成 <code>arch/x86/boot/vmlinux.bin</code> 。</p>
+  </li>
+  <li>
+    <p>生成最终的 bzImage，大小约为 5.6M<br />
+当 <code>setup.bin</code> 和 <code>vmlinux.bin</code> 都生成之后，通过 <code>arch/x86/boot/tools/build</code> 生成最终的 bzImage，该文件位于 <code>arch/x86/boot</code> 目录下。</p>
+  </li>
+</ol>
+
+<p>因此，bzImage 组成结构：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">bzImage       : bootsect+setup+vmlinux.bin
+vmlinux.bin   : head.S+misc.c+vmlinux.bin.gz
+vmlinux.bin.gz: gzip 压缩的 vmlinux.bin 即最终的内核</code></pre></figure>
+
+<h2 id="参考">参考</h2>
+
+<p>关于 KBuild 可以参考 <a href="http://www.open-open.com/news/view/dfa811">你知道 Linux 内核是如何构建的吗？</a> 或者参考 <a href="/reference/linux/kernel/how_linux_kernel_build.maff">本地文档</a>；以及介绍 ARM bzImage 生成过程 <a href="/reference/linux/kernel/how_zimage_generate.maff">zImage 的生成和加载</a> 。</p>
+
+<p>对于 KBuild 可以参考本地文档 <a href="/reference/linux/kernel/KBUILD_system.pdf">KBUILD系统原理分析</a> 。</p>
+
+<!--
+内核映像的形成 —— KBuild体系，介绍 Linux 的 Blog ，一系列文章，云松的文章。
+http://blog.csdn.net/yunsongice/article/category/759408
+
+Linux 内核 Makefile 体系简单分析
+http://blog.chinaunix.net/uid-20543672-id-3065852.html
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-communication-netlink_init.html" title="Linux 内核与用户态通讯机制 -- Netlink">&larr; Older</a></li> 
+         <li class="next"><a href="/post/kernel-hardware-startup.html" title="Linux 硬件启动">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1393084800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/kernel-compile.html" data-title="Linux 内核编译" data-url="/post/kernel-compile.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

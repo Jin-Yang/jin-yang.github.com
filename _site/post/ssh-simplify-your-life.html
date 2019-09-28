@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>SSH Simplify Your Life|JinYang's Blog</title>
+  <meta name="keywords" content="ssh,sshd">
+  <meta name="description" content="通常在一个 ssh 链接中，需要指定用户名、主机名、主机端口号、配置参数等信息，如果每次登陆一台主机都要输入，那么就会变的非常麻烦，而且一些 IP 地址通常又非常难记。为此，我们可以通过 OpenSSH 的客户端配置文件简化我们的登陆方式，下面简单介绍下。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>SSH Simplify Your Life</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-01-15 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>通常在一个 ssh 链接中，需要指定用户名、主机名、主机端口号、配置参数等信息，如果每次登陆一台主机都要输入，那么就会变的非常麻烦，而且一些 IP 地址通常又非常难记。</p>
+
+<p>为此，我们可以通过 OpenSSH 的客户端配置文件简化我们的登陆方式，下面简单介绍下。</p>
+
+<!-- more -->
+
+<h2 id="常用操作">常用操作</h2>
+
+<p>通过 SSH 可以在远程主机上执行一些常用的操作，简单列举如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh user@host &#39;mkdir -p .ssh &amp;&amp; cat &gt;&gt; .ssh/authorized_keys&#39; &lt; ~/.ssh/id_rsa.pub</code></pre></figure>
+
+<p>单引号中间的部分，表示在远程主机上执行的操作，紧跟着的输入重定向，表示数据通过 SSH 传向远程主机。这就是说，SSH 可以在用户和远程主机之间，建立命令和数据的传输通道，因此很多事情都可以通过 SSH 来完成。</p>
+
+<p>下面看几个常用的例子。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 1. 将$HOME/src/下的所有文件，复制到远程主机的$HOME/src/目录
+$ cd &amp;&amp; tar czv src | ssh user@host &#39;tar xz&#39;
+
+----- 2. 将远程主机$HOME/src/目录下面的所有文件，复制到用户的当前目录
+$ ssh user@host &#39;tar cz src&#39; | tar xzv
+
+----- 3. 查看远程主机是否运行进程httpd
+$ ssh user@host &#39;ps ax | grep [h]ttpd&#39;</code></pre></figure>
+
+<h2 id="简单配置">简单配置</h2>
+
+<p>每次通过 ssh 登陆时，通常需要按照如下方式，指定用户名、主机、端口号，如果拥有多个 ssh 账号，那么要记住每个 ssh 账号的参数会非常麻烦。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh foobar@192.168.9.123 -p 2222
+
+常用参数:
+   -p:  指定端口
+   -i:  如果通过公私钥认证，则通过该参数指定私钥
+   -v:  调试，用于查看认证过程
+   -o:  指定参数，例如-o ServerAliveInterval=60</code></pre></figure>
+
+<p>实际上，对于 OpenSSH 客户端，可以通过配置文件简化登陆。</p>
+
+<p>OpenSSH 客户端会使用 <code>~/.ssh/config</code> 用户配置文件，也可使用全局配置 <code>/etc/ssh/ssh_config</code>，如果没有该文件则需要手动创建，该文件中的配置项通过 <code>Key = Value</code> 格式进行设置。</p>
+
+<p>通过如下的方式指定别名，可以支持通配符 <code>*%</code>，注意，配置项大小写不敏感，值大小写敏感。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Host *                           # 对于所有主机通用配置项
+    ServerAliveInterval 60       # 防止因为空闲链接断开，每隔60秒发送一次请求，从而保持连接
+    ServerAliveCountMax 3        # 发送请求后，如果服务端连续超过3次没有响应，则自动断开
+    StrictHostKeyChecking no     # 默认首次添加到known_hosts时会有提示信息，配置为自动添加
+    Protocol 2                   # 使用协议版本V2
+
+Host mysql                       # 登陆时简化MySQL主机的配置
+    HostName 192.168.9.123       # 指定服务器的IP，如果与上述的Host参数相同，则可以忽略
+    User foobar                  # 登陆用户名
+    Port 2222                    # 登陆使用端口号，默认22
+    IdentityFile ~/.ssh/mysql    # 如果通过公私钥认证方式，指定私钥文件地址
+
+Host dev backup www* mail
+    HostName %h.example.com      # 利用上述的Host作为参数</code></pre></figure>
+
+<p>例如，上述的 mysql 设置，可以直接通过 ssh mysql 登陆，而且 scp 等，同样可以如此使用。</p>
+
+<p>另外，对于上述的最后一个示例，需要简单说明下，如果是通过 ssh dev 命令登陆，那么实际登陆时对应的主机名为 dev.example.com，以此类推。</p>
+
+<h3 id="代理设置">代理设置</h3>
+
+<p>为了安全设置，通常防火墙只允许 80/22 端口访问，假设该服务器同时部署了 MySQL 服务，那么我们就无法通过笔记本进行调试。当然可以通过 ssh 的本地代理实现，设置如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh -f -N -L 9906:127.0.0.1:3306 foobar@database.example.com</code></pre></figure>
+
+<p>如上，使得本地访问 9906 端口时，会将请求转发到 database.example.com 的 127.0.0.1:3306 ，也就是对应的 MySQL 服务器了。</p>
+
+<p>当然，同样可以通过如下方式简化。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Host tunnel
+    HostName database.example.com
+    IdentityFile ~/.ssh/foobar.example.key
+    LocalForward 9906 127.0.0.1:3306
+    User foobar</code></pre></figure>
+
+<p>然后通过如下方式使用。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh -f -N tunnel</code></pre></figure>
+
+<h2 id="共享连接">共享连接</h2>
+
+<p>当登陆一台服务器后，可以通过共享链接实现免登陆，也就是说第一次登陆之后，后面的会自动登陆。需要在添加配置文件 <code>~/.ssh/config(600)</code> 中添加如下内容。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">host *
+    ControlMaster auto
+    ControlPath /tmp/ssh_mux_%r@%h:%p      # 如果不使用该参数只能是最后一个免登
+    ControlPersist 4h                      # 默认直接退出，该参数指定4小时后退出</code></pre></figure>
+
+<p>此时会在 /tmp 目录下创建 ssh_mux 的 sock 文件，它记录了你目前登录到的机器，这样的话，你登录同样的机器就会重用同一个链接了。</p>
+
+<p>这种方法也可以同时避免如下的错误 Shared connection to &lt;hostname&gt; closed.；这个主要是由于使用共享链接，当原链接关闭之后导致共享的链接同样失败，这样共享的链接可以保持打开状态，并且会复用。</p>
+
+<h2 id="公私钥认证">公私钥认证</h2>
+
+<p>如果需要通过自动化脚本定期进行备份，当输入密码并保证密码的安全时，处理起来会比较麻烦。为此，可以通过公钥登录 (RSA/DSA认证)，省去输入密码的步骤。</p>
+
+<p>所谓 “公钥登录” ，原理很简单，就是用户将自己的公钥储存在远程主机上。登录时，远程主机会向用户发送一段随机字符串，用户用自己的私钥加密后，再发回来。远程主机用事先储存的公钥进行解密，如果成功，就证明用户是可信的，直接允许登录 shell ，不再要求密码。</p>
+
+<p>只需要生成一个密钥对，然后将公钥传送到服务器端，并保存在配置文件中的 AuthorizedKeysFile 指定的文件。</p>
+
+<h3 id="实践">实践</h3>
+
+<p>可以通过如下步骤执行。</p>
+
+<h4 id="1-服务端设置">1. 服务端设置</h4>
+
+<p>在服务器端，首先确认 <code>/etc/ssh/sshd_config</code> 这个文件，检查下面几行是否有效。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">RSAAuthentication yes
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys</code></pre></figure>
+
+<h4 id="2-生成公私钥">2. 生成公私钥</h4>
+
+<p>直接通过 ssh-keygen 生成公私钥密码对即可。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh-keygen [-t rsa/dsa]
+$ ssh-keygen -t rsa -f ~/.ssh/id_rsa -N &quot;&quot; -C &quot;comment&quot;
+参数：
+    -t:   加密类型
+    -f:   指定输出文件
+    -N:   通过该密码加密私钥，为空则会自动登陆
+    -C:   注释，通常为邮箱名称，会保存在公钥中</code></pre></figure>
+
+<p>默认采用 rsa 加密，如上，如若想设置无密码登录，则直接回车即可。密钥对默认保存在 .ssh/ 目录下，包括了 id_rsa(私钥) id_rsa.pub(公钥)。</p>
+
+<p>其它常用的加密方式还包括了 RSA, DSA, ECDSA, ED25519 。</p>
+
+<h4 id="3-将公钥上传到服务器">3. 将公钥上传到服务器</h4>
+
+<p>将公钥上传到服务器，此时会保存到需要免密码登陆用户 (在此为 foobar) 的 $HOME 目录下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ scp ~/.ssh/id_rsa.pub foobar@remote-server-ip:~</code></pre></figure>
+
+<h4 id="4-公钥保存">4. 公钥保存</h4>
+
+<p>配置文件中通过 AuthorizedKeysFile 指定公钥保存的文件名，一般是 <code>.ssh/authorized_keys</code> 文件，然后直接添加到该文件中即可。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ mkdir ~/.ssh/ &amp;&amp; chmod 700 ~/.ssh/
+$ cat id_rsa.pub &gt;&gt; .ssh/authorized_keys
+$ chmod 644 .ssh/authorized_keys</code></pre></figure>
+
+<p>在此，需要明确如下文件的权限。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ chmod 700 ~/.ssh/
+$ chmod 644 ~/.ssh/authorized_keys
+$ chmod 600 ~/.ssh/id_rsa</code></pre></figure>
+
+<h4 id="5-登陆">5. 登陆</h4>
+
+<p>如果使用私钥登录多台主机，可以通过 -i 选项指定私钥文件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh -i id_rsa user-name@remote-server-ip</code></pre></figure>
+
+<h4 id="6-添加到known_hosts">6. 添加到known_hosts</h4>
+
+<p>如果是初次登陆时，会提示是否将对应的主机添加到 known_hosts 文件中，可以通过如下命令自动添加，而不需要交互。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh -T -o StrictHostKeyChecking=no 192.144.51.85 &#39;date&#39;</code></pre></figure>
+
+<h3 id="简化配置">简化配置</h3>
+
+<p>也可以通过如下命令简单地进行设置。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh-keygen -t dsa -f ~/.ssh/id_dsa -C &quot;foobar@kidding.com&quot; -N &quot;&quot;
+$ ssh-copy-id -i /home/foobar/.ssh/id_dsa.pub foobar@remote-host-ip
+$ ssh remote-host-ip</code></pre></figure>
+
+<p>可以通过如下方式在本地进行简单的测试。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh-keygen -t ed25519
+$ cat .ssh/id_rsa.pub &gt;&gt; .ssh/authorized_keys
+$ ssh 127.1</code></pre></figure>
+
+<p>ssh-copy-id 命令会自动将公钥添加到 <code>~/.ssh/authorized_keys</code> 文件中。</p>
+
+<h3 id="安全相关">安全相关</h3>
+
+<p>在生成密钥对时，如果密码没有输入，也就是为空，那么可以自动登陆，不过同样会导致当有人获取了该私钥后，可以登陆你配置的所有服务器。</p>
+
+<p>为此，为了保证私钥的安全，生成密钥对时，最好输入密码，这样即使有人获取了你的私钥文件，他仍然无法登陆。</p>
+
+<p>不过这也导致了每次登陆时需要输入 <strong>私钥保护密码</strong>，会产生与之前相同的问题。</p>
+
+<h2 id="ssh-agent">ssh-agent</h2>
+
+<p>为了解决上述的问题，可以使用 ssh-agent，这是一个守护进程，设计它的唯一目的就是对解密用的专用密钥进行高速缓存。</p>
+
+<p>ssh 支持与 ssh-agent 通信，允许 ssh 建立新连接时自动获取解密的专用密钥；你所需要做的就是，使用 ssh-add 命令把密钥添加到 ssh-agent 的高速缓存中即可。</p>
+
+<p>还没有仔细研究过。</p>
+
+<!--
+### 工作原理
+
+在 CentOS 中，会默认启动 ssh-agent 服务，当然，也可以手动启动；此是会输出一些信息，包括两个重要的环境变量 SSH_AUTH_SOCK(ssh/scp用来连接的套接字) 和 SSH_AGENT_PID 。
+
+可以通过 ssh-add id_rsa 将私钥添加到 agent 中；另外，如果出现了错误 Agent admitted failure to sign using the key ，则同样需要执行上述命令。
+
+### 常用命令
+
+可以通过 ssh-add 管理私钥，常用命令参数如下：
+
+* -L：列出所缓存的公钥，与服务器端 authorized_keys 文件中保存的值相同；
+* -D：清空缓存中的密码，此时如果登陆则需要使用之前设置的私钥保护密码；
+* -X/x：对agent加锁，不知道具体的作用，仍然可以免密码登陆。
+
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ eval $(ssh-keygen)         # 启动并设置环境变量
+$ eval $(ssh-keygen -k)      # 退出</code></pre></figure>
+
+
+## 缺点
+
+首先，如果在 bash_profile 中使用 eval \`ssh-agent\`，那么每次登录会话都会启动一个新的 ssh-agent 副本；这不仅仅是有一丁点儿浪费，而且还意味着您得使用 ssh-add 向每个新的 ssh-agent 副本添加专用密钥。
+
+如果您只想打开系统上的一个终端或控制台，这没什么大不了的，但是我们中大多数人打开相当多的终端，每次新打开控制台都需要键入密码短语。
+
+从技术角度讲，既然一个 ssh-agent 进程的确应当足够了，要是我们还需这样做，这毫无道理，为此可以使用 keychain ，在 bash_profile 文件里追加 eval \`keychain --eval id_dsa\` 即可实现到其他机器的免登。
+
+
+
+
+
+## Login to internal lan server at 192.168.0.251 via our public uk office ssh based gateway using ##
+## $ ssh uk.gw.lan ##
+Host uk.gw.lan uk.lan
+     HostName 192.168.0.251
+     User nixcraft
+     ProxyCommand  ssh nixcraft@gateway.uk.cyberciti.biz nc %h %p 2> /dev/null
+
+
+    ProxyCommand : Specifies the command to use to connect to the server. The command string extends to the end of the line, and is executed with the user's shell. In the command string, any occurrence of %h will be substituted by the host name to connect, %p by the port, and %r by the remote user name. The command can be basically anything, and should read from its standard input and write to its standard output. This directive is useful in conjunction with nc(1) and its proxy support. For example, the following directive would connect via an HTTP proxy at 192.1.0.253:
+    ProxyCommand /usr/bin/nc -X connect -x 192.1.0.253:3128 %h %p
+    LocalForward : Specifies that a TCP port on the local machine be forwarded over the secure channel to the specified host and port from the remote machine. The first argument must be [bind_address:]port and the second argument must be host:hostport.
+    Protocol : Specifies the protocol versions ssh(1) should support in order of preference. The possible values are 1 and 2.
+    ServerAliveInterval : Sets a timeout interval in seconds after which if no data has been received from the server, ssh(1) will send a message through the encrypted channel to request a response from the server. See blogpost "Open SSH Server connection drops out after few or N minutes of inactivity" for more information.
+    ServerAliveCountMax : Sets the number of server alive messages which may be sent without ssh(1) receiving any messages back from the server. If this threshold is reached while server alive messages are being sent, ssh will disconnect from the server, terminating the session.
+
+通过本地端口访问服务器<br>
+有时可能有些服务，比如数据库或是Web服务器，它们运行在远程服务器上，但是如果有用方式可以直接从本地程序连接它们，那会非常有用，要做到这一点，你需要用到端口转发(port forwarding)，举个例子，如果你的服务器运行Postgres（并且只允许本地访问），那么你就可以在你的SSH配置中加入：
+<pre>
+Host db
+    LocalForward 5433 localhost:5432
+</pre>
+现在当你连接你的SSH服务器时，它会在你本地电脑打开一个5433端口（我随便挑的），并将所有发送到这个端口的数据转发到服务器的5432端口（Postgres的默认端口），然后，只要你和服务器建立了连接，你就可以通过5433端口来访问服务器的Postgres了。<br>
+$ ssh db<br>
+现在打开另外一个窗口，你就可以通过下面这条命令在本地连接你的Postgres数据库了：<br>
+$ psql -h localhost -p 5443 orders</li><br><li>
+
+# 登陆跳板机的方法
+
+现在假设有 ABC 三台机器，A 是本地机器，B 是跳板服务器（123.456.789.110），C 是工作服务器（192.168.1.111），其中 A 可以访问 B，但不能直接访问 C，B 可以直接访问 C。
+
+
+### 通过 ssh 端口转发命令
+
+ssh -CfNg -L 8833:192.168.1.111:22 userc@192.168.1.111<br>
+
+句话的意思是当我访问B机器8833端口时，其实是在访问C的22端口。以后就可以直接在A机器命令行输入。<br>
+ssh -p 8833 userc@123.456.789.110<br>
+就可以登录C机器了，这里要注意的是此处用户名是B登录C的用户名，而ip地址是B的ip地址，要和普通的ssh登录做区分。</li><br><li>
+
+通过proxycommand+netcat<br>
+这种方法不需要对B和C进行任何操作，只需要对A机器上的ssh_config文件做些修改就可以了。我们首先修改A机器上的ssh_config文件，添加这么几行。
+<pre>
+Host Cserver
+    HostName 192.168.1.111
+    Port 22 【C机器的ssh端口】
+    ProxyCommand ssh -p 9022【B机器的ssh端口】 userb@123.456.789.110 nc %h %p
+</pre>
+然后在A机器的命令行输入<br>
+ssh userc@Cserver</li><br><li>
+
+无脑笨方法<br>
+我们知道ssh是可以直接执行远程命令的，于是，在A机器命令行输入：<br>
+ssh -t -p 9022【B机器ssh端口】 userb@123.456.789.110 "ssh userc@192.168.1.111"<br>
+ 当然这还是要输入两次ssh命令，没有任何技术含量。无脑懒人可以把这个在.bashrc里面alias一下，记住要source哦。
+
+
+
+
+
+1. 在服务器间跳转
+
+有些时候，你可能没法直接连接到某台服务器，而需要使用一台中间服务器进行中转，这个过程也可以自动化。首先确保你已经为服务器配置了公钥访问，并开启了agent forwarding，现在你就可以通过2条命令来连接目标服务器，不会有任何提示输入：
+
+$ ssh gateway
+
+gateway $ ssh db
+
+然后在你的本地SSH配置中，添加下面这条配置：
+
+Host db
+
+HostName db.internal.example.com
+
+ProxyCommand ssh gateway netcat -q 600 %h %p
+
+现在你就可以通过一条命令来直接连接目标服务器了:
+
+$ ssh db
+
+这里你可能会需要等待长一点的时间，因为SSH需要进行两次认证，，注意netcat也有可能被写成nc或者ncat或者前面还需要加上g，你需要检查你的中间服务器来确定实际的参数。
+ -->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/program-c-tips-function-pointer.html" title="C 函数指针">&larr; Older</a></li> 
+         <li class="next"><a href="/post/ssh-proxy.html" title="SSH 代理设置">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1421251200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/ssh-simplify-your-life.html" data-title="SSH Simplify Your Life" data-url="/post/ssh-simplify-your-life.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

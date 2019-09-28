@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>SSH 简介|JinYang's Blog</title>
+  <meta name="keywords" content="ssh,openssh">
+  <meta name="description" content="OpenSSH 是 SSH (Secure SHell) 协议的免费开源实现，SSH 协议族可以用来进行远程控制，或在计算机之间传送文件。传统方式，如 telnet、rcp ftp、rlogin、rsh 都是极不安全的，并且会使用明文传送密码，OpenSSH 提供了服务端后台程序和客户端工具，用来加密远程控件和文件传输过程中的数据，并由此来代替原来的类似服务。在此，简单介绍下 OpenSSH 。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>SSH 简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-01-02 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>OpenSSH 是 SSH (Secure SHell) 协议的免费开源实现，SSH 协议族可以用来进行远程控制，或在计算机之间传送文件。</p>
+
+<p>传统方式，如 telnet、rcp ftp、rlogin、rsh 都是极不安全的，并且会使用明文传送密码，OpenSSH 提供了服务端后台程序和客户端工具，用来加密远程控件和文件传输过程中的数据，并由此来代替原来的类似服务。</p>
+
+<p>在此，简单介绍下 OpenSSH 。</p>
+
+<!-- more -->
+
+<p><img src="/images/linux/ssh_logo.png" alt="OpenSSH Logo" title="OpenSSH Logo" class="pull-center" /></p>
+
+<h2 id="简介">简介</h2>
+
+<p>SSH 采用的是公私钥加密方式，利用公钥进行加密，通过私钥解密，公钥任何人都可以看到，而私钥是私有的。目前 ssh 有 version1 和 version2 两个版本， version2 加入了联机检测功能，可以避免联机过程中插入恶意攻击代码。</p>
+
+<p>OpenSSH Server 在首次执行时会在 /etc/ssh/ 目录下产生公钥和私钥，通常为 ssh_host_* 。如果想要产生新的密钥可以删除 ssh_host_* ，然后重启服务即可。</p>
+
+<p>客户端会将已知服务器的公钥保存在 ~/.ssh/known_hosts 中，当登入远程服务器时，本地主机会主动的用接收到的服务器的 public key 去比对 ~/.ssh/known_hosts 有无相关的公钥，若接收的公钥尚未记录，则询问用户是否记录。若接收到的公钥已有记录，则比对记录是否相同，若相同则继续登入动作；若不相同，则出现警告信息, 且离开登入的动作。</p>
+
+<p><img src="/images/linux/ssh_how_ssh_works.gif" alt="SSH Tunneling Sock" class="pull-center" /></p>
+
+<p>服务器工作过程。</p>
+
+<ol>
+  <li>
+    <p>服务器建立公钥文件。<br />
+每次启动 sshd 服务时，服务器主动寻找 /etc/ssh/ssh_host* 文件，如果没有则 sshd 会计算出这些文件，包括服务器自己的私钥文件。</p>
+  </li>
+  <li>
+    <p>客户端主动连接请求。<br />
+客户端通过 ssh 等软件来连接 SSH 服务器。</p>
+  </li>
+  <li>
+    <p>服务器将公钥传递给客户端。<br />
+接收到用戶端的请求后，服务器的第一步是取得公钥文件传送给客户端，此时是明码传输。</p>
+  </li>
+  <li>
+    <p>客户端记录/比对服务器的公钥，并随机计算自己的公私钥。<br />
+本地主机主动用接收到的服务器的 public key 去比对 ~/.ssh/known_hosts 有无相关的公钥。<br />
+A) 若接收的公钥尚未记录，则询问用户是否记录。若要记录 (回答 yes) 则写入 ~/.ssh/known_hosts 且继续登入的后续工作；若不记录 (回答 no) 则不写入该档案，并且离开登入工作。<br />
+B) 若接收到的公钥已有记录，则比对记录是否相同，若相同则继续登入动作；若不相同，则出现警告信息, 且离开登入的动作。 这是客户端的自我保护功能，避免你的服务器是被别人伪装的。如果是在测试主机，那么重新安装时服务器的公钥会经常改变，此时会无法正常登入。如果服务器的 Public key 改变，那么，直接删除 ~/.ssh/known_hosts 中对应的记录即可。</p>
+  </li>
+  <li>
+    <p>回传用户端的公钥资料到服务器端。<br />
+用户将自己的公钥传送给服务器，此时服务器具有服务器的私钥和用户端的公钥；而用户端则有服务器的公钥以及用户端的自己的私钥。</p>
+  </li>
+  <li>
+    <p>开始双向加/解密。<br />
+服务器到用户端：服务器在传送资料时，使用用户端的公钥加密后传送出去。用户端接收后用自己的私钥解密。<br />
+用户端到服务器：用户端在传送资料时，使用服务器的公钥加密后传送出去。服务器接收后用自己的私钥解密。</p>
+  </li>
+</ol>
+
+<p>~/.ssh/known_hosts 存在于客户端，用于记录已经通过验证的服务器。在第一次登录的时候，会提示是否将服务器添加到该文件中，以后再登录时，会利用该文件检测是否是之前的服务器，从而可以防止“中间人攻击”。</p>
+
+<p>~/.ssh/authorized_keys 是主机保存了用户的公钥，保存在登录后的用户主目录下。正常情况下服务器不会主动保存客户端的公钥，需要用户手动设置，通常用于“无密码登录”。</p>
+
+<h2 id="安装使用">安装使用</h2>
+
+<p>OpenSSH 不仅提供了一个 shell，而且还提供了一个较为安全的 ftp-server，也就是客户端和服务器。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># dpkg --list | grep ssh                                  # Ubuntu中查看/安装OpenSSH Server
+# apt-get install openssh-server
+
+# yum install openssh-server openssh-clients openssh      # CentOS中安装</code></pre></figure>
+
+<p>Ubutnu 中安装之后会包括 /etc/init.d/ssh 文件，在 Ubuntu 中可以通过如下方式启动/停止/重启 Openssh Server 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># /etc/init.d/ssh [start | stop | restart]
+# service ssh [start | stop | restart]</code></pre></figure>
+
+<p>通过如下命令可以查看服务是否已经启动，其中 ssh 使用的是 22 号端口，使用 tcp 协议， ftp 同样使用 22 号端口。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># netstat -vatn | grep 22</code></pre></figure>
+
+<p>在 CentOS7 中，可以通过如下命令启动。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># systemctl start sshd.service</code></pre></figure>
+
+<h2 id="客户端使用">客户端使用</h2>
+
+<p>正常情况下在安装完服务器后，可以通过如下命令进行简单的登录，如果远程主机的用户名和本地用户名一致可以省略 user 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh user@host-name</code></pre></figure>
+
+<p>关于 ssh 客户端的详细参数可以参考 man 命令，常用的参数有：</p>
+
+<ul>
+  <li>
+    <p>-f :需要配合后面的 [command] , 不登入远程主机直接发送一个指令过去而已。</p>
+  </li>
+  <li>
+    <p>-o option:主要的参数项目有：<br />
+  ConnectTimeout=秒数 : 联机等待的秒数,减少等待的时间；<br />
+  StrictHostKeyChecking=[yes|no|ask]:预设是 ask 若要让 public key 主动加入 known_hosts，则可以设定为 no 即可；</p>
+  </li>
+  <li>
+    <p>-p :如果你的 sshd 服务启动在非正规的端口 (22),需使用此选项。</p>
+  </li>
+</ul>
+
+<h3 id="在服务端执行命令">在服务端执行命令</h3>
+
+<p>登入对方主机执行过指令后立刻离开。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh student@127.0.0.1 find / &amp; &gt; ~/find1.log</code></pre></figure>
+
+<p>此时你会发现怎么画面卡住了，这是因为上头的指令会造成，已经登入远程主机，但是执行的指令尚未跑完，因此会在等待当中。</p>
+
+<p>与上相似，但是让对方主机自己跑该指令，立刻回到本地主机继续工作。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ssh -f student@127.0.0.1 find / &amp;&gt; ~/find1.log</code></pre></figure>
+
+<p>此时你会立刻注销 127.0.0.1 ，但 find 指令会自己在远程服务器跑喔!</p>
+
+<h2 id="配置文件">配置文件</h2>
+
+<p>默认包括了如下的配置文件：</p>
+
+<ul>
+  <li>
+    <p>/etc/ssh/sshd_config ： OpenSSH 服务器配置文件。</p>
+  </li>
+  <li>
+    <p>/etc/ssh/ssh_config ： OpenSSH 客户端全局配置文件。</p>
+  </li>
+  <li>
+    <p>~/.ssh/authorized_keys ：已经授权的可以直接登陆的公钥。</p>
+  </li>
+</ul>
+
+<h3 id="整体配置">整体配置</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Protocol 2,1    # SSH协议版本，1可能会有中间人攻击，建议只配置为2</code></pre></figure>
+
+<h3 id="安全配置">安全配置</h3>
+
+<h4 id="登入设定部分">登入设定部分</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">PermitRootLogin yes                      # 是否允许root登入
+StrictModes yes                          # 严格检查目录权限，权限设置出错则不允许登陆
+PubkeyAuthentication yes                 # 允许公钥登陆
+AuthorizedKeysFile .ssh/authorized_keys  # 公钥保存文件
+HostbasedAuthentication no               # 取消基于host的授权
+PasswordAuthentication yes               # 使用密码验证
+PermitEmptyPasswords no                  # 是否允许以空的密码登入
+AllowUsers list                          # 允许登陆的用户，用空格分开，可以用*?通配符
+DenyUsers foobar                         # 禁止某一个用户登入
+AllowGroups nosh                         # 允许某一个组登入
+DenyGroups nosh                          # 禁止某一个组登入</code></pre></figure>
+
+<h4 id="登入后设置">登入后设置</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ClientAliveInterval 300        # 若300秒内没有收到客户端消息，则发送心跳报文
+ClientAliveCountMax 0          # 客户端断开连接之前，能发送保活信息的条数，此时踢出用户</code></pre></figure>
+
+<h4 id="安全设置">安全设置</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">IgnoreRhosts yes              # 取消使用~/.ssh/.rhosts来做为认证</code></pre></figure>
+
+<h4 id="其它">其它</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">UseDNS yes                    # 关闭DNS验证，详见后面的介绍</code></pre></figure>
+
+<!--
+
+You need to firewall ssh port # 22 by updating iptables or pf firewall configurations. Usually, OpenSSH server must only accept connections from your LAN or other remote WAN sites only.
+Netfilter (Iptables) Configuration
+
+Update /etc/sysconfig/iptables (Redhat and friends specific file) to accept connection only from 192.168.1.0/24 and 202.54.1.5/29, enter:
+
+-A RH-Firewall-1-INPUT -s 192.168.1.0/24 -m state --state NEW -p tcp --dport 22 -j ACCEPT
+-A RH-Firewall-1-INPUT -s 202.54.1.5/29 -m state --state NEW -p tcp --dport 22 -j ACCEPT
+
+If you’ve dual stacked sshd with IPv6, edit /etc/sysconfig/ip6tables (Redhat and friends specific file), enter:
+
+ -A RH-Firewall-1-INPUT -s ipv6network::/ipv6mask -m tcp -p tcp --dport 22 -j ACCEPT
+
+ Replace ipv6network::/ipv6mask with actual IPv6 ranges.
+-->
+
+<h2 id="杂项">杂项</h2>
+
+<h4 id="客户端心跳报文">客户端心跳报文</h4>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">SecureCRT:
+   Properties-&gt;Terminal-&gt;Anti-dile
+   设置每隔80秒发送一个字符串或是NO-OP协议包
+Putty:
+   Properties-&gt;Connection-&gt;Seconds between keepalives(0 to turn off)
+   默认为0，改为80
+Xshell:
+   File-&gt;Properties-&gt;Connection-&gt;Keep Alive
+   设置为80s
+Linux:
+   在/etc/ssh/ssh_config添加ServerAliveInterval 80</code></pre></figure>
+
+<h4 id="关闭dns检查">关闭DNS检查</h4>
+
+<p>OpenSSH 服务器有一个 DNS 查找选项 UseDNS 默认是打开的。</p>
+
+<p>当客户端试图登录 OpenSSH 服务器时，服务器端先根据客户端的 IP 地址进行 DNS PTR 反向查询，查询出客户端的 host name，然后根据查询出的客户端 host name 进行 DNS 正向 A 记录查询，验证与其原始 IP 地址是否一致，这是防止客户端欺骗的一种手段，但一般 IP 是动态的，不会有 PTR 记录的，打开这个选项不过是在白白浪费时间而已。</p>
+
+<h4 id="目录权限设置">目录权限设置</h4>
+
+<p>ssh 对目录的权限有要求，代码中要设置下新生成的 config 文件权限才行。~ 目录权限是750，~/.ssh 的是700， ~/.ssh/* 的是600，~/.ssh/config 是700</p>
+
+<h4 id="减少延迟">减少延迟</h4>
+
+<p>如果每次连接服务器都意味着你需要等待几十秒而无所事事，那么你或许应该试试在你的 SSH 配置中加入下面这条，这一配置可以在客户端或者服务端配置，或者在 ssh 登录时加上 “-o GSSAPIAuthentication=no” 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">GSSAPIAuthentication no</code></pre></figure>
+
+<p>GSSAPI 是 Generic Security Services Application Program Interface (通用安全服务应用程序接口) 是 ITEF 的一个标准，允许不同的安全算法使用一个标准化的 API 来为网络产品提供加密认证。</p>
+
+<p>OpenSSH 使用这个 API 并且底层的 kerberos 5 协议代码提供除了 ssh_keys 的另一种 ssh 认证方式。</p>
+
+<!--
+### 加速连接
+
+　　如果你确保你和某个服务器之间的连接是安全的（比如通过公司内网连接），那么你就可以通过选择arcfourencryption算法来让数据传输更快一些：
+
+Host dev
+Ciphers arcfour
+
+　　注意这个加速是以牺牲数据的加密性为代价的，所以如果你连接的是位于网上的服务器，千万不要打开这个选项，并且确保你是通过VPN建立的连接。
+-->
+
+<!--
+tar -cvf - /bin | ssh id@hostname "tar -xvf -"
+从服务器复制到其它地方
+
+
+当主机的私钥修改后，可以通过 ssh-keyscan 进行扫描，列出相应主机对应的公钥信息，其中参数中的 host 信息可以查看 known_hosts 中每行的第一列。
+
+f=$(mktemp) && ssh-keyscan korell > $f && ssh-keygen -l -f $f && rm $f
+
+ssh-agent 会通过一个后台程序，将私钥信息保存在内存中，需要时发送给相应的程序。
+
+当 ssh-agent 启动之后，会自动更新 SSH_AUTH_SOCK 和 SSH_AGENT_PID 环境变量，用来供其它程序使用
+
+介绍最佳实践方式，包括了一个漏洞的链接
+https://blog.0xbadc0de.be/archives/300
+
+
+
+<h2>中间人攻击</h2>
+<p>
+	在进行登录时，存在风险：如果有人截获了登录请求，然后冒充远程主机，将伪造的公钥发给用户，那么用户很难辨别真伪。因为不像 https 协议， SSH 协议的公钥是没有证书中心 （CA） 公证的，也就是说，都是自己签发的。<br><br>
+
+	如果攻击者在用户与远程主机之间（如公共的 wifi 区域），用伪造的公钥，获取用户的登录密码。再用这个密码登录远程主机，那么 SSH 的安全机制就荡然无存了。这种风险就是著名的 "中间人攻击" （Man-in-the-middle attack）。<br><br>
+
+	为了解决这一问题，如果你是第一次登录对方主机，系统会出现类似下面的提示：
+<pre>
+$ ssh user@host
+The authenticity of host 'host (12.18.429.21)' can't be established.
+RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.
+Are you sure you want to continue connecting (yes/no)?</pre>
+	所谓 "公钥指纹" ，是指公钥长度较长（这里采用 RSA 算法，长达 1024 位），很难比对，所以对其进行 MD5 计算，将它变成一个 128 位的指纹。上例中是 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d ，再进行比较，就容易多了。<br><br>
+
+
+	通常我们可以通过如下的方法来获取公钥对指纹。<ol><li>
+		最简单的方法是远程主机在自己的网站上贴出公钥指纹，以便用户自行核对。</li><br><li>
+
+		可以直接通过网络从远程服务器上获取公共密钥，然后通过这个文件生成指纹。
+		<pre>$ ssh-keyscan -p 22 -t rsa,dsa REMOTE_HOST > /tmp/ssh_host_rsa_dsa_key.pub<br>$ ssh-keygen -l -f /tmp/ssh_host_rsa_dsa_key.pub</pre></li><br><li>
+
+		想办法通过其他方式登录到真机上，如通过管理控制台，然后通过如下命令直接生成指纹。
+		<pre>$ ssh-keygen -lf /etc/ssh/ssh_host_rsa_key</pre>
+	</li></ol>
+如果指纹不匹配，那么你应该先做一个针对ARP请求的网络扫描，看看有哪个IP地址回应了ARP请求。在ping的时候扫描一下看看有没有ARP请求。如果有两个主机，那么它们会为一个ARP条目而“互掐”起来，你应该能看到两个回应。
+
+一旦你知道了这个神秘主机的以太网地址，就可以通过路由（或交换机）接口上跟踪到ARP流量的去处。
+
+	假定经过风险衡量以后，用户决定接受这个远程主机的公钥，然后，会要求输入密码，如果密码正确，就可以登录了。<br><br>
+
+	当远程主机的公钥被接受以后，它就会被保存在文件 ~/.ssh/known_hosts 之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。<br><br>
+
+	如果再次登录时，发现 SSH 密钥改变了。这种情况可能是由于中间人攻击导致，但更多的情况下，是因为主机被重建，生成了新的 SSH 密钥，所以在重建服务器的时候要养成保存恢复 SSH 密钥习惯。<br><br>
+
+	其它内容可以参考硕士论文，《SSH 协议的中间人攻击研究》。
+	</p>
+-->
+
+<h2 id="参考">参考</h2>
+
+<p>可以参考 <a href="/reference/linux/SSH_The_Secure_Shell_The_Definitive_Guide.pdf">SSH The Secure Shell The Definitive Guide</a> 文档。</p>
+
+<p>github 上收集的与 SSH 相关的经典内容 <a href="https://github.com/moul/awesome-ssh">ssh awesome</a> 。</p>
+
+<!--
+https://github.com/arthepsy/ssh-audit
+https://nvd.nist.gov/
+https://zzz.buzz/zh/2016/04/18/hardening-sshd/
+https://networkjutsu.com/ssh-brute-force-attack/
+封IP可以通过 denyhosts、iptables、Fail2Ban
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/nginx-https.html" title="Nginx HTTPS 配置">&larr; Older</a></li> 
+         <li class="next"><a href="/post/gnucach-personal-financial-accounting-introduce.html" title="GnuCash 使用简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1420128000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/ssh-introduce.html" data-title="SSH 简介" data-url="/post/ssh-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

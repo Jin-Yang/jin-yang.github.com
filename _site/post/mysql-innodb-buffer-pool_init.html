@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>InnoDB Buffer Pool|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,innodb,buffer pool">
+  <meta name="description" content="无论哪种数据库，缓存都是提高数据库性能的关键技术，通过缓存可以在读写方面大幅提高数据库的整体性能，InnoDB 中就是通过 Buffer Pool 实现的。在此，简单介绍下 Buffer Pool 中的实现。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>InnoDB Buffer Pool</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-06-18 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>无论哪种数据库，缓存都是提高数据库性能的关键技术，通过缓存可以在读写方面大幅提高数据库的整体性能，InnoDB 中就是通过 Buffer Pool 实现的。</p>
+
+<p>在此，简单介绍下 Buffer Pool 中的实现。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>我们知道 InnoDB 使用 buffer pool 来缓存从磁盘读取到内存的数据页，BP 通常由数个内存块加上一组控制结构体对象组成，BP 每块内存通过 mmap 分配内存，而这些大片的内存块又按照 16KB 划分为多个 frame，用于存储数据页。</p>
+
+<p>多数情况下 BP 是以 16KB 来存储数据页，但有一种例外：使用压缩表时，需要在内存中同时存储压缩页和解压页，对于压缩页，会使用 Binary buddy allocator 算法来分配内存空间。</p>
+
+<p>例如我们读入一个 8KB 的压缩页，就从 BP 中取一个 16KB 的 block，取其中 8KB，剩下的 8KB 放到空闲链表上；如果紧跟着另外一个 4KB 的压缩页读入内存，就可以从这 8KB 中分裂 4KB，同时将剩下的 4KB 放到空闲链表上。</p>
+
+<p>BP 通过 Least Recently Used, LRU 进行组织，当需要插入新数据时，将最近最少使用的 block 去除，并将新 block 插入到列表的中间，也就是 <code>midpoint insertion strategy</code> 。</p>
+
+<p>头部的子链表，表示最近读取过；尾部的子链表表示最近很少读取；也就是说经常使用的 blocks 会放在头部，而需要去除的会放在尾部。</p>
+
+<h3 id="算法详解">算法详解</h3>
+
+<p>单纯的 LRU 算法有一个缺点：如果有某一个查询做了一次全表扫描，如备份、DDL 等，都可能会导致整个 LRU 链表中的数据块都被替换了，甚至很多热点数据也会被替换，而这些新进的数据块可能在这一次查询之后就再也不会被读到了；此时也就是说 BP 被污染了。</p>
+
+<p>即使采用上述的 midpoint 方法，也就是说当数据块需要从数据文件中读取时 (也包括了预读)，首先会放到 old sublist 的头部
+(midpoint)。然后，如果有对这个数据块的访问，那么就将这个数据块放到 new sublist 的首部。</p>
+
+<p>一般来说，一个数据块被取出后，立刻会有读取，也就很快会被放到 new sublist 的头部。一种糟糕的情况是，如果是 mysqldump 访问全部数据块，也就会导致所有的数据块被放到 new sublist；这样 BP 也会被全部污染。</p>
+
+<p>为了解决这个问题，可以设置 <code>innodb_old_blocks_time(ms)</code> 参数，当页被插入到 midpoint 后，必须要在 old sublist 的头部停留超过上述的时间后，才有可能被转移到 new sublist。</p>
+
+<p>参数 <code>innodb_old_blocks_time</code> 可以动态设置，在执行一些全表扫描时，可以将上述参数设置为比较大的值，操作完成之后再恢复为 0 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">SET GLOBAL innodb_old_blocks_time = 1000;
+... perform queries that scan tables ...
+SET GLOBAL innodb_old_blocks_time = 0;</code></pre></figure>
+
+<p>还有一种情况时，希望数据加载的缓存中。例如，在进行性能测试时，通常会执行一次全表扫描，将磁盘中的数据加载到内存中，那么，此时就应该将上述的参数设置为 0 。</p>
+
+<h3 id="多实例配置">多实例配置</h3>
+
+<!--Multiple Buffer Pool Instances-->
+
+<p>当服务器的内存比较大时，如果多个线程读取 BP 数据，会导致瓶颈；此时，可以将 BP 分为几个实例 (instance)，从而提高并发，减少资源冲突。每个实例管理自己的 free lists、flush lists、LRUs、互斥锁 (mutex) 以及其它与 BP 相关的结构。</p>
+
+<p>可以通过 innodb_buffer_pool_instances 参数配置实例个数，默认为 1，最大可以配置为 64；只有当 innodb_buffer_pool_size 的值大于 1G 时才会生效，而且每个实例均分 BP 缓存。</p>
+
+<p>通过多个 BP 可以减小竞争，每个页(page)将通过一个 hash 函数随机分配到 BP 中。</p>
+
+<h3 id="参数监控">参数、监控</h3>
+
+<p>InnoDB 主索引是聚簇索引，索引与数据共用表空间，也就是说，对于 InnoDB 而言，数据就是索引，索引就是数据。也就是说，Innodb 和 MyISAM 缓存的最大区别就在于前者不仅缓存索引，同时还会缓存数据。</p>
+
+<h4 id="参数设置">参数设置</h4>
+
+<p>通过 innodb_buffer_pool_size 参数来设置 InnoDB 缓存池大小，也就是缓存用户表及索引数据的最主要缓存空间，甚至其它管理数据 (例如元数据信息，行级锁信息)；对于专用的数据库服务器上通常为物理内存的 70% ~ 80%；5.7.5 版本后可以动态调整，调整时按 Block 进行。</p>
+
+<p>因此，对 Innodb 整体性能影响也最大。可通过如下命令查看当前 buffer pool 相关的参数。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 当前缓存的大小
+mysql&gt; SHOW VARIABLES LIKE &#39;innodb%pool%&#39;;
++-----------------------------------------+----------------+
+| Variable_name                           | Value          |
++-----------------------------------------+----------------+
+| innodb_buffer_pool_chunk_size           | 134217728      |  动态调整时Block的大小
+| innodb_buffer_pool_dump_at_shutdown     | ON             |
+| innodb_buffer_pool_dump_now             | OFF            |
+| innodb_buffer_pool_dump_pct             | 25             |
+| innodb_buffer_pool_evict                |                |
+| innodb_buffer_pool_filename             | ib_buffer_pool |
+| innodb_buffer_pool_instances            | 1              |  BP缓存的实例数，只有当BP大于1G时才会生效
+| innodb_buffer_pool_load_abort           | OFF            |
+| innodb_buffer_pool_load_at_startup      | ON             |
+| innodb_buffer_pool_load_now             | OFF            |
+| innodb_buffer_pool_size                 | 134217728      |  缓存大小，包括了数据和索引
+| innodb_disable_resize_buffer_pool_debug | ON             |
++-----------------------------------------+----------------+
+12 rows in set (0.00 sec)
+
+----- 当前缓存页的大小
+mysql&gt; SHOW VARIABLES LIKE &#39;innodb_page_size&#39;;
++------------------+-------+
+| Variable_name    | Value |
++------------------+-------+
+| innodb_page_size | 16384 |
++------------------+-------+
+1 row in set (0.00 sec)</code></pre></figure>
+
+<p>如上所述，通常建议设置为系统内存的 70%~80%，不过也必须要对具体项目具体分析，比如最大链接数、是否有 MyISAM 引擎等。可以按照如下的值进行分配，仅做参考：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">操作系统:
+    800M~1G
+线程独享:
+    2GB  = 线程数(500) * (1MB  + 1MB  + 1MB  + 512KB  + 512KB)
+    sort_buffer_size(1MB) + join_buffer_size(1MB) + read_buffer_size (1MB)
+    read_rnd_buffer_size(512KB) + thread_statck(512KB)
+MyISAM Key Cache:
+    1.5GB
+Innodb Buffer Pool:
+    8GB(系统内存) - 800MB - 2GB - 1.5GB = 3.7GB</code></pre></figure>
+
+<p>修改配置文件 /etc/my.cnf，并添加如下字段，然后重启 mysqld 即可。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">[mysqld]
+innodb_buffer_pool_size = 3G</code></pre></figure>
+
+<p>除了上述的参数之外，与之相关的还有如下配置参数：</p>
+
+<ul>
+  <li>innodb_old_blocks_pct<br />old-sublist 的分割点，可以为 5~95，默认为 37 也就是 3/8；</li>
+  <li>innodb_old_blocks_time (ms)<br />指定页必须在 old-sublist 中待多长时间之后，才有可能被移动到新列表中；</li>
+</ul>
+
+<!--
+    innodb_flush_method: 这个控制Innodb的IO形为，什么:fsync, O_DSYNC之类的，这里不做过多介绍， 建议使用: O_DIRECT, 这样减少操作系统级别VFS的缓存使用内存过多和Innodb本身的buffer的缓存冲突，同时也算是给操作系统减少点压力。
+    innodb_max_dirty_pages_pct : 这个参数据控制脏页的比例如果是innodb_plugin或是MySQL5.5以上的版本，建议这个参数可以设制到75%-90%都行。如果是大量写入，而且写入的数据不是太活跃，可以考虑把这个值设的低一点。 如果写入或是更新的数据也就是热数据就可以考虑把这个值设为：95%
+    innodb_log_file_size : 这个可以配置256M以上，建议有两个以前的日志文件（innodb_log_files_in_group). 如果对系统非常大写的情况下，也可以考虑用这个参数提高一下性能，把文件设的大一点，减少checkpiont的发生。 最大可以设制成：innodb_log_files_in_group * innodb_log_file_size < 512G(percona, MySQL 5.6) 建议设制成: 256M -> innodb_buffer_pool_size/innodb_log_file_in_group 即可。
+    innodb_log_buffer_size : 如果没在大事务，控制在8M-16M即可。
+
+其它对IO有影响的参数(以5.6为准）
+
+    innodb_adaptive_flushing 默认即可
+    innodb_change_buffer_max_size 如果是日值类服务，可以考虑把这个增值调到 50
+    innodb_change_buffering 默认即可
+    innodb_flush_neighors 默认是开的， 这个一定要开着，充分利用顺序IO去写数据。
+    innodb_lru_scan_depth: 默认即可 这个参数比较专业。
+    innodb_max_purge_lag 默认没启用，如果写入和读取都量大，可以保证读取优先，可以考虑使用这个功能。
+    innodb_random_read_ahead 默认没开启，属于一个比较活跃的参数，如果要用一定要多测试一下。 对用passport类应用可以考虑使用
+    innodb_read_ahead_threshold 默认开启：56 预读机制可以根据业务处理，如果是passprot可以考虑关闭。如果使用innodb_random_read_ahead,建议关闭这个功能
+    sync_binlog 默认即可： 0
+    innodb_rollback_segments 默认即可: 128
+另外5.6的undo log也可以独立配置了，建议单独配置出来。
+    innodb_read_io_threads 默认为：4 可以考虑8
+    innodb_write_io_threads 默认为：4 可以考虑8
+-->
+
+<h4 id="监控指标">监控指标</h4>
+
+<p>可以通过如下命令查看一些 InnoDB Buffer Pool 监控值。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SHOW STATUS LIKE &#39;Innodb_buffer_pool_%&#39;;
++-----------------------------------+-------+
+| Variable_name                     | Value |
++-----------------------------------+-------+
+| Innodb_buffer_pool_pages_data     | 70    |    已经使用的缓存页数
+| Innodb_buffer_pool_pages_dirty    | 0     |    脏页数
+| Innodb_buffer_pool_pages_flushed  | 0     |    刷新页数
+| Innodb_buffer_pool_pages_free     | 1978  |    尚未使用的缓存页数
+| Innodb_buffer_pool_pages_misc     | 0     |
+| Innodb_buffer_pool_pages_total    | 2048  |    缓存页面总数，innodb_page_size(16k)
+| Innodb_buffer_pool_read_ahead_rnd | 1     |
+| Innodb_buffer_pool_read_ahead_seq | 0     |
+| Innodb_buffer_pool_read_requests  | 329   |    读请求次数
+| Innodb_buffer_pool_reads          | 19    |    从磁盘中读取数据的次数
+| Innodb_buffer_pool_wait_free      | 0     |
+| Innodb_buffer_pool_write_requests | 0     |
++-----------------------------------+-------+
+12 rows in set (0.01 sec)</code></pre></figure>
+
+<p>如果 Innodb_buffer_pool_pages_free 偏大的话，证明有很多缓存没有被利用到，这时可以考虑减小缓存；相反 Innodb_buffer_pool_pages_data 过大就考虑增大缓存。</p>
+
+<p>对于缓存命中率可以通过如下方式计算。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 缓存命中率，通常不低于99%
+(Innodb_buffer_pool_read_requests - Innodb_buffer_pool_reads) / Innodb_buffer_pool_read_requests * 100%
+(329 - 19) / 329 * 100%  = 94.22%。</code></pre></figure>
+
+<!--
+当然，通过上面的数据，我们还可以分析出 write 命中率，可以得到发生了多少次 read_ahead_rnd，多少次 read_ahead_seq，发生过多少次 latch，多少次因为 Buffer 空间大小不足而产 生 wait_free 等等。
+
+在 Innodb Buffer  Pool 中，还有一个非常重要的概念，叫做“预读”。一般来说，预读概念主要是 在一些高端存储上面才会有，简单来说就是通过分析数据请求的特点来自动判断出客户在请求当前数据 块之后可能会继续请求的数据快。通过该自动判断之后，存储引擎可能就会一次将当前请求的数据库和 后面可能请求的下一个（或者几个）数据库一次全部读出，以期望通过这种方式减少磁盘 IO 次数提高 IO 性能。在上面列出的状态参数中就有两个专门针对预读：
+Innodb_buffer_pool_read_ahead_rnd，记录进行随机读的时候产生的预读次数； Innodb_buffer_pool_read_ahead_seq，记录连续读的时候产生的预读次数；
+-->
+
+<p>另外，也可以通过 <code>SHOW ENGINE INNODB STATUS\G</code> 命令查看。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SHOW ENGINE INNODB STATUS\G
+----------------------
+BUFFER POOL AND MEMORY
+----------------------
+Total large memory allocated 140836864
+Dictionary memory allocated 538303
+Buffer pool size   8192
+Free buffers       7810
+Database pages     382
+Old database pages 0
+Modified db pages  0
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 0, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 336, created 46, written 128
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+No buffer pool page gets since the last printout
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 382, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]</code></pre></figure>
+
+<p>可以查看对应的源码。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">ibool</span> <span class="nf">srv_printf_innodb_monitor</span><span class="p">(</span><span class="kt">FILE</span><span class="o">*</span> <span class="n">file</span><span class="p">,</span> <span class="n">ibool</span> <span class="n">nowait</span><span class="p">,</span>
+    <span class="n">ulint</span><span class="o">*</span> <span class="n">trx_start_pos</span><span class="p">,</span> <span class="n">ulint</span><span class="o">*</span>  <span class="n">trx_end</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// ... ...</span>
+    <span class="n">fputs</span><span class="p">(</span><span class="s">&quot;----------------------</span><span class="se">\n</span><span class="s">&quot;</span>
+          <span class="s">&quot;BUFFER POOL AND MEMORY</span><span class="se">\n</span><span class="s">&quot;</span>
+          <span class="s">&quot;----------------------</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">);</span>
+    <span class="n">fprintf</span><span class="p">(</span><span class="n">file</span><span class="p">,</span>
+        <span class="s">&quot;Total large memory allocated &quot;</span> <span class="n">ULINTPF</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="s">&quot;Dictionary memory allocated &quot;</span> <span class="n">ULINTPF</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+        <span class="n">os_total_large_mem_allocated</span><span class="p">,</span>
+        <span class="n">dict_sys</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">);</span>
+
+    <span class="n">buf_print_io</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
+    <span class="c1">// ... ...</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">buf_print_io</span><span class="p">(</span> <span class="kt">FILE</span><span class="o">*</span> <span class="n">file</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">ulint</span>           <span class="n">i</span><span class="p">;</span>
+    <span class="kt">buf_pool_info_t</span><span class="o">*</span>    <span class="n">pool_info</span><span class="p">;</span>
+    <span class="kt">buf_pool_info_t</span><span class="o">*</span>    <span class="n">pool_info_total</span><span class="p">;</span>
+
+    <span class="cm">/* If srv_buf_pool_instances is greater than 1, allocate</span>
+<span class="cm">    one extra buf_pool_info_t, the last one stores</span>
+<span class="cm">    aggregated/total values from all pools */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">srv_buf_pool_instances</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">pool_info</span> <span class="o">=</span> <span class="p">(</span><span class="kt">buf_pool_info_t</span><span class="o">*</span><span class="p">)</span> <span class="n">ut_zalloc_nokey</span><span class="p">((</span>
+            <span class="n">srv_buf_pool_instances</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="k">sizeof</span> <span class="o">*</span><span class="n">pool_info</span><span class="p">);</span>
+
+        <span class="n">pool_info_total</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">pool_info</span><span class="p">[</span><span class="n">srv_buf_pool_instances</span><span class="p">];</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">ut_a</span><span class="p">(</span><span class="n">srv_buf_pool_instances</span> <span class="o">==</span> <span class="mi">1</span><span class="p">);</span>
+
+        <span class="n">pool_info_total</span> <span class="o">=</span> <span class="n">pool_info</span> <span class="o">=</span>
+            <span class="n">static_cast</span><span class="o">&lt;</span><span class="kt">buf_pool_info_t</span><span class="o">*&gt;</span><span class="p">(</span>
+                <span class="n">ut_zalloc_nokey</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">pool_info</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">srv_buf_pool_instances</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">buf_pool_t</span><span class="o">*</span> <span class="n">buf_pool</span><span class="p">;</span>
+
+        <span class="n">buf_pool</span> <span class="o">=</span> <span class="n">buf_pool_from_array</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+
+        <span class="cm">/* Fetch individual buffer pool info and calculate</span>
+<span class="cm">        aggregated stats along the way */</span>
+        <span class="n">buf_stats_get_pool_info</span><span class="p">(</span><span class="n">buf_pool</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">pool_info</span><span class="p">);</span>
+
+        <span class="cm">/* If we have more than one buffer pool, store</span>
+<span class="cm">        the aggregated stats  */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">srv_buf_pool_instances</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">buf_stats_aggregate_pool_info</span><span class="p">(</span><span class="n">pool_info_total</span><span class="p">,</span>
+                              <span class="o">&amp;</span><span class="n">pool_info</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* Print the aggreate buffer pool info */</span>
+    <span class="n">buf_print_io_instance</span><span class="p">(</span><span class="n">pool_info_total</span><span class="p">,</span> <span class="n">file</span><span class="p">);</span>
+
+    <span class="cm">/* If there are more than one buffer pool, print each individual pool</span>
+<span class="cm">    info */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">srv_buf_pool_instances</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fputs</span><span class="p">(</span><span class="s">&quot;----------------------</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="s">&quot;INDIVIDUAL BUFFER POOL INFO</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="s">&quot;----------------------</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">);</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">srv_buf_pool_instances</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s">&quot;---BUFFER POOL &quot;</span> <span class="n">ULINTPF</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+            <span class="n">buf_print_io_instance</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pool_info</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">file</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">ut_free</span><span class="p">(</span><span class="n">pool_info</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>上述方式，只能看到所有 BP 的总体统计值，如果要查看每个实例的值，可以通过如下命令查看。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SELECT * FROM information_schema.innodb_buffer_pool_stats\G</code></pre></figure>
+
+<h2 id="磁盘预热">磁盘预热</h2>
+
+<p>如果一台高负荷的机器重启后，内存中大量的热数据被清空；重启后，会重新从磁盘加载到 Buffer Pool 中，此时，性能就会变得很差，连接数就会很高。</p>
+
+<p>在 MySQL5.6 后，添加了一个新特性避免的这种问题的出现，当正常关闭时会将 BP 中的数据写入到磁盘；对于 kill -9 或者宕机仍无法使用。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 关闭时把热数据dump到本地磁盘。
+innodb_buffer_pool_dump_at_shutdown = 1
+
+innodb_buffer_pool_dump_now = 1
+
+解释：采用手工方式把热数据dump到本地磁盘。
+
+innodb_buffer_pool_load_at_startup = 1
+
+解释：在启动时把热数据加载到内存。
+
+innodb_buffer_pool_load_now = 1
+
+解释：采用手工方式把热数据加载到内存。</code></pre></figure>
+
+<p>在关闭 MySQL 时，会把内存中的热数据保存在磁盘里 ib_buffer_pool 文件中，位于数据目录下。</p>
+
+<h2 id="源码解析">源码解析</h2>
+
+<p>MySQL 5.6 内存管理在 mem0pool.c 中实现，其文件的开头注释中都有说明，粗略的可以分成四部分，包含 9 大块。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">/* We would like to use also the buffer frames to allocate memory. This
+would be desirable, because then the memory consumption of the database
+would be fixed, and we might even lock the buffer pool to the main memory.
+The problem here is that the buffer management routines can themselves call
+memory allocation, while the buffer pool mutex is reserved.
+
+The main components of the memory consumption are:
+
+1. buffer pool,
+2. parsed and optimized SQL statements,
+3. data dictionary cache,
+4. log buffer,
+5. locks for each transaction,
+6. hash table for the adaptive index,
+7. state and buffers for each SQL query currently being executed,
+8. session for each user, and
+9. stack for each OS thread.
+
+Items 1 and 2 are managed by an LRU algorithm. Items 5 and 6 can potentially
+consume very much memory. Items 7 and 8 should consume quite little memory,
+and the OS should take care of item 9, which too should consume little memory.
+
+A solution to the memory management:
+
+1. the buffer pool size is set separately;
+2. log buffer size is set separately;
+3. the common pool size for all the other entries, except 8, is set separately.
+
+Problems: we may waste memory if the common pool is set too big. Another
+problem is the locks, which may take very much space in big transactions.
+Then the shared pool size should be set very big. We can allow locks to take
+space from the buffer pool, but the SQL optimizer is then unaware of the
+usable size of the buffer pool. We could also combine the objects in the
+common pool and the buffers in the buffer pool into a single LRU list and
+manage it uniformly, but this approach does not take into account the parsing
+and other costs unique to SQL statements.
+
+The locks for a transaction can be seen as a part of the state of the
+transaction. Hence, they should be stored in the common pool. We still
+have the problem of a very big update transaction, for example, which
+will set very many x-locks on rows, and the locks will consume a lot
+of memory, say, half of the buffer pool size.
+
+Another problem is what to do if we are not able to malloc a requested
+block of memory from the common pool. Then we can request memory from
+the operating system. If it does not help, a system error results.
+
+Because 5 and 6 may potentially consume very much memory, we let them grow
+into the buffer pool. We may let the locks of a transaction take frames
+from the buffer pool, when the corresponding memory heap block has grown to
+the size of a buffer frame. Similarly for the hash node cells of the locks,
+and for the adaptive index. Thus, for each individual transaction, its locks
+can occupy at most about the size of the buffer frame of memory in the common
+pool, and after that its locks will grow into the buffer pool. */</code></pre></figure>
+
+<h3 id="bp-管理概述">BP 管理概述</h3>
+
+<p>为了管理 buffer pool，每个 buffer pool instance 使用如下几个链表来管理：</p>
+
+<ul>
+  <li>LRU 链表包含所有读入内存的数据页；</li>
+  <li>Flush_list 包含被修改过的脏页；</li>
+  <li>unzip_LRU 包含所有解压页；</li>
+  <li>Free list 上存放当前空闲的 block 。</li>
+</ul>
+
+<p>另外为了避免查询数据页时扫描 LRU，还为每个 buffer pool instance 维护了一个 page hash，可以通过 space id 和 page no 直接找到对应的 page 。</p>
+
+<p>一般情况下，当需要读入一个 Page 时，首先会根据 space id 和 page no 找到对应的 buffer pool instance；然后查询 page hash，如果 page hash 中没有，则表示需要从磁盘读取。</p>
+
+<p>在读盘前，我们需要为即将读入内存的数据页分配一个空闲的 block，当 free list 上存在空闲的 block 时，可以直接从 free list 上摘取；如果没有，就需要从 unzip_lru 或者 lru 上淘汰 page 。</p>
+
+<p>在淘汰页时会遵循一定原则，可参考 <code>buf_LRU_get_free_block()-&gt;buf_LRU_scan_and_free_block()</code>：</p>
+
+<ol>
+  <li>首先尝试从 unzip_lru 上驱逐解压页，可以参考 <code>buf_LRU_free_from_unzip_LRU_list()</code>；</li>
+  <li>如果没有，再尝试从 lru 链表上淘汰 Page，可以参考 <code>buf_LRU_free_from_common_LRU_list()</code> ；</li>
+  <li>如果还是无法从 lru 上获取到空闲 block，用户线程就会参与刷脏，尝试做一次 SINGLE PAGE FLUSH，单独从 lru 上刷掉一个脏页，然后再重试。</li>
+</ol>
+
+<p>BP 中的页被修改后，不是立刻写入磁盘，而是由后台线程定时写入，和大多数数据库系统一样，脏页的写盘遵循日志先行 WAL 原则，因此在每个 block 上都记录了一个最近被修改时的 lsn，写数据页时需要确保当前写入日志文件的 redo 不低于这个 lsn。</p>
+
+<p>然而基于 WAL 原则的刷脏策略可能带来一个问题：当数据库的写入负载过高时，产生 redo log 的速度极快，redo log 可能很快到达同步 checkpoint 点，这时候需要进行刷脏来推进 lsn 。</p>
+
+<p>由于这种行为是由用户线程在检查到 redo log 空间不够时触发，大量用户线程将可能陷入到这段低效的逻辑中，产生一个明显的性能拐点。</p>
+
+<h3 id="数据结构">数据结构</h3>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">buf_page_t</span> <span class="p">{</span>
+    <span class="kt">unsigned</span>    <span class="nl">old</span><span class="p">:</span><span class="mi">1</span><span class="p">;</span>    <span class="c1">// 是否在LRU_list的old部分</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="kt">buf_block_t</span> <span class="p">{</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="kt">buf_buddy_free_t</span> <span class="p">{</span>
+<span class="p">};</span>
+
+
+<span class="k">struct</span> <span class="kt">buf_pool_t</span><span class="p">{</span>
+    <span class="cm">/** @name General fields */</span>
+    <span class="cm">/* @{ */</span>
+    <span class="kt">ib_mutex_t</span>  <span class="n">mutex</span><span class="p">;</span>      <span class="cm">/*!&lt; Buffer pool mutex of this</span>
+<span class="cm">                    instance */</span>
+    <span class="kt">ib_mutex_t</span>  <span class="n">zip_mutex</span><span class="p">;</span>  <span class="cm">/*!&lt; Zip mutex of this buffer</span>
+<span class="cm">                    pool instance, protects compressed</span>
+<span class="cm">                    only pages (of type buf_page_t, not</span>
+<span class="cm">                    buf_block_t */</span>
+    <span class="n">ulint</span>       <span class="n">instance_no</span><span class="p">;</span>    <span class="cm">/*!&lt; Array index of this buffer</span>
+<span class="cm">                    pool instance */</span>
+    <span class="n">ulint</span>       <span class="n">old_pool_size</span><span class="p">;</span>  <span class="cm">/*!&lt; Old pool size in bytes */</span>
+    <span class="n">ulint</span>       <span class="n">curr_pool_size</span><span class="p">;</span> <span class="cm">/*!&lt; Current pool size in bytes */</span>
+    <span class="n">ulint</span>       <span class="n">LRU_old_ratio</span><span class="p">;</span>  <span class="cm">/*!&lt; Reserve this much of the buffer</span>
+<span class="cm">                    pool for &quot;old&quot; blocks */</span>
+<span class="cp">#ifdef UNIV_DEBUG</span>
+    <span class="n">ulint</span>       <span class="n">buddy_n_frames</span><span class="p">;</span> <span class="cm">/*!&lt; Number of frames allocated from</span>
+<span class="cm">                    the buffer pool to the buddy system */</span>
+<span class="cp">#endif</span>
+<span class="cp">#if defined UNIV_DEBUG || defined UNIV_BUF_DEBUG</span>
+    <span class="n">ulint</span>       <span class="n">mutex_exit_forbidden</span><span class="p">;</span> <span class="cm">/*!&lt; Forbid release mutex */</span>
+<span class="cp">#endif</span>
+    <span class="n">ulint</span>       <span class="n">n_chunks</span><span class="p">;</span>   <span class="cm">/*!&lt; number of buffer pool chunks */</span>
+    <span class="kt">buf_chunk_t</span><span class="o">*</span>    <span class="n">chunks</span><span class="p">;</span>     <span class="cm">/*!&lt; buffer pool chunks */</span>
+    <span class="n">ulint</span>       <span class="n">curr_size</span><span class="p">;</span>  <span class="cm">/*!&lt; current pool size in pages */</span>
+    <span class="kt">hash_table_t</span><span class="o">*</span>   <span class="n">page_hash</span><span class="p">;</span>  <span class="cm">/*!&lt; hash table of buf_page_t or</span>
+<span class="cm">                    buf_block_t file pages,</span>
+<span class="cm">                    buf_page_in_file() == TRUE,</span>
+<span class="cm">                    indexed by (space_id, offset).</span>
+<span class="cm">                    page_hash is protected by an</span>
+<span class="cm">                    array of mutexes.</span>
+<span class="cm">                    Changes in page_hash are protected</span>
+<span class="cm">                    by buf_pool-&gt;mutex and the relevant</span>
+<span class="cm">                    page_hash mutex. Lookups can happen</span>
+<span class="cm">                    while holding the buf_pool-&gt;mutex or</span>
+<span class="cm">                    the relevant page_hash mutex. */</span>
+    <span class="kt">hash_table_t</span><span class="o">*</span>   <span class="n">zip_hash</span><span class="p">;</span>   <span class="cm">/*!&lt; hash table of buf_block_t blocks</span>
+<span class="cm">                    whose frames are allocated to the</span>
+<span class="cm">                    zip buddy system,</span>
+<span class="cm">                    indexed by block-&gt;frame */</span>
+    <span class="n">ulint</span>       <span class="n">n_pend_reads</span><span class="p">;</span>   <span class="cm">/*!&lt; number of pending read</span>
+<span class="cm">                    operations */</span>
+    <span class="n">ulint</span>       <span class="n">n_pend_unzip</span><span class="p">;</span>   <span class="cm">/*!&lt; number of pending decompressions */</span>
+
+    <span class="kt">time_t</span>      <span class="n">last_printout_time</span><span class="p">;</span>         <span class="c1">// when buf_print_io was last time called</span>
+    <span class="kt">buf_buddy_stat_t</span> <span class="n">buddy_stat</span><span class="p">[</span><span class="n">BUF_BUDDY_SIZES_MAX</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+                    <span class="cm">/*!&lt; Statistics of buddy system,</span>
+<span class="cm">                    indexed by block size */</span>
+    <span class="kt">buf_pool_stat_t</span> <span class="n">stat</span><span class="p">;</span>       <span class="cm">/*!&lt; current statistics */</span>
+    <span class="kt">buf_pool_stat_t</span> <span class="n">old_stat</span><span class="p">;</span>   <span class="cm">/*!&lt; old statistics */</span>
+
+    <span class="cm">/* @} */</span>
+
+    <span class="cm">/** @name Page flushing algorithm fields */</span>
+
+    <span class="cm">/* @{ */</span>
+
+    <span class="kt">ib_mutex_t</span>  <span class="n">flush_list_mutex</span><span class="p">;</span><span class="cm">/*!&lt; mutex protecting the</span>
+<span class="cm">                    flush list access. This mutex</span>
+<span class="cm">                    protects flush_list, flush_rbt</span>
+<span class="cm">                    and bpage::list pointers when</span>
+<span class="cm">                    the bpage is on flush_list. It</span>
+<span class="cm">                    also protects writes to</span>
+<span class="cm">                    bpage::oldest_modification and</span>
+<span class="cm">                    flush_list_hp */</span>
+    <span class="k">const</span> <span class="kt">buf_page_t</span><span class="o">*</span>   <span class="n">flush_list_hp</span><span class="p">;</span><span class="cm">/*!&lt; &quot;hazard pointer&quot;</span>
+<span class="cm">                    used during scan of flush_list</span>
+<span class="cm">                    while doing flush list batch.</span>
+<span class="cm">                    Protected by flush_list_mutex */</span>
+    <span class="n">UT_LIST_BASE_NODE_T</span><span class="p">(</span><span class="kt">buf_page_t</span><span class="p">)</span> <span class="n">flush_list</span><span class="p">;</span>
+                    <span class="cm">/*!&lt; base node of the modified block</span>
+<span class="cm">                    list */</span>
+    <span class="n">ibool</span>       <span class="n">init_flush</span><span class="p">[</span><span class="n">BUF_FLUSH_N_TYPES</span><span class="p">];</span>
+                    <span class="cm">/*!&lt; this is TRUE when a flush of the</span>
+<span class="cm">                    given type is being initialized */</span>
+    <span class="n">ulint</span>       <span class="n">n_flush</span><span class="p">[</span><span class="n">BUF_FLUSH_N_TYPES</span><span class="p">];</span>
+                    <span class="cm">/*!&lt; this is the number of pending</span>
+<span class="cm">                    writes in the given flush type */</span>
+    <span class="kt">os_event_t</span>  <span class="n">no_flush</span><span class="p">[</span><span class="n">BUF_FLUSH_N_TYPES</span><span class="p">];</span>
+                    <span class="cm">/*!&lt; this is in the set state</span>
+<span class="cm">                    when there is no flush batch</span>
+<span class="cm">                    of the given type running */</span>
+    <span class="kt">ib_rbt_t</span><span class="o">*</span>   <span class="n">flush_rbt</span><span class="p">;</span>  <span class="cm">/*!&lt; a red-black tree is used</span>
+<span class="cm">                    exclusively during recovery to</span>
+<span class="cm">                    speed up insertions in the</span>
+<span class="cm">                    flush_list. This tree contains</span>
+<span class="cm">                    blocks in order of</span>
+<span class="cm">                    oldest_modification LSN and is</span>
+<span class="cm">                    kept in sync with the</span>
+<span class="cm">                    flush_list.</span>
+<span class="cm">                    Each member of the tree MUST</span>
+<span class="cm">                    also be on the flush_list.</span>
+<span class="cm">                    This tree is relevant only in</span>
+<span class="cm">                    recovery and is set to NULL</span>
+<span class="cm">                    once the recovery is over.</span>
+<span class="cm">                    Protected by flush_list_mutex */</span>
+    <span class="n">ulint</span>       <span class="n">freed_page_clock</span><span class="p">;</span><span class="cm">/*!&lt; a sequence number used</span>
+<span class="cm">                    to count the number of buffer</span>
+<span class="cm">                    blocks removed from the end of</span>
+<span class="cm">                    the LRU list; NOTE that this</span>
+<span class="cm">                    counter may wrap around at 4</span>
+<span class="cm">                    billion! A thread is allowed</span>
+<span class="cm">                    to read this for heuristic</span>
+<span class="cm">                    purposes without holding any</span>
+<span class="cm">                    mutex or latch */</span>
+    <span class="n">ibool</span>       <span class="n">try_LRU_scan</span><span class="p">;</span>   <span class="cm">/*!&lt; Set to FALSE when an LRU</span>
+<span class="cm">                    scan for free block fails. This</span>
+<span class="cm">                    flag is used to avoid repeated</span>
+<span class="cm">                    scans of LRU list when we know</span>
+<span class="cm">                    that there is no free block</span>
+<span class="cm">                    available in the scan depth for</span>
+<span class="cm">                    eviction. Set to TRUE whenever</span>
+<span class="cm">                    we flush a batch from the</span>
+<span class="cm">                    buffer pool. Protected by the</span>
+<span class="cm">                    buf_pool-&gt;mutex */</span>
+    <span class="cm">/* @} */</span>
+
+    <span class="cm">/** @name LRU replacement algorithm fields */</span>
+    <span class="cm">/* @{ */</span>
+
+    <span class="n">UT_LIST_BASE_NODE_T</span><span class="p">(</span><span class="kt">buf_page_t</span><span class="p">)</span> <span class="n">free</span><span class="p">;</span>
+                    <span class="cm">/*!&lt; base node of the free</span>
+<span class="cm">                    block list */</span>
+
+    <span class="n">UT_LIST_BASE_NODE_T</span><span class="p">(</span><span class="kt">buf_page_t</span><span class="p">)</span> <span class="n">withdraw</span><span class="p">;</span>
+                    <span class="cm">/*!&lt; base node of the withdraw</span>
+<span class="cm">                    block list. It is only used during</span>
+<span class="cm">                    shrinking buffer pool size, not to</span>
+<span class="cm">                    reuse the blocks will be removed */</span>
+
+    <span class="n">ulint</span>       <span class="n">withdraw_target</span><span class="p">;</span><span class="cm">/*!&lt; target length of withdraw</span>
+<span class="cm">                    block list, when withdrawing */</span>
+
+    <span class="cm">/** &quot;hazard pointer&quot; used during scan of LRU while doing</span>
+<span class="cm">    LRU list batch.  Protected by buf_pool::mutex */</span>
+    <span class="n">LRUHp</span>       <span class="n">lru_hp</span><span class="p">;</span>
+
+    <span class="cm">/** Iterator used to scan the LRU list when searching for</span>
+<span class="cm">    replacable victim. Protected by buf_pool::mutex. */</span>
+    <span class="n">LRUItr</span>      <span class="n">lru_scan_itr</span><span class="p">;</span>
+
+    <span class="cm">/** Iterator used to scan the LRU list when searching for</span>
+<span class="cm">    single page flushing victim.  Protected by buf_pool::mutex. */</span>
+    <span class="n">LRUItr</span>      <span class="n">single_scan_itr</span><span class="p">;</span>
+
+    <span class="n">UT_LIST_BASE_NODE_T</span><span class="p">(</span><span class="kt">buf_page_t</span><span class="p">)</span> <span class="n">LRU</span><span class="p">;</span>
+                    <span class="cm">/*!&lt; base node of the LRU list */</span>
+
+    <span class="kt">buf_page_t</span><span class="o">*</span> <span class="n">LRU_old</span><span class="p">;</span>    <span class="cm">/*!&lt; pointer to the about</span>
+<span class="cm">                    LRU_old_ratio/BUF_LRU_OLD_RATIO_DIV</span>
+<span class="cm">                    oldest blocks in the LRU list;</span>
+<span class="cm">                    NULL if LRU length less than</span>
+<span class="cm">                    BUF_LRU_OLD_MIN_LEN;</span>
+<span class="cm">                    NOTE: when LRU_old != NULL, its length</span>
+<span class="cm">                    should always equal LRU_old_len */</span>
+    <span class="n">ulint</span>       <span class="n">LRU_old_len</span><span class="p">;</span>    <span class="cm">/*!&lt; length of the LRU list from</span>
+<span class="cm">                    the block to which LRU_old points</span>
+<span class="cm">                    onward, including that block;</span>
+<span class="cm">                    see buf0lru.cc for the restrictions</span>
+<span class="cm">                    on this value; 0 if LRU_old == NULL;</span>
+<span class="cm">                    NOTE: LRU_old_len must be adjusted</span>
+<span class="cm">                    whenever LRU_old shrinks or grows! */</span>
+
+    <span class="n">UT_LIST_BASE_NODE_T</span><span class="p">(</span><span class="kt">buf_block_t</span><span class="p">)</span> <span class="n">unzip_LRU</span><span class="p">;</span>
+                    <span class="cm">/*!&lt; base node of the</span>
+<span class="cm">                    unzip_LRU list */</span>
+
+    <span class="cm">/* @} */</span>
+    <span class="cm">/** @name Buddy allocator fields</span>
+<span class="cm">    The buddy allocator is used for allocating compressed page</span>
+<span class="cm">    frames and buf_page_t descriptors of blocks that exist</span>
+<span class="cm">    in the buffer pool only in compressed form. */</span>
+    <span class="cm">/* @{ */</span>
+<span class="cp">#if defined UNIV_DEBUG || defined UNIV_BUF_DEBUG</span>
+    <span class="n">UT_LIST_BASE_NODE_T</span><span class="p">(</span><span class="kt">buf_page_t</span><span class="p">)</span> <span class="n">zip_clean</span><span class="p">;</span>
+                    <span class="cm">/*!&lt; unmodified compressed pages */</span>
+<span class="cp">#endif </span><span class="cm">/* UNIV_DEBUG || UNIV_BUF_DEBUG */</span><span class="cp"></span>
+
+    <span class="n">UT_LIST_BASE_NODE_T</span><span class="p">(</span><span class="kt">buf_buddy_free_t</span><span class="p">)</span> <span class="n">zip_free</span><span class="p">[</span><span class="n">BUF_BUDDY_SIZES_MAX</span><span class="p">];</span>
+                    <span class="cm">/*!&lt; buddy free lists */</span>
+
+    <span class="kt">buf_page_t</span><span class="o">*</span>         <span class="n">watch</span><span class="p">;</span>   <span class="o">?????</span><span class="nl">TODODO</span><span class="p">:</span><span class="err">到底是干吗的</span>
+                    <span class="cm">/*!&lt; Sentinel records for buffer</span>
+<span class="cm">                    pool watches. Protected by</span>
+<span class="cm">                    buf_pool-&gt;mutex. */</span>
+<span class="p">};</span>
+
+
+
+
+<span class="k">struct</span> <span class="kt">buf_chunk_t</span><span class="p">{</span>   <span class="c1">// include/buf0buf.ic</span>
+    <span class="n">ulint</span>       <span class="n">mem_size</span><span class="p">;</span>   <span class="cm">/*!&lt; allocated size of the chunk */</span>
+    <span class="n">ulint</span>       <span class="n">size</span><span class="p">;</span>       <span class="cm">/*!&lt; size of frames[] and blocks[] */</span>
+    <span class="kt">void</span><span class="o">*</span>       <span class="n">mem</span><span class="p">;</span>        <span class="cm">/*!&lt; pointer to the memory area which</span>
+<span class="cm">                    was allocated for the frames */</span>
+    <span class="kt">buf_block_t</span><span class="o">*</span>    <span class="n">blocks</span><span class="p">;</span>     <span class="cm">/*!&lt; array of buffer control blocks */</span>
+<span class="p">};</span></code></pre></figure>
+
+<h2 id="buffer-pool">Buffer Pool</h2>
+
+<h3 id="预读策略">预读策略</h3>
+
+<p>预读其实是基于这样的判断，在读取磁盘数据时，接下来的请求，有很大可能要读取周围的数据；为此，InnoDB 会异步读取该页周围的数据，从而减小 IO 。</p>
+
+<p>InnoDB 提供了顺序和随机两种策略。</p>
+
+<h4 id="顺序预读">顺序预读</h4>
+
+<!--
+buf_read_ahead_linear()
+
+也就是 linear read-ahead ，会根据
+https://dev.mysql.com/doc/refman/5.7/en/innodb-performance-read_ahead.html
+-->
+
+<h3 id="源码解析-1">源码解析</h3>
+
+<p>Buffer Pool 的初始化入口在 <code>innobase_start_or_create_for_mysql()</code> 函数中，调用流程如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">buf_pool_init()                     # 初始化buffer pool主函数入口
+ |-buf_pool_init_instance()         # 1.1 每个buf-pool大小为srv_buf_pool_size/instance，通过该函数初始化各个实例
+ | |-UT_LIST_INIT(buf_pool-&gt;free)   # 2.1 初始化buf pool的free list
+ | |
+ | |-buf_chunk_init()               # 初始化buffer pool中的chunk
+ | | |-ut_2pow_round()              # 2.2 计算每个buf pool实际所需空间，空间必须按照page_size对齐
+ | | |-ut_2pow_round()              #     必须为每个page分配一个内存block结构，用于管理内存page
+ | | |-os_mem_alloc_large()         # 2.3 为buf pool分配大块内存，对于不同系统配置，调用不同函数
+ | | | |-shmget() shmat() shmct()   #     若用了大页(Huge Page)，则使用这些方法分配空间
+ | | | |-VirtualAlloc()             #     Win平台使用该函数分配空间
+ | | | |-ut_malloc_low()            #     若未使用MMAP，则调用该函数分配空间
+ | | | |-mmap()                     #     若使用MMAP，则调用mmap函数分配空间
+ | | |-ut_align()                   # 2.4 将分配出来的mem空间，按page size对齐，作为page的起点
+ | | |-... ...                      # 2.5 将mem划分为两部分：前部分作为block结构空间；后部分作为page空间
+ | | |                              #     page空间每一个page的起始位置，必须按照page size对齐
+ | | |                              #     block结构起始位置为mem空间的0号位置
+ | | |                              #     page空间的起始位置，为预留足够的block结构之后的第一个frame位置
+ | | |-buf_block_init()             # 2.6 为每个page指定一个block头结构，并初始化各种mutex与lock
+ | | |-UT_LIST_ADD_LAST()           # 2.7 将page加入buf pool的free list链表，等待分配
+ | |-hash_create()                  # 2.8 创建相应的hash表，若page对应于文件中的一个页，则在page hash表中存在
+ |                                  #     便于page在内存中的快速定位
+ |
+ |-buf_pool_set_sizes()             # 1.2 设置大小参数
+ |-buf_LRU_old_ratio_update()       # 1.3 设置buf_pool.LRU中oldList部分所占的比率，默认为3/8
+ |-btr_search_sys_create()</code></pre></figure>
+
+<p>其中比较重要的参数是 innodb_old_blocks_pct，该参数运行时可以调整，初始值为 3/8 。</p>
+
+<p>若设置不同的 old ratio，则涉及到调整 buf_pool-&gt;LRU_old 指向的位置，LRU_old 指向的是 LRU list 中位于 old ratio 处的 block 位置，也就是说 old ration 调整，LRU_old 需要相应的做出调整。</p>
+
+<h3 id="页面管理">页面管理</h3>
+
+<p>在 MySQL 5.5 之后，InnoDB 支持多 Buffer Pool Instance，内存中有多个 buffer pool 管理，如果此时指定一个 page，需要确定属于哪个 buffer pool 的。</p>
+
+<p>其入参是给定一个 page 的 tablespace id 与 pageno，然后可以定位到对应的管理 buffer pool 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">class</span> <span class="kt">page_id_t</span> <span class="p">{</span>
+<span class="nl">private</span><span class="p">:</span>
+    <span class="kt">ib_uint32_t</span> <span class="n">m_space</span><span class="p">;</span>     <span class="c1">// Tablespace id</span>
+    <span class="kt">ib_uint32_t</span> <span class="n">m_page_no</span><span class="p">;</span>   <span class="c1">// Page number</span>
+    <span class="n">mutable</span> <span class="n">ulint</span>   <span class="n">m_fold</span><span class="p">;</span>  <span class="c1">// 通过m_space+m_page_no计算的hash值</span>
+<span class="p">};</span>
+
+<span class="kt">buf_pool_t</span><span class="o">*</span> <span class="nf">buf_pool_get</span><span class="p">(</span><span class="k">const</span> <span class="kt">page_id_t</span><span class="o">&amp;</span> <span class="n">page_id</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// 每次读取64Pages，BUF_READ_AHEAD_AREA，这64页统一在一个BP实例中管理</span>
+    <span class="n">ulint</span>       <span class="n">ignored_page_no</span> <span class="o">=</span> <span class="n">page_id</span><span class="p">.</span><span class="n">page_no</span><span class="p">()</span> <span class="o">&gt;&gt;</span> <span class="mi">6</span><span class="p">;</span>
+    <span class="kt">page_id_t</span>   <span class="n">id</span><span class="p">(</span><span class="n">page_id</span><span class="p">.</span><span class="n">space</span><span class="p">(),</span> <span class="n">ignored_page_no</span><span class="p">);</span>   <span class="c1">// 创建一个实例，无它</span>
+    <span class="n">ulint</span>       <span class="n">i</span> <span class="o">=</span> <span class="n">id</span><span class="p">.</span><span class="n">fold</span><span class="p">()</span> <span class="o">%</span> <span class="n">srv_buf_pool_instances</span><span class="p">;</span> <span class="c1">// fold是计算一个hash值</span>
+    <span class="k">return</span><span class="p">(</span><span class="o">&amp;</span><span class="n">buf_pool_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>因为目前 InnoDB 的一个 read ahead 是 64 个 page，因此右移 6 位能够保证一个 read ahead area 中的页，都属于同一个 buffer pool 管理。</p>
+
+<h3 id="buffer-pool-lru-list">Buffer Pool LRU List</h3>
+
+<p>如上所述，InnoDB Buffer Pool 会通过 LRU 算法作为管理页面的替换策略，将 LRU List 划分为两部分：LRU_young 与 LRU_old，参数的占比可以通过 <code>innodb_old_blocks_pct</code> 参数设置，默认是 37，也就是 LRU_old 为链表长度的 3/8 。</p>
+
+<h4 id="old-page-移动到-new-page">old-page 移动到 new-page</h4>
+
+<p>在页面读取时 (get/read ahead)，会先将页链入到 LRU_old 的头部；当页面第一次访问时 (read/write)，从 LRU_old 链表移动到 LRU_young 的头部，也就是整个 LRU 链表头。</p>
+
+<!--
+全表扫描的所有页面，也遵循先读入 LRU_old，后移动到 LRU_young 的原则，但是会导致 BP 中的其他页面被替换出内存。为防止全表扫描的负面影响，InnoDB 提供了系统参数， innodb_old_blocks_time:只有当页面的后续访问与第一次访问时间间隔大于此值,才会移动
+到 LRU 链表头。innodb_old_blocks_time 在 5.1.41 版本中引入。默认为 0,也就是说全表扫
+描的页面会进入 LRU_young(链表头),一个大表的全表扫描会导致大量 page 被替换出内存。
+-->
+
+<p>会通过如下函数进行判断是否要写入到 LRU_head 中。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">buf_page_make_young_if_needed()
+ |-buf_page_peek_if_too_old()
+ |-buf_page_make_young()
+   |-buf_LRU_make_block_young()
+     |-buf_LRU_remove_block()
+     |-buf_LRU_add_block_low()</code></pre></figure>
+
+<p>其中判断是否需要写入 LRU_head 的处理如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">ibool</span> <span class="nf">buf_page_peek_if_too_old</span><span class="p">(</span><span class="k">const</span> <span class="kt">buf_page_t</span><span class="o">*</span> <span class="n">bpage</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">buf_pool_t</span><span class="o">*</span>     <span class="n">buf_pool</span> <span class="o">=</span> <span class="n">buf_pool_from_bpage</span><span class="p">(</span><span class="n">bpage</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">buf_pool</span><span class="o">-&gt;</span><span class="n">freed_page_clock</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* 当前BP还没有淘汰任何页，说明在内存中还有足够的页，那么就不需要更新统计值，</span>
+<span class="cm">           也不需要在LRU链表中移动；通常在warm-up阶段。 */</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">FALSE</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">buf_LRU_old_threshold_ms</span> <span class="o">&amp;&amp;</span> <span class="n">bpage</span><span class="o">-&gt;</span><span class="n">old</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">unsigned</span> <span class="n">access_time</span> <span class="o">=</span> <span class="n">buf_page_is_accessed</span><span class="p">(</span><span class="n">bpage</span><span class="p">);</span> <span class="c1">// 直接返回bpage-&gt;access_time</span>
+        <span class="cm">/* 若当前页已经被访问过，那么会计算距上次访问的时间间隔是否超过了用户设置的</span>
+<span class="cm">           innodb_old_blocks_time参数，如果未超过，则不会将页移动到LRU_head。</span>
+<span class="cm">           PS. 这里有个整数溢出的情况，通常是50天，也就是如果页面据上次访问超过了50天，</span>
+<span class="cm">               紧接着在此访问时，可能会判断没有超过阈值，从而没有移动到LRU_head。 */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">access_time</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="o">&amp;&amp;</span> <span class="p">((</span><span class="kt">ib_uint32_t</span><span class="p">)</span> <span class="p">(</span><span class="n">ut_time_ms</span><span class="p">()</span> <span class="o">-</span> <span class="n">access_time</span><span class="p">))</span>
+            <span class="o">&gt;=</span> <span class="n">buf_LRU_old_threshold_ms</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span><span class="p">(</span><span class="n">TRUE</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">buf_pool</span><span class="o">-&gt;</span><span class="n">stat</span><span class="p">.</span><span class="n">n_pages_not_made_young</span><span class="o">++</span><span class="p">;</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">FALSE</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="cm">/* 此时，已经有页面淘汰过，也就是内存中的页已经不够用；但没有设置old_blocks_time参数，</span>
+<span class="cm">           或者该页第一次被访问，那么就通过如下算法判断是否需要移动到LRU_head。*/</span>
+        <span class="k">return</span><span class="p">(</span><span class="o">!</span><span class="n">buf_page_peek_if_young</span><span class="p">(</span><span class="n">bpage</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">ibool</span> <span class="nf">buf_page_peek_if_young</span><span class="p">(</span><span class="k">const</span> <span class="kt">buf_page_t</span><span class="o">*</span> <span class="n">bpage</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">buf_pool_t</span><span class="o">*</span> <span class="n">buf_pool</span> <span class="o">=</span> <span class="n">buf_pool_from_bpage</span><span class="p">(</span><span class="n">bpage</span><span class="p">);</span>
+
+    <span class="cm">/* 判断当前页是否足够新(Most Recently Update, MRU)，而不需要移动</span>
+<span class="cm">       buf_pool-&gt;freed_page_clock:  该BP实例一共淘汰了多少页</span>
+<span class="cm">       bpage-&gt;freed_page_clock   :  该页最近一次移动到LRU_head时，对应BP中该参数的取值</span>
+<span class="cm">       buf_pool-&gt;curr_size       :  该BP当前使用的页面数量</span>
+<span class="cm">       BUF_LRU_OLD_RATIO_DIV     :  宏定义为1024</span>
+<span class="cm">       buf_pool-&gt;LRU_old_ratio   :  old LRU的占比，默认3/8时，该值为378</span>
+<span class="cm">    公式意义解释:</span>
+<span class="cm">       从该页最近一次移动到BP的LRU_head以来，BP在此期间淘汰的页数量，超过了LRU_yound列表长度</span>
+<span class="cm">       的1/4，那么说明该页已经不够年轻，该页需要移动到LRU_head；否则该页属于MRU，不需要移动。</span>
+<span class="cm">    */</span>
+    <span class="k">return</span><span class="p">((</span><span class="n">buf_pool</span><span class="o">-&gt;</span><span class="n">freed_page_clock</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1UL</span> <span class="o">&lt;&lt;</span> <span class="mi">31</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+           <span class="o">&lt;</span> <span class="p">((</span><span class="n">ulint</span><span class="p">)</span> <span class="n">bpage</span><span class="o">-&gt;</span><span class="n">freed_page_clock</span>
+             <span class="o">+</span> <span class="p">(</span><span class="n">buf_pool</span><span class="o">-&gt;</span><span class="n">curr_size</span>
+             <span class="o">*</span> <span class="p">(</span><span class="n">BUF_LRU_OLD_RATIO_DIV</span> <span class="o">-</span> <span class="n">buf_pool</span><span class="o">-&gt;</span><span class="n">LRU_old_ratio</span><span class="p">)</span>
+             <span class="o">/</span> <span class="p">(</span><span class="n">BUF_LRU_OLD_RATIO_DIV</span> <span class="o">*</span> <span class="mi">4</span><span class="p">))));</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="new-page-移动到-old-page">new-page 移动到 old-page</h4>
+
+<p>正常来说，每次访问页面时，都有可能会将该页移动到 LRU_head 中 (make young)，随着越来越多的页加入 LRU_head，那么原来在 LRU list 中的页也就慢慢退化到 LRU list 的 LRU_old list 部分。</p>
+
+<p>实际上，在 <code>class buf_page_t</code> 类中有个成员变量 old 用来标示是否在 LRU 的 old list 中；该变量的设置基本是通过 <code>buf_page_set_old()</code> 函数进行设置。</p>
+
+<h5 id="第一次读取">第一次读取</h5>
+
+<p>在第一读入到 BP 时，会加入到 LRU 链表的 LRU_old 头部，调用堆栈如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">buf_page_init_for_read()
+ |-buf_LRU_add_block(bpage, TRUE)    参数TRUE表示添加到old-list
+   |-buf_LRU_add_block_low()</code></pre></figure>
+
+<p>当入参为 TRUE 时，会将页放到 LRU 的 old list 中，否则放在链表头部；当然，如果 LRU 链表比较小，那么会直接忽略该参数，将页放在头部。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">void buf_LRU_add_block_low(buf_page_t* bpage, ibool old)
+{
+    buf_pool_t* buf_pool = buf_pool_from_bpage(bpage);
+
+    if (!old || (UT_LIST_GET_LEN(buf_pool-&gt;LRU) &lt; BUF_LRU_OLD_MIN_LEN)) {
+
+        UT_LIST_ADD_FIRST(buf_pool-&gt;LRU, bpage);
+
+        bpage-&gt;freed_page_clock = buf_pool-&gt;freed_page_clock;
+    } else {
+#ifdef UNIV_LRU_DEBUG
+        /* buf_pool-&gt;LRU_old must be the first item in the LRU list
+        whose &quot;old&quot; flag is set. */
+        ut_a(buf_pool-&gt;LRU_old-&gt;old);
+        ut_a(!UT_LIST_GET_PREV(LRU, buf_pool-&gt;LRU_old)
+             || !UT_LIST_GET_PREV(LRU, buf_pool-&gt;LRU_old)-&gt;old);
+        ut_a(!UT_LIST_GET_NEXT(LRU, buf_pool-&gt;LRU_old)
+             || UT_LIST_GET_NEXT(LRU, buf_pool-&gt;LRU_old)-&gt;old);
+#endif /* UNIV_LRU_DEBUG */
+        UT_LIST_INSERT_AFTER(buf_pool-&gt;LRU, buf_pool-&gt;LRU_old,
+            bpage);
+
+        buf_pool-&gt;LRU_old_len++;
+    }
+
+    ut_d(bpage-&gt;in_LRU_list = TRUE);
+
+    incr_LRU_size_in_bytes(bpage, buf_pool);
+
+    if (UT_LIST_GET_LEN(buf_pool-&gt;LRU) &gt; BUF_LRU_OLD_MIN_LEN) {
+
+        ut_ad(buf_pool-&gt;LRU_old);
+
+        /* Adjust the length of the old block list if necessary */
+
+        buf_page_set_old(bpage, old);
+        buf_LRU_old_adjust_len(buf_pool);
+
+    } else if (UT_LIST_GET_LEN(buf_pool-&gt;LRU) == BUF_LRU_OLD_MIN_LEN) {
+
+        /* The LRU list is now long enough for LRU_old to become
+        defined: init it */
+
+        buf_LRU_old_init(buf_pool);
+    } else {
+        buf_page_set_old(bpage, buf_pool-&gt;LRU_old != NULL);
+    }
+
+    /* If this is a zipped block with decompressed frame as well
+    then put it on the unzip_LRU list */
+    if (buf_page_belongs_to_unzip_LRU(bpage)) {
+        buf_unzip_LRU_add_block((buf_block_t*) bpage, old);
+    }
+}</code></pre></figure>
+
+<h3 id="其它">其它</h3>
+
+<h4 id="innodb_old_blocks_pct">innodb_old_blocks_pct</h4>
+
+<p>该变量会通过 buf_LRU_old_ratio_update_instance() 函数进行更新，默认 37，范围是 5~95 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define BUF_LRU_OLD_RATIO_DIV   1024</span>
+<span class="cp">#define BUF_LRU_OLD_RATIO_MAX   BUF_LRU_OLD_RATIO_DIV</span>
+<span class="cp">#define BUF_LRU_OLD_RATIO_MIN   51</span>
+
+<span class="n">uint</span> <span class="nf">buf_LRU_old_ratio_update_instance</span><span class="p">(</span><span class="kt">buf_pool_t</span><span class="o">*</span> <span class="n">buf_pool</span><span class="p">,</span> <span class="n">uint</span> <span class="n">old_pct</span><span class="p">,</span> <span class="n">ibool</span> <span class="n">adjust</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">uint</span>    <span class="n">ratio</span><span class="p">;</span>
+
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">old_pct</span> <span class="o">*</span> <span class="n">BUF_LRU_OLD_RATIO_DIV</span> <span class="o">/</span> <span class="mi">100</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ratio</span> <span class="o">&lt;</span> <span class="n">BUF_LRU_OLD_RATIO_MIN</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">BUF_LRU_OLD_RATIO_MIN</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ratio</span> <span class="o">&gt;</span> <span class="n">BUF_LRU_OLD_RATIO_MAX</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">BUF_LRU_OLD_RATIO_MAX</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">adjust</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">buf_pool_mutex_enter</span><span class="p">(</span><span class="n">buf_pool</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">ratio</span> <span class="o">!=</span> <span class="n">buf_pool</span><span class="o">-&gt;</span><span class="n">LRU_old_ratio</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">buf_pool</span><span class="o">-&gt;</span><span class="n">LRU_old_ratio</span> <span class="o">=</span> <span class="n">ratio</span><span class="p">;</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">UT_LIST_GET_LEN</span><span class="p">(</span><span class="n">buf_pool</span><span class="o">-&gt;</span><span class="n">LRU</span><span class="p">)</span>
+                <span class="o">&gt;=</span> <span class="n">BUF_LRU_OLD_MIN_LEN</span><span class="p">)</span> <span class="p">{</span>
+
+                <span class="n">buf_LRU_old_adjust_len</span><span class="p">(</span><span class="n">buf_pool</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="n">buf_pool_mutex_exit</span><span class="p">(</span><span class="n">buf_pool</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">buf_pool</span><span class="o">-&gt;</span><span class="n">LRU_old_ratio</span> <span class="o">=</span> <span class="n">ratio</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="cm">/* the reverse of</span>
+<span class="cm">    ratio = old_pct * BUF_LRU_OLD_RATIO_DIV / 100 */</span>
+    <span class="k">return</span><span class="p">((</span><span class="n">uint</span><span class="p">)</span> <span class="p">(</span><span class="n">ratio</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="n">BUF_LRU_OLD_RATIO_DIV</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">));</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如上，在计算时，实际上会乘以 BUF_LRU_OLD_RATIO_DIV ，然后再除以 100，也就意味着在内部使用时会大值乘于 10 。</p>
+
+<h3 id="读取">读取</h3>
+
+<p>接下来看看如何读取一个页，其中实际分配缓存是在 buf_LRU_get_free_block() 函数中。这一函数是在用户线程中调用，而且只会从 free_list 中获取空闲页，即使是从 LRU_list 上获取的，也需要先将 LRU_list 中的页保存在 free_list 中。</p>
+
+<p>尝试从 BP 中获取一个 block，大多数情况下 free_list 上是有足够的空闲页，因此可以直接分配，分配完之后，直接从 free_list 上删除。</p>
+
+<p>如果 free_list 上没有空闲页了，那么尝试从 LRU_list 上分配，一般会经历如下循环。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">* iteration 0:
+  * get a block from free list, success:done
+  * if buf_pool-&gt;try_LRU_scan is set
+    * scan LRU up to srv_LRU_scan_depth to find a clean block
+    * the above will put the block on free list
+    * success:retry the free list
+  * flush one dirty page from tail of LRU to disk
+    * the above will put the block on free list
+    * success: retry the free list
+* iteration 1:
+  * same as iteration 0 except:
+    * scan whole LRU list
+    * scan LRU list even if buf_pool-&gt;try_LRU_scan is not set
+* iteration &gt; 1:
+  * same as iteration 1 but sleep 10ms
+@return the free control block, in state BUF_BLOCK_READY_FOR_USE */</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">buf_page_get_gen()                      获取数据库中的页
+ |-buf_pool_get()                       所在buffer pool实例
+ |-buf_page_hash_lock_get()             获取锁
+ |-rw_lock_s_lock()                     加锁
+ |-buf_page_hash_get_low()              尝试从bp中获取页
+ |-buf_pool_watch_is_sentinel()         干吗的???
+ |-buf_read_page()
+ | |-buf_read_page_low()
+ |   |-buf_page_init_for_read()         初始化bp
+ |     |-buf_LRU_get_free_block()       如果没有压缩，则直接获取空闲页
+ |       |-buf_LRU_get_free_only()      尝试从free_list获取，有则直接返回即可
+ |       |-buf_LRU_scan_and_free_block()
+ |         |-buf_LRU_free_from_unzip_LRU_list()
+ |         |-buf_LRU_free_from_common_LRU_list()
+ |     |-buf_LRU_add_block()
+ |     |
+ |     |-buf_buddy_alloc()              压缩页，使用buddy系统
+ |
+ |-buf_read_ahead_random()              如果需要做随机预读
+
+
+  |-fil_io()
+ |-buf_block_get_state()         根据页的类型，判断是否需要进一步处理，如ZIP
+
+buf_read_ahead_linear()</code></pre></figure>
+
+<h2 id="参考">参考</h2>
+
+<p>关于 LRU list 被划分为 new 与 old 两部分的原因及意义，可参考 <a href="http://dev.mysql.com/doc/refman/en/innodb-buffer-pool.html">InnoDB Buffer Pool</a> 。</p>
+
+<!--
+Buffer Pool 空间如何初始化？
+Buffer Pool 是通过什么数据结构管理的？
+如何从 Buffer Pool 中分配 page ？
+Buffer Pool 已满情况下，如何替换？
+Buffer Pool 的 LRU list ， Flush list ， Free list 上分别有哪些操作？
+LRU list flush 与 Flush list flush 有和不同？
+
+
+
+[MySQL学习] 一个压缩Page从磁盘读入buffer pool的过程
+http://mysqllover.com/?p=303
+
+原创mysql内核源代码深度解析缓冲池bufferpool整体概述
+http://www.2cto.com/database/201604/497862.html
+
+MySQL · 性能优化· InnoDB buffer pool flush策略漫谈
+http://www.linuxidc.com/Linux/2016-03/128829.htm
+
+Introducing page_cleaner thread in InnoDB
+https://blogs.oracle.com/mysqlinnodb/entry/introducing_page_cleaner_thread_in
+
+MySQL 5.7: Page Cleaner的刷脏问题
+http://mysqllover.com/?p=1113
+
+【MySQL】mysql buffer pool结构分析
+http://www.cnblogs.com/jiangxu67/p/3765708.html
+
+原创mysql内核源代码深度解析缓冲池bufferpool整体概述
+http://www.2cto.com/database/201604/497862.html
+
+innodb buffer pool相关特性
+http://www.cnblogs.com/justfortaste/p/5507584.html
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/python-modules.html" title="Python 模块简介">&larr; Older</a></li> 
+         <li class="next"><a href="/post/java-environment.html" title="Java 环境搭建">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1434556800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-innodb-buffer-pool_init.html" data-title="InnoDB Buffer Pool" data-url="/post/mysql-innodb-buffer-pool_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

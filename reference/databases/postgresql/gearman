@@ -1,0 +1,106 @@
+#!/bin/sh
+
+# Source some configuration.
+#. /etc/sysconfig/network
+
+# Check that networking is up.
+#[ "$NETWORKING" = "no" ] && exit 0
+function display() {
+    echo -n $1
+    if [ $2 -eq 0 ]
+    then echo -e "\033[1;32m [DONE] \033[0m"
+    else printf "\033[1;31m [ERROR] \033[0m\n"
+    fi
+}
+
+function test() {
+    ! true
+    display "Just for Test ... " $?
+}
+
+UWSGI="/tmp/uwsgi.pid"
+
+start() {
+    mkdir -p /var/lib/pgsql/master
+    initdb -D /var/lib/pgsql/master
+    mkdir -p /tmp/archive
+    sleep 5
+    sed -i "s/#port = 5432/port = 5432/g"                                            master/postgresql.conf
+    sed -i "s/#archive_mode = off/archive_mode = on/g"                               master/postgresql.conf
+    sed -i "s/#wal_level = minimal/wal_level = archive/g"                            master/postgresql.conf
+    sed -i "s/#archive_command = ''/archive_command = 'cp %p \/tmp\/archive\/%f'/g"  master/postgresql.conf
+    pg_ctl -D /var/lib/pgsql/master start >/dev/null 2>&1
+    sleep 5
+    psql -U postgres -c "SELECT pg_start_backup('bak20120218');"
+    sleep 5
+    cd /var/lib/pgsql/master/ && tar czvf /tmp/base_data.tar.gz *
+    sleep 5
+    psql -U postgres -c "SELECT pg_stop_backup();"
+    sleep 5
+    psql -U postgres -c "SELECT pg_switch_xlog();"
+    sleep 5
+
+
+
+    mkdir -p /var/lib/pgsql/standby && cd /var/lib/pgsql/standby 
+    tar xzvf /tmp/base_data.tar.gz
+    rm -rf pg_xlog/*
+    mkdir -p pg_xlog/archive_status
+    rm postmaster.pid
+    cp /usr/pgsql-9.5/share/postgresql.conf.sample postgresql.conf
+    cp /usr/pgsql-9.5/share/recovery.conf.sample recovery.conf
+    sed -i "s/#port = 5432/port = 5433/g"                               postgresql.conf
+    sed -i "s/#standby_mode = off/standby_mode = on/g"                  recovery.conf
+    sed -i "s/#recovery_end_command = ''/recovery_end_command = 'rm -f \/tmp\/pgsql.trigger.5433'/g" recovery.conf
+    sed -i "s/#restore_command = ''/restore_command = 'pg_standby -d -s 2 -t \/tmp\/pgsql.trigger.5433 \/tmp\/archive %f %p %r 2>>standby.log'/g"   recovery.conf
+#    [ -x $NGINX ] || exit 5
+#    [ -f $NGINX_CONF_FILE ] || exit 6
+#    [ -x $UWSGI ] || exit 5
+#    [ -f $UWSGI_CONF_FILE ] || exit 6
+}
+
+function stop() {
+    echo "OK"
+}
+function status() {
+    pg_controldata /var/lib/pgsql/master | grep 'Database cluster state'
+    pg_controldata /var/lib/pgsql/standby | grep 'Database cluster state'
+}
+function failover() {
+#    pg_clt -D /var/lib/pgsql/master stop
+    cd /var/lib/pgsql
+    mkdir /tmp/archive_failover
+    sed -i "s/#archive_mode = off/archive_mode = on/g"                                        standby/postgresql.conf
+    sed -i "s/#wal_level = minimal/wal_level = archive/g"                                     standby/postgresql.conf
+    sed -i "s/#archive_command = ''/archive_command = 'cp %p \/tmp\/archive_failover\/%f'/g"  standby/postgresql.conf
+}
+
+function clean() {
+    rm -rf /var/lib/pgsql/{master,standby}
+    rm -rf /tmp/archive
+    rm -f /tmp/base_data.tar.gz
+}
+
+case "$1" in
+    start)
+        $1
+        ;;
+    stop)
+        $1
+        ;;
+    status)
+        $1
+        ;;
+    failover)
+        $1
+        ;;
+    clean)
+        $1
+        ;;
+    test)
+        $1
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|clean}"
+        exit 2
+esac

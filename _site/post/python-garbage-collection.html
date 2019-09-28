@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Python 的垃圾回收|JinYang's Blog</title>
+  <meta name="keywords" content="python,garbage collection,垃圾回收">
+  <meta name="description" content="Python 带有自动垃圾回收机制，但是它真的能处理所有的垃圾回收问题吗？ 是不是有了自动垃圾回收，就不用再担心内存泄露了呢？ 为什么经常会看到文章说，在实现自己的类时，不要使用 \_\_del\_\_() ？ 多当代的语言都实现了垃圾回收机制，包括 Java、Ruby、Lua、Go等，从而将众码农从内存管理中释放出来，那么 Python 的垃圾回收是怎么实现的呢？ 篇文章将详细介绍 Python 垃圾回收的使用方法，包括示例以及相关的源码分析。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Python 的垃圾回收</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-06-07 Sunday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  python  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Python 带有自动垃圾回收机制，但是它真的能处理所有的垃圾回收问题吗？ 是不是有了自动垃圾回收，就不用再担心内存泄露了呢？ 为什么经常会看到文章说，在实现自己的类时，不要使用 __del__() ？</p>
+
+<p>很多当代的语言都实现了垃圾回收机制，包括 Java、Ruby、Lua、Go等，从而将众码农从内存管理中释放出来，那么 Python 的垃圾回收是怎么实现的呢？</p>
+
+<p>这篇文章将详细介绍 Python 垃圾回收的使用方法，包括示例以及相关的源码分析。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p><img src="/images/python/garbages/garbage-logo.jpg" alt="garbage-logo" title="垃圾回收logo" class="pull-right" width="230" />
+在介绍 Python 的垃圾收集回收（Garbage Collection）之前，先稍微介绍一些背景。</p>
+
+<p>现在的主流语言基本都支持三种最基本的内存分配方式： A）静态分配，如静态变量、全剧变量，通常这一部分内存不需要释放或者回收； B）自动分配，通常由语言或者编译器控制，如栈中局部变量、参数传递； C）动态分配，这部分通常在栈中分配，由用户申请。</p>
+
+<p>那么，垃圾收集机制就是用来处理程序动态分配内存时产生的垃圾。</p>
+
+<p>在没有垃圾回收机制时，比如在写 C 语言程序时，我们需要时刻记着什么时候申请了内存，什么时候需要释放内存！！！如果忘了释放或者在一个条件分支内没有释放内存，那么就会造成内存泄露；如果提前释放了，后面的程序仍然使用这部分内存，就必然导致内存异常。</p>
+
+<p>垃圾回收机制使得众码农不再需要考虑动态内存的管理。</p>
+
+<h3 id="python-的垃圾回收">Python 的垃圾回收</h3>
+
+<p>在 Python 中，主要通过引用计数（Reference Counting）进行垃圾回收。引用计数法有其明显的优点，如高效、实现逻辑简单、将垃圾回收随机分配到运行的阶段，正常程序的运行比较平稳。</p>
+
+<p>但是，很多带有自动垃圾回收的语言并未使用引用计数，必然存在者缺点，通常有：</p>
+
+<ul>
+  <li>
+    <p>逻辑简单，但实现有些麻烦。每个对象需要分配单独的空间来统计引用计数，并且需要对引用计数进行维护，在维护的时候很容易会出错。</p>
+  </li>
+  <li>
+    <p>在一些场景下，可能会比较慢。正常来说垃圾回收会比较平稳运行，但是当需要释放一个大的对象时，比如字典，需要对引用的所有对象循环嵌套调用，从而可能会花费比较长的时间。</p>
+  </li>
+  <li>
+    <p>循环引用。这将是引用计数的致命伤，引用计数对此是无解的，因此必须要使用其它的垃圾回收算法对其进行补充。</p>
+  </li>
+</ul>
+
+<p>也就是说，Python 的垃圾回收机制，很大一部分是为了处理可能产生的循环引用，是对引用计数的补充。<br /><br /></p>
+
+<p>Python 采用了 “标记-清除”（Mark and Sweep）算法，解决容器对象可能产生的循环引用问题。</p>
+
+<p>跟其名称一样，该算法在进行垃圾回收时分成了两步，分别是： A）标记阶段，遍历所有的对象，如果是可达的（reachable），也就是还有对象引用它，那么就标记该对象为可达； B）清除阶段，再次遍历对象，如果发现某个对象没有标记为可达，则就将其回收。</p>
+
+<p>注意，在进行垃圾回收的阶段，会暂停整个应用程序，等待标记清除结束后才会恢复应用程序的运行。<br /><br /></p>
+
+<p>为了减少垃圾回收的时间，Python 通过 “分代回收”（Generation Collection）以空间换时间的方法提高垃圾回收效率。</p>
+
+<p>分代回收是基于这样的一个统计事实，对于程序，存在一定比例的内存块的生存周期比较短；而剩下的内存块，生存周期会比较长，甚至会从程序开始一直持续到程序结束。这一比例通常在 80%～90% 之间，这种思想简单点说就是：对象存在时间越长，越可能不是垃圾，应该越少去收集。</p>
+
+<p>这样在执行标记-清除算法时可以有效减小遍历的对象数，从而提高垃圾回收的速度。<br /><br /></p>
+
+<p>总体来说，在 Python 中，主要通过引用计数进行垃圾回收；通过 “标记-清除” 解决容器对象可能产生的循环引用问题；通过 “分代回收” 以空间换时间的方法提高垃圾回收效率。</p>
+
+<h2 id="实战">实战</h2>
+
+<p>下面通过 Python 程序大致介绍垃圾回收机制，也可以参考 <a href="http://patshaughnessy.net/2013/10/30/generational-gc-in-python-and-ruby" title="关于Python和Ruby垃圾回收机制的比较">Generational GC in Python and Ruby</a>，该文章同时介绍了 Python 和 Ruby 的垃圾回收机制。</p>
+
+<h3 id="引用计数">引用计数</h3>
+
+<p>如上所述，Python 的垃圾回收采用引用计数，每个对象都会维护一个引用计数器，当引用计数变为 0 时该对象被回收。</p>
+
+<p>当对象被创建并赋值给变量时，该对象的引用计数被设置为 1；当该对象被赋值给其他变量时，或者作为参数传递给函数，该对象的引用计数同样也加 1 。</p>
+
+<p>当变量被赋值给另外一个对象或者显示销毁时，源对象的引用计数也会自动减 1，只有当减到 0 时，该对象才会被真正删除。</p>
+
+<p>对象的引用计数可以通过 sys 提供的 getrefcount() 函数获得，该函数会包含传参的引用。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="o">&gt;&gt;&gt;</span> <span class="n">foo</span> <span class="o">=</span> <span class="s">&quot;XYZ&quot;</span>                            <span class="c"># 此时引用计数是1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">getrefcount</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>                   <span class="c"># 返回2，包括了getrefcount()的参数引用</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">bar</span> <span class="o">=</span> <span class="n">foo</span>                              <span class="c"># 2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">foo</span> <span class="o">=</span> <span class="mi">123</span>                              <span class="c"># 1</span></code></pre></figure>
+
+<p>当字符串对象 “XYZ” 被创建并赋值给 foo 时，引用计数是 1，当增加了一个别名 bar 时，引用计数变成了 2，不过当 foo 被重新赋值给整数对像 123 时，”XYZ” 对象的引用计数自减 1 ，又变成 1 了。</p>
+
+<h3 id="循环引用-cyclic-references">循环引用 (Cyclic References)</h3>
+
+<p>循环引用可以使一组对象的引用计数不是 0 ，但是这些对象实际上并没有被任何外部变量引用，只是他们之间相互引用。这也就是说，实际上对象应该被删除了，但是引用计数机制却告诉我们不能回收这些对象。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">gc</span>
+
+<span class="n">gc</span><span class="o">.</span><span class="n">set_debug</span><span class="p">(</span><span class="n">gc</span><span class="o">.</span><span class="n">DEBUG_STATS</span><span class="o">|</span><span class="n">gc</span><span class="o">.</span><span class="n">DEBUG_LEAK</span><span class="p">)</span>
+<span class="n">a</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">b</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;a(</span><span class="si">%s</span><span class="s">) refcount: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">a</span><span class="p">)),</span> <span class="n">sys</span><span class="o">.</span><span class="n">getrefcount</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>  <span class="c"># 3</span>
+<span class="k">print</span> <span class="s">&#39;b(</span><span class="si">%s</span><span class="s">) refcount: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">b</span><span class="p">)),</span> <span class="n">sys</span><span class="o">.</span><span class="n">getrefcount</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>  <span class="c"># 3</span>
+<span class="k">del</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span>
+<span class="k">print</span> <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;gc.garbage is:&#39;</span><span class="p">,</span> <span class="n">gc</span><span class="o">.</span><span class="n">garbage</span></code></pre></figure>
+
+<p>在调用 del 之前，列表还被 a、b 引用，称之为可达的（reachable），此时不能删除；在执行 del 之后，两者实际只剩下了对象之间的相互引用，因此是需要被删除的。但是引用计数仍然为 1，Python 的引用计数机制不会回收这两个对象。</p>
+
+<p>如上所述，为了解决循环引用，Python 引入了 “标记-清除” 和 “分代收集” 机制，可以通过 gc.collect() 调用，该函数会返回不可达（unreachable）对象数。</p>
+
+<p>实际上，由于调用了 gc.set_debug()，gc 模块会把垃圾回收是的信息 上面的执行结果显示，有两个是不可达的（unreachable）对象，这也就是需要回收的对象了，当调用 gc.collect() 时，首先会监测到 a、b 都将成为了不可达(unreachable)对象，且循环引用将被拆除，此时 a、b 引用数都是 0，两者将被回收，所以 gc.collect() 将返回 2 。</p>
+
+<p>在上述的示例中，如果只删除 a 或者 b ，实际也不会被垃圾回收处理掉。<br /><br /></p>
+
+<p>在执行上述的程序时，可以看到 uncollectable 的对象数是 0 ，也就是没有不可回收的对像。当然，这也意味着可能会出现不可回收的对像，下面看一种循环引用产生的垃圾回收问题。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">gc</span>
+
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">pass</span>
+<span class="k">class</span> <span class="nc">B</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">pass</span>
+
+<span class="n">gc</span><span class="o">.</span><span class="n">set_debug</span><span class="p">(</span><span class="n">gc</span><span class="o">.</span><span class="n">DEBUG_STATS</span><span class="o">|</span><span class="n">gc</span><span class="o">.</span><span class="n">DEBUG_LEAK</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">(</span><span class="s">&quot;ABC&quot;</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="s">&quot;XYZ&quot;</span><span class="p">)</span>
+<span class="k">print</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">a</span><span class="p">)),</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">__dict__</span><span class="p">))</span>
+<span class="k">print</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">b</span><span class="p">)),</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">__dict__</span><span class="p">))</span>
+<span class="n">a</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">b</span>
+<span class="n">b</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">a</span>
+<span class="k">del</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span>
+<span class="k">print</span> <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">gc</span><span class="o">.</span><span class="n">garbage</span></code></pre></figure>
+
+<p>从输出中可以看到 uncollectable 字样，额，很明显这次垃圾回收搞不定了，造成了内存泄漏。</p>
+
+<p>当对象含有 <code>__del__()</code> 方法（在 Python 中称为 finalizer）时，对于这样的对象，跟据 Python 的定义，在释放该对象占用的资源前需要调用该函数。由于 Python 的垃圾回收机制不能保证垃圾回收的顺序，可能在删除 b 之后，在 <code>a.__del__()</code> 中仍然会调用 b 对象，这样将会造成异常。</p>
+
+<p>为此，Python 采取了比较保守的策略，也就是说对于当自定的类，如果存在 <code>__del__()</code> 时，不会对该对象进行垃圾回收。这样的对象，Python 会直接放到一个 garbage 列表中，这个列表在运行期间不会释放，对于 Python 来说不会有内存泄露，但是对于该程序来说，实际上已经发生了内存泄露。<br /><br /></p>
+
+<p>这也就是为什么很多 Python 的书籍建议不要使用 <code>__del__()</code> 的主要原因。虽然说同时出现定义 <code>__del__()</code> 和循环引用的概率比较小，但为了防止内存泄露，在使用 <code>__del__()</code> 时一定要慎重，如果要用的话一定要保证没有循环引用。</p>
+
+<p>当用户发现有这种情况时，最根本的时取消 <code>__del__()</code> 或者循环引用；如果知道一个安全的次序，那么就可以打破引用环，然后再执行 <code>del gc.garbage[:]</code> ，以清空垃圾对象列表，可以参考 <a href="http://pymotw.com/2/gc/index.html" title="PyMOTW 中关于垃圾回收的介绍，包括如何消除uncollectable对象">gc – Garbage Collector</a> 。<br /><br /></p>
+
+<p>对于 gc.garbage ，文档描述为：A list of objects which the collector found to be unreachable but could not be freed (uncollectable objects).</p>
+
+<p>也就是说 gc.garbage 返回的应该是 unreachable 且不能被回收的对象，也就是上述的 a、b（因为有 __del__）。实际上，上面的结果也包含了字典，这个是在 gc.set_debug() 中设置的，gc.DEBUG_LEAK 会包含 gc.DEBUG_SAVEALL，那么所有的 unreachable 对象都将加入 gc.garbage 返回的列表，而不止不能被回收的对象。</p>
+
+<h3 id="gc-模块">gc 模块</h3>
+
+<p>Python 的垃圾回收实际是通过 gc 模块实现的，并将 Python 的垃圾回收管理接口暴露出来，通过该模块可以用来处理垃圾回收相关的工作。</p>
+
+<p>该模块源码保存在 Modules/gcmodule.c 文件中，gc 模块中的函数同时会对应到 gcmodule.c 中的函数，如 gc.get_count() 对应于 gc_get_count()。</p>
+
+<p>常见的函数包括了如下：</p>
+
+<ul>
+  <li>
+    <p>enable()、disable()、isenable() <br />
+分别用于打开、关闭、查看 Python 的垃圾回收器。注意，当关闭垃圾回收时，只是取消了自动垃圾回收，此时仍然可以通过 gc.collect() 进行回收。</p>
+  </li>
+  <li>
+    <p>set_debug()、get_debug() <br />
+用于设置和过去调试格式，通过设置 (DEBUG_STATS | DEBUG_LEAK) 标志位，实际上就可以打印 gc 模块的所有信息。</p>
+  </li>
+  <li>
+    <p>get_count() <br />
+获取当前的 count 值。</p>
+  </li>
+  <li>
+    <p>set_threshold()、get_threshold() <br />
+设置或者获得每代的上限值。</p>
+  </li>
+  <li>
+    <p>collect([generation=2]) <br />
+进行垃圾回收，主要的垃圾回收函数。</p>
+  </li>
+  <li>
+    <p>get_referents(obj) <br />
+返回该对象直接引用的对象，非 container 为 0；其中 class 对象包括了 <strong>dict</strong> 和类对象。</p>
+  </li>
+  <li>
+    <p>get_referrers(obj) <br />
+返回指向该对象的所有对象，该函数通过遍历分代的所有对象，查找并保存符合的对象。</p>
+  </li>
+  <li>
+    <p>get_object() <br />
+返回分代中的所有对象，该函数会返回一大堆的对象。</p>
+  </li>
+</ul>
+
+<h3 id="weakref">weakref</h3>
+
+<p>如上所述，在 Python 中主要通过引用计数来销毁对象，实际上我们可以通过 weakref 模块创建到对象的弱引用，这样 Python 会在对象的引用计数为 0 或只存在对象的弱引用时回收这个对象。</p>
+
+<p>最简单的方式是通过 weakref.ref(obj[, callback]) 来创建一个弱引用对象，然后通过调用实例可以获得原来的对象。创建弱引用的时候可以设置回调函数，该函数会在原对象销毁前调用，并且将 weakref 作为参数传入。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="k">class</span> <span class="nc">WeakTest</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;Deleting </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span>
+
+<span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&quot;weakref object:&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="s">&quot;target object dead!&quot;</span>
+
+<span class="n">o</span> <span class="o">=</span> <span class="n">WeakTest</span><span class="p">(</span><span class="s">&#39;foobar&#39;</span><span class="p">)</span>                                            <span class="c"># 创建新对象</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>                                      <span class="c"># 创建弱引用对象，回调函数为可选</span>
+<span class="k">print</span> <span class="s">&quot;the number of weakref in &#39;o&#39;&quot;</span><span class="p">,</span> <span class="n">weakref</span><span class="o">.</span><span class="n">getweakrefcount</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>  <span class="c"># 原对象的弱引用数目</span>
+<span class="k">print</span> <span class="s">&quot;and the objects are:&quot;</span><span class="p">,</span> <span class="n">weakref</span><span class="o">.</span><span class="n">getweakrefs</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>              <span class="c"># 原对象弱引用的列表</span>
+<span class="k">print</span> <span class="n">r</span><span class="p">()</span> <span class="ow">is</span> <span class="n">o</span>                                                    <span class="c"># 可以通过弱引用可以访问原对象</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>                                              <span class="c"># 代理对象，对其使用等价于对原对象使用</span>
+<span class="k">print</span> <span class="n">r</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span>                                            <span class="c"># 调用原对象的属性</span>
+<span class="k">del</span> <span class="n">o</span>                                                             <span class="c"># 此时r()变为None</span></code></pre></figure>
+
+<p>当然，比较方便的方式是通过 proxy() 函数创建代理（proxy），这个代理实际就可以当作原对象使用，对代理对象的操作可以等价于对原对象的操作。</p>
+
+<p>通过弱引用可以很有效的处理循环引用，比如下面的示例。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="k">class</span> <span class="nc">LeakTest</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;object(0x</span><span class="si">%x</span><span class="s">) born&quot;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;object(0x</span><span class="si">%x</span><span class="s">) dead&quot;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">LeakTest</span><span class="p">()</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">LeakTest</span><span class="p">()</span>
+<span class="n">A</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>                                <span class="c"># A.b = B</span>
+<span class="n">B</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>                                <span class="c"># B.a = A</span>
+<span class="k">del</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span></code></pre></figure>
+
+<p>当不使用弱引用时，上述的方式会造成循环引用，通过弱引用可以有效避免循环引用的产生。需要注意的是大部分的对象不能通过弱引用来访问，如常见的 int、string、list等。</p>
+
+<p>如果使用多个弱引用对象，可以考虑使用 WeakKeyDictionary、WeakValueDictionary、WeakSet，详细可以参考 <a href="http://pymotw.com/2/weakref/index.html" title="PyMOTW 中关于弱引用的介绍">weakref – Garbage-collectable references to objects</a> 。</p>
+
+<p>weakref 模块的实现在 Modules/_weakref.c 中，是对 Objects/weakrefobject.c 的封装，如果感兴趣可以参考一下源码。</p>
+
+<h2 id="源码">源码</h2>
+
+<p>Python 的垃圾回收机制主要在 Modules/gcmodule.c 中实现，同时也通过 gc 模块将相应的接口暴露出来，可以通过 gc 模块查看。</p>
+
+<h3 id="相关数据结构">相关数据结构</h3>
+
+<p>Python 中，每个对象中都会包含 PyObject_HEAD 宏，其中包含了 ob_refcnt 用于统计该对象的引用计数。下面的代码是 int 类型的对象，其它类型于此相似，都会包含 PyObject_HEAD 宏。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define PyObject_HEAD                    \</span>
+<span class="cp">    Py_ssize_t            ob_refcnt;     \</span>
+<span class="cp">    struct _typeobject*   ob_type;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">PyObject_HEAD</span>
+    <span class="kt">long</span> <span class="n">ob_ival</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">PyIntObject</span><span class="p">;</span></code></pre></figure>
+
+<p>每次新建、赋值、传参等操作时，都会修改 ob_refcnt，当减小到 0 时，就会回收该对象。<br /><br /></p>
+
+<p>我们在开头讲过，Python 通过 “标记-删除” 处理可能出现的循环引用问题。</p>
+
+<p>对于 int、string 等类型来说，是不可能产生循环引用的，因为它们内部不可能有对其它对象的引用。能发生循环引用的，只会发生在容器（container）对象中，如 list、dict、class、instance 等。因此 Python 的垃圾回收只针对这些容器对象，并对这些对象，在内部维护了一个双向链表。</p>
+
+<p>每个容器对象都会包含一个 PyGC_Head 结构。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">union</span> <span class="n">_gc_head</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="p">{</span>
+        <span class="k">union</span> <span class="n">_gc_head</span> <span class="o">*</span><span class="n">gc_next</span><span class="p">;</span>
+        <span class="k">union</span> <span class="n">_gc_head</span> <span class="o">*</span><span class="n">gc_prev</span><span class="p">;</span>
+        <span class="n">Py_ssize_t</span> <span class="n">gc_refs</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">gc</span><span class="p">;</span>
+    <span class="kt">long</span> <span class="kt">double</span> <span class="n">dummy</span><span class="p">;</span>  <span class="cm">/* force worst-case alignment */</span>
+<span class="p">}</span> <span class="n">PyGC_Head</span><span class="p">;</span></code></pre></figure>
+
+<p>通常来说，我们会把这个列表称为 “有效列表”（active list）；由于 Python 同时使用了 “分代回收”，实际上其中的 0 代就对应着上述的有效列表，新建的对象都会先放置到该列表中。<br /><br /></p>
+
+<p>在 Python 中的分代回收采用三代，实际就是通过三个链表实现，每代通过 threshold 表示该代最多容纳对象的个数，当超过该值时会触发垃圾回收，可以通过 gc.get_threshold() 获得该参数。</p>
+
+<p>需要注意的是，上述的阈值并非该代中实际含有的对象数，当前每代的对象数可以通过 gc.get_count() 获得，该函数实际会从该代的头部遍历这个链表。</p>
+
+<p>以 threshold 的默认值为例，也就是 0~2 代分别为 700、10、10，这实际意味着当 0 代超过 700 后会触发回收；1 代超过 700x10 后触发回收；2 代超过 700x10x10 后会触发回收操作。</p>
+
+<p>也就是说如果触发了一次当前代的回收，会把上代的 count 加 1 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">gc_generation</span> <span class="p">{</span>
+    <span class="n">PyGC_Head</span> <span class="n">head</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">threshold</span><span class="p">;</span> <span class="cm">/* collection threshold */</span>
+    <span class="kt">int</span> <span class="n">count</span><span class="p">;</span>     <span class="cm">/* count of allocations or collections of younger generations */</span>
+<span class="p">};</span>
+
+<span class="cp">#define NUM_GENERATIONS 3</span>
+<span class="cp">#define GEN_HEAD(n) (&amp;generations[n].head)</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">gc_generation</span> <span class="n">generations</span><span class="p">[</span><span class="n">NUM_GENERATIONS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="cm">/* PyGC_Head,                               threshold,      count */</span>
+    <span class="p">{</span> <span class="p">{</span> <span class="p">{</span><span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">}</span> <span class="p">},</span>        <span class="mi">700</span><span class="p">,</span>            <span class="mi">0</span><span class="p">},</span>
+    <span class="p">{</span> <span class="p">{</span> <span class="p">{</span><span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">}</span> <span class="p">},</span>        <span class="mi">10</span><span class="p">,</span>             <span class="mi">0</span><span class="p">},</span>
+    <span class="p">{</span> <span class="p">{</span> <span class="p">{</span><span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">GEN_HEAD</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">}</span> <span class="p">},</span>        <span class="mi">10</span><span class="p">,</span>             <span class="mi">0</span><span class="p">},</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>上述实际是创建了三代的链表，并对 threshold 和 count 初始化。</p>
+
+<h3 id="对象初始化">对象初始化</h3>
+
+<p>下面通过跟踪一个 list 对象的创建过程来查看 Python 的垃圾回收机制。list 对象通过 PyList_New() 函数创建，其创建过程大致如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cm">/* FILE: Objects/listobject.c */</span>
+<span class="n">PyObject</span><span class="o">*</span> <span class="nf">PyList_New</span><span class="p">(</span><span class="n">Py_ssize_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">PyListObject</span> <span class="o">*</span><span class="n">op</span><span class="p">;</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">PyObject_GC_New</span><span class="p">(</span><span class="n">PyListObject</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">PyList_Type</span><span class="p">);</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">_PyObject_GC_TRACK</span><span class="p">(</span><span class="n">op</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="p">)</span> <span class="n">op</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>首先通过 PyObject_GC_New() 初始化一个对象，而这个函数实际上是对 _PyObject_GC_New() 的宏定义，最终调用的是 _PyObject_GC_New()。</p>
+
+<p>该函数主要作了两件事情：A）分配内存结构，同时会将第 0 代的 count 加 1，如果超过了阈值，则会通过 collect_generations() 触发一次垃圾回收； B）初始化数据结构。注意，在这一步中还没有将该对象插入到链表中。</p>
+
+<p>最终插入链表实际是通过 _PyObject_GC_TRACK() 实现的，也就是插入到 _PyGC_generation0 中（第 0 代）。</p>
+
+<p>到此，已经完成了对象的新建，并可以 “监控” 该对象。</p>
+
+<h3 id="垃圾回收机制">垃圾回收机制</h3>
+
+<p>Python 中的垃圾回收机制实际通过 collect(gen) 实现，其中 gen 是所定义的代数。</p>
+
+<p>当我们一直新建 container 对象时，如果超过了第 0 代的上限，就会通过 collect_generations() 调用 Python 的垃圾回收机制。该函数会从最高代（数字最大）开始检测，当超过阈值之后就会触发该代的垃圾回收操作，所以有可能是从第 1、2 代触发垃圾回收。</p>
+
+<p>当第一次超过 700 后，则会调用 collect_generations()，该函数会从 2 依次向下检测，当超过阈值则会调用 collect()，此时第 1、2 代的 count 仍为 0 ，所以最终会调用 collect(0) 。</p>
+
+<p>接下来主要查看 collect() 函数。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cm">/* FILE: Modules/gcmodule.c */</span>
+<span class="k">static</span> <span class="n">Py_ssize_t</span> <span class="nf">collect</span><span class="p">(</span><span class="kt">int</span> <span class="n">generation</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="cm">/* ❶ */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">generation</span><span class="o">+</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="n">NUM_GENERATIONS</span><span class="p">)</span>
+        <span class="n">generations</span><span class="p">[</span><span class="n">generation</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">generation</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">generations</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="cm">/* ❷ */</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">generation</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">gc_list_merge</span><span class="p">(</span><span class="n">GEN_HEAD</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">GEN_HEAD</span><span class="p">(</span><span class="n">generation</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="p">...</span> <span class="p">...</span>
+
+    <span class="cm">/* ❸ */</span>
+    <span class="n">update_refs</span><span class="p">(</span><span class="n">young</span><span class="p">);</span>
+    <span class="n">subtract_refs</span><span class="p">(</span><span class="n">young</span><span class="p">);</span>
+
+    <span class="cm">/* ❹ */</span>
+    <span class="n">gc_list_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">unreachable</span><span class="p">);</span>
+    <span class="n">move_unreachable</span><span class="p">(</span><span class="n">young</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">unreachable</span><span class="p">);</span>
+
+    <span class="cm">/* ❺ */</span>
+    <span class="n">gc_list_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">finalizers</span><span class="p">);</span>
+    <span class="n">move_finalizers</span><span class="p">(</span><span class="o">&amp;</span><span class="n">unreachable</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">finalizers</span><span class="p">);</span>
+    <span class="n">move_finalizer_reachable</span><span class="p">(</span><span class="o">&amp;</span><span class="n">finalizers</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>假设，第 0 代有如下的对象，每个对象用黑色方框表示，其中数字表示引用计数。其中各个对象是通过双向链表相互链接的，只是没有表示出来，其中双向线表示相互引用，蓝色表示本代外部的引用。</p>
+
+<p><img src="/images/python/garbages/gc-explain1.png" alt="garbage-explain1" title="garbage collection 1" class="pull-center" width="400" /></p>
+
+<p>在第 ❶ 步中，首先处理每代的 count，也就是将上一代的加 1，并将本代以及一下的清零。这也就是之前说的 700、700x10、700x10x10 的关系了。</p>
+
+<p>在第 ❷ 步中，将本代以下的链表合并到本代，以后的操作实际上都是针对于这一链表的操作。也就是说每次 Python 执行垃圾回收时，会检测本代及以下的对象。</p>
+
+<p>接着在第 ❸ 步中，查找含有外部引用的对象，为了不影响对象的原引用计数，先通过 update_refs() 将 ob_refcnt 复制到 gc_refs，后面的操作都是针对 gc_refs；然后通过 subtract_refs() 遍历整个链表，将本代对象的 gc_refs 及其引用减 1。此时，对于 gc_refs &gt; 0 的对象，一定有该代之外的对象引用，是不应该被删除的。</p>
+
+<p>执行完 subtract_refs() 之后，各个对象的引用如下所示，可以看出，在此时并不是说 gc_refs = 0 的对象就一定是垃圾对象。</p>
+
+<p>如 “JKL”，虽然此时计算的 gc_refs = 0，但是该对象不应该删除，因为还被 “MNO” 所引用。</p>
+
+<p><img src="/images/python/garbages/gc-explain2.png" alt="garbage-explain2" title="garbage collection 2" class="pull-center" width="400" /></p>
+
+<p>然后是将 unreachable 的对象分开，在第 ❹ 步中调用 move_unreachable() 函数。该函数会遍历整个链表，在遍历整个链表时，会将 gc_refs=0 的对象移动到 unreachable 列表中，并将 gc_refs 临时设置为 GC_TENTATIVELY_UNREACHABLE。如上所述，因为这些对象仍可能会被 gc_refs &gt; 0 的对象引用，在遍历后续的对象时会重新将这些对象设置为 reachable，通过 visit_reachable() 实现。</p>
+
+<p>到此为止，处于 unreachable 链表中的对象都是不可达的，也就是应该被回收的垃圾。那么接下来就需要对这些 unreachable 的对象进行处理了。</p>
+
+<p>接下来在第 ❺ 步中，实际要遍历 unreachable 链表，并处理含有 finalizers 的对象，通过 move_finalizers() 将 unreachable 链表中含有 __del__ 的对象放到 finalizers 链表中。对于在 finalizers 链表中指向的对象同样也需要放到该链表中，该功能是通过 move_finalizer_reachable() 函数实现。</p>
+
+<p>到此，unreachable 中包含了可以通过 Python 回收的对象，而 finalizers 中包含了不能通过 Python 回收的对象，会将这些对象分别打印出来。在 finalizers 中的对象，会保存到 garbage 中，可以通过 gc.garbage() 查看。<br /><br /></p>
+
+<p>接下来还会通过 handle_weakrefs() 函数处理 unreachable 链表中的 weakref 对象；通过 delete_garbage() 处理 unreachable 链表中的垃圾对象。</p>
+
+<p>当然除此之外，Python 也对垃圾回收机制进行了优化，详细可以参考源码中的注释。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>有 __del__() 函数的对象，如果存在循环引用，会导致内存泄露；如果没有 __del__() 可以自动垃圾回收掉。</p>
+
+<p>需要注意的是，要么在实现类时不要单独实现 __del__() 函数，要么需要确保不要形成循环引用，对于循环引用可以通过 objgraph 进行检测。</p>
+
+<!-- pictures -->
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/python-tips.html" title="Python 杂项">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-basic-conception-for-time-details.html" title="Linux 时间基本概念">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1433606400',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/python-garbage-collection.html" data-title="Python 的垃圾回收" data-url="/post/python-garbage-collection.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

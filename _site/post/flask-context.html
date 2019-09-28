@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Flask 上下文理解|JinYang's Blog</title>
+  <meta name="keywords" content="flask,context,上下文">
+  <meta name="description" content="Flask 中定义了两种上下文，分别为请求上下文和应用上下文，其中前者包括了 current_app (当前的应用对象)、g (处理请求时用作临时存储的对象)；后者包括了 request (请求对象，封装了 HTTP 请求的内容)、session (用于存储请求之间需要记住的值)。Flask 分发请求之前会激活请求上下文，请求处理完成后再将其删除，为了支持多个 app，Flask 中的 Context 是通过栈来实现。接下来，我们看看详细的是如何实现的。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Flask 上下文理解</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-08-18 Thursday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  webserver  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Flask 中定义了两种上下文，分别为请求上下文和应用上下文，其中前者包括了 current_app (当前的应用对象)、g (处理请求时用作临时存储的对象)；后者包括了 request (请求对象，封装了 HTTP 请求的内容)、session (用于存储请求之间需要记住的值)。</p>
+
+<p>Flask 分发请求之前会激活请求上下文，请求处理完成后再将其删除，为了支持多个 app，Flask 中的 Context 是通过栈来实现。</p>
+
+<p>接下来，我们看看详细的是如何实现的。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>实际上所谓的上下文，在该场景下就是包括了一次请求所包含的信息，包括了从客户（一般是浏览器）发送过来的数据，例如，登陆时使用的用户名密码；以及在中间处理过程中生成的数据，例如，每次请求时我们可能会需要新建一个数据库链接。</p>
+
+<p>Flask 会在接收每次请求的时候将参数自动转换为相应的对象，也就是 request、session，一般来说上下文传递可以通过参数进行，这也就意味这每个需要该上下文的函数都要多增加一个入参，为了解决这一问题，Flask 提供了一个类似于全局变量的实现方式（如下会讲到这一参数是线程安全的）。</p>
+
+<p>在多线程服务器中，通过线程池处理不同客户的不同请求，当收到请求后，会选一个线程进行处理，请求的临时对象（也就是上下文）会保存在该线程对应的全局变量中（通过线程 ID 区分），这样即不干扰其他线程，又使得所有线程都可以访问。</p>
+
+<h3 id="flask-上下文对象">Flask 上下文对象</h3>
+
+<p>如上所述，Flask 有两种上下文，分别是：</p>
+
+<h5 id="requestcontext-请求上下文">RequestContext 请求上下文</h5>
+
+<ul>
+  <li>
+    <p>Request 请求的对象，会封装每次的 Http 请求 (environ) 的内容；</p>
+  </li>
+  <li>
+    <p>Session 会根据请求中的 cookie，重新载入该访问者相关的会话信息。</p>
+  </li>
+</ul>
+
+<h5 id="appcontext-程序上下文">AppContext 程序上下文</h5>
+
+<ul>
+  <li>
+    <p>g 处理请求时用作临时存储的对象，每次请求都会重设这个变量；</p>
+  </li>
+  <li>
+    <p>current_app 当前激活程序的程序实例。</p>
+  </li>
+</ul>
+
+<h5 id="生命周期">生命周期</h5>
+
+<ul>
+  <li>
+    <p>current_app 的生命周期最长，只要当前程序实例还在运行，都不会失效。</p>
+  </li>
+  <li>
+    <p>request 和 g 的生命周期为一次请求期间，当请求处理完成后，生命周期也就完结了。</p>
+  </li>
+  <li>
+    <p>session 就是传统意义上的 session，只要还未失效（用户未关闭浏览器、没有超过设定的失效时间），那么不同的请求会共用同样的 session。</p>
+  </li>
+</ul>
+
+<p><img src="/images/python/flask-context-logic.jpg" alt="Flask Context Logic" title="Flask Context Logic" class="pull-center" /></p>
+
+<h3 id="应用上下文">应用上下文</h3>
+
+<p>关于应用上下文的内容可以参考官方文档 <a href="http://flask.pocoo.org/docs/appcontext/">flask.pocoo.org/docs/appcontext/</a> 中的 The Application Context 部分的内容，在此摘抄如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">One of the design ideas behind Flask is that there are two different &quot;states&quot; in which
+code is executed. The application setup state in which the application implicitly is on
+the module level. It starts when the Flask object is instantiated, and it implicitly ends
+when the first request comes in. While the application is in this state a few assumptions
+are true:
+
+  * the programmer can modify the application object safely.
+  * no request handling happened so far
+  * you have to have a reference to the application object in order to modify it, there
+    is no magic proxy that can give you a reference to the application object you&#39;re
+    currently creating or modifying.
+
+In contrast, during request handling, a couple of other rules exist:
+
+  * while a request is active, the context local objects (flask.request and others) point
+    to the current request.
+  * any code can get hold of these objects at any time.
+
+There is a third state which is sitting in between a little bit. Sometimes you are dealing
+with an application in a way that is similar to how you interact with applications during
+request handling; just that there is no request active. Consider, for instance, that you&#39;re
+sitting in an interactive Python shell and interacting with the application, or a command
+line application.
+
+The application context is what powers the current_app context local.</code></pre></figure>
+
+<p>如上所述，Flask 启动时会有两种状态，开始的状态可以做些应用级的初始化；当第一个请求过来之后，就进入了另外的一个状态，详细的可以参考上面的描述。</p>
+
+<p>在应用上下文中，包括了 current_app、g 两个对象，一般来说，该对象有如下的两种创建方式：</p>
+
+<ul>
+  <li>
+    <p>在处理请求的时候会自动创建；</p>
+  </li>
+  <li>
+    <p>通过 app_context() 手动创建，通常用在一些单元测试的场景中。</p>
+  </li>
+</ul>
+
+<p>在应用上下文中，通过 flask.current_app、g 会返回当前的应用对象上下文，其中包含了当前的应用对象。注意：g 之前是在请求上下文中的，现在被迁移到了应用上下文。</p>
+
+<p>下面是使用应用上下文的使用方式。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">g</span>
+
+<span class="k">def</span> <span class="nf">get_db</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s">&#39;_database&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">_database</span> <span class="o">=</span> <span class="n">connect_to_database</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">db</span>
+
+<span class="nd">@app.teardown_appcontext</span>
+<span class="k">def</span> <span class="nf">teardown_db</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s">&#39;_database&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></code></pre></figure>
+
+<h3 id="请求上下文">请求上下文</h3>
+
+<p>请求上下文中包括了 request、session 变量，包含了一次请求的上下文信息，类似于应用上下文，同样可以通过两种方式进行创建。</p>
+
+<ul>
+  <li>
+    <p>当应用收到请求之后会自动创建；</p>
+  </li>
+  <li>
+    <p>可以通过 app.test_request_context(‘/route?param=value’) 手动创建。</p>
+  </li>
+</ul>
+
+<p>与应用上下文不同的是，请求上下文会接收一个参数代表了一次请求。另外，需要注意的是，在创建请求上下文的时候，如果没有当前的应用上下文，或者不是本应用的上下文，会自动创建一个应用上下文。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Another thing of note is that the request context will automatically also create
+an application context when it’s pushed and there is no application context for
+that application so far.</code></pre></figure>
+
+<p>接下来我们看看在 Flask 中如何使用请求上下文。</p>
+
+<p>无论在什么地方，如果要获取当前的 request 对象，直接通过如下的方式使用即可。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">request</span>
+<span class="n">request</span><span class="o">.</span><span class="n">args</span>
+<span class="n">request</span><span class="o">.</span><span class="n">forms</span>
+<span class="n">request</span><span class="o">.</span><span class="n">cookies</span></code></pre></figure>
+
+<h2 id="线程安全">线程安全</h2>
+
+<p>首先我们看看 request 是如何实现的，实际上之所以有 request 就是为了在多线程（或者协程）的环境下，各个线程可以使用各自的变量，不至于会混乱，接下来我们看看具体是如何实现的。</p>
+
+<h3 id="简介-1">简介</h3>
+
+<p>实际上，Python 提供了同样类似的线程安全变量保存机制，也就是 threading.local() 方法，而在 flask 中，使用的是 werkzeug 中的 Local 实现的，详细可以参考 <a href="http://werkzeug.pocoo.org/docs/local/">werkzeug.pocoo.org/docs/local</a> 。</p>
+
+<p>总体来说，werkzeug 提供了与 threading.local() 相同的机制，不过是 threading 只提供了线程的安全，对于 greenlet 则无效。</p>
+
+<h3 id="flask-定义">flask 定义</h3>
+
+<p>首先，查看源码目录下的 __init__.py 文件，可以发现这些变量实际上是在 globals.py 中定义，然后只是在 __init__.py 中引入的，其定义如下。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">_lookup_req_object</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">top</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span>
+    <span class="k">if</span> <span class="n">top</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;working outside of request context&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+<span class="n">_request_ctx_stack</span> <span class="o">=</span> <span class="n">LocalStack</span><span class="p">()</span>
+<span class="n">_app_ctx_stack</span> <span class="o">=</span> <span class="n">LocalStack</span><span class="p">()</span>
+<span class="n">current_app</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="n">_find_app</span><span class="p">)</span>
+<span class="n">request</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">_lookup_req_object</span><span class="p">,</span> <span class="s">&#39;request&#39;</span><span class="p">))</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">_lookup_req_object</span><span class="p">,</span> <span class="s">&#39;session&#39;</span><span class="p">))</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">_lookup_app_object</span><span class="p">,</span> <span class="s">&#39;g&#39;</span><span class="p">))</span></code></pre></figure>
+
+<p>其中，partial() 函数就是函数调用时，如果有多个参数，但其中的一个参数已经知道了，我们可以通过这个函数重新绑定一个新函数，然后去调用这个新函数，如果有默认参数的话，也可以自动对应。</p>
+
+<p>示例如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">from functools import partial
+def add2(a,b,c=2):
+    return a+b+c
+plus3 = partial(add2, 1)
+plus3(2)  # 1+2+2=5</code></pre></figure>
+
+<p>而上述的代码，实际就定义了最终调用的是 getattr(top, ‘request’) 还是 getattr(top, ‘session’) 。</p>
+
+<p>如上，我们会发现 g、request、session 的调用方式都是一样的，最后都通过 getattr(top, name) 获取，这也就意味着有一个上下文对象同时保持了上述的三个对象。</p>
+
+<p>另外，使用时，我们只要一处导入 request，在任何视图函数中都可以使用 request，关键是每次的都是不同的 request 对象，说明获取 request 对象肯定是一个动态的操作，不然肯定都是相同的 request。</p>
+
+<p>之所以可以做到这样，主要就是 _lookup_req_object() 和 LocalProxy 组合完成的。</p>
+
+<h3 id="localproxy">LocalProxy</h3>
+
+<p>LocalProxy 是 werkzeug/local.py 中定义的一个代理对象，在此处的作用是将所有的请求都发给内部的 _local 对象，如下的 __slots__ 用来表示所有的实例都只有一个实现。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">__slots__ = (&#39;__local&#39;, &#39;__dict__&#39;, &#39;__name__&#39;)
+class LocalProxy(object):
+    def __init__(self, local, name=None):
+        # 在上述的request中传递的就是_lookup_req_object()
+        object.__setattr__(self, &#39;_LocalProxy__local&#39;, local)
+        object.__setattr__(self, &#39;__name__&#39;, name)
+
+    def _get_current_object(self):
+        # _lookup_req_object() 中没有 __release_local__，直接进入该分支
+        if not hasattr(self.__local, &#39;__release_local__&#39;):
+            return self.__local()
+        try:
+            return getattr(self.__local, self.__name__)
+        except AttributeError:
+            raise RuntimeError(&#39;no object bound to %s&#39; % self.__name__)
+
+    def __getattr__(self, name):
+        return getattr(self._get_current_object(), name)</code></pre></figure>
+
+<p>当调用 request.method 时会调用 __getattr__() 函数，而实际上 request 对任何方法的调用，最终都会转化为对 _lookup_req_object() 返回对象的调用。</p>
+
+<p>上述的 request.method 会调用 _request_ctx_stack.top.request.method 。</p>
+
+<h3 id="localstack">LocalStack</h3>
+
+<p>既然每次 request 都不同，要么调用 top = _request_ctx_stack.top 返回的 top 不同，要么 top.request 属性不同，在 flask 中每次返回的 top 是不一样的，所以 request 的各个属性都是变化的。</p>
+
+<p>现在需要看看 _request_ctx_stack = LocalStack() 了，LocalStack 其实就是简单的模拟了堆栈的基本操作，包括 push、top、pop，其内部保存了与线程相关联的本地变量，从而使其在多线程中 request 不混乱。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Local</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;__storage__&#39;</span><span class="p">,</span> <span class="s">&#39;__ident_func__&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">object</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;__storage__&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="nb">object</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;__ident_func__&#39;</span><span class="p">,</span> <span class="n">get_ident</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__storage__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__ident_func__</span><span class="p">()][</span><span class="n">name</span><span class="p">]</span></code></pre></figure>
+
+<p>在 Local 的代码中，__storage__ 为内部保存的自己，键就是 thread.get_ident ，也就是根据线程的标示符返回对应的值。</p>
+
+<p>下面我们来看看整个交互过程，_request_ctx_stack 堆栈是在哪里设置 push 的，push 的应该是我们上面说的同时具有 request 和 session 属性的对象。</p>
+
+<h2 id="源码解析">源码解析</h2>
+
+<p>接下来我们看看上下文是如何实现。</p>
+
+<h3 id="上下文对象定义">上下文对象定义</h3>
+
+<p>应用上下文和请求上下文在 ctx.py 中定义，内容如下。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">AppContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url_adapter</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">create_url_adapter</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">app_ctx_globals_class</span><span class="p">()</span>
+
+        <span class="c"># Like request context, app contexts can be pushed multiple times</span>
+        <span class="c"># but there a basic &quot;refcount&quot; is enough to track them.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refcnt</span> <span class="o">=</span> <span class="mi">0</span></code></pre></figure>
+
+<p>AppContext 类即是应用上下文，可以看到里面保存了几个变量，其中比较重要的有：app (当前应用对象的引用)、g (用来保存需要在每个请求中需要用到的请求内全局变量) 。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">RequestContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">request_class</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url_adapter</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">create_url_adapter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flashes</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># Request contexts can be pushed multiple times and interleaved with</span>
+        <span class="c"># other request contexts.  Now only if the last level is popped we</span>
+        <span class="c"># get rid of them.  Additionally if an application context is missing</span>
+        <span class="c"># one is created implicitly so for each level we add this information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_implicit_app_ctx_stack</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># indicator if the context was preserved.  Next time another context</span>
+        <span class="c"># is pushed the preserved context is popped.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preserved</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c"># remembers the exception for pop if there is one in case the context</span>
+        <span class="c"># preservation kicks in.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preserved_exc</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># Functions that should be executed after the request on the response</span>
+        <span class="c"># object.  These will be called before the regular &quot;after_request&quot;</span>
+        <span class="c"># functions.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_after_request_functions</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">match_request</span><span class="p">()</span></code></pre></figure>
+
+<p>RequestContext 即请求上下文，其中有我们熟悉的request 和 session，其中 app 和应用上下文中的 app 含义相同。</p>
+
+<h3 id="上下文处理流程">上下文处理流程</h3>
+
+<p>如之前文章所述，会在 app.py 中的 wsgi_app() 函数中调用 ctx.push() 函数将上下文信息压栈。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">RequestContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">request_class</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span> <span class="c"># 根据环境变量创建request</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">top</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span>
+        <span class="k">if</span> <span class="n">top</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">top</span><span class="o">.</span><span class="n">preserved</span><span class="p">:</span>
+            <span class="n">top</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">top</span><span class="o">.</span><span class="n">_preserved_exc</span><span class="p">)</span>
+
+        <span class="c"># Before we push the request context we have to ensure that there</span>
+        <span class="c"># is an application context.</span>
+        <span class="n">app_ctx</span> <span class="o">=</span> <span class="n">_app_ctx_stack</span><span class="o">.</span><span class="n">top</span>
+        <span class="k">if</span> <span class="n">app_ctx</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">app_ctx</span><span class="o">.</span><span class="n">app</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">:</span>
+            <span class="n">app_ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">()</span>
+            <span class="n">app_ctx</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_implicit_app_ctx_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">app_ctx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_implicit_app_ctx_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s">&#39;exc_clear&#39;</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exc_clear</span><span class="p">()</span>
+
+        <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="c"># 将ctx压入到_request_ctx_stack变量中</span>
+        <span class="c"># Open the session at the moment that the request context is</span>
+        <span class="c"># available. This allows a custom open_session method to use the</span>
+        <span class="c"># request context (e.g. code that access database information</span>
+        <span class="c"># stored on `g` instead of the appcontext).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">open_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">make_null_session</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">auto_pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;flask._preserve_context&#39;</span><span class="p">)</span> <span class="ow">or</span> \
+           <span class="p">(</span><span class="n">exc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">preserve_context_on_exception</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preserved</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_preserved_exc</span> <span class="o">=</span> <span class="n">exc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span></code></pre></figure>
+
+<p>可以看到 ctx.push() 将 ctx 压入到 _request_ctx_stack 这个栈中，所以当我们调用 request.METHOD 时将调用 _lookup_req_object() 函数。</p>
+
+<p>top 此时就是上面压入的 ctx 上下文对象（RequestContext 类的实例），而 getattr(top, “request”) 将返回 ctx 实例中的 request 请求，而这个 request 就是在 ctx 的 __init__() 中根据环境变量创建的。</p>
+
+<p>这下应该清楚了，每次请求在调用视图函数之前，flask 会自动把请求创建好 ctx 上下文，并存放在线程的栈中，当使用时就可以根据线程 id 拿到了所需要的变量。</p>
+
+<!--
+    上面是我简化的代码，其实在RequestContext push中_app_ctx_stack = LocalStack()是None，也会把app push进去，对应的app上下文对象为AppContext。
+
+    我们知道flask还有一个神秘的对象g，flask从0.10开始g是和app绑定在一起的(http://flask.pocoo.org/docs/0.10/api/#flask.g)，g是AppContext的一个成员变量。虽然说g是和app绑定在一起的，但不同请求的AppContext是不同的，所以g还是不同。也就是说你不能再一个视图中设置g.name，然后再另一个视图中使用g.name，会提示AttributeError。
+
+    绑定要app的好处就是可以脱离request使用g，否则就要使用flask._app_ctx_stack.top代替g，
+-->
+
+<h3 id="为什么要使用栈">为什么要使用栈</h3>
+
+<p>到此，实际上已经大概清除了 request 的工作流程了，但是通常对于多线程来说，一个线程一次只会处理一个请求，也就是说当前的 request 应该是只有一个，那么为什么不是直接使用这个对象，而是要使用栈呢？</p>
+
+<p>这主要是多个应用导致的，这也是 Flask 设计时的标准之一吧，也就是在一个 Python 进程中，可以拥有多个应用。由于一般都只有一个 app，栈顶存放的肯定是当前 request 对象，但是如果是多个 app，那么栈顶存放的是当前活跃的 request，也就是说使用栈是为了获取当前的活跃 request 对象。</p>
+
+<p>可以查看如下的代码。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">url_for</span>
+<span class="n">app1</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="s">&quot;app1&quot;</span><span class="p">)</span>
+<span class="n">app2</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="s">&quot;app2&quot;</span><span class="p">)</span>
+
+<span class="nd">@app1.route</span><span class="p">(</span><span class="s">&quot;/index1&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index1</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&quot;app1&quot;</span>
+
+<span class="nd">@app1.route</span><span class="p">(</span><span class="s">&quot;/home&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&quot;app1home&quot;</span>
+
+<span class="nd">@app2.route</span><span class="p">(</span><span class="s">&quot;/index2&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index2</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&quot;app2&quot;</span>
+
+<span class="k">with</span> <span class="n">app1</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;index1&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">app2</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">():</span>
+        <span class="k">print</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;index2&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">)</span>
+
+<span class="c"># OUTPUT:</span>
+<span class="c"># /index1</span>
+<span class="c"># /index2</span>
+<span class="c"># /home</span></code></pre></figure>
+
+<p>当调用 app1.test_request_context() 时，会将 app1 对应的 context 压栈，当前活跃 app context 是 app1 的，所以 url_for 使用的是 app1 的 context，当 with app2.test_request_context() 时，会将 app2 对应的 context 压栈，当前活跃 app context 是 app2 的，当 with 过了作用域，将弹出 app2 的 context，此时活跃的为 app1 的，这就是为什么 context 使用栈而不是实例变量。</p>
+
+<h2 id="session-原理">session 原理</h2>
+
+<p>关于 session 使用方式，可以查看 <a href="/blog/python-flask-tips">Flask 常见示例</a> 中的 session 示例。Flask 中的 session 是通过客户端的 cookie 实现的，当然也可以使用 <a href="http://pythonhosted.org/Flask-Session/">Flask-Session</a> 在服务器端实现。</p>
+
+<p>Flask 通过 itsdangerous 这个库将 session 的内容序列化到浏览器的 cookie，当浏览器再次请求时会反序列化 cookie 内容，也就得到我们的 session 内容。</p>
+
+<p>假设有如下的代码，我们保存一个变量。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">escape</span><span class="p">,</span> <span class="n">request</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="s">&#39;key&#39;</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="n">session</span><span class="p">[</span><span class="s">&#39;username&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Andy&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;Hello World</span><span class="se">\n</span><span class="s">&quot;</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></figure>
+
+<p>然后可以通过 curl 命令查看或者查看浏览器。</p>
+
+<h3 id="内容查看">内容查看</h3>
+
+<p>接下来看看这个 cookie 存储了什么值。该 cookie 通过 . 分割成了三部分：内容序列化+时间+防篡改值 。</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">argv</span>
+<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">loads</span>
+<span class="kn">from</span> <span class="nn">itsdangerous</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">strftime</span><span class="p">,</span> <span class="n">localtime</span>
+
+<span class="n">cookies</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="c">#cookies = &quot;eyJ1c2VybmFtZSI6eyIgYiI6IlFXNWtlUT09In19.CuxlJQ.ljG_CYgC0K3RwRPx0vg20kFA08o&quot;</span>
+<span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">=</span> <span class="p">[</span><span class="n">base64_decode</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cookies</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)]</span>
+<span class="k">print</span> <span class="s">&quot;DATE   :&quot;</span><span class="p">,</span> <span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">localtime</span><span class="p">(</span><span class="n">bytes_to_int</span><span class="p">(</span><span class="n">time</span><span class="p">)</span><span class="o">+</span><span class="n">EPOCH</span><span class="p">))</span>
+<span class="c">#print &quot;KEY    :&quot;, key</span>
+<span class="k">print</span> <span class="s">&quot;VALUES :&quot;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">v</span>
+<span class="c">#&#39;{&quot;username&quot;:{&quot; b&quot;:&quot;QW5keQ==&quot;}}&#39;</span>
+<span class="c">#base64_decode(&#39;QW5keQ==&#39;)</span></code></pre></figure>
+
+<p>通过第一部分可以获得了 session[‘username’] 的值；第二部分保存的是时间，itsdangerous 为了减少时间戳的值，之前减掉了 118897263，所以我们要加上。</p>
+
+<p>第三部分是 session 值和时间戳以及我们 SECRET_KEY 的防篡改值，通过 HMAC 算法签名，也就是说即使你修改了前面的值，由于签名值有误，flask 不会使用该 session 。所以一定要保存好 SECRET_KEY，否则泄露后就可以通过构造 cookie 伪造 session 值，这是很恐怖的一件事。</p>
+
+<!--
+https://github.com/pallets/itsdangerous
+http://pythonhosted.org/itsdangerous/
+http://itsdangerous.readthedocs.io/en/latest/
+-->
+
+<!--
+这个标题有点不太准确，其实应该说：慎用异步 WSGI Server 运行基于 Werkzeug 的应用。或者更宽泛一点——慎用异步 WSGI Server 运行使用 Thread Local 的应用。 Flask 是基于 Werkzeug 的故也在此列。貌似使用 Werkzeug 作为底层 WSGI 库的框架还有国内 limodou 老师的 Uliweb 。而其他使用 Thread Local 的 WSGI Application 不计其数，Bottle、web.py 都在此列。但我没有测试过其他的，仅仅掉下过 Flask 的坑。
+
+这个坑问题就出在 Werkzeug 的 Thread Local 上。用过 Flask 的同学应该不会忘记其便捷的 flask.request 、 flask.g 、 flask.session 等对象。引用的时候就像使用单例对象一样，但实际上对它们的所有赋值操作都只会影响到当前请求（当前线程）。Thread Local 模式的实现一定要有一个 Thread Identity 作为标识，由此产生的 Proxy 对象会根据这个标识创建多个独立的数据空间。我们访问代理对象的时候就像访问全局对象，但代理对象会将消息分发到 Thread Identity 对应的真实对象上。
+
+一般这个实现都会使用系统提供的当前线程 ID 作为 Thread Identity，于是在使用多线程的 Web 服务器上，由于每个请求独享一个线程，每个 Thread Local 的数据空间也就为一个请求所独享。这是 Flask（Werkzeug）可以正常工作的假设前提。但异步 WSGI Server 一般不会给每个请求分配一个线程。为了减少内核调度线程的开销，这类服务器软件一般使用协同式调度——若干个请求都在同一个进程的主线程中运行，遇到 IO 阻塞（例如等待网络）则挂起当前帧栈，切换到另一个帧栈执行，整个过程都是协同式的，并没有时间片轮转这些抢占的做法。如此一来，用线程 ID 作为 Thread Identity 的所有 Thread Local 对象就会退化成单例对象，这也是我遇到的灵异现象的原因：在宿舍登录网站，远在图书馆的电脑会同步登录。
+
+说到底还是 Thread Identity 选取导致的问题。其实 Werkzeug 在设计的时候有考虑到这个问题，其默认的 Thread Identity 工厂选取就优先采用 Greenlet 的“当前协程 ID”，这一点从 Werkzeug Local 可以看到。但并非所有异步 WSGI Server 都使用 Greenlet 作为协程库，我所使用的 uWSGI 就是使用自己实现的 uGreen 作为微线程的。于是上述问题就出现了。
+
+和 Flask 的这个问题相关的是 flask.globals 模块中的两个 werkzeug.local.LocalStack 实例，替换它们的 __ident_func__ 属性应该可以解决问题。但我没有找到 uWSGI 默认使用的 uGreen 对应的 Thread Identity 获取方法。或许对于使用 uWSGI 运行的应用来说，不要去使用异步是个更好的选择吧。当然，不怕麻烦的话也可以给 uWSGI 编译使用 Greenlet 调度的异步支持插件。
+-->
+
+<h2 id="结论">结论</h2>
+
+<p>如上，在 flask 中包括了两种上下文，应用上下文和请求上下文。不过从名字上来看，应用上下文一般会被任务是一个应用的全局变量，所有请求都可以访问修改其中的内容；而请求上下文则是请求内可访问的内容。</p>
+
+<p>但事实上，这两者并不是全局与局部的关系，它们都处于一个请求的局部中，每个请求的 g 都是独立的，并且在整个请求内都是可访问修改的。</p>
+
+<p>之所以有应用上下文，是因为 flask 设计之初，就是要支持多个应用。</p>
+
+<h3 id="其它">其它</h3>
+
+<p>还是要重点声明一下。</p>
+
+<p>g 在每次请求时都会修改，其生命周期只在一个请求中，不能保存类似数据库链接（需要在整个应用存活期间使用）相关的信息，但是可以保存在本次请求中不同函数中都会调用的变量信息。</p>
+
+<p>像类似数据库的请求可以使用一个全局变量，不过此时对线程是不安全的，因此建议使用链接池（线程安全），也就是可以直接使用 Flask-SQLAlchemy 类似的插件。</p>
+
+<p>其时，还有一种信息，就是类似用户登陆的信息，可以将其保存到 session 中，每次浏览器请求都会携带该信息，不过实际只能是字符串信息（可以转换为其它类型数据）。</p>
+
+<h2 id="参考">参考</h2>
+
+<p>关于请求上下文和应用上下文可以参考官方文档，<a href="http://flask.pocoo.org/docs/0.11/reqcontext/">The Request Context</a> 以及 <a href="http://flask.pocoo.org/docs/0.11/appcontext/">The Application Context</a> 。</p>
+
+<p><a href="http://kronosapiens.github.io/blog/2014/08/14/understanding-contexts-in-flask.html">Understanding Contexts in Flask</a> 或者 <a href="/reference/python/Understanding Contexts in Flask.mht">本地保存文档</a>；<a href="http://www.zlovezl.cn/articles/charming-python-start-from-flask-request/">Charming Python: 从Flask的request说起</a>；<a href="https://blog.tonyseek.com/post/the-context-mechanism-of-flask/">Flask 的 Context 机制</a> 。</p>
+
+<!--
+http://blog.csdn.net/sasoritattoo/article/details/9703429
+http://blog.csdn.net/barrysj/article/details/51519254
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/postgresql-wal_init.html" title="PG WAL (Write Ahead Log)">&larr; Older</a></li> 
+         <li class="next"><a href="/post/lmdb_init.html" title="LMDB">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1471449600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/flask-context.html" data-title="Flask 上下文理解" data-url="/post/flask-context.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

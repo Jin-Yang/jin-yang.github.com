@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>while(SUCC!=try());|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/lua-coroutine.html">Lua 协程</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2015-10-06 Tuesday</span>
+  <p style="margin-top:10px;">
+    
+       协程是另外一种并发方式，相比多进程或者多线程来说，其上下文的切换成本开销更小，这也意味这协程的执行更加高效。
+
+Lua 作为一种简单的语言，仍然可以支持闭包、协程等较新的特性，在此介绍一下协程相关的内容。
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#program"> program </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/lua-coroutine.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/linux-selinux-introduce.html">SELinux 简介</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2015-10-03 Saturday</span>
+  <p style="margin-top:10px;">
+    
+       SELinux 给 Linux 带来的最重要价值是：提供了一个灵活的，可配置的 MAC 机制。包括了内核中的模块，以及用户态的工具，对于用户来说是透明的，只有同时满足了 "标准 Linux 访问控制" 和 "SELinux 访问控制" 时，主体才能访问客体。
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/linux-selinux-introduce.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/mysql-deploy-online.html">MySQL 线上部署</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2015-10-01 Thursday</span>
+  <p style="margin-top:10px;">
+    
+       主要介绍下 MySQL 如何在线上进行部署。
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#mysql"> mysql </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#database"> database </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/mysql-deploy-online.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/mysql-innodb-double-write-buffer.html">InnoDB Double Write Buffer</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2015-10-01 Thursday</span>
+  <p style="margin-top:10px;">
+    
+       从 Double Write Buffer 来看，貌似是内存中的一块缓存区域，实际上，这里的 buffer 并不只是一块内存区域，而是还包括了存放在表空间中或是单独指定的某个文件中的一个 buffer 。
+
+在此，介绍下为什么会有 Double Write Buffer，以及其是如何实现的。
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#mysql"> mysql </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#database"> database </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/mysql-innodb-double-write-buffer.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/lua-introduce.html">Lua 简介</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2015-09-25 Friday</span>
+  <p style="margin-top:10px;">
+    
+       Lua 在葡萄牙语中是 “月亮” 的意思，是一个小巧的脚本语言，官方版本只包括一个精简的核心和最基本的库，使得其体积小、启动速度快，从而特别适合嵌入到其它程序里。
+
+Lua 历史可以从 1993 年开始，到现在为止，在很多场景都可以看到 Lua 的影子，如游戏开发、Web 应用脚本、安全系统插件等，像常见的 nmap、sysbench 等程序。
+
+这里简单介绍 Lua 的安装使用。
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#program"> program </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/lua-introduce.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/linux-bash-related-stuff.html">Bash 相关</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2015-09-23 Wednesday</span>
+  <p style="margin-top:10px;">
+    
+       一些与 Bash 相关的内容，如命令执行顺序、配置文件、通配符、元字符及转义字符等。
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/linux-bash-related-stuff.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/linux-container-cgroup-introduce.html">容器之 CGroup</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2015-09-21 Monday</span>
+  <p style="margin-top:10px;">
+    
+       在 CentOS 7 中，已经通过 systemd 替换了之前的 cgroup-tools 工具，为了防止两者冲突，建议只使用 systemd ，只有对于一些不支持的，例如 net_prio ，才使用 cgroup-tools 工具。
+
+在此，简单介绍其使用。
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/linux-container-cgroup-introduce.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+<div class="blog-post">
+  <div class="blog-post-title"><a href="/post/linux-systemd.html">systemd 使用简介</a></div>
+  <span class="blog-post-meta"><i class="fa fa-calendar"></i> 2015-09-17 Thursday</span>
+  <p style="margin-top:10px;">
+    
+       现在一般新发行的版本会采用新的 init 进程，也就是 systemd ，其中启动过程可以通过 man bootup 查看。
+
+在此，简单介绍一下 systemd 。
+
+
+    
+  </p>
+</div>
+<div class="blog-post-footer">
+  <ul class="no-list" style="list-style: none; padding-left:0px;"><li>
+    
+      <a class="label label-info" href="/categories.html#linux"> linux </a>
+      &nbsp;
+    
+      <a class="label label-info" href="/categories.html#misc"> misc </a>
+      
+    
+    <a class="btn btn-default pull-right"  href="/post/linux-systemd.html" role="button">View Details »</a>
+  </li></ul>
+</div>
+
+
+<div class="row"><center>
+
+  <nav><ul class="pagination pagination-lg">
+   
+     <li><a href="/" title="Go to newest articles">&laquo;</a></li>
+     
+     <li><a href="/page48" title="Go to newer articles">&lsaquo;</a></li>
+     
+   
+   
+     <li class="disabled"><span>page <strong>49</strong> of <strong>72</strong></span></li>
+   
+   
+     <li><a href="/page50" title="Go to older articles">&rsaquo;</a></li>
+     <li><a href="/page72" title="Go to oldest articles">&raquo;</a></li>
+   
+  </ul></nav>
+
+</center></div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-mcmc-metropolis-introduce.html">MCMC 采样 - Metropolis</a>
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">302</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">245</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux NTP 介绍|JinYang's Blog</title>
+  <meta name="keywords" content="linux,时间,ntp,ntpdate">
+  <meta name="description" content="网络时间协议 (Network Time Protocol, NTP) 是通过 [RFC-1305](https://tools.ietf.org/html/rfc1305) 定义的时间同步协议，该协议基于 UDP 协议，使用端口号为 123；该协议用于在时间服务器和客户端之间同步时间，从而使网络内所有设备的时钟保持一致。这里简单介绍 NTP 的使用方法。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux NTP 介绍</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2017-02-28 Tuesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  program ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>网络时间协议 (Network Time Protocol, NTP) 是通过 <a href="https://tools.ietf.org/html/rfc1305">RFC-1305</a> 定义的时间同步协议，该协议基于 UDP 协议，使用端口号为 123；该协议用于在时间服务器和客户端之间同步时间，从而使网络内所有设备的时钟保持一致。</p>
+
+<p>这里简单介绍 NTP 的使用方法。</p>
+
+<!-- more -->
+
+<h2 id="ntp">NTP</h2>
+
+<p>对于运行NTP的本地系统，既可以接收来自其他时钟源的同步，又可以作为时钟源同步其他的时钟，并且可以和其他设备互相同步。</p>
+
+<h3 id="时钟层级-stratum-levels">时钟层级 Stratum Levels</h3>
+
+<p>NTP 时间同步是按照层级分发时间的。</p>
+
+<p><img src="/images/misc/ntp-stratum-levels.png" alt="ntp stratum levels" title="ntp stratum levels" class="pull-center" width="60%" /></p>
+
+<p>时钟层级定义了到参考时钟的距离，如上图所示。</p>
+
+<ul>
+  <li>
+    <p>stratum-0 也即参考时钟，有极高的精度，提供可靠的 UTC 时间，通常为铯/铷原子钟(Atomic Cesium/Rubidium Clocks)、GPS 授时或者无线电波授时 (如 CDMA)，这类的时钟源不会直接为互联网提供服务。</p>
+  </li>
+  <li>
+    <p>stratum-1 直接（非通过网络）链接到 stratum-0 提供服务，通常通过 RS-232、IRIG-B 链接，为互联网提供标准时间。</p>
+  </li>
+  <li>
+    <p>stratum-2+ 通过网络向上一级请求服务，通常利用 NTP 协议。</p>
+  </li>
+</ul>
+
+<p>通常距离顶层的时钟源越远时钟的精度也就越差。</p>
+
+<h3 id="安装">安装</h3>
+
+<p>在 CentOS 中，可以通过如下方式进行安装。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># yum install ntp ntpdate              # 安装
+# systemctl [enable|start] ntpd        # 设置开机启动，或者直接启动</code></pre></figure>
+
+<p>在 Linux 下有两种时钟同步方式，分别为直接同步和平滑同步：</p>
+
+<ul>
+  <li>
+    <p>通过 ntpdate 直接同步时间。但异常情况时，若机器有个 12 点的定时任务，当前时间认为是 13 点，而实际的标准时间为 11 点，直接使用该命令会造成任务重复执行；因此该命令多用于时钟同步服务的第一次同步时间时使用。</p>
+  </li>
+  <li>
+    <p>通过 ntpd 可以平滑同步时钟，通过每次同步较小的时间的偏移量，慢慢进行调整，也因此会耗费较长的时间，但可以保证一个时间不经历两次。</p>
+  </li>
+</ul>
+
+<p><a href="http://www.pool.ntp.org/zone/cn">www.pool.ntp.org</a> 提供了全球的标准时钟同步服务，对于中国可以参考其中的建议 ntp 配置文件，NTP 建议我们为了保障时间的准确性，最少找两个个 NTP Server 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">server 0.asia.pool.ntp.org
+server 1.asia.pool.ntp.org
+server 2.asia.pool.ntp.org
+server 3.asia.pool.ntp.org</code></pre></figure>
+
+<p>它的一般格式都是 number.country.pool.ntp.org ；当然，也可以使用阿里的公共服务。</p>
+
+<p><img src="/images/misc/ntp-alibaba-basic-service.png" alt="ntp alibaba basic service" title="ntp alibaba basic service" class="pull-center" width="60%" /></p>
+
+<p>接下来可以使用如下命令。</p>
+
+<h3 id="工作原理">工作原理</h3>
+
+<p>NTP 授时有以下三种工作模式。</p>
+
+<h4 id="broadcastmulticast">broadcast/multicast</h4>
+
+<p>适用于局域网的环境，时间服务器周期性以广播的方式，将时间信息传送给其他网路中的时间服务器，配置简单 (可做到客户端免配置)，但是精确度不高，对时间精确度要求不是很高的情况下可以采用。</p>
+
+<h4 id="clientserver">client/server</h4>
+
+<p>最主流的 ntp 授时方式，精度较高，对网络没有特殊要求；同时可以指定多个 ntp server，因而也可避免网络路径失效带来的时钟不能同步。</p>
+
+<h4 id="symmetric">symmetric</h4>
+
+<p>一台服务器可以从远端时间服务器获取时钟，如果需要也可提供时间信息给远端的时间服务器，服务器之间的 peer 关系即为这种工作方式。</p>
+
+<p>接下来，简单介绍下 Client/Server 模式。</p>
+
+<p>如下图所示，Device A 和 Device B 通过网络相连，且都有自己独立的系统时钟，需要通过 NTP 实现各自系统时钟的自动同步。假设在系统时钟同步前，Device A 的时钟设定为 10:00:00am，Device B 的时钟设定为 11:00:00am。</p>
+
+<p>其中 Device B 作为 NTP 时间服务器，即 Device A 将使自己的时钟与 Device B 的时钟同步，另外，假设 NTP 报文在 Device A 和 Device B 之间单向传输所需要的时间为 1 秒。</p>
+
+<p><img src="/images/misc/ntp-how-ntp-works.png" alt="how ntp works" title="how ntp works" class="pull-center" /></p>
+
+<p>系统时钟同步的工作过程如下：</p>
+
+<ol>
+  <li>
+    <p>Device A 发送一个 NTP 报文给 Device B，该报文带有它离开 Device A 时的时间戳，该时间戳为 10:00:00am(T1)。</p>
+  </li>
+  <li>
+    <p>当 NTP 报文到达 Device B 时，Device B 会加上自己的时间戳，该时间戳为 11:00:01am(T2)。</p>
+  </li>
+  <li>
+    <p>此 NTP 报文离开 Device B 时，Device B 再加上自己的时间戳，该时间戳为 11:00:02am(T3)。</p>
+  </li>
+  <li>
+    <p>当 Device A 接收到该响应报文时，Device A 的本地时间为 10:00:03am(T4)。</p>
+  </li>
+</ol>
+
+<p>至此，Device A 已经拥有足够的信息来计算两个重要的参数：A）报文的往返时延 Delay=(T4-T1)-(T3-T2)=2s；B) Device A 相对 Device B 的时间差 Offset=((T2-T1)+(T3-T4))/2=1h。这样，Device A 就能够根据这些信息来设定自己的时钟，使之与 Device B 的时钟同步。</p>
+
+<h3 id="ntp-的报文格式">NTP 的报文格式</h3>
+
+<p>NTP 有两种不同类型的报文，一种是时钟同步报文，另一种是控制报文。控制报文仅用于需要网络管理的场合，它对于时钟同步功能来说并不是必需的，在此只介绍时钟同步报文。</p>
+
+<p><img src="/images/misc/ntp-packets-format.jpg" alt="ntp packets format" title="ntp packets format" class="pull-center" /></p>
+
+<!--
+主要字段的解释如下：
+LI（Leap Indicator）：长度为2比特，值为“11”时表示告警状态，时钟未被同步。为其他值时NTP本身不做处理。
+VN（Version Number）：长度为3比特，表示NTP的版本号，目前的最新版本为3。
+Mode：长度为3比特，表示NTP的工作模式。不同的值所表示的含义分别是：0未定义、1表示主动对等体模式、2表示被动对等体模式、3表示客户模式、4表示服务器模式、5表示广播模式或组播模式、6表示此报文为NTP控制报文、7预留给内部使用。
+Stratum：系统时钟的层数，取值范围为1～16，它定义了时钟的准确度。层数为1的时钟准确度最高，准确度从1到16依次递减，层数为16的时钟处于未同步状态，不能作为参考时钟。
+Poll：轮询时间，即两个连续NTP报文之间的时间间隔。
+Precision：系统时钟的精度。
+Root Delay：本地到主参考时钟源的往返时间。
+Root Dispersion：系统时钟相对于主参考时钟的最大误差。
+Reference Identifier：参考时钟源的标识。
+Reference Timestamp：系统时钟最后一次被设定或更新的时间。
+Originate Timestamp：NTP请求报文离开发送端时发送端的本地时间。
+Receive Timestamp：NTP请求报文到达接收端时接收端的本地时间。
+Transmit Timestamp：应答报文离开应答者时应答者的本地时间。
+Authenticator：验证信息。
+-->
+
+<p>NTP 提供了多种工作模式进行时间同步，包括了：客户端/服务器模式、对等体模式、广播模式、组播模式。</p>
+
+<p>在不能确定服务器或对等体IP地址、网络中需要同步的设备很多等情况下，可以通过广播或组播模式实现时钟同步；客户端/服务器和对等体模式中，设备从指定的服务器或对等体获得时钟同步，增加了时钟的可靠性。</p>
+
+<h3 id="启动-ntp-服务">启动 NTP 服务</h3>
+
+<p>接下来，看看如何在 Linux 中配置并启动 ntp 服务器。</p>
+
+<h4 id="配置文件">配置文件</h4>
+
+<p>先修改配置文件 /etc/ntp.conf ，只需要加入上面的 NTP Server 和一个 driftfile 就可以了。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># vi /etc/ntp.conf
+driftfile /var/lib/ntp/drift
+server 0.asia.pool.ntp.org
+server 1.asia.pool.ntp.org
+server 2.asia.pool.ntp.org
+server 3.asia.pool.ntp.org</code></pre></figure>
+
+<p>fudge 127.127.1.0 stratum 0  stratum  这行是时间服务器的层次。设为0则为顶级，如果要向别的NTP服务器更新时间，请不要把它设为0</p>
+
+<!--
+那么这里一个很简单的思路就是第一我们只允许局域网内一部分的用户连接到我们的服务器. 第二个就是这些client不能修改我们服务器上的时间
+
+权限的设定主要以 restrict 这个参数来设定，主要的语法为：
+restrict IP地址 mask 子网掩码 参数
+其中 IP 可以是IP地址，也可以是 default ，default 就是指所有的IP
+参数有以下几个：
+ignore　：关闭所有的 NTP 联机服务
+nomodify：客户端不能更改服务端的时间参数，但是客户端可以通过服务端进行网络校时。
+notrust ：客户端除非通过认证，否则该客户端来源将被视为不信任子网
+noquery ：不提供客户端的时间查询
+注意：如果参数没有设定，那就表示该 IP (或子网)没有任何限制！
+
+在/etc/ntp.conf文件中我们可以用restrict关键字来配置上面的要求
+
+首先我们对于默认的client拒绝所有的操作
+代码:
+restrict default kod nomodify notrap nopeer noquery
+
+然后允许本机地址一切的操作
+代码:
+restrict 127.0.0.1
+
+最后我们允许局域网内所有client连接到这台服务器同步时间.但是拒绝让他们修改服务器上的时间
+代码:
+restrict 192.168.1.0 mask 255.255.255.0 nomodify
+
+把这三条加入到/etc/ntp.conf中就完成了我们的简单配置. NTP还可以用key来做authentication,这里就不详细介绍了
+-->
+
+<h4 id="更新时间">更新时间</h4>
+
+<p>如上，在正式启动 NTP 服务器之前，需要先通过 ntpdate 命令同步系统时间。需要注意的是，此时最好不要启动服务，否则可能由于时间跳变导致服务异常。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># ntpdate 0.asia.pool.ntp.org
+# ntpdate 1.asia.pool.ntp.org</code></pre></figure>
+
+<p>需要注意的是，通过 ntpdate 更新时间时，不能开启 NTP 服务，否则会提示端口被占用。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">1 Jan 22:35:08 ntpdate[12481]: no servers can be used, exiting</code></pre></figure>
+
+<p>当然，可以通过 cron 定期更新时间，</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">30 8 * * * root /usr/sbin/ntpdate 192.168.0.1; /sbin/hwclock -w</code></pre></figure>
+
+<p>这样，每天 8:30 Linux 系统就会自动的进行网络时间校准，并写入硬件时钟。</p>
+
+<h4 id="查看状态">查看状态</h4>
+
+<p>首先，通过 ntpstat 查看 NTP 服务的整体状态。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># ntpstat
+synchronised to NTP server (202.112.29.82) at stratum 3
+   time correct to within 44 ms
+   polling server every 256 s</code></pre></figure>
+
+<p>然后，可以通过 ntpq (NTP query) 来查看当前服务器的状态，到底和那些服务器做时间同步。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># watch ntpq -pn
+Every 2.0s: ntpq -p                                  Sat Jul  7 00:41:45 2007
+
+     remote           refid      st t when poll reach   delay   offset  jitter
+===========================================================
++193.60.199.75   193.62.22.98     2 u   52   64  377    8.578   10.203 289.032
+*mozart.musicbox 192.5.41.41      2 u   54   64  377   19.301  -60.218 292.411</code></pre></figure>
+
+<!--ntpdc -np -c peer 127.0.0.1-->
+
+<p>现在我就来解释一下其中各个字段的含义。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">remote: 本地机器所连接的远程NTP服务器；
+ refid: 给远程服务器提供时间同步的服务器，也就是上级服务器；
+    st: 远程服务器的层级别，级别从1~16，原则上不会与1直接链接；
+     t: 也就是type，表示该时间服务器的工作模式(local, unicast, multicast or broadcast)；
+
+  when: 多少秒之前与服务器成功做过时间同步；
+  poll: 和远程服务器多少秒进行一次同步，开始较小，后面会逐渐增加，可在配置文件中通过minpoll+maxpoll设置；
+ reach: 成功连接服务器的次数，这是八进值；
+ delay: 从本地机发送同步要求到服务器的网络延迟 (round trip time)；
+offset: 本地和服务器之间的时间差别，该值越接近于0，说明和服务器的时间越接近；
+jitter: 统计值，统计了offset的分布情况，这个数值的绝对值越小则说明和服务器的时间就越精确；</code></pre></figure>
+
+<p>对于上述输出，有几个问题，第一我们在配置文件中设置与 remote 不同？</p>
+
+<p>因为 NTP 提供的是一个集群，所以每次连接的得到的服务器都有可能是不一样，也就意味着，配置文件中最好指定 hostname 而非 IP 。</p>
+
+<p>第二问题是，那个最前面的 + 和 * 都是什么意思呢？如上，提供了多个服务器同步时间，这些标志就是用来标识服务器的状态。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  (space) reject，节点网络不可达，或者 ACL 有限制；
+x falsetick 通过算法确定远程服务器不可用；
+. excess 不在前10个同步距离较短的节点所以被排除，如果前10个节点故障，该节点可进一步被选中；
+- outlyer 远程服务器被clustering algorithm认为是不合格的NTP Server；
++ candidate 将作为辅助的服务器，作为组合算法的一个候选者，当上述的服务器不可用时，该服务器会接管；
+* sys.peer 服务器被确认为我们的主NTP Server，系统时间将由这台机器所提供；
+o pps.peer 该节点为选中的时钟源，系统时钟以其为参考；</code></pre></figure>
+
+<!--对于上述的 o ，实际上，系统时钟无论是间接地通过PPS参考时钟驱动器或直接通过内核接口同步，原则上都是是从秒脉冲信号（PPS）进行同步的。-->
+
+<p>也即是说，输出内容中第一个域标记符号是 * 即可认为系统通过该时间源同步时间。</p>
+
+<p>了解这些之后我们就可以实时监测我们系统的时间同步状况了；注意，部分虚拟机使用的是容器，无独立 kernel，使用的就是宿主机的时间源，所以这时就需要到对应宿主机器排查。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># systemctl start ntpd
+$ ps aux | grep ntp</code></pre></figure>
+
+<h4 id="其它">其它</h4>
+
+<p>记录下常见的问题。</p>
+
+<h5 id="1-配置文件中的driftfile是什么">1. 配置文件中的driftfile是什么?</h5>
+
+<p>每个 system clock 的频率都有误差，NTP 会监测我们时钟的误差值并予以调整，但是 NTP 不会立即调整时间，这样会导致时钟跳变，所以采用的是渐进方式，进而导致这是一个冗长的过程。</p>
+
+<p>为此，它会把记录下来的误差先写入 driftfile，这样即使重启之前的计算结果也就不会丢失了。</p>
+
+<p>另外，记录的单为是 PPM (Part Per Million)，是指百万分之一秒，也就是微秒，</p>
+
+<h5 id="2-如何同步硬件时钟">2. 如何同步硬件时钟?</h5>
+
+<p>NTP 一般只会同步 system clock，如果我们也要同步 RTC (hwclock) 的话那么只需要把下面的选项打开就可以了。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># vi /etc/sysconfig/ntpd
+SYNC_HWCLOCK=yes</code></pre></figure>
+
+<!--
+2、fudge 127.127.1.0 stratum 10 如果是LINUX做为NTP服务器，stratum(层级)的值不能太大，如果要向上级NTP更新可以设成2
+
+ntpd -gq
+
+
+ frequency error -506 PPM exceeds tolerance 500 PPM
+
+
+-g
+    Normally, ntpd exits if the offset exceeds the sanity limit, which is 1000 s by default. If the sanity limit is set to zero, no sanity checking is performed and any offset is acceptable. This option overrides the limit and allows the time to be set to any value without restriction; however, this can happen only once. After that, ntpd will exit if the limit is exceeded.
+-q
+Exit the ntpd just after the first time the clock is set. This behavior mimics that of the ntpdate program, which is to be retired. The -g and -x options can be used with this option.
+-->
+
+<h2 id="参考">参考</h2>
+
+<!--
+另外，有个 adjtimex 命令，可以用来调整系统和硬件时间；Linux 中通过 tzdata 保存了与时区相关的信息，包括夏令时、闰秒等信息，不过对于新发布的闰秒则需要最近的更新。
+-->
+
+<p><a href="https://www.eecis.udel.edu/~mills/ntp/html/ntpq.html">standard NTP query program</a> ntpq 的实现官网，而且包括了很多相关的资料 <a href="https://www.eecis.udel.edu/~mills/ntp/html/index.html">The Network Time Protocol (NTP) Distribution</a> 。</p>
+
+<!-- https://www.eecis.udel.edu/~mills/ntp/html/warp.html -->
+
+<p>关于时间的简单介绍，包括了时区、NTP 等 <a href="http://www.tldp.org/HOWTO/TimePrecision-HOWTO/index.html">Managing Accurate Date and Time</a>，或者 <a href="/reference/misc/ntp/HOWTO/TimePrecision-HOWTO/index.html">本地文档</a> ；其它的一些关于 GPS 相关的信息可以参考 <a href="/reference/misc/ntp/GPS_NTP.doc">GPS时间同步原理及其应用</a> ，一篇十分不错的文章。</p>
+
+<p><a href="/reference/misc/ntp/sync_an02-StratumLevelDefined.pdf">Stratum Levels Defined</a> 关于时钟层级的定义；另外一篇关于 ntpq 的介绍可以参考 <a href="https://linux.cn/article-4664-1.html?pr">网络时间的那些事及 ntpq 详解</a> ，或者参考 <a href="/reference/misc/ntp/ntpq_details.mht">本地文档</a><!--；还有一篇是关于 [ntp反射式攻击原理](/reference/misc/ntp/ntp_attack.mht)--> 。</p>
+
+<p>实际可以通过 GPS 和 Raspberry Pi 搭建 stratum-1 服务器，可以参考 <a href="https://xmission.com/blog/2014/05/28/building-a-stratum-1-ntp-server-with-a-raspberry-pi">Building a Stratum 1 NTP Server with a Raspberry Pi</a> ，也可参考 <a href="/reference/misc/ntp/Building a Stratum 1 NTP Server with a Raspberry Pi.mht">本地文档</a>；或者另一篇 <a href="http://www.satsignal.eu/ntp/Raspberry-Pi-NTP.html">The Raspberry Pi as a Stratum-1 NTP Server</a>，也可查看 <a href="/reference/misc/ntp/Building a Raspberry-Pi Stratum-1 NTP Server.mht">本地文档</a> 。</p>
+
+<!--
+另外两篇包括了 常见服务器时钟不准的解决方案 、 [NTP alibaba](/reference/misc/ntp/ntp.tar.gz) 。
+
+NTP Client
+http://blog.csdn.net/rich_baba/article/details/6052863
+https://lettier.github.io/posts/2016-04-26-lets-make-a-ntp-client-in-c.html
+http://blog.csdn.net/rich_baba/article/details/6052863
+https://www.vfe.cc/NewsDetail-2332.aspx NTP计算方法推导
+http://blog.csdn.net/C3080844491/article/details/77934050
+
+https://pthree.org/2013/11/05/real-life-ntp/
+
+一般可以通过 ntpdate 和 ntpd 进行时钟同步，两种方式区别如下：
+
+* ntpdate 只同步一次，需要配合 cron 机制进行周期同步；时钟会立即进行同步，会导致时间瞬间被修改。
+* ntpd 是一个后台程序，会自动周期性的与服务端进行同步更新；时钟采用渐进同步方式，如果大于30min会直接退出。
+
+ntpdc 用于访问 ntpd ，可以查看以及修改一些参数。
+
+
+修改完配置文件后，可以通过如下的方式启动，查看是否正常。
+
+----- 启动ntpd服务
+# systemctl start ntpd
+
+----- 查看启动是否正常
+# netstat -atunp | grep ntpd
+
+
+ntpdc -p
+ntp
+
+delay/offset 使用的单位是 milliseconds ，如果 offset 大于 0 则表示远端大于本地。
+
+----- 查看当前的时间偏差，不更新时钟
+ntpdate -q 192.144.52.46
+
+ntpd 会渐进同步，一般启动后大概 5~10 分钟后会完成同步，所以开始通过 ntpstat 查看时显示的是未同步。
+
+# ntpstat
+unsynchronised
+   polling server every 64 s
+
+也可以通过 `ntpdate IP` 直接同步。
+
+/usr/sbin/ntpd -p /var/run/ntp/ntpd.pid -g -u ntp:ntp -i /var/lib/ntp -c /etc/ntp.conf
+
+/usr/bin/ntpstat
+/usr/sbin/ntp-keygen
+/usr/sbin/ntpd
+/usr/sbin/ntpdc
+/usr/sbin/ntpq
+/usr/sbin/ntptime
+/usr/sbin/tickadj
+
+
+通过gnuplot进行绘图
+https://github.com/hans-mayer/ntpgraph
+http://www.cnblogs.com/sonwnja/p/6758261.html
+https://www.eecis.udel.edu/~mills/ntp/html/miscopt.html
+官方文档，排查问题，以及ntpq输出
+http://support.ntp.org/bin/view/Support/TroubleshootingNTP
+查询ntp的sysinfo信息
+ntpdc -c sysinfo
+ntpq -p  检查*号
+
+### 本地测试
+
+服务端
+
+#----- 允许远端查询
+#restrict default nomodify notrap nopeer noquery
+restrict default nomodify
+#----- 如果无法与远端通讯，则使用本地的时钟
+server 127.127.1.0
+fudge 127.127.1.0 stratum 0
+
+date -s "2018-2-27 21:05:00"
+
+#### 时间跳变
+
+ntpd 在发现与服务端的时间差超过 1000s (默认值) 后会自动退出，此时需要手动进行时钟同步，也可以在启动时通过 -g 参数忽略开始的检查。
+
+客户端和服务端的时间同步有两种情况：时间跳变 (Time Step) 和渐变 (Time Slew)。
+
+跳变是指在client和server间时间差过大时（默认128ms），瞬间调整client端的系统时间
+
+渐变是指时间差较小时，通过改变client端的时钟频率，进而改变client端中“1秒”的“真实时间”，保持client端时间连续性。
+
+举个例子，如果client端比server端慢10s，通过ntpd，client端的中每1秒现实时间是1.0005秒！虽然client端的时间仍然是1秒1秒增加的，通过调整每秒的实际时间，直到与serrver的时间相同。在这个例子中，10s/0.0005s=20000s，20000s/60/60=5.55555小时，即需要5个多小时才能消除10s的误差。
+
+在linux中，很多应用软件依赖系统的时间连续性来正确工作，系统时间的跳变将导致软件出现意想不到的问题，所以时间渐变才是ntpd的主要应用场景。
+
+3、那么怎么禁止ntpd的时间跳变，只采用时间渐变呢？
+
+刚开始通过man ntpd，尝试在ntpd启动配置(/etc/sysconfig/ntpd)中加-x选项：
+
+-xNormally, the time is slewed if the offset is less than the step threshold, which is 128 ms by default, and stepped if above the threshold. This option forces the time to be slewed in all cases. If the step threshold is set to zero, all offsets are stepped, regardless of value and regardless of the -x option. In general, this is not a good idea, as it bypasses the clock state machine which is designed to cope with large time and frequency errors Note: Since the slew rate is limited to 0.5 ms/s, each second of adjustment requires an amortization interval of 2000 s. Thus, an adjustment of many seconds can take hours or days to amortize. This option can be used with the -q option.
+结果发现-x只是提高了时间跳变的阈值，在client与server时间差小于600秒时，时间的调整使用渐变，大于600秒，时间调整使用跳变形式。
+
+查了很多资料，最后确定在ntp配置文件/etc/ntp.conf中添加字段：
+
+[html] view plain copy
+tinker panic 600
+
+这句话的意思是在时间差大于600秒的情况下，ntpd进程自动关闭，ntpd退出时会向/var/log/messages中写入log
+在时间差过大时，应该由用户手动设置系统时间或者调用ntpdate命令，这样能避免因为时间跳变出现的问题。
+
+
+http://www.cnblogs.com/sonwnja/p/6767936.html
+http://blog.csdn.net/u014707812/article/details/52150563
+
+#### 权限设置
+
+通过 `restrict` 关键字设置，可以通过 `-6` 参数指定为 IPv6 ，其语法为：
+
+restrict [-6] IP mask MASK ARGS
+IP: 配置的IP地址，可以是default，也就是不指定的默认值
+ARGS:
+   ignore    关闭所有的NTP请求
+   nomodify  客户端不能更改服务端的配置参数
+   nopeer    不与同一层的NTP服务器同步
+   notrust   拒绝没有通过认证的客户端请求
+   noquery   不提供客户端的时间查询，一般作为主机客户端
+   notrap    不提供ntpdc的trap远程事件登录的功能
+   kod       阻止Kiss of Death类型的DDoS攻击
+
+常见设置有：
+restrict default kod nomodify notrap nopeer noquery     # IPv4设置
+restrict -6 default kod nomodify notrap nopeer noquery  # IPv6设置
+
+# 允许本地所有操作
+restrict 127.0.0.1
+restrict -6 ::1
+
+# 允许的局域网络段或单独IP
+restrict 10.0.0.0 mask 255.0.0.0 nomodify notrap
+restrict 192.168.0.0 mask 255.255.255.0 nomodify notrap
+restrict 192.168.1.123 mask 255.255.255.255 nomodify notrap
+
+#### 服务端设置
+
+设定上级时间服务器，语法为：
+
+server IP/HOSTNAME [prefer] [iburst]
+
+增加 prefer 表示优先选择，否则按照配置文件的顺序由高到低。
+
+iburst 用于开始快速进行同步，一般开始一分钟只发送一次请求，通过该参数可以在第一分钟内发送多次查询，直到时间同步；如果服务没有响应，同样会快速查询。
+
+而 burst 则会一直发送多次请求，不建议使用该选项，可能会视为攻击而被禁止。
+
+##### poll
+
+关于 minpoll/maxpoll 用于设置 NTP 消息的最小和最大轮询间隔，最大默认为 10(1024s) 可以设置为 17(36.4h)；最小默认为 6(64s) 也可以设置为 4(16s)；注意，这里的单位不是秒，而是 2 的几次方。
+
+# 使用多选项的本地配置
+server 127.127.1.0 prefer burst iburst minpoll 6 maxpoll 10
+fudge 127.127.1.0 stratum 0
+
+#### 其它配置
+
+# 如果无法与上层服务器通信则以本地时间作标准时间，fudge用于指定本地
+server 127.127.1.0     # local clock
+fudge 127.127.1.0 stratum 10
+
+# 指定driftfile文件名，用于写入时间偏差
+ftfile /var/lib/ntp/driftrestrict
+
+# 加密及key文件
+includefile /etc/ntp/crypto/pw
+keys /etc/ntp/keys
+
+
+除了 ntpdate 还可以使用 rdate，不过这是一个很老的的协议了。
+
+tinker step 0
+tinker panic 0
+disable monitor
+disable kernel
+
+## 典型配置
+
+一般生产环境至少需要两台，设置为对等模式，相互备份，同时可以防止由于单台主机异常导致全网异常。
+
+http://haibing.org/?p=52
+
+jitter 与BIOS硬件时间差异
+
+当系统出问题后，每次输入命令都会输出 `You have new mail in /var/spool/mail/root` 类似的内容。
+
+这个是 Linux 系统自动发送的一些邮件，用来提醒用户系统中出了哪些问题，通常收件箱位于 `/var/mail/` 目录下，对于 root 可以直接通过 `cat /var/mail/root` 文件。
+
+----- 关闭邮件提醒
+# echo "unset MAILCHECK" >> /etc/profile
+# source /etc/profile
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/python-version2-vs-version3-introduce.html" title="Python2 VS. Python3">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-cpu-physical-arch-introduce.html" title="CPU 物理架构">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1488211200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-ntp-related-stuff-introduce.html" data-title="Linux NTP 介绍" data-url="/post/linux-ntp-related-stuff-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

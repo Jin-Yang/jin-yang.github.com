@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Documentation and user's manual for Aspersa toolkit">
+<meta name="keywords" content="MySQL"> 
+<meta name="author" content="Baron Schwartz"> 
+<link rel="stylesheet" type="text/css" href="Aspersa%20User%27s%20Manual%20-%20The%20mext%20tool_files/default.css" media="screen">
+<title>Aspersa User's Manual - The mext tool</title>
+</head>
+<body>
+<div class="outer-container">
+<div class="inner-container">
+	<div class="header">
+		<div class="title">
+			<span class="sitename"><a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa User's Manual</a></span>
+			<div class="slogan">The mext tool</div>
+		</div>
+	</div>
+	<div class="path">
+			<a href="http://aspersa.googlecode.com/svn/html/index.html">Aspersa Manual</a> › The mext tool
+	</div>
+	<div class="main">		
+		<div class="content">
+
+<p>The <em>mext</em> tool is a handy way to look at many samples of MySQL's SHOW GLOBAL STATUS side by side.</p>
+
+<h2>Command-Line Options and Environment Variables</h2>
+
+<p>The tool has the following command-line options:</p>
+
+<dl>
+<dt>-r</dt> <dd>Causes each sample to be subtracted from the previous sample, so you see the difference between them.</dd>
+</dl>
+
+<p>Any additional command-line arguments passed to the tool, after the 
+standard Unix double-dash option to indicate the end of option 
+processing, will be executed as a command.</p>
+
+<h2>How it Works</h2>
+
+<p>The <em>mext</em> tool executes the command you specify, and reads 
+through the result one line at a time.  It places each line into a 
+temporary file.  When it finds a blank line, it assumes that a new 
+sample of SHOW GLOBAL STATUS is starting, and it creates a new temporary
+ file.  At the end of this process, it has a number of temporary files. 
+ It joins the temporary files together side-by-side and prints the 
+result.  If the -r option is given, it first subtracts each sample from 
+the one after it before printing results.</p>
+
+<h2>Example Usage</h2>
+
+<p>You can use this tool to gather and column-ify data, or you can make 
+it column-ify data that has already been gathered.  Try the following 
+commands:</p>
+
+<code>
+# Gather 3 samples at 10-second intervals, and place them side by side:
+mext -- mysqladmin ext -c3 -i10
+
+# Ditto, but show relative differences between samples:
+mext -- mysqladmin ext -c3 -i10 -r
+
+# Show relative diff between samples previously saved in mext-file:
+mext -r -- cat mext-file
+</code>
+
+<p>The output will look something like the following:</p>
+
+<code>
+Aborted_clients                             156    0    0
+Aborted_connects                           1310    0    0
+Binlog_cache_disk_use                         0    0    0
+Binlog_cache_use                         103261    0    0
+Bytes_received                       1674663578   35   35
+Bytes_sent                          10710808254 6586 6586
+</code>
+
+<p>The more samples there are, the more columns there will be.</p>
+
+		</div>
+		<div class="navigation">
+			<h2>Navigation</h2>
+			<ul>
+				<li><a href="http://aspersa.googlecode.com/svn/html/support.html">Support and help</a></li>
+				<li><a href="http://aspersa.googlecode.com/svn/html/installing.html">Installing Aspersa</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/align.html">The align tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/collect.html">The collect tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/diskstats.html">The diskstats tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/ioprofile.html">The ioprofile tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mext.html">The mext tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/mysql-summary.html">The mysql-summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/pmp.html">The pmp tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/rel.html">The rel tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/sift.html">The sift tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/stalk.html">The stalk tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/summary.html">The summary tool</a></li>
+            <li><a href="http://aspersa.googlecode.com/svn/html/usl.html">The usl tool</a></li>
+			</ul>
+		</div>
+		<div class="clearer">&nbsp;</div>
+	</div>
+	<div class="footer">
+		<span class="right"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></span>
+		<div class="clearer"></div>
+	</div>
+</div>
+</div>
+
+
+</body></html>

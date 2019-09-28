@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux PIPE 相关介绍|JinYang's Blog</title>
+  <meta name="keywords" content="linux,auto,completion">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux PIPE 相关介绍</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2018-07-20 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <!-- more -->
+
+<h2 id="容量限制">容量限制</h2>
+
+<p>在 Linux 中管道的能力是有限的，对于一个应用来说，如果管道满，那么会导致 <code>write()</code> 系统调用被阻塞 (依赖于程序是否设置了 <code>O_NONBLOCK</code> 标志)。</p>
+
+<p>不同的系统对应的 Pipe 能力不同，所以应用应该做到尽快读取 Pipe 中的数据，以防止阻塞。</p>
+
+<h3 id="最大容量">最大容量</h3>
+
+<p>在 <code>man 7 pip</code> 中 <code>Pipe capacity</code> 有相关的介绍，对于 2.6.11 之前的版本标准是一个页的大小，一般是 4K ，而在之后最大是 64K 。</p>
+
+<p>实际上通过，<code>ulimit -a</code> 查看 Pipe 的大小是 <code>512 * 8 = 4K</code> ，而实际上内核会动态分配最大到 16 倍的缓冲，也就是最大到 64K 。</p>
+
+<p>注意，其中的 16 倍是在源码的 <code>linux/pipe_fs_i.h</code> 文件中通过 <code>PIPE_DEF_BUFFERS</code> 宏定义写死的，所以，如果想要扩展 Pipe 的最大能力，就需要修改宏重新编译内核。</p>
+
+<h3 id="内核实现">内核实现</h3>
+
+<p>在 Linux 中，管道的实现并没有使用专门的数据结构，而是借助了文件系统的 <code>struct file</code> 和 VFS 的索引节点 <code>struct inode</code> ，通过将两个 file 结构指向同一个临时的 VFS 索引节点，而这个 VFS 索引节点又指向一个物理页面而实现的。</p>
+
+<p>有两个 file 数据结构，但它们定义文件操作例程地址是不同的，其中一个是向管道中写入数据的例程地址，而另一个是从管道中读出数据的例程地址。这样，用户程序的系统调用仍然是通常的文件操作，而内核却利用这种抽象机制实现了管道这一特殊操作。</p>
+
+<h2 id="popen">popen</h2>
+
+<p>简单来说，<code>popen()</code> 会 <code>fork()</code> 一个子进程，然后建立管道，并通过管道读取相关的数据。</p>
+
+<p>注意处理时需要注意如下的异常场景。</p>
+
+<h4 id="1-提前关闭">1. 提前关闭</h4>
+
+<p>读取部分数据后直接调用了 <code>pclose()</code> ，提前关闭了一段的管道，那么接下来的行为要依赖调用命令了，列举如下：</p>
+
+<ol>
+  <li>如果调用的命令没有输出任何内容，那么对应的命令可以正常运行。</li>
+  <li>调用命令同时输出了，因为此时管道的对端关闭了，那么命令输出时实际会接收 <code>SIGPIPE</code> 信号，默认是直接退出。</li>
+</ol>
+
+<h4 id="2-异常处理">2. 异常处理</h4>
+
+<p>因为是标准的 C 库，实际上可以使用 <code>strerror(errno)</code> 打印错误信息，包括了 <code>popen()</code> <code>pclose()</code> ，当然对于 <code>popen()</code> 内存申请失败，实际上是不会设置 <code>errno</code> 的。</p>
+
+<p>在循环读取数据时，建议使用 <code>fgets()</code>，理由如下。</p>
+
+<p><code>fgets()</code> 如果获取的数据超过了 buffer 的大小，实际获取的数据是 <code>sizeof(buffer) - 1</code> ，而且最后会填充一个 <code>'\0'</code> 作为字符串的结束。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>不是特别喜欢用类似 <code>popen()</code> 这样的封装，理由如下：</p>
+
+<ol>
+  <li>同步命令。目前为了保证性能大部分的代码用的是异步调用方式，这样的话 <code>popen()</code> 实际使用场景有限。</li>
+  <li>超时处理。如果要设置命令执行的超时，那么在调用命令的时候需要添加 <code>timeout</code> 命令，一般建议为 <code>timeout --signal=INT --kill-after=10 YOUR CMD</code> 这种方式。</li>
+  <li>标准错误输出。该函数只读取标准输出的内容，不会读取标准错误输出，所以调用脚本时，需要将标准错误输出重定向，例如 <code>command 2&gt;&amp;1</code>。</li>
+</ol>
+
+<p>在通过 <code>pclose()</code> 返回时，如果 <code>wait4()</code> 没有报错，那么实际上会返回进程的退出码，这样就可以通过该值获取更多的有效信息，例如退出码、是否core、是否收到信号等等，然后根据这些信息去做相关处理。</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c">#!/bin/bash</span>
+<span class="nb">trap</span> <span class="s2">&quot;echo &#39;pipe error&#39; &gt; /tmp/pipe.err&quot;</span> PIPE
+<span class="k">for</span> i in <span class="o">{</span>1..100<span class="o">}</span><span class="p">;</span> <span class="k">do</span>
+        <span class="c">#echo &quot;Current count ${i}&quot; &gt;&gt; /tmp/pipe.out</span>
+        <span class="nb">echo</span> <span class="s2">&quot;Current count ${i}&quot;</span>
+        sleep 1
+<span class="k">done</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;errno.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">popen</span><span class="p">(</span><span class="s">&quot;bash /tmp/pipe.sh&quot;</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">fp</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;popen() failed, %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Output BEGIN</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="k">while</span><span class="p">(</span><span class="n">fgets</span><span class="p">(</span><span class="n">buff</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">),</span> <span class="n">fp</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;xxx%s&quot;</span><span class="p">,</span> <span class="n">buff</span><span class="p">);</span> <span class="cm">/* including &#39;\n&#39; for fgets() */</span>
+                <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">)</span>
+                        <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Output -END-</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pclose</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;pclose() failed, %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="原子操作">原子操作</h2>
+
+<p>所谓的原子操作，简单来说就是这次写入要么成功要么失败，不会存在着中间状态。</p>
+
+<p>对于 PIPE 来说，可以参考 <a href="https://www.tldp.org/LDP/lpg/node13.html">Atomic Operations with Pipes</a> 中的介绍，也就是说 POSIX 规定了 <code>512</code> 字节的写入是原子的，而 Linux 实际上是 <code>4096</code> 。</p>
+
+<p>Linux 在 <code>linux/limits.h</code> 头文件中，通过 <code>PIPE_BUF</code> 宏定义了该值。</p>
+
+<h3 id="示例">示例</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;errno.h&gt;</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+<span class="cp">#include &lt;unistd.h&gt;</span>
+
+<span class="cp">#define NUM_PRODUCE    5</span>
+<span class="cp">#define NUM_CONSUME    1</span>
+
+<span class="cp">#include &lt;stdarg.h&gt;</span>
+<span class="cp">#include &lt;pthread.h&gt;</span>
+
+<span class="cp">#define MOD &quot;(main) &quot;</span>
+
+<span class="cp">#define LVL_INFO   1</span>
+<span class="cp">#define LVL_ERROR  2</span>
+
+<span class="kt">void</span> <span class="nf">log_it</span><span class="p">(</span><span class="kt">int</span> <span class="n">severity</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="k">const</span> <span class="n">fmt</span><span class="p">,</span> <span class="p">...)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">rc</span><span class="p">,</span> <span class="n">len</span><span class="p">;</span>
+        <span class="kt">va_list</span> <span class="n">ap</span><span class="p">;</span>
+        <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">128</span><span class="p">],</span> <span class="o">*</span><span class="n">ptr</span><span class="p">,</span> <span class="o">*</span><span class="n">end</span><span class="p">;</span>
+
+        <span class="n">end</span> <span class="o">=</span> <span class="n">buff</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">severity</span> <span class="o">==</span> <span class="n">LVL_INFO</span><span class="p">)</span>
+                <span class="n">memcpy</span><span class="p">(</span><span class="n">buff</span><span class="p">,</span> <span class="s">&quot;INFO  &quot;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="s">&quot;INFO  &quot;</span><span class="p">));</span>
+        <span class="k">else</span>
+                <span class="n">memcpy</span><span class="p">(</span><span class="n">buff</span><span class="p">,</span> <span class="s">&quot;ERROR &quot;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="s">&quot;ERROR &quot;</span><span class="p">));</span>
+        <span class="n">ptr</span> <span class="o">=</span> <span class="n">buff</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="s">&quot;ERROR &quot;</span><span class="p">);</span> <span class="cm">/* 6 */</span>
+        <span class="n">len</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">ptr</span><span class="p">;</span> <span class="cm">/* including &#39;\n&#39; */</span>
+
+        <span class="n">va_start</span><span class="p">(</span><span class="n">ap</span><span class="p">,</span> <span class="n">fmt</span><span class="p">);</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">vsnprintf</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">ap</span><span class="p">);</span>
+        <span class="n">va_end</span><span class="p">(</span><span class="n">ap</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">&gt;=</span> <span class="n">len</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">buff</span><span class="p">[</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+                <span class="n">buff</span><span class="p">[</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;.&#39;</span><span class="p">;</span>
+                <span class="n">buff</span><span class="p">[</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;.&#39;</span><span class="p">;</span>
+                <span class="n">buff</span><span class="p">[</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;.&#39;</span><span class="p">;</span>
+                <span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="o">*</span><span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="n">rc</span><span class="p">)</span> <span class="o">=</span> <span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+                <span class="n">len</span> <span class="o">=</span> <span class="n">ptr</span> <span class="o">-</span> <span class="n">buff</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">rc</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">write</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">buff</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cp">#define log_info(...)  log_it(LVL_INFO, __VA_ARGS__);</span>
+<span class="cp">#define log_error(...) log_it(LVL_ERROR, __VA_ARGS__);</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">producer_func</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="n">nbytes</span><span class="p">,</span> <span class="n">i</span><span class="p">;</span>
+        <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+
+        <span class="n">fd</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span><span class="n">args</span><span class="p">;</span>
+        <span class="n">log_info</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;producer thread #%lx start, write fd %d.&quot;</span><span class="p">,</span> <span class="n">pthread_self</span><span class="p">(),</span> <span class="n">fd</span><span class="p">);</span>
+        <span class="n">nbytes</span> <span class="o">=</span> <span class="n">snprintf</span><span class="p">(</span><span class="n">buff</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">),</span> <span class="s">&quot;thread %ld</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">pthread_self</span><span class="p">());</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1000000</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buff</span><span class="p">,</span> <span class="n">nbytes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">log_error</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;write to pipe %d times failed, %s.&quot;</span><span class="p">,</span>
+                                        <span class="n">i</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="n">log_info</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;producer thread #%lx quit.&quot;</span><span class="p">,</span> <span class="n">pthread_self</span><span class="p">());</span>
+        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">consumer_func</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">1024</span><span class="p">],</span> <span class="o">*</span><span class="n">ptr</span><span class="p">,</span> <span class="o">*</span><span class="n">end</span><span class="p">,</span> <span class="o">*</span><span class="n">last</span><span class="p">,</span> <span class="o">*</span><span class="n">tail</span><span class="p">,</span> <span class="o">*</span><span class="n">str</span><span class="p">;</span>
+
+        <span class="n">fd</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span><span class="n">args</span><span class="p">;</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">buff</span><span class="p">;</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">buff</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">);</span>
+        <span class="n">log_info</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;consumer thread #%lx start, read fd %d.&quot;</span><span class="p">,</span> <span class="n">pthread_self</span><span class="p">(),</span> <span class="n">fd</span><span class="p">);</span>
+        <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">ptr</span><span class="p">,</span> <span class="n">end</span> <span class="o">-</span> <span class="n">ptr</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">log_error</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;read from pipe failed, %s.&quot;</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">log_error</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;peer has closed, just quit.&quot;</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="n">tail</span> <span class="o">=</span> <span class="n">ptr</span> <span class="o">+</span> <span class="n">rc</span><span class="p">;</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">buff</span><span class="p">,</span> <span class="n">last</span> <span class="o">=</span> <span class="n">buff</span><span class="p">;</span> <span class="n">ptr</span> <span class="o">&lt;</span> <span class="n">tail</span><span class="p">;</span> <span class="n">ptr</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">ptr</span> <span class="o">==</span> <span class="sc">&#39;\n&#39;</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+                                <span class="n">str</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">last</span><span class="p">,</span> <span class="sc">&#39; &#39;</span><span class="p">);</span>
+                                <span class="o">*</span><span class="n">str</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+                                <span class="k">if</span> <span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">last</span><span class="p">,</span> <span class="s">&quot;thread&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                                        <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+
+                                <span class="c1">//log_info(MOD &quot;got a line: %s&quot;, last);</span>
+                                <span class="n">last</span> <span class="o">=</span> <span class="n">ptr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">last</span> <span class="o">==</span> <span class="n">buff</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">log_error</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;buffer overflow.&quot;</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">buff</span><span class="p">;</span> <span class="n">last</span> <span class="o">&lt;</span> <span class="n">tail</span><span class="p">;</span> <span class="n">last</span><span class="o">++</span><span class="p">,</span> <span class="n">ptr</span><span class="o">++</span><span class="p">)</span>
+                        <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="o">*</span><span class="n">last</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">log_info</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;consumer thread #%lx quit, got %d.&quot;</span><span class="p">,</span> <span class="n">pthread_self</span><span class="p">(),</span> <span class="n">count</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">pipefd</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">i</span><span class="p">;</span>
+        <span class="kt">pthread_t</span> <span class="n">consumers</span><span class="p">[</span><span class="n">NUM_CONSUME</span><span class="p">],</span> <span class="n">producers</span><span class="p">[</span><span class="n">NUM_PRODUCE</span><span class="p">];</span>
+
+        <span class="c1">//log_info(&quot;123456789&quot;);  /* INFO  12345... */</span>
+        <span class="c1">//log_info(&quot;12345678&quot;);   /* INFO  12345678 */</span>
+        <span class="c1">//log_info(&quot;1234567&quot;);    /* INFO  1234567 */</span>
+        <span class="c1">//log_it(LVL_INFO, &quot;12345678&quot;);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">pipe</span><span class="p">(</span><span class="n">pipefd</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;create pipe failed, %s.&quot;</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_CONSUME</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+                <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">consumers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">consumer_func</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pipefd</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_PRODUCE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+                <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">producers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">producer_func</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pipefd</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+        <span class="n">log_info</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;wait producers quit.&quot;</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_PRODUCE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+                <span class="n">pthread_join</span><span class="p">(</span><span class="n">producers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">log_info</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;all producers quit now.&quot;</span><span class="p">);</span>
+        <span class="n">close</span><span class="p">(</span><span class="n">pipefd</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+        <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+        <span class="n">log_info</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;wait consumers quit.&quot;</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_CONSUME</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+                <span class="n">pthread_join</span><span class="p">(</span><span class="n">consumers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">log_info</span><span class="p">(</span><span class="n">MOD</span> <span class="s">&quot;all consumers quit now.&quot;</span><span class="p">);</span>
+
+        <span class="n">close</span><span class="p">(</span><span class="n">pipefd</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="其它">其它</h2>
+
+<h3 id="broken-pipe">Broken Pipe</h3>
+
+<p>一般来说就是尝试写入数据的时候，对端已经关闭，包括了 Socket 以及 Pipe 。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/program-c-preload-introduce.html" title="C Preload 简介">&larr; Older</a></li> 
+         <li class="next"><a href="/post/golang-grpc-sourcecode-details.html" title="GoLang gRPC 源码解析">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1532016000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-pipe-stuff-introduce.html" data-title="Linux PIPE 相关介绍" data-url="/post/linux-pipe-stuff-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>libev 源码详解|JinYang's Blog</title>
+  <meta name="keywords" content="linux,program,libev,event loop">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>libev 源码详解</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-11-09 Wednesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  program  
+      
+    </div>
+  </div>
+  <hr>
+  <p>libev 内部结构比较简单，只提供了基本的处理逻辑，其中核心主要分成了几部分：文件描述符处理。</p>
+
+<!-- more -->
+
+<h3 id="时间触发">时间触发</h3>
+
+<p>每次事件准备好之后，会通过</p>
+
+<h2 id="简介">简介</h2>
+
+<p>libev 通过观察器 (watcher) 来监听各种事件，watcher 包括了事件类型、优先级、触发条件和回调函数等参数；将其注册到事件循环上，在满足注册的条件时，会触发观察器，调用它的回调函数。</p>
+
+<p>其中相关事件类型的宏定义如下，其中部分是用来标示不同类型触发的事件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">enum {
+  EV_UNDEF    = (int)0xFFFFFFFF, /* guaranteed to be invalid */
+  EV_NONE     =            0x00, /* no events */
+  EV_READ     =            0x01, /* ev_io detected read will not block */
+  EV_WRITE    =            0x02, /* ev_io detected write will not block */
+  EV__IOFDSET =            0x80, /* internal use only */
+  EV_IO       =         EV_READ, /* alias for type-detection */
+  EV_TIMER    =      0x00000100, /* timer timed out */
+#if EV_COMPAT3
+  EV_TIMEOUT  =        EV_TIMER, /* pre 4.0 API compatibility */
+#endif
+  EV_PERIODIC =      0x00000200, /* periodic timer timed out */
+  EV_SIGNAL   =      0x00000400, /* signal was received */
+  EV_CHILD    =      0x00000800, /* child/pid had status change */
+  EV_STAT     =      0x00001000, /* stat data changed */
+  EV_IDLE     =      0x00002000, /* event loop is idling */
+  EV_PREPARE  =      0x00004000, /* event loop about to poll */
+  EV_CHECK    =      0x00008000, /* event loop finished poll */
+  EV_EMBED    =      0x00010000, /* embedded event loop needs sweep */
+  EV_FORK     =      0x00020000, /* event loop resumed in child */
+  EV_CLEANUP  =      0x00040000, /* event loop resumed in child */
+  EV_ASYNC    =      0x00080000, /* async intra-loop signal */
+  EV_CUSTOM   =      0x01000000, /* for use by user code */
+  EV_ERROR    = (int)0x80000000  /* sent when an error occurs */</code></pre></figure>
+
+<p>libev 中的观察器分为 4 种状态：初始化、启动/活动、等待、停止。</p>
+
+<p>首先需要对 watcher 初始化，可通过 <code>ev_TYPE_init()</code> 或者 <code>ev_init()</code>+<code>ev_TYPE_set()</code> 初始化，两者等效；实际就是设置对应结构体的初始值。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define ev_io_init(ev,cb,fd,events)              \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_io_set ((ev),(fd),(events)); } while (0)</span>
+<span class="cp">#define ev_timer_init(ev,cb,after,repeat)        \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_timer_set ((ev),(after),(repeat)); } while (0)</span>
+<span class="cp">#define ev_periodic_init(ev,cb,ofs,ival,rcb)     \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_periodic_set ((ev),(ofs),(ival),(rcb)); } while (0)</span>
+<span class="cp">#define ev_signal_init(ev,cb,signum)             \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_signal_set ((ev), (signum)); } while (0)</span>
+<span class="cp">#define ev_child_init(ev,cb,pid,trace)           \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_child_set ((ev),(pid),(trace)); } while (0)</span>
+<span class="cp">#define ev_stat_init(ev,cb,path,interval)        \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_stat_set ((ev),(path),(interval)); } while (0)</span>
+<span class="cp">#define ev_idle_init(ev,cb)                      \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_idle_set ((ev)); } while (0)</span>
+<span class="cp">#define ev_prepare_init(ev,cb)                   \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_prepare_set ((ev)); } while (0)</span>
+<span class="cp">#define ev_check_init(ev,cb)                     \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_check_set ((ev)); } while (0)</span>
+<span class="cp">#define ev_embed_init(ev,cb,other)               \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_embed_set ((ev),(other)); } while (0)</span>
+<span class="cp">#define ev_fork_init(ev,cb)                      \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_fork_set ((ev)); } while (0)</span>
+<span class="cp">#define ev_cleanup_init(ev,cb)                   \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_cleanup_set ((ev)); } while (0)</span>
+<span class="cp">#define ev_async_init(ev,cb)                     \</span>
+<span class="cp">    do { ev_init ((ev), (cb)); ev_async_set ((ev)); } while (0)</span></code></pre></figure>
+
+<p>接下来，通过 <code>ev_TYPE_start()</code>、<code>ev_TYPE_stop()</code> 来启动、停止观察器，停止同时会释放内存。</p>
+
+<h3 id="结构体">结构体</h3>
+
+<p>libev 通过 C 语言实现，其中通过宏实现了一种类似的继承机制，也就是其中各种 Watchers 的部分成员变量是相同的，只有少部分成员为各自独有，接下来简单介绍下。</p>
+
+<p>每个 watcher 都会包含 <code>EV_WATCHER</code> 宏定义的内容，该宏实际会包含如下内容，其中 type 对应类型，如 <code>ev_io</code> 等。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp"># define EV_CB_DECLARE(type) void (*cb)(EV_P_ struct type *w, int revents);</span>
+
+<span class="cp">#define EV_WATCHER(type) \</span>
+<span class="cp">  int active;          </span><span class="cm">/* private，是否激活，通过start()/stop()处理 */</span><span class="cp"> \</span>
+<span class="cp">  int pending;         </span><span class="cm">/* private，有事件就绪等待处理，对应了等待队列的下标 */</span><span class="cp"> \</span>
+<span class="cp">  EV_DECL_PRIORITY     </span><span class="cm">/* private，定义优先级，如果没有使用优先级则是空 */</span><span class="cp"> \</span>
+<span class="cp">  EV_COMMON            </span><span class="cm">/* rw，私有数据，一般是void *data */</span><span class="cp"> \</span>
+<span class="cp">  EV_CB_DECLARE (type) </span><span class="cm">/* private，回调函数 */</span><span class="cp"></span>
+
+<span class="cp">#define EV_WATCHER_LIST(type)           \</span>
+<span class="cp">  EV_WATCHER (type)                     \</span>
+<span class="cp">  struct ev_watcher_list *next; </span><span class="cm">/* private */</span><span class="cp"></span>
+
+<span class="cp">#define EV_WATCHER_TIME(type)           \</span>
+<span class="cp">  EV_WATCHER (type)                     \</span>
+<span class="cp">  ev_tstamp at;                 </span><span class="cm">/* private */</span><span class="cp"></span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">ev_watcher</span> <span class="p">{</span>
+  <span class="n">EV_WATCHER</span> <span class="p">(</span><span class="n">ev_watcher</span><span class="p">)</span>
+<span class="p">}</span> <span class="n">ev_watcher</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">ev_watcher_list</span> <span class="p">{</span>
+  <span class="n">EV_WATCHER_LIST</span> <span class="p">(</span><span class="n">ev_watcher_list</span><span class="p">)</span>
+<span class="p">}</span> <span class="n">ev_watcher_list</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">ev_io</span> <span class="p">{</span>
+  <span class="n">EV_WATCHER_LIST</span> <span class="p">(</span><span class="n">ev_io</span><span class="p">)</span>
+
+  <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>     <span class="cm">/* ro */</span>
+  <span class="kt">int</span> <span class="n">events</span><span class="p">;</span> <span class="cm">/* ro */</span>
+<span class="p">}</span> <span class="n">ev_io</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">ev_timer</span> <span class="p">{</span>
+  <span class="n">EV_WATCHER_TIME</span> <span class="p">(</span><span class="n">ev_timer</span><span class="p">)</span>
+
+  <span class="n">ev_tstamp</span> <span class="n">repeat</span><span class="p">;</span> <span class="cm">/* rw */</span>
+<span class="p">}</span> <span class="n">ev_timer</span><span class="p">;</span></code></pre></figure>
+
+<p>如上的 <code>ev_watcher</code> 结构体可以时为 “基类”，通过宏 <code>EV_WATCHER</code> 定义了它的所有成员；而像 IO Watcher、Signal Watcher 是以链表的形式进行组织的，所以在 <code>ev_watcher</code> 基类的基础上，定义了 <code>ev_watcher</code> 的子类 <code>ev_watcher_list</code> 。</p>
+
+<h2 id="多实例支持">多实例支持</h2>
+
+<p>默认 <code>ev_loop</code> 是主循环，保存了与循环相关的很多变量，而 <code>EV_MULTIPLICITY</code> 是一个条件编译的宏，表明是否支持有多个 <code>ev_loop</code> 实例存在，表现在源码中表示是否需要传递 <code>struct ev_loop *loop</code> 参数，一般来说，每个线程中有且仅有一个 <code>ev_loop</code> 实例。</p>
+
+<p>例如，可以在多线程编程中每个线程使用一个实例。</p>
+
+<h3 id="结构体-1">结构体</h3>
+
+<p>其中最为关键的代码如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#if EV_MULTIPLICITY</span>
+	<span class="k">struct</span> <span class="n">ev_loop</span> <span class="p">{</span>
+		<span class="n">ev_tstamp</span> <span class="n">ev_rt_now</span><span class="p">;</span>
+		<span class="cp">#define ev_rt_now ((loop)-&gt;ev_rt_now)</span>
+		<span class="cp">#define VAR(name,decl) decl;</span>
+		<span class="cp">#include &quot;ev_vars.h&quot;</span>
+		<span class="cp">#undef VAR</span>
+	<span class="p">};</span>
+	<span class="cp">#include &quot;ev_wrap.h&quot;</span>
+	<span class="k">static</span> <span class="k">struct</span> <span class="n">ev_loop</span> <span class="n">default_loop_struct</span><span class="p">;</span>
+	<span class="cm">/* needs to be initialised to make it a definition despite extern */</span>
+	<span class="k">struct</span> <span class="n">ev_loop</span> <span class="o">*</span><span class="n">ev_default_loop_ptr</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="cp">#else</span>
+	<span class="cm">/* needs to be initialised to make it a definition despite extern */</span>
+	<span class="n">ev_tstamp</span> <span class="n">ev_rt_now</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="cp">#define VAR(name,decl) static decl;</span>
+	<span class="cp">#include &quot;ev_vars.h&quot;</span>
+	<span class="cp">#undef VAR</span>
+	<span class="k">static</span> <span class="kt">int</span> <span class="n">ev_default_loop_ptr</span><span class="p">;</span>
+<span class="cp">#endif</span></code></pre></figure>
+
+<p>如果支持多个 event loop，那么 <code>ev_default_loop_ptr</code> 就是一个静态的 <code>struct ev_loop</code> 类型的结构体，其中包含了各种成员，比如 <code>ev_tstamp ev_rt_now;</code> <code>int pendingpri;</code> 等等。</p>
+
+<p>如果不支持多个 event loop，则上述的 <code>struct ev_loop</code> 结构就不存在，其成员都是以静态变量的形式进行定义，而 <code>ev_default_loop_ptr</code> 也只是一个 int 变量，用来表明 loop 是否已经初始化成功。</p>
+
+<p>使用方式可以查看之前的示例。</p>
+
+<h2 id="系统时间">系统时间</h2>
+
+<p>在介绍代码的详细处理逻辑之前，先简单介绍下与时间相关的内容，看下 libev 是如何使用时间的，因为该库中很多与时间相关的操作。</p>
+
+<p>在 <code>libev.m4</code> 中，定义了与之相关的宏，如下所示。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">AC_CHECK_FUNCS(clock_gettime, [], [
+   dnl on linux, try syscall wrapper first
+   if test $(uname) = Linux; then
+      AC_MSG_CHECKING(for clock_gettime syscall)
+      AC_LINK_IFELSE([AC_LANG_PROGRAM(
+         [#include &lt;unistd.h&gt;
+          #include &lt;sys/syscall.h&gt;
+          #include &lt;time.h&gt;],
+         [struct timespec ts; int status = syscall (SYS_clock_gettime, CLOCK_REALTIME, &amp;ts)])],
+         [ac_have_clock_syscall=1
+          AC_DEFINE(HAVE_CLOCK_SYSCALL, 1, Define to 1 to use the syscall interface for clock_gettime)
+          AC_MSG_RESULT(yes)],
+         [AC_MSG_RESULT(no)])
+   fi
+   if test -z &quot;$LIBEV_M4_AVOID_LIBRT&quot; &amp;&amp; test -z &quot;$ac_have_clock_syscall&quot;; then
+      AC_CHECK_LIB(rt, clock_gettime)
+      unset ac_cv_func_clock_gettime
+      AC_CHECK_FUNCS(clock_gettime)
+   fi
+])
+
+AC_CHECK_FUNCS(nanosleep, [], [
+   if test -z &quot;$LIBEV_M4_AVOID_LIBRT&quot;; then
+      AC_CHECK_LIB(rt, nanosleep)
+      unset ac_cv_func_nanosleep
+      AC_CHECK_FUNCS(nanosleep)
+   fi
+])</code></pre></figure>
+
+<p><code>clock_gettime()</code> 函数的调用有两种方式，分别是系统调用和 <code>-lrt</code> 库；在上述的 <code>libev.m4</code> 中，会进行检测，首先会检测 <code>clock_gettime()</code> 系统调用是否可用，如果可用会定义 <code>HAVE_CLOCK_SYSCALL</code> 宏。</p>
+
+<p>libev 提供了单调递增 (monotonic) 以及实时时间 (realtime) 两种记时方式，其宏定义的方式如下，而 <code>HAVE_CLOCK_SYSCALL</code> 和 <code>HAVE_CLOCK_GETTIME</code> 的详见 libev.m4 中定义，优先使用 <code>SYS_clock_gettime()</code> 系统调用 API 函数。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp"># if HAVE_CLOCK_SYSCALL</span>
+<span class="cp">#  ifndef EV_USE_CLOCK_SYSCALL</span>
+<span class="cp">#   define EV_USE_CLOCK_SYSCALL 1</span>
+<span class="cp">#   ifndef EV_USE_REALTIME</span>
+<span class="cp">#    define EV_USE_REALTIME  0</span>
+<span class="cp">#   endif</span>
+<span class="cp">#   ifndef EV_USE_MONOTONIC</span>
+<span class="cp">#    define EV_USE_MONOTONIC 1</span>
+<span class="cp">#   endif</span>
+<span class="cp">#  endif</span>
+<span class="cp"># elif !defined EV_USE_CLOCK_SYSCALL</span>
+<span class="cp">#  define EV_USE_CLOCK_SYSCALL 0</span>
+<span class="cp"># endif</span>
+
+<span class="cp"># if HAVE_CLOCK_GETTIME</span>
+<span class="cp">#  ifndef EV_USE_MONOTONIC</span>
+<span class="cp">#   define EV_USE_MONOTONIC 1</span>
+<span class="cp">#  endif</span>
+<span class="cp">#  ifndef EV_USE_REALTIME</span>
+<span class="cp">#   define EV_USE_REALTIME  0</span>
+<span class="cp">#  endif</span>
+<span class="cp"># else</span>
+<span class="cp">#  ifndef EV_USE_MONOTONIC</span>
+<span class="cp">#   define EV_USE_MONOTONIC 0</span>
+<span class="cp">#  endif</span>
+<span class="cp">#  ifndef EV_USE_REALTIME</span>
+<span class="cp">#   define EV_USE_REALTIME  0</span>
+<span class="cp">#  endif</span>
+<span class="cp"># endif</span></code></pre></figure>
+
+<p>优先使用系统调用和单调递增时间，在 CentOS 7 中通常定义为。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">#define HAVE_CLOCK_GETTIME 1
+#define EV_USE_REALTIME  0
+#define EV_USE_MONOTONIC 1</code></pre></figure>
+
+<p>在如下的初始化函数中介绍详细的细节。</p>
+
+<!--
+场景：
+    1. 使用系统调用
+    syscall (SYS_clock_gettime, CLOCK_REALTIME, &ts);
+-->
+
+<h2 id="初始化">初始化</h2>
+
+<p>无论是通过 <code>EV_DEFAULT</code> 宏还是 <code>ev_default_loop()</code> 函数进行初始化，实际上功能都相同，也就是都调用了 <code>ev_default_loop(0)</code> 进行初始化，该函数中会调用 <code>loop_init()</code> 。</p>
+
+<p>如下主要介绍 <code>loop_init()</code> 函数。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#ifndef EV_HAVE_EV_TIME</span>
+<span class="n">ev_tstamp</span>
+<span class="nf">ev_time</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">EV_THROW</span>
+<span class="p">{</span>
+<span class="cp">#if EV_USE_REALTIME</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">expect_true</span> <span class="p">(</span><span class="n">have_realtime</span><span class="p">))</span>
+    <span class="p">{</span>
+      <span class="k">struct</span> <span class="n">timespec</span> <span class="n">ts</span><span class="p">;</span>
+      <span class="n">clock_gettime</span> <span class="p">(</span><span class="n">CLOCK_REALTIME</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ts</span><span class="p">);</span>
+      <span class="k">return</span> <span class="n">ts</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">+</span> <span class="n">ts</span><span class="p">.</span><span class="n">tv_nsec</span> <span class="o">*</span> <span class="mf">1e-9</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="cp">#endif</span>
+
+  <span class="k">struct</span> <span class="n">timeval</span> <span class="n">tv</span><span class="p">;</span>
+  <span class="n">gettimeofday</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">tv</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">+</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+
+<span class="n">inline_size</span> <span class="n">ev_tstamp</span>
+<span class="n">get_clock</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="cp">#if EV_USE_MONOTONIC</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">expect_true</span> <span class="p">(</span><span class="n">have_monotonic</span><span class="p">))</span>
+    <span class="p">{</span>
+      <span class="k">struct</span> <span class="n">timespec</span> <span class="n">ts</span><span class="p">;</span>
+      <span class="n">clock_gettime</span> <span class="p">(</span><span class="n">CLOCK_MONOTONIC</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ts</span><span class="p">);</span>
+      <span class="k">return</span> <span class="n">ts</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">+</span> <span class="n">ts</span><span class="p">.</span><span class="n">tv_nsec</span> <span class="o">*</span> <span class="mf">1e-9</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="cp">#endif</span>
+
+  <span class="k">return</span> <span class="n">ev_time</span> <span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">noinline</span> <span class="n">ecb_cold</span> <span class="n">loop_init</span> <span class="p">(</span><span class="n">EV_P_</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span> <span class="n">EV_THROW</span>
+<span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">backend</span><span class="p">)</span> <span class="p">{</span>  <span class="c1">// 如果backend还没有确定</span>
+      <span class="n">origflags</span> <span class="o">=</span> <span class="n">flags</span><span class="p">;</span>
+
+<span class="cp">#if EV_USE_REALTIME</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">have_realtime</span><span class="p">)</span>
+        <span class="p">{</span>
+          <span class="k">struct</span> <span class="n">timespec</span> <span class="n">ts</span><span class="p">;</span>
+
+          <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">clock_gettime</span> <span class="p">(</span><span class="n">CLOCK_REALTIME</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ts</span><span class="p">))</span>
+            <span class="n">have_realtime</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#if EV_USE_MONOTONIC</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">have_monotonic</span><span class="p">)</span>
+        <span class="p">{</span>
+          <span class="k">struct</span> <span class="n">timespec</span> <span class="n">ts</span><span class="p">;</span>
+
+          <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">clock_gettime</span> <span class="p">(</span><span class="n">CLOCK_MONOTONIC</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ts</span><span class="p">))</span>
+            <span class="n">have_monotonic</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+<span class="cp">#endif</span>
+
+      <span class="cm">/* pid check not overridable via env */</span>
+<span class="cp">#ifndef _WIN32</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVFLAG_FORKCHECK</span><span class="p">)</span>
+        <span class="n">curpid</span> <span class="o">=</span> <span class="n">getpid</span> <span class="p">();</span>
+<span class="cp">#endif</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVFLAG_NOENV</span><span class="p">)</span>
+          <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">enable_secure</span> <span class="p">()</span>
+          <span class="o">&amp;&amp;</span> <span class="n">getenv</span> <span class="p">(</span><span class="s">&quot;LIBEV_FLAGS&quot;</span><span class="p">))</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="n">atoi</span> <span class="p">(</span><span class="n">getenv</span> <span class="p">(</span><span class="s">&quot;LIBEV_FLAGS&quot;</span><span class="p">));</span>
+
+      <span class="n">ev_rt_now</span>          <span class="o">=</span> <span class="n">ev_time</span> <span class="p">();</span>
+      <span class="n">mn_now</span>             <span class="o">=</span> <span class="n">get_clock</span> <span class="p">();</span>
+      <span class="n">now_floor</span>          <span class="o">=</span> <span class="n">mn_now</span><span class="p">;</span>
+      <span class="n">rtmn_diff</span>          <span class="o">=</span> <span class="n">ev_rt_now</span> <span class="o">-</span> <span class="n">mn_now</span><span class="p">;</span>
+<span class="cp">#if EV_FEATURE_API</span>
+      <span class="n">invoke_cb</span>          <span class="o">=</span> <span class="n">ev_invoke_pending</span><span class="p">;</span>
+<span class="cp">#endif</span>
+
+      <span class="n">io_blocktime</span>       <span class="o">=</span> <span class="mf">0.</span><span class="p">;</span>
+      <span class="n">timeout_blocktime</span>  <span class="o">=</span> <span class="mf">0.</span><span class="p">;</span>
+      <span class="n">backend</span>            <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">backend_fd</span>         <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+      <span class="n">sig_pending</span>        <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="cp">#if EV_ASYNC_ENABLE</span>
+      <span class="n">async_pending</span>      <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="cp">#endif</span>
+      <span class="n">pipe_write_skipped</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">pipe_write_wanted</span>  <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">evpipe</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>         <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+      <span class="n">evpipe</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>         <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="cp">#if EV_USE_INOTIFY</span>
+      <span class="n">fs_fd</span>              <span class="o">=</span> <span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVFLAG_NOINOTIFY</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">;</span>
+<span class="cp">#endif</span>
+<span class="cp">#if EV_USE_SIGNALFD</span>
+      <span class="n">sigfd</span>              <span class="o">=</span> <span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVFLAG_SIGNALFD</span>  <span class="o">?</span> <span class="o">-</span><span class="mi">2</span> <span class="o">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="cp">#endif</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVBACKEND_MASK</span><span class="p">))</span>
+        <span class="n">flags</span> <span class="o">|=</span> <span class="n">ev_recommended_backends</span> <span class="p">();</span>
+
+<span class="cp">#if EV_USE_IOCP</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">backend</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVBACKEND_IOCP</span>  <span class="p">))</span> <span class="n">backend</span> <span class="o">=</span> <span class="n">iocp_init</span>   <span class="p">(</span><span class="n">EV_A_</span> <span class="n">flags</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="cp">#if EV_USE_PORT</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">backend</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVBACKEND_PORT</span>  <span class="p">))</span> <span class="n">backend</span> <span class="o">=</span> <span class="n">port_init</span>   <span class="p">(</span><span class="n">EV_A_</span> <span class="n">flags</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="cp">#if EV_USE_KQUEUE</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">backend</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVBACKEND_KQUEUE</span><span class="p">))</span> <span class="n">backend</span> <span class="o">=</span> <span class="n">kqueue_init</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="n">flags</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="cp">#if EV_USE_EPOLL</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">backend</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVBACKEND_EPOLL</span> <span class="p">))</span> <span class="n">backend</span> <span class="o">=</span> <span class="n">epoll_init</span>  <span class="p">(</span><span class="n">EV_A_</span> <span class="n">flags</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="cp">#if EV_USE_POLL</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">backend</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVBACKEND_POLL</span>  <span class="p">))</span> <span class="n">backend</span> <span class="o">=</span> <span class="n">poll_init</span>   <span class="p">(</span><span class="n">EV_A_</span> <span class="n">flags</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="cp">#if EV_USE_SELECT</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">backend</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVBACKEND_SELECT</span><span class="p">))</span> <span class="n">backend</span> <span class="o">=</span> <span class="n">select_init</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="n">flags</span><span class="p">);</span>
+<span class="cp">#endif</span>
+
+      <span class="n">ev_prepare_init</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">pending_w</span><span class="p">,</span> <span class="n">pendingcb</span><span class="p">);</span>
+
+<span class="cp">#if EV_SIGNAL_ENABLE || EV_ASYNC_ENABLE</span>
+      <span class="n">ev_init</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">pipe_w</span><span class="p">,</span> <span class="n">pipecb</span><span class="p">);</span>
+      <span class="n">ev_set_priority</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">pipe_w</span><span class="p">,</span> <span class="n">EV_MAXPRI</span><span class="p">);</span>
+<span class="cp">#endif</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>其中有两个比较重要的时间变量，也就是 <code>ev_rt_now</code> 和 <code>mn_now</code>，前者表示当前的日历时间，也就是自 1970.01.01 以来的秒数，该值通过 <code>gettimeofday()</code> 得到。</p>
+
+<h2 id="主循环">主循环</h2>
+
+<p>在介绍各个 Watcher 的流程之前，首先看下主循环的执行过程。</p>
+
+<p>该函数通常是在各个事件初始化完成之后调用，也就是等待操作系统的事件，然后调用已经注册的回调函数，并一直重复循环执行。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">ev_run</span> <span class="p">(</span><span class="n">EV_P_</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="o">++</span><span class="n">loop_depth</span><span class="p">;</span>      <span class="c1">// 如果定义了EV_FEATURE_API宏</span>
+  <span class="n">loop_done</span> <span class="o">=</span> <span class="n">EVBREAK_CANCEL</span><span class="p">;</span>
+  <span class="n">EV_INVOKE_PENDING</span><span class="p">;</span> <span class="c1">// 在执行前确认所有的事件已经执行</span>
+
+  <span class="k">do</span> <span class="p">{</span>
+      <span class="n">ev_verify</span> <span class="p">(</span><span class="n">EV_A</span><span class="p">);</span>  <span class="c1">// 当EV_VERIFY &gt;= 2时，用于校验当前的结构体是否正常</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">curpid</span><span class="p">))</span> <span class="cm">/* penalise the forking check even more */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">getpid</span> <span class="p">()</span> <span class="o">!=</span> <span class="n">curpid</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">curpid</span> <span class="o">=</span> <span class="n">getpid</span> <span class="p">();</span>
+            <span class="n">postfork</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+
+      <span class="cm">/* we might have forked, so queue fork handlers */</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">postfork</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">forkcnt</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">queue_events</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="p">(</span><span class="n">W</span> <span class="o">*</span><span class="p">)</span><span class="n">forks</span><span class="p">,</span> <span class="n">forkcnt</span><span class="p">,</span> <span class="n">EV_FORK</span><span class="p">);</span>
+            <span class="n">EV_INVOKE_PENDING</span><span class="p">;</span>
+        <span class="p">}</span>
+
+      <span class="cm">/* queue prepare watchers (and execute them) */</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">preparecnt</span><span class="p">))</span> <span class="p">{</span>
+          <span class="n">queue_events</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="p">(</span><span class="n">W</span> <span class="o">*</span><span class="p">)</span><span class="n">prepares</span><span class="p">,</span> <span class="n">preparecnt</span><span class="p">,</span> <span class="n">EV_PREPARE</span><span class="p">);</span>
+          <span class="n">EV_INVOKE_PENDING</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">loop_done</span><span class="p">))</span>
+        <span class="k">break</span><span class="p">;</span>
+
+      <span class="cm">/* we might have forked, so reify kernel state if necessary */</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">postfork</span><span class="p">))</span>
+        <span class="n">loop_fork</span> <span class="p">(</span><span class="n">EV_A</span><span class="p">);</span>
+
+      <span class="cm">/* update fd-related kernel structures */</span>
+      <span class="n">fd_reify</span> <span class="p">(</span><span class="n">EV_A</span><span class="p">);</span>
+
+      <span class="cm">/* calculate blocking time */</span>
+      <span class="p">{</span>
+        <span class="n">ev_tstamp</span> <span class="n">waittime</span>  <span class="o">=</span> <span class="mf">0.</span><span class="p">;</span>
+        <span class="n">ev_tstamp</span> <span class="n">sleeptime</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">;</span>
+
+        <span class="cm">/* remember old timestamp for io_blocktime calculation */</span>
+        <span class="n">ev_tstamp</span> <span class="n">prev_mn_now</span> <span class="o">=</span> <span class="n">mn_now</span><span class="p">;</span>
+
+        <span class="cm">/* 会更新当前时间mn_now和ev_rt_now，如果发现时间被调整，则调用</span>
+<span class="cm">         * timers_reschedule()函数调整堆loop-&gt;timers()中的每个节点。</span>
+<span class="cm">         */</span>
+        <span class="n">time_update</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="mf">1e100</span><span class="p">);</span>
+
+        <span class="cm">/* from now on, we want a pipe-wake-up */</span>
+        <span class="n">pipe_write_wanted</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="n">ECB_MEMORY_FENCE</span><span class="p">;</span> <span class="cm">/* make sure pipe_write_wanted is visible before we check for potential skips */</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">expect_true</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">EVRUN_NOWAIT</span> <span class="o">||</span> <span class="n">idleall</span> <span class="o">||</span> <span class="o">!</span><span class="n">activecnt</span> <span class="o">||</span> <span class="n">pipe_write_skipped</span><span class="p">)))</span> <span class="p">{</span>
+            <span class="n">waittime</span> <span class="o">=</span> <span class="n">MAX_BLOCKTIME</span><span class="p">;</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">timercnt</span><span class="p">)</span> <span class="p">{</span>    <span class="c1">// 如果有定时器存在则重新计算等待时间</span>
+                <span class="n">ev_tstamp</span> <span class="n">to</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="n">timers</span> <span class="p">[</span><span class="n">HEAP0</span><span class="p">])</span> <span class="o">-</span> <span class="n">mn_now</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">waittime</span> <span class="o">&gt;</span> <span class="n">to</span><span class="p">)</span> <span class="n">waittime</span> <span class="o">=</span> <span class="n">to</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">periodiccnt</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 如果定义了EV_PERIODIC_ENABLE宏</span>
+                <span class="n">ev_tstamp</span> <span class="n">to</span> <span class="o">=</span> <span class="n">ANHE_at</span> <span class="p">(</span><span class="n">periodics</span> <span class="p">[</span><span class="n">HEAP0</span><span class="p">])</span> <span class="o">-</span> <span class="n">ev_rt_now</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">waittime</span> <span class="o">&gt;</span> <span class="n">to</span><span class="p">)</span> <span class="n">waittime</span> <span class="o">=</span> <span class="n">to</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="cm">/* don&#39;t let timeouts decrease the waittime below timeout_blocktime */</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">waittime</span> <span class="o">&lt;</span> <span class="n">timeout_blocktime</span><span class="p">))</span> <span class="c1">// 默认timeout_blocktime为0</span>
+              <span class="n">waittime</span> <span class="o">=</span> <span class="n">timeout_blocktime</span><span class="p">;</span>
+
+            <span class="cm">/* at this point, we NEED to wait, so we have to ensure */</span>
+            <span class="cm">/* to pass a minimum nonzero value to the backend */</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">waittime</span> <span class="o">&lt;</span> <span class="n">backend_mintime</span><span class="p">))</span>
+              <span class="n">waittime</span> <span class="o">=</span> <span class="n">backend_mintime</span><span class="p">;</span>  <span class="c1">// 不同的后端最小等待时间不同</span>
+
+            <span class="cm">/* extra check because io_blocktime is commonly 0 */</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">io_blocktime</span><span class="p">))</span> <span class="p">{</span>
+                <span class="n">sleeptime</span> <span class="o">=</span> <span class="n">io_blocktime</span> <span class="o">-</span> <span class="p">(</span><span class="n">mn_now</span> <span class="o">-</span> <span class="n">prev_mn_now</span><span class="p">);</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">sleeptime</span> <span class="o">&gt;</span> <span class="n">waittime</span> <span class="o">-</span> <span class="n">backend_mintime</span><span class="p">)</span>
+                  <span class="n">sleeptime</span> <span class="o">=</span> <span class="n">waittime</span> <span class="o">-</span> <span class="n">backend_mintime</span><span class="p">;</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">expect_true</span> <span class="p">(</span><span class="n">sleeptime</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">))</span> <span class="p">{</span>
+                    <span class="n">ev_sleep</span> <span class="p">(</span><span class="n">sleeptime</span><span class="p">);</span>
+                    <span class="n">waittime</span> <span class="o">-=</span> <span class="n">sleeptime</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+<span class="cp">#if EV_FEATURE_API</span>
+        <span class="o">++</span><span class="n">loop_count</span><span class="p">;</span>
+<span class="cp">#endif</span>
+        <span class="cm">/* 调用IO复用函数，例如epoll_poll()，在此需要保证阻塞时间小于loop-&gt;timers，</span>
+<span class="cm">         * 以及loop-&gt;periodics的栈顶元素的触发时间。</span>
+<span class="cm">         */</span>
+        <span class="n">assert</span> <span class="p">((</span><span class="n">loop_done</span> <span class="o">=</span> <span class="n">EVBREAK_RECURSE</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span> <span class="cm">/* assert for side effect */</span>
+        <span class="n">backend_poll</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="n">waittime</span><span class="p">);</span>
+        <span class="n">assert</span> <span class="p">((</span><span class="n">loop_done</span> <span class="o">=</span> <span class="n">EVBREAK_CANCEL</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span> <span class="cm">/* assert for side effect */</span>
+
+        <span class="n">pipe_write_wanted</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="cm">/* just an optimisation, no fence needed */</span>
+
+        <span class="n">ECB_MEMORY_FENCE_ACQUIRE</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pipe_write_skipped</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">assert</span> <span class="p">((</span><span class="s">&quot;libev: pipe_w not active, but pipe not written&quot;</span><span class="p">,</span> <span class="n">ev_is_active</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">pipe_w</span><span class="p">)));</span>
+            <span class="n">ev_feed_event</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="o">&amp;</span><span class="n">pipe_w</span><span class="p">,</span> <span class="n">EV_CUSTOM</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="cm">/* update ev_rt_now, do magic */</span>
+        <span class="n">time_update</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="n">waittime</span> <span class="o">+</span> <span class="n">sleeptime</span><span class="p">);</span> <span class="c1">// 更新时间，防止timejump</span>
+      <span class="p">}</span>
+
+      <span class="cm">/* 如果栈顶元素的超时时间已经超过了当前时间，则将栈顶元素的监控器添加到</span>
+<span class="cm">       * loop-&gt;pendings中，并调整堆结构，接着判断栈顶元素是否仍超时，一致重复，</span>
+<span class="cm">       * 直到栈顶元素不再超时。</span>
+<span class="cm">       */</span>
+      <span class="n">timers_reify</span> <span class="p">(</span><span class="n">EV_A</span><span class="p">);</span> <span class="cm">/* relative timers called last */</span>
+      <span class="n">periodics_reify</span> <span class="p">(</span><span class="n">EV_A</span><span class="p">);</span> <span class="cm">/* absolute timers called first */</span>
+
+      <span class="cm">/* queue idle watchers unless other events are pending */</span>
+      <span class="n">idle_reify</span> <span class="p">(</span><span class="n">EV_A</span><span class="p">);</span>
+
+      <span class="cm">/* queue check watchers, to be executed first */</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">checkcnt</span><span class="p">))</span>
+        <span class="n">queue_events</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="p">(</span><span class="n">W</span> <span class="o">*</span><span class="p">)</span><span class="n">checks</span><span class="p">,</span> <span class="n">checkcnt</span><span class="p">,</span> <span class="n">EV_CHECK</span><span class="p">);</span>
+
+      <span class="cm">/* 按照优先级，顺序遍厉loop-&gt;pendings数组，调用其中每个监视器的回调函数 */</span>
+      <span class="n">EV_INVOKE_PENDING</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">expect_true</span> <span class="p">(</span>
+        <span class="n">activecnt</span>
+        <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">loop_done</span>
+        <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">EVRUN_ONCE</span> <span class="o">|</span> <span class="n">EVRUN_NOWAIT</span><span class="p">))</span>
+    <span class="p">));</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">loop_done</span> <span class="o">==</span> <span class="n">EVBREAK_ONE</span><span class="p">)</span>
+    <span class="n">loop_done</span> <span class="o">=</span> <span class="n">EVBREAK_CANCEL</span><span class="p">;</span>
+
+<span class="cp">#if EV_FEATURE_API</span>
+  <span class="o">--</span><span class="n">loop_depth</span><span class="p">;</span>
+<span class="cp">#endif</span>
+
+  <span class="k">return</span> <span class="n">activecnt</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<!--
+       - Increment loop depth.
+       - Reset the ev_break status.
+       - Before the first iteration, call any pending watchers.
+       LOOP:
+       - If EVFLAG_FORKCHECK was used, check for a fork.
+       - If a fork was detected (by any means), queue and call all fork watchers.
+       - Queue and call all prepare watchers.
+       - If ev_break was called, goto FINISH.
+       - If we have been forked, detach and recreate the kernel state
+         as to not disturb the other process.
+       - Update the kernel state with all outstanding changes.
+       - Update the "event loop time" (ev_now ()).
+       - Calculate for how long to sleep or block, if at all
+         (active idle watchers, EVRUN_NOWAIT or not having
+         any active watchers at all will result in not sleeping).
+       - Sleep if the I/O and timer collect interval say so.
+       - Increment loop iteration counter.
+       - Block the process, waiting for any events.
+       - Queue all outstanding I/O (fd) events.
+       - Update the "event loop time" (ev_now ()), and do time jump adjustments.
+       - Queue all expired timers.
+       - Queue all expired periodics.
+       - Queue all idle watchers with priority higher than that of pending events.
+       - Queue all check watchers.
+       - Call all queued watchers in reverse order (i.e. check watchers first).
+         Signals and child watchers are implemented as I/O watchers, and will
+         be handled here by queueing them when their watcher gets executed.
+       - If ev_break has been called, or EVRUN_ONCE or EVRUN_NOWAIT
+         were used, or there are no active watchers, goto FINISH, otherwise
+         continue with step LOOP.
+       FINISH:
+       - Reset the ev_break status iff it was EVBREAK_ONE.
+       - Decrement the loop depth.
+       - Return.
+
+    Example: Queue some jobs and then loop until no events are outstanding anymore.
+
+       ... queue jobs here, make sure they register event watchers as long
+       ... as they still have work to do (even an idle watcher will do..)
+       ev_run (my_loop, 0);
+       ... jobs done or somebody called break. yeah!
+-->
+
+<!--
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">void ev_invoke_pending (struct ev_loop *loop);
+  调用所有pending的watchers。
+
+ev_default_loop()/ev_loop_new()
+ |-loop_init()
+   |-ev_recommended_backends()    如果没有设置backend则会尝试选择
+     |-ev_supported_backends()
+ |-ev_prepare_init()
+
+ev_run()
+ |-backend_poll()</code></pre></figure>
+
+-->
+
+<h2 id="io-watcher">IO Watcher</h2>
+
+<p>对 IO 事件的监控的函数，会在 <code>loop_init()</code> 中初始化 <code>backend_poll</code> 函数变量，正是通过该函数监控 IO 事件，如下是一个简单的示例。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">void cb (struct ev_loop *loop, ev_io *w, int revents)
+{
+    ev_io_stop (loop, w);
+    // .. read from stdin here (or from w-&gt;fd) and handle any I/O errors
+}
+ev_io watcher;
+ev_io_init (&amp;watcher, cb, STDIN_FILENO, EV_READ);  // 初始化，第三个是文件描述符，第四个是监听事件
+ev_io_start (loop, &amp;watcher);</code></pre></figure>
+
+<p>其中，<code>ev_io_init()</code> 用来设置结构体的参数，除了初始化通用的变量之外，还包括 IO 观察器对应的 fd 和 event 。</p>
+
+<h3 id="数据结构">数据结构</h3>
+
+<p>对于 IO 事件，无非就是添加到列表中，然后判断是否需要通过类似 <code>epoll</code> 系统接口进行修改。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="n">ev_watcher</span> <span class="o">*</span><span class="n">W</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="n">ev_watcher_list</span> <span class="o">*</span><span class="n">WL</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">WL</span> <span class="n">head</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">events</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">reify</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">emask</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">unused</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">egen</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">ANFD</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">W</span> <span class="n">w</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">events</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">ANPENDING</span><span class="p">;</span>
+
+<span class="n">ANFD</span> <span class="n">andfs</span><span class="p">[];</span>    <span class="c1">// 保存了所有IO事件</span>
+
+<span class="kt">int</span> <span class="n">fchangecnt</span><span class="p">;</span>  <span class="c1">// 记录被修改的fd个数，用来判断是否调用epoll</span>
+<span class="kt">int</span> <span class="n">fdchanges</span><span class="p">[];</span> <span class="c1">// 每次循环时需要修改的句柄</span></code></pre></figure>
+
+<p>在 Linux 中，文件句柄会按照顺序增加，在 libev 中直接使用数组保存已经打开的文件句柄，而对应的数组序号就是文件句柄。</p>
+
+<p>这也就意味着，如果中间有句柄没有注册事件，那么就可能会有空洞。</p>
+
+<h4 id="ev_io_start">ev_io_start()</h4>
+
+<p>作用是设置 <code>ANFD anfds[]</code>，其中文件描述符为其序号，并将相应的 IO Watcher 插入到对应 fd 的链表中。由于对应 fd 的监控条件已有改动了，同时会在 <code>int fdchanges[]</code> 中记录下该 fd ，并在后续的步骤中调用系统的接口修改对该 fd 监控条件。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="n">noinline</span> <span class="n">ev_io_start</span> <span class="p">(</span><span class="n">EV_P_</span> <span class="n">ev_io</span> <span class="o">*</span><span class="n">w</span><span class="p">)</span> <span class="n">EV_THROW</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">expect_false</span> <span class="p">(</span><span class="n">ev_is_active</span> <span class="p">(</span><span class="n">w</span><span class="p">)))</span> <span class="c1">// 如果已经启动则直接退出</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="n">EV_FREQUENT_CHECK</span><span class="p">;</span>                   <span class="c1">// 通过ev_verify()校验数据格式是否正常</span>
+
+  <span class="n">ev_start</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="p">(</span><span class="n">W</span><span class="p">)</span><span class="n">w</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>            <span class="c1">// 设置watch-&gt;active变量</span>
+  <span class="n">array_needsize</span> <span class="p">(</span><span class="n">ANFD</span><span class="p">,</span> <span class="n">anfds</span><span class="p">,</span> <span class="n">anfdmax</span><span class="p">,</span> <span class="n">fd</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">array_init_zero</span><span class="p">);</span>
+  <span class="n">wlist_add</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">anfds</span><span class="p">[</span><span class="n">fd</span><span class="p">].</span><span class="n">head</span><span class="p">,</span> <span class="p">(</span><span class="n">WL</span><span class="p">)</span><span class="n">w</span><span class="p">);</span>
+
+  <span class="c1">// 添加到fdchanges[]数组中</span>
+  <span class="n">fd_change</span> <span class="p">(</span><span class="n">EV_A_</span> <span class="n">fd</span><span class="p">,</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">&amp;</span> <span class="n">EV__IOFDSET</span> <span class="o">|</span> <span class="n">EV_ANFD_REIFY</span><span class="p">);</span>
+  <span class="n">w</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">EV__IOFDSET</span><span class="p">;</span>
+
+  <span class="n">EV_FREQUENT_CHECK</span><span class="p">;</span>                   <span class="c1">// 如上，通过ev_verify()校验数据格式是否正常</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><img src="/images/programs/libev_io_watcher_anfds.png" alt="libev io watcher" title="libev io watcher" class="pull-center" /></p>
+
+<p>调用 <code>ev_run()</code> 开始等待事件的触发，该函数中首先会调用 <code>fd_reify()</code>，该函数根据 <code>fdchanges[]</code> 中记录的描述符，将该描述符上的事件添加到 backend 所使用的数据结构中；调用 <code>time_update()</code> 更新当前时间。</p>
+
+<p>接着计算超时时间，并调用 <code>backend_poll()</code> 开始等待事件的发生，如果事件在规定时间内触发的话，则会调用 <code>fd_event()</code> 将触发的监视器记录到 pendings 中；</p>
+
+<p>backend 监听函数 (如 <code>select()</code>、<code>poll()</code>、<code>epoll_wait()</code> 等) 返回后，再次调用 <code>time_update()</code> 更新时间，然后调用 <code>ev_invoke_pending()</code> ，依次处理 pendings 中的监视器，调用该监视器的回调函数。</p>
+
+<h3 id="fd_reify">fd_reify()</h3>
+
+<p>该函数在 <code>ev_run()</code> 的每轮循环中都会调用；会将 fdchanges 中记录的这些新事件一个个的处理，并调用后端 IO 复用的 backend_modify 宏。</p>
+
+<!--
+这里需要注意fd_reify()中的思想，anfd[fd] 结构体中，还有一个events事件，它是原先的所有watcher 的事件的 "|" 操作，向系统的epoll 从新添加描述符的操作 是在下次事件迭代开始前进行的，当我们依次扫描fdchangs，找到对应的anfd 结构，如果发现先前的events 与 当前所有的watcher 的"|" 操作结果不等，则表示我们需要调用epoll_ctrl 之类的函数来进行更改，反之不做操作。
+
+实际上 Linux 在分配 fd 时，总是选择系统可用的最小 fd ，所以 anfd 这个数组长度不会太大，而且这个数组会动态分配。
+
+然后启动事件驱动器，最后实际会阻塞到 backend_poll() 中，等待对应的 IO 事件。<br><br>
+
+以 epoll 为例，实际调用的是 ev_epoll.c@epoll_poll() 。当 epoll_wait() 返回一个 fd_event 时 ，就可以直接定位到对应 fd 的 watchers-list ，而这个 watchers-list 的长度与注册的事件相关。<br><br>
+
+fd_event 会有一个导致触发的事件，依次检查对应的 wathers-list ，也即用这个事件依次和各个 watch 注册的 event 做 & 操作，如果不为 0 ，则把对应的 watch 加入到待处理队列 pendings 中。<br><br>
+
+当我们启用 watcher 优先级模式时，pendings 是个 2 维数组，此时仅考虑普通模式。
+-->
+
+<h3 id="多路复用">多路复用</h3>
+
+<p>当前支持的多路复用通过如下方式定义，</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cm">/* method bits to be ored together */</span>
+<span class="k">enum</span> <span class="p">{</span>
+  <span class="n">EVBACKEND_SELECT</span>  <span class="o">=</span> <span class="mh">0x00000001U</span><span class="p">,</span> <span class="cm">/* about anywhere */</span>
+  <span class="n">EVBACKEND_POLL</span>    <span class="o">=</span> <span class="mh">0x00000002U</span><span class="p">,</span> <span class="cm">/* !win */</span>
+  <span class="n">EVBACKEND_EPOLL</span>   <span class="o">=</span> <span class="mh">0x00000004U</span><span class="p">,</span> <span class="cm">/* linux */</span>
+  <span class="n">EVBACKEND_KQUEUE</span>  <span class="o">=</span> <span class="mh">0x00000008U</span><span class="p">,</span> <span class="cm">/* bsd */</span>
+  <span class="n">EVBACKEND_DEVPOLL</span> <span class="o">=</span> <span class="mh">0x00000010U</span><span class="p">,</span> <span class="cm">/* solaris 8 */</span> <span class="cm">/* NYI */</span>
+  <span class="n">EVBACKEND_PORT</span>    <span class="o">=</span> <span class="mh">0x00000020U</span><span class="p">,</span> <span class="cm">/* solaris 10 */</span>
+  <span class="n">EVBACKEND_ALL</span>     <span class="o">=</span> <span class="mh">0x0000003FU</span><span class="p">,</span> <span class="cm">/* all known backends */</span>
+  <span class="n">EVBACKEND_MASK</span>    <span class="o">=</span> <span class="mh">0x0000FFFFU</span>  <span class="cm">/* all future backends */</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>而在通过 configure 进行编译时，会对宏进行处理，以 epoll 为例，可以查看 ev.c 中的内容；在通过 configure 编译时，如果支持 EPOLL 会在 config.h 中生成 <code>HAVE_POLL</code> 和 <code>HAVE_POLL_H</code> 宏定义。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp"># if HAVE_POLL &amp;&amp; HAVE_POLL_H</span>
+<span class="cp">#  ifndef EV_USE_POLL</span>
+<span class="cp">#   define EV_USE_POLL EV_FEATURE_BACKENDS</span>
+<span class="cp">#  endif</span>
+<span class="cp"># else</span>
+<span class="cp">#  undef EV_USE_POLL</span>
+<span class="cp">#  define EV_USE_POLL 0</span>
+<span class="cp"># endif</span></code></pre></figure>
+
+<p>之后调用 <code>ev_recommended_backends()</code> 得到当前系统支持的 backend 类型，比如 select、poll、epoll 等；然后，接下来就是根据系统支持的 backend，按照一定的优先顺序，去初始化 backend 。</p>
+
+<!--
+接下来，初始化loop中的ev_prepare监视器pending_w，以及ev_io监视器pipe_w
+
+loop_init返回后，backend已经初始化完成，接着，初始化并启动信号监视器ev_signal childev。暂不深入。
+
+至此，初始化默认loop的工作就完成了。
+-->
+
+<h3 id="filestat-watcher">Filestat Watcher</h3>
+
+<p>监控 Makefile 是否有变化，可以通过修改文件触发事件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">static void filestat_cb (struct ev_loop *loop, ev_stat *w, int revents)
+{
+    // &quot;Makefile&quot; changed in some way
+    if (w-&gt;attr.st_nlink) {
+        printf (&quot;Makefile current size  %ld\n&quot;, (long)w-&gt;attr.st_size);
+        printf (&quot;Makefile current atime %ld\n&quot;, (long)w-&gt;attr.st_mtime);
+        printf (&quot;Makefile current mtime %ld\n&quot;, (long)w-&gt;attr.st_mtime);
+    } else { /* you shalt not abuse printf for puts */
+        puts (&quot;wow, Makefile is not there, expect problems. &quot;
+              &quot;if this is windows, they already arrived\n&quot;);
+    }
+}
+ev_stat makefile;
+ev_stat_init (&amp;makefile, filestat_cb, &quot;Makefile&quot;, 0.);
+ev_stat_start (loop, &amp;makefile);</code></pre></figure>
+
+<h3 id="其它">其它</h3>
+
+<p>也就是 <code>ev_prepare</code>、<code>ev_check</code>、<code>ev_idle</code>，这三个类型的实际上是事件循环的扩展。</p>
+
+<ul>
+  <li>ev_prepare 在事件循环发生阻塞前会被触发。</li>
+</ul>
+
+<!--
+* ev_check 在事件循环阻塞结束后会被触发。ev_check的触发是按优先级划分的。可以保证，ev_check是同一个优先级上阻塞结束后最先被触发的watcher。所以，如果要保证ev_check是最先被执行的，可以把它的优先级设成最高。
+ev_idle 当没有其他watcher被触发时被触发。ev_idle也是按优先级划分的。它的语义是，在当前优先级以及更高的优先级上没有watcher被触发，那么它就会被触发，无论之后在较低优先级上是否有其他watcher被触发。
+-->
+
+<h2 id="async-watcher">Async Watcher</h2>
+
+<p>在 libev 库中，有很大一部分的数据结构是通过数组存储，以 async 的信号处理为例，其大致的处理过程如下。</p>
+
+<p>async 的所有信号保存在 <code>ev_async *[]</code> 数组中，其中 <code>asyncmax</code> 保存了当前内存空间支持的最大事件数，而 <code>asynccnt</code> 为当前有效事件数。</p>
+
+<p>如下是启动时的数组处理。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ev_start(EV_A_ (W)w, ++asynccnt);  // 将w-&gt;active设置为序号
+array_needsize(ev_async *, asyncs, asyncmax, asynccnt, EMPTY2); // 判断空间是否足够
+asyncs[asynccnt - 1] = w;          // 添加到数组中</code></pre></figure>
+
+<p>停止时的处理流程如下，也就是将最后一个事件与 w 对应事件交换。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">active = ev_active(w);
+asyncs[active - 1] = asyncs[--asynccnt];
+ev_active(asyncs[active - 1]) = active;</code></pre></figure>
+
+<p>这里实际上会使用 pipe 将异步信号转换为文件的句柄操作，因为 pipe 写满会导致阻塞，所以在代码中有很大一部分时对触发事件的同步处理。</p>
+
+<h2 id="杂项">杂项</h2>
+
+<h3 id="代码优化">代码优化</h3>
+
+<p>libev 可以通过很多宏进行调优，默认会通过 EV_FEATURES 宏定义一些特性，定义如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#ifndef EV_FEATURES</span>
+<span class="cp"># if defined __OPTIMIZE_SIZE__</span>
+<span class="cp">#  define EV_FEATURES 0x7c  </span><span class="cm">/* 0111 1100 */</span><span class="cp"></span>
+<span class="cp"># else</span>
+<span class="cp">#  define EV_FEATURES 0x7f  </span><span class="cm">/* 0111 1111 */</span><span class="cp"></span>
+<span class="cp"># endif</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#define EV_FEATURE_CODE     ((EV_FEATURES) &amp;  1) </span><span class="cm">/* 0000 0001 */</span><span class="cp"></span>
+<span class="cp">#define EV_FEATURE_DATA     ((EV_FEATURES) &amp;  2) </span><span class="cm">/* 0000 0010 */</span><span class="cp"></span>
+<span class="cp">#define EV_FEATURE_CONFIG   ((EV_FEATURES) &amp;  4) </span><span class="cm">/* 0000 0100 */</span><span class="cp"></span>
+<span class="cp">#define EV_FEATURE_API      ((EV_FEATURES) &amp;  8) </span><span class="cm">/* 0000 1000 */</span><span class="cp"></span>
+<span class="cp">#define EV_FEATURE_WATCHERS ((EV_FEATURES) &amp; 16) </span><span class="cm">/* 0001 0000 */</span><span class="cp"></span>
+<span class="cp">#define EV_FEATURE_BACKENDS ((EV_FEATURES) &amp; 32) </span><span class="cm">/* 0010 0000 */</span><span class="cp"></span>
+<span class="cp">#define EV_FEATURE_OS       ((EV_FEATURES) &amp; 64) </span><span class="cm">/* 0100 0000 */</span><span class="cp"></span></code></pre></figure>
+
+<h4 id="ev_feature_api">EV_FEATURE_API</h4>
+
+<p>用来做深度的定制化操作，例如在调用 <code>epoll_wait()</code> 之前可以设置回调函数，替换掉默认的 <code>ev_invoke_pending()</code> 函数，对循环调用次数做统计等等。</p>
+
+<h3 id="内存分配">内存分配</h3>
+
+<p>实际上，在代码中，可以看到很多数组会通过 <code>array_needsize()</code> 函数分配内存，简单来说，为了防止频繁申请内存，每次都会尝试申请 <code>MALLOC_ROUND</code> 宏指定大小的内存，一般是 4K 。</p>
+
+<p>如下是在 <code>ev_timer_start()</code> 函数中的使用方法。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">array_needsize(ANHE, timers, timermax, ev_active (w) + 1, EMPTY2);</code></pre></figure>
+
+<p>简单来说，<code>ANHE</code> 表示数组中的成员类型；<code>timers</code> 表示数组的基地址；<code>timermax</code> 表示当其值，因为可能会预分配一部分内存，所以在分配完成后，同时会将真正分配的内存数返回；<code>ev_active(w)+1</code> 表示需要申请的大小。</p>
+
+<p>在分配内存时，默认会采用 <code>realloc()</code> 函数，如果想要自己定义，可以通过 <code>ev_set_allocator()</code> 函数进行设置。</p>
+
+<h3 id="处理回调">处理回调</h3>
+
+<p>触发的事件会通过 <code>ev_feed_event()</code> 函数将相关的事件保存到一个二维 pendings 数组中，也就是说该数组记录了所有已经触发的事件，其中第一个维度是优先级，而第二个维度是已经触发的事件。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">pendings[PRI][NUMS];
+pendingmax[PRI]; 最大数组
+pendingcnt[PRI]; 当前事件数</code></pre></figure>
+
+<h3 id="优先级">优先级</h3>
+
+<h2 id="参考">参考</h2>
+
+<p>源码可以从 <a href="http://freecode.com/projects/libev">freenode - libev</a> 上下载，不过最近的更新是 2011 年，也可以从 <a href="https://github.com/enki/libev">github</a> 上下载，或者下载 <a href="/reference/linux/libev-4.22.tar.bz2">本地保存版本 libev-4.22</a>；帮助文档可以参考 <a href="/reference/linux/libev.html">本地文档</a> 。</p>
+
+<p>对于 python ，提供了相关的扩展 <a href="http://packages.python.org/pyev/">Python libev interface - pyev</a> 。</p>
+
+<p>魅族内核团队的相关文章，一篇介绍内核如何实现信号处理，<a href="http://kernel.meizu.com/linux-signal.html">Linux Signal</a> 。</p>
+
+<!--
+libev and libevent对比
+https://blog.gevent.org/2011/04/28/libev-and-libevent/
+
+https://blog.csdn.net/gqtcgq/article/details/49716601
+
+在使用 `-O2` 或者 `-O3` 选项后，默认会开启 `-fstrict-aliasing` 选项，可以通过 `-fno-strict-aliasing` 参数将其关闭。
+
+在 GCC 中，其解释如下。
+
+Allows the compiler to assume the strictest aliasing rules applicable to the language
+being compiled. For C (and C++), this activates optimizations based on the type of
+expressions. In particular, an object of one type is assumed never to reside at the same
+address as an object of a different type, unless the types are almost the same.
+For example, an unsigned int can alias an int, but not avoid* or a double. A character
+type may alias any other type.
+
+也就是说，默认是不允许不同类型进行转换的，除非可以做到兼容。
+
+
+https://github.com/metametaclass/libev-aliasing-warning
+
+最新版本为4.24
+http://software.schmorp.de/pkg/libev.html
+还有很多不错的库，例如liblzf
+http://dist.schmorp.de/libev/
+
+https://github.com/mreiferson/libevbuffsock
+-->
+
+<p>统计信息</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">activecnt</span>  <span class="err">活跃的事件计数</span></code></pre></figure>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-gnuplot.html" title="Linux 绘图工具">&larr; Older</a></li> 
+         <li class="next"><a href="/post/python-basic-introduce.html" title="Python 基本概念">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1478620800',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-libev-source-code-details-introduce.html" data-title="libev 源码详解" data-url="/post/linux-libev-source-code-details-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+  <h2>Related Posts</h2>
+  <div class="list-group">
+    
+      
+        <a class="list-group-item" href="/post/linux-libev-source-code-signal-process-details.html">libev 信号处理</a>
+      
+    
+      
+        <a class="list-group-item" href="/post/linux-libev-timers.html">libev 时间处理</a>
+      
+    
+      
+        <a class="list-group-item" href="/post/linux-libev.html">libev 使用简介</a>
+      
+    
+      
+    
+  </div>
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

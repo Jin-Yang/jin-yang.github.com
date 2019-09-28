@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Golang 语法之接口|JinYang's Blog</title>
+  <meta name="keywords" content="golang,interface">
+  <meta name="description" content="Interface 定义了方法集，只要某个类型实现了该接口的超集(实现了接口定义的所有方法，而且可能还有其它方法)，那么就可以说这个类型实现了该接口。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Golang 语法之接口</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2018-03-30 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  program ,  golang  
+      
+    </div>
+  </div>
+  <hr>
+  <p>在 Go 语言的实际编程中，几乎所有的数据结构都围绕 Interface 展开，这是 GoLang 中所有数据结构的核心。</p>
+
+<p>首先，Go 不是一种典型的 OO 语言，它在语法上不支持类和继承的概念，而通过 Interface 可以看到多态的影子。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>Interface 定义了方法集，只要某个类型实现了该接口的超集(实现了接口定义的所有方法，而且可能还有其它方法)，那么就可以说这个类型实现了该接口。</p>
+
+<p>这意味着，一个类型可能实现了多个接口，例如，所有的类型都实现了 <code>interface {}</code> 这个接口。</p>
+
+<p>Interface 会在编译时检查，在运行时动态生成，如果有类似类型的报错，在编译阶段就可以发现，而不像 Python 会在运行时报错。</p>
+
+<p>上面说的 <code>interface {}</code> 比较容易混淆，它定义的是空接口，所有的类型都实现了该接口，在函数传参定义类型时，可以认为是 C 语言中的 <code>void *</code>，可接收任意类型的参数。</p>
+
+<!--
+每个 interface 变量，都包含了两个指针，分别指向方法和该 interface 中定义的变量，关于其实现的详细解释可以参考 https://research.swtch.com/interfaces 以及 https://golang.org/doc/effective_go.html 。
+
+I don’t want to bleat on about this endlessly.
+-->
+
+<h3 id="简单示例">简单示例</h3>
+
+<p>一般通过如下的规则判断一个类型或者指针是否实现了该接口：</p>
+
+<ul>
+  <li>类型 <code>*T</code> 的对象可调用方法集含类型为 <code>*T</code> 或 <code>T</code> 的所有方法集。</li>
+  <li>类型 <code>T</code> 的对象可调用方法集含类型为 <code>T</code> 的所有方法集。</li>
+</ul>
+
+<p>同时也可以得出一条推论：</p>
+
+<ul>
+  <li>类型 <code>T</code> 的对象不能调用方法集类型为 <code>*T</code> 的方法集。</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;log&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Notifier</span> <span class="kd">interface</span> <span class="p">{</span>
+        <span class="nx">Notify</span><span class="p">()</span> <span class="kt">error</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+        <span class="nx">Name</span>  <span class="kt">string</span>
+        <span class="nx">Email</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">u</span> <span class="o">*</span><span class="nx">User</span><span class="p">)</span> <span class="nx">Notify</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;User: Sending User Email To %s&lt;%s&gt;\n&quot;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Email</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">SendNotification</span><span class="p">(</span><span class="nx">notify</span> <span class="nx">Notifier</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">notify</span><span class="p">.</span><span class="nx">Notify</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">user</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{</span>
+                <span class="nx">Name</span><span class="p">:</span>  <span class="s">&quot;FooBar&quot;</span><span class="p">,</span>
+                <span class="nx">Email</span><span class="p">:</span> <span class="s">&quot;foobar@example.com&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="nx">SendNotification</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">user</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如果将 <code>SendNotification(&amp;user)</code> 替换为 <code>SendNotification(user)</code> 将会报错。</p>
+
+<h2 id="理解接口">理解接口</h2>
+
+<p>首先 Interface 是一种类型，可以参考上述示例的定义方法。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Notifier</span> <span class="kd">interface</span> <span class="p">{</span>
+        <span class="nx">Notify</span><span class="p">()</span> <span class="kt">error</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>它的定义可以看出用了 type 关键字，更准确的说 interface 是一种具有一组方法的类型，这些方法定义了 interface 的行为。</p>
+
+<p>允许不带任何方法的 interface ，称为 <code>Empty Interface</code>，也就是上述的 <code>interface {}</code>。</p>
+
+<p>在 go 中没有显式的关键字用来实现 interface，只需要实现 interface 包含的方法即可。</p>
+
+<h3 id="变量存储">变量存储</h3>
+
+<p>interface 变量存储的是实现者的值</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;log&quot;</span>
+<span class="p">)</span>
+
+<span class="c1">// #1</span>
+<span class="kd">type</span> <span class="nx">Notifier</span> <span class="kd">interface</span> <span class="p">{</span>
+        <span class="nx">Notify</span><span class="p">()</span> <span class="kt">error</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+        <span class="nx">Name</span>  <span class="kt">string</span>
+        <span class="nx">Email</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="c1">// #2</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">u</span> <span class="o">*</span><span class="nx">User</span><span class="p">)</span> <span class="nx">Notify</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;User: Sending User Email To %s&lt;%s&gt;\n&quot;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Email</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">SendNotification</span><span class="p">(</span><span class="nx">notify</span> <span class="nx">Notifier</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">notify</span><span class="p">.</span><span class="nx">Notify</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">user</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{</span>
+                <span class="nx">Name</span><span class="p">:</span>  <span class="s">&quot;FooBar&quot;</span><span class="p">,</span>
+                <span class="nx">Email</span><span class="p">:</span> <span class="s">&quot;foobar@example.com&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="nx">SendNotification</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">user</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>同样复制上述的示例，其中 <code>#1</code> 定义了接口，<code>#2</code> 实现了接口中定义的方法，也就是说 <code>User</code> 是接口 <code>Notifier</code> 的实现，接着通过 <code>SendNotification(&amp;user)</code> 完成了一次对接口类型的使用。</p>
+
+<p>其比较重要的用途就在 <code>SendNotification()</code> 函数中，如果有多种类型实现了这个接口，这些类型的值都可以直接使用接口的变量存储。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="nx">user</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{}</span>
+<span class="kd">var</span> <span class="nx">n</span> <span class="nx">Notifier</span>      <span class="c1">// 声明一个接口对象</span>
+<span class="nx">n</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">user</span>           <span class="c1">// 将对象赋值到接口变量</span>
+<span class="nx">SendNotification</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="c1">// 调用该类型变量实现的接口</span></code></pre></figure>
+
+<p>也就是说，接口变量中存储的是实现了该接口类型的对象值，这种能力称为 <code>duck typing</code>。</p>
+
+<p>在使用接口时不需要显式声明要实现哪个接口，只需要实现对应接口中的方法即可，go 会自动进行检查，并在运行时完成从其他类型到接口类型的自动转换。</p>
+
+<p>即使实现了多个接口，go 也会在使用对应接口时实现自动转换，这就是接口的魔力所在。</p>
+
+<h3 id="类型判断">类型判断</h3>
+
+<p>如上，如果有多种类型实现了 <code>Notifier</code> 这个接口，那么在调用接口时，如何判断接口变量保存的究竟时那种类型的实现。</p>
+
+<p>此时可以使用 <code>comma, ok</code> 的形式做区分，也就是 <code>value, ok := em.(T)</code>，其中 <code>em</code> 是接口类型的变量，<code>T</code> 代表要判断的类型，<code>value</code> 是接口变量存储的值，<code>ok</code> 返回是否类型 <code>T</code> 的实现。</p>
+
+<p>例如，上述的示例可以修改为。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nx">SendNotification</span><span class="p">(</span><span class="nx">notify</span> <span class="nx">Notifier</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">notify</span><span class="p">.(</span><span class="o">*</span><span class="nx">User</span><span class="p">);</span> <span class="nx">ok</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;User implements Notifier %+v\n&quot;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+	<span class="p">}</span>
+        <span class="k">return</span> <span class="nx">notify</span><span class="p">.</span><span class="nx">Notify</span><span class="p">()</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>当 <code>ok</code> 是 <code>true</code> 表明 <code>notify</code> 存储的是 <code>*User</code> 类型的值，<code>false</code> 则不是，这种区分能力叫 <code>Type assertions</code> (类型断言)。</p>
+
+<p>如果需要区分多种类型，可以使用 <code>switch</code> 语句，如下，其中 <code>Foo</code> 未定义会报错。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nx">SendNotification</span><span class="p">(</span><span class="nx">notify</span> <span class="nx">Notifier</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="k">switch</span> <span class="nx">n</span> <span class="o">:=</span> <span class="nx">notify</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="o">*</span><span class="nx">User</span><span class="p">:</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;notify store *User, %+v&quot;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+		<span class="k">case</span> <span class="o">*</span><span class="nx">Foo</span><span class="p">:</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;notify store *Foo, %+v&quot;</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+	<span class="p">}</span>
+        <span class="k">return</span> <span class="nx">notify</span><span class="p">.</span><span class="nx">Notify</span><span class="p">()</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="空接口">空接口</h3>
+
+<p><code>interface{}</code> 是一个空的接口类型，如前所述，可以认为所有的类型都实现了 <code>interface{}</code>，那么如果定义一个函数参数是 <code>interface{}</code> 类型，这个函数可以接受任何类型作为它的参数。</p>
+
+<!--
+func doSomething(v interface{}){
+}
+
+如果函数的参数 v 可以接受任何类型，那么函数被调用时在函数内部 v 是不是表示的是任何类型？并不是，虽然函数的参数可以接受任何类型，并不表示 v 就是任何类型，在函数 doSomething 内部 v 仅仅是一个 interface 类型，之所以函数可以接受任何类型是在 go 执行时传递到函数的任何类型都被自动转换成 interface{}。go 是如何进行转换的，以及 v 存储的值究竟是怎么做到可以接受任何类型的，感兴趣的可以看看 [Russ Cox 关于 interface 的实现](https://research.swtch.com/interfaces) 。
+
+
+
+既然空的 interface 可以接受任何类型的参数，那么一个 interface{}类型的 slice 是不是就可以接受任何类型的 slice ?
+
+func printAll(vals []interface{}) { //1
+	for _, val := range vals {
+		fmt.Println(val)
+	}
+}
+func main(){
+	names := []string{"stanley", "david", "oscar"}
+	printAll(names)
+}
+
+上面的代码是按照我们的假设修改的，执行之后竟然会报 cannot use names (type []string) as type []interface {} in argument to printAll 错误，why？
+
+这个错误说明 go 没有帮助我们自动把 slice 转换成 interface{} 类型的 slice，所以出错了。go 不会对 类型是interface{} 的 slice 进行转换 。为什么 go 不帮我们自动转换，一开始我也很好奇，最后终于在 go 的 wiki 中找到了答案 https://github.com/golang/go/wiki/InterfaceSlice 大意是 interface{} 会占用两个字长的存储空间，一个是自身的 methods 数据，一个是指向其存储值的指针，也就是 interface 变量存储的值，因而 slice []interface{} 其长度是固定的N*2，但是 []T 的长度是N*sizeof(T)，两种 slice 实际存储值的大小是有区别的(文中只介绍两种 slice 的不同，至于为什么不能转换猜测可能是 runtime 转换代价比较大)。
+
+但是我们可以手动进行转换来达到我们的目的。
+
+var dataSlice []int = foo()
+var interfaceSlice []interface{} = make([]interface{}, len(dataSlice))
+for i, d := range dataSlice {
+	interfaceSlice[i] = d
+}
+-->
+
+<h3 id="receiver-类型">Receiver 类型</h3>
+
+<p>如果将上述 <code>SendNotification(&amp;user)</code> 改为 <code>SendNotification(user)</code>，执行时会报如下的错。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="nx">cannot</span> <span class="nx">use</span> <span class="nx">user</span> <span class="p">(</span><span class="kd">type</span> <span class="nx">User</span><span class="p">)</span> <span class="nx">as</span> <span class="kd">type</span> <span class="nx">Notifier</span> <span class="nx">in</span> <span class="nx">argument</span> <span class="nx">to</span> <span class="nx">SendNotification</span><span class="p">:</span>
+        <span class="nx">User</span> <span class="nx">does</span> <span class="nx">not</span> <span class="nx">implement</span> <span class="nx">Notifier</span> <span class="p">(</span><span class="nx">Notify</span> <span class="nx">method</span> <span class="nx">has</span> <span class="nx">pointer</span> <span class="nx">receiver</span><span class="p">)</span></code></pre></figure>
+
+<p>上述报错的大致意思是说，<code>User</code> 没有实现 <code>Notifier</code> ，这里的关键是 <code>User</code> 的 <code>Notify()</code> 方法的 Receiver 是个指针 <code>*User</code> 。</p>
+
+<p>接口的定义并没有严格规定实现者的方法 Receiver 是个 <code>Value Receiver</code> 还是 <code>Pointer Receiver</code>，不过如果定义为 <code>Pointer</code> 而使用 <code>Value</code> ，那么会导致报错。</p>
+
+<p>那么，反过来会怎样，如果 Receiver 是 Value，函数用 Pointer 的形式调用？</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;log&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+        <span class="nx">Name</span>  <span class="kt">string</span>
+        <span class="nx">Email</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">u</span> <span class="nx">User</span><span class="p">)</span> <span class="nx">Notify</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;User: Sending User Email To %s&lt;%s&gt;\n&quot;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Email</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Notifier</span> <span class="kd">interface</span> <span class="p">{</span>
+        <span class="nx">Notify</span><span class="p">()</span> <span class="kt">error</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">SendNotification</span><span class="p">(</span><span class="nx">notify</span> <span class="nx">Notifier</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">notify</span><span class="p">.</span><span class="nx">Notify</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">user</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{</span>
+                <span class="nx">Name</span><span class="p">:</span>  <span class="s">&quot;AriesDevil&quot;</span><span class="p">,</span>
+                <span class="nx">Email</span><span class="p">:</span> <span class="s">&quot;ariesdevil@xxoo.com&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="nx">SendNotification</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span>
+        <span class="nx">SendNotification</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">user</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>从执行代码可以看到无论是 Pointer 还是 Value 都可以正确执行。</p>
+
+<p>导致这一现象的原因是什么？</p>
+
+<p>如果是按 Pointer 调用，会自动进行转换，因为有了指针总是能得到指针指向的值是什么；如果是 Value 调用，GoLang 将无从得知 Value 的原始值是什么，因为 Value 是份拷贝。</p>
+
+<p><strong>GoLang 会把指针进行隐式转换得到 Value，但反过来则不行。</strong></p>
+
+<p>对于 Receiver 是 Value 的方法来说，任何在方法内部对 Value 做出的改变都不影响调用者所看到的 Value，这就是按值传递。</p>
+
+<h3 id="其它">其它</h3>
+
+<p>如果实现的类型不一致，那么在如下的调用时同样会报错。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;fmt&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Animal</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nx">Speak</span><span class="p">()</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Dog</span> <span class="kd">struct</span> <span class="p">{}</span>
+<span class="c1">// #2 func (d Dog) Speak() string {</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <span class="o">*</span><span class="nx">Dog</span><span class="p">)</span> <span class="nx">Speak</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="s">&quot;Woof!&quot;</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Cat</span> <span class="kd">struct</span> <span class="p">{}</span>
+<span class="c1">// #2 func (c Cat) Speak() string {</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">Cat</span><span class="p">)</span> <span class="nx">Speak</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="s">&quot;Meow!&quot;</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// #2 animals := []Animal{Dog{}, Cat{}}</span>
+	<span class="nx">animals</span> <span class="o">:=</span> <span class="p">[]</span><span class="nx">Animal</span><span class="p">{</span><span class="o">&amp;</span><span class="nx">Dog</span><span class="p">{},</span> <span class="o">&amp;</span><span class="nx">Cat</span><span class="p">{}}</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">animal</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">animals</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">animal</span><span class="p">.</span><span class="nx">Speak</span><span class="p">())</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>可以保持现状，或者都修改为 <code>#2</code> 的方式，但是如果有不一致的，将会报错。</p>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://sanyuesha.com/2017/07/22/how-to-understand-go-interface/">理解 Go interface 的 5 个关键点</a> 很好的一篇介绍 GoLang 中接口的文章。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/golang-common-module-time-introduce.html" title="GoLang time 模块">&larr; Older</a></li> 
+         <li class="next"><a href="/post/network-icmp-ping-program-introduce.html" title="ICMP Ping">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1522339200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/golang-syntax-interface-introduce.html" data-title="Golang 语法之接口" data-url="/post/golang-syntax-interface-introduce.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

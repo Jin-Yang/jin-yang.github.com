@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux 中的 socketfs|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux 中的 socketfs</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2014-02-10 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  network ,  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>BSD socket 是用户程序与网络协议栈之间的接口层，用户通过调用 socket API 将报文传给协议栈，以及从协议栈读取报文。实际上，Linux 对于网络提供了一个与虚拟文件系统相似的接口，也就是可以通过 socket 接口打开一个类似的文件，而内核中实际是通过 sockfs 文件系统实现的。</p>
+
+<p>接下来我们就在这篇文章中查看下与 socketfs 相关的内容。</p>
+
+<!-- more -->
+
+<h1 id="socket层系统调用">Socket层，系统调用</h1>
+
+<p>系统调用 socket()、bind()、connect()、accept()、send()、release() 等都是在 net/socket.c 实现的，下面介绍通过 socket 层和用户的衔接。</p>
+
+<p>对于这么多的协议，都是通过 socket() 向用户提供统一的接口，下面是一个典型的 TCP 协议通讯。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"># 服务端
+listenfd = socket(AF_INET, SOCK_STREAM, 0);                 # 新建socket
+bind(sock_descriptor, servaddr, size);                      # 绑定端口
+listen(listenfd, 5);                                        # 开始监听端口
+accept(listenfd, cliaddr, clilen);                          # 接收新请求
+
+# 客户端
+sock_descriptor = socket(AF_INET, SOCK_STREAM, 0);          # 新建socket
+connect(sock_descriptor, sockaddr, size);                   # 与服务端建立链接
+send(sock_descriptor, &quot;hello world&quot;);                       # 发送数据
+recv(sock_descriptor, buffer, 1024, 0);                     # 接收数据</code></pre></figure>
+
+<p>socket() 的声明和实现如下，三个参数分别为协议族、协议类型 (面向连接或无连接) 以及协议。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">int socket(int domain, int type, int protocol);</code></pre></figure>
+
+<h2 id="socketfs-初始化">socketfs 初始化</h2>
+
+<p>对于用户态而言, 返回的 socket 就是一个特殊的已经打开的文件，为了对 socket 抽像出文件的概念，内核中为 socket 定义了一个专门的文件系统类型 sockfs 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="k">struct</span> <span class="n">vfsmount</span> <span class="o">*</span><span class="n">sock_mnt</span> <span class="n">__read_mostly</span><span class="p">;</span>
+<span class="k">static</span> <span class="k">struct</span> <span class="n">file_system_type</span> <span class="n">sock_fs_type</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">name</span>     <span class="o">=</span> <span class="s">&quot;sockfs&quot;</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">get_sb</span>   <span class="o">=</span> <span class="n">sockfs_get_sb</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">kill_sb</span>  <span class="o">=</span> <span class="n">kill_anon_super</span><span class="p">,</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>socket 系统的初始化通过 sock_init() 函数完成，通过如下程序实现。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">core_initcall</span><span class="p">(</span><span class="n">sock_init</span><span class="p">);</span></code></pre></figure>
+
+<p>通过 core_initcall() 宏实现，其中定义的函数会在系统初始化时调用，详细可以参考 <a href="linux-initcalls">Linux initcall 机制实现</a>，在通过 sock_init() 模块初始化的时候，会安装该文件系统。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">sock_init()
+  |-net_sysctl_init()
+  |-skb_init()
+  |-init_inodecache()
+  |-register_filesystem()             # 将文件系统添加到一个列表中
+  |-kern_mount()                      # 挂载文件系统
+    |-kern_mount_data()
+      |-vfs_kern_mount()
+        |-alloc_vfsmnt()
+        |-mount_fs()                  # 返回root dentry</code></pre></figure>
+
+<p>在 vfs_kern_mount() 中，会申请文件系统 mnt 结构，调用之前注册的 sock_fs_type 的 get_sb()，获取相应的超级块，并将 mnt-&gt;mnt_sb 指向 sock_fs_type 中的超级块。</p>
+
+<p>这里就是先获取/分配一个超级块，然后初始化超级块的各成员，包括 s_op，它封装了对应的功能函数表。s_op 自然就指向了 sockfs_ops，那前面提到的 new_inode() 函数分配 inode 时调用的，这个函数实际对应 sock_alloc_inode() 函数。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">sock_mnt</span><span class="o">-&gt;</span><span class="n">mnt_sb</span><span class="o">-&gt;</span><span class="n">s_op</span><span class="o">-&gt;</span><span class="n">alloc_inode</span><span class="p">(</span><span class="n">sock_mnt</span><span class="o">-&gt;</span><span class="n">mnt_sb</span><span class="p">);</span></code></pre></figure>
+
+<p>可以看到 sock_alloc_inode() 是如何分配一个 inode 节点的，函数先分配了一个用于封装 socket 和 inode 的 ei，然后在高速缓存中为之申请了一块空间，这样 inode 和 socket 就同时都被分配了。</p>
+
+<p>至目前为止，分配 inode、socket 以及两者如何关联，都已一一分析了。最后一个关键问题，就是如何把 socket 与一个已打开的文件，建立映射关系。</p>
+
+<p>sys_socketcall() 包含了所有 socket API 的入口。</p>
+
+<h1 id="socket">socket()</h1>
+
+<p>有了文件系统后，对内核而言，创建一个 socket，就是在 sockfs 文件系统中创建一个文件节点(inode)，并建立起为了实现 socket 功能所需的一整套数据结构，包括 struct inode 和 struct socket。而 struct socket 结构在内核中就代表了一个 socket，然后再将其与一个已打开的文件 “建立映射关系”，这样，用户态就可以用抽像的文件的概念来操作 socket 了。</p>
+
+<p>而用户看到的是一个类似于文件描述符的 int 类型。在内核中 struct task_struct current 用来表示当前进程，用 struct file 描述一个已经打开的文件，当然一个进程可以打开多个文件，所以通过 struct file *fd_array[] 表示，文件描述符即对应该数组的下标。</p>
+
+<p>通过文件描述符即可以找到对应内核中的 struct file 结构。</p>
+
+<p>因此，对于网络编程需要做的是将 socket 与一个已经打开的文件建立映射，也就是为 socket 分配一个 struct file 以及相应的文件描述符 fd 。</p>
+
+<p>如前所述，一个 socket 总是与一个 inode 密切相关的，为此内核引入了一个 socket_alloc 结构，当已知一个 inode 可以通过宏 SOCKET_I() 获取对应的 socket 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">socket_alloc</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">socket</span> <span class="n">socket</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">inode</span> <span class="n">vfs_inode</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="n">sock</span> <span class="o">=</span> <span class="n">SOCKET_I</span><span class="p">(</span><span class="n">inode</span><span class="p">);</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="nf">SOCKET_I</span><span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">inode</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">container_of</span><span class="p">(</span><span class="n">inode</span><span class="p">,</span> <span class="k">struct</span> <span class="n">socket_alloc</span><span class="p">,</span> <span class="n">vfs_inode</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">socket</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>这也同时意味着在正常分配一个 inode 后，必须再分配一个 socket_alloc 结构，并实现对应的封装。</p>
+
+<p>接着申请分配一个相应的文件描述符 fd，因为 socket 并不支持 open() 方法，所以不能期望用户通过调用 open() API 分配一个 struct file，而是 sock_alloc_file() 获取，并通过让 current 的 files 指针的 fd 数组的 fd 索引项指向该 file 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">sys_socket(family, type, protocol)
+  |-sock_create()                         # 分配inode和socket_alloc
+  | |-__sock_create()
+  |   |-security_socket_create()          # 调用安全接口，一般是selinux，可忽略
+  |   |-socket *sock=sock_alloc()         # 主要的分配函数，分配一个struct socket
+  |   | |-new_inode_pseudo()              # 通过sock_mnt-&gt;mnt_sb生成一个inode
+  |   | | |-alloc_inode()                 # 新建inode，并添加到sb.s_inodes链表中
+  |   | |-socket *sock=SOCKET_I(inode)    # 根据上述的inode，获取sock
+  |   |
+  |   |-sock-&gt;type=type
+  |   |-pf=net_families[family]
+  |   |-pf-&gt;create(..., protocol, ...)    # 其中TCP对应了inet_create()函数
+  |   | |-inetsw[sock-&gt;type]              # 遍厉该数组的对象
+  |   | |-sock-&gt;ops=answer-&gt;ops           ### struct proto_ops类型，后续收发操作的主要函数
+  |   | |-sock *sk=sk_alloc()             # 分配sock结构体
+  |   |
+  |   |-security_socket_post_create()
+  |
+  |-sock_map_fd()
+    |-get_unused_fd_flags()               # 获取未使用的fd
+    |-sock_alloc_file()                   # 分配一个struct file
+    |-fd_install()</code></pre></figure>
+
+<p>在 alloc_inode() 函数中，会调用 sock_mnt-&gt;mnt_sb-&gt;s_op-&gt;alloc_inode(sock_mnt-&gt;mnt_sb) 返回一个 inode 结构体，而该 alloc_inode() 函数实际对应的是 sockfs_ops 中的成员变量。</p>
+
+<p>在 Linux 中，通过 net_families[] 数组标示不同的 family 类型，对于 TCP/IP 采用的是 AF_INET 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define PF_UNIX     AF_UNIX</span>
+<span class="cp">#define PF_INET     AF_INET</span>
+
+<span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">net_proto_family</span> <span class="n">__rcu</span> <span class="o">*</span><span class="n">net_families</span><span class="p">[</span><span class="n">NPROTO</span><span class="p">]</span> <span class="n">__read_mostly</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">net_proto_family</span> <span class="n">inet_family_ops</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">family</span> <span class="o">=</span> <span class="n">PF_INET</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">create</span> <span class="o">=</span> <span class="n">inet_create</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">owner</span>  <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>其中，仍以 TCP 为例，其中入参采用 SOCK_STREAM，其中的 inetsw_array[] 会在 inet_init() 函数中通过 inet_register_protosw() 函数注册到 static struct list_head inetsw[SOCK_MAX] 中。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">const</span> <span class="k">struct</span> <span class="n">proto_ops</span> <span class="n">inet_stream_ops</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">family</span>        <span class="o">=</span> <span class="n">PF_INET</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">owner</span>         <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">sendmsg</span>       <span class="o">=</span> <span class="n">inet_sendmsg</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">recvmsg</span>       <span class="o">=</span> <span class="n">inet_recvmsg</span><span class="p">,</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">inet_protosw</span> <span class="n">inetsw_array</span><span class="p">[]</span> <span class="o">=</span>
+<span class="p">{</span>
+    <span class="p">{</span>
+        <span class="p">.</span><span class="n">type</span> <span class="o">=</span>       <span class="n">SOCK_STREAM</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">protocol</span> <span class="o">=</span>   <span class="n">IPPROTO_TCP</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">prot</span> <span class="o">=</span>       <span class="o">&amp;</span><span class="n">tcp_prot</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">ops</span> <span class="o">=</span>        <span class="o">&amp;</span><span class="n">inet_stream_ops</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">flags</span> <span class="o">=</span>      <span class="n">INET_PROTOSW_PERMANENT</span> <span class="o">|</span> <span class="n">INET_PROTOSW_ICSK</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">inet_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">q</span> <span class="o">=</span> <span class="n">inetsw_array</span><span class="p">;</span> <span class="n">q</span> <span class="o">&lt;</span> <span class="o">&amp;</span><span class="n">inetsw_array</span><span class="p">[</span><span class="n">INETSW_ARRAY_LEN</span><span class="p">];</span> <span class="o">++</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">inet_register_protosw</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>那么，在 sys_socket() 函数中就会根据 family、type 的参数，通过 sock-&gt;ops=answer-&gt;ops 进行赋值，后面包括报文的收发操作等，都是根据该结构体进行操作。</p>
+
+<h2 id="小结">小结</h2>
+
+<p>上面已经介绍了在协议栈中是如何选择相关操作函数的，在此仍然一步步查看下具体的排查过程。</p>
+
+<p>首先，socket() 系统调用会传入三个参数，接口如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">SYSCALL_DEFINE3</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">protocol</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">retval</span> <span class="o">=</span> <span class="n">sock_create</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">sock</span><span class="p">);</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>实际最终会调用如下的函数。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">__sock_create</span><span class="p">(...,</span> <span class="kt">int</span> <span class="n">family</span><span class="p">,</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">protocol</span><span class="p">,</span> <span class="p">...)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span> <span class="o">=</span> <span class="n">sock_alloc</span><span class="p">();</span>
+    <span class="n">sokc</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">=</span> <span class="n">type</span><span class="p">;</span>
+
+    <span class="k">const</span> <span class="k">struct</span> <span class="n">net_proto_family</span> <span class="o">*</span><span class="n">pf</span><span class="p">;</span>
+    <span class="n">pf</span> <span class="o">=</span> <span class="n">rcu_dereference</span><span class="p">(</span><span class="n">net_families</span><span class="p">[</span><span class="n">family</span><span class="p">]);</span>   <span class="c1">//## 关系到如下函数的调用</span>
+
+    <span class="n">err</span> <span class="o">=</span> <span class="n">pf</span><span class="o">-&gt;</span><span class="n">create</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">sock</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">kern</span><span class="p">);</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>其中 net_families[] 数组通过 sock_register() 函数进行注册，通过如下命令看到所有注册的协议，在此以 AF_INET 或者 PF_INET 为例，注册的是 inet_family_ops 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cd net &amp;&amp; grep -rne &#39;\&lt;sock_register(&#39;
+... ...
+ipv4/af_inet.c:1704:    (void)sock_register(&amp;inet_family_ops);
+... ...</code></pre></figure>
+
+<p>而对应的结构体定义为：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">net_proto_family</span> <span class="n">inet_family_ops</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">family</span> <span class="o">=</span> <span class="n">PF_INET</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">create</span> <span class="o">=</span> <span class="n">inet_create</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">owner</span>  <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>也就是接下来实际调用的函数是：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">inet_create</span><span class="p">(</span><span class="k">struct</span> <span class="n">net</span> <span class="o">*</span><span class="n">net</span><span class="p">,</span> <span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span> <span class="kt">int</span> <span class="n">protocol</span><span class="p">,</span> <span class="kt">int</span> <span class="n">kern</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="o">-</span><span class="n">ESOCKTNOSUPPORT</span><span class="p">;</span>
+    <span class="n">rcu_read_lock</span><span class="p">();</span>
+    <span class="n">list_for_each_entry_rcu</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">inetsw</span><span class="p">[</span><span class="n">sock</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">],</span> <span class="n">list</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="cm">/* Check the non-wild match. */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">answer</span><span class="o">-&gt;</span><span class="n">protocol</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">protocol</span> <span class="o">!=</span> <span class="n">IPPROTO_IP</span><span class="p">)</span>
+                <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">sock</span><span class="o">-&gt;</span><span class="n">ops</span> <span class="o">=</span> <span class="n">answer</span><span class="o">-&gt;</span><span class="n">ops</span><span class="p">;</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>而其中 inetsw[] 数组实际是通过 inetsw_array[] 注册的结果。</p>
+
+<h1 id="send-类的实现">send() 类的实现</h1>
+
+<p>在 Linux 中，应用层可以使用以下 socket 函数来发送数据：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">ssize_t</span> <span class="nf">write</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span>
+<span class="kt">ssize_t</span> <span class="nf">send</span><span class="p">(</span><span class="kt">int</span> <span class="n">s</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+<span class="kt">ssize_t</span> <span class="nf">sendto</span><span class="p">(</span><span class="kt">int</span> <span class="n">s</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span> <span class="kt">socklen_t</span> <span class="n">tolen</span><span class="p">);</span>
+<span class="kt">ssize_t</span> <span class="nf">sendmsg</span><span class="p">(</span><span class="kt">int</span> <span class="n">s</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">msghdr</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">sendmmsg</span><span class="p">(</span><span class="kt">int</span> <span class="n">s</span><span class="p">,</span> <span class="k">struct</span> <span class="n">mmsghdr</span> <span class="o">*</span><span class="n">msgvec</span><span class="p">,</span>  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">vlen</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span></code></pre></figure>
+
+<p>当 flags 为 0 时，send() 和 write() 功能相同；而 sendto(…, NULL, 0) 功能与 send() 的功能相同；write() 和 send() 在套接字处于连接状态时可以使用，而 sendto()、sendmsg() 和 sendmmsg() 在任何时候都可用。</p>
+
+<p>对于 send() 而言，其入口函数就是 sys_send() 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">sys_send()
+  |-sys_sendto()
+    |-sockfd_lookup_light()         # 通过文件描述符fd，找到对应的socket实例
+    |-... ...                       # 初始化消息头信息
+    |-move_addr_to_kernel()         # 把套接字地址从用户空间拷贝到内核空间
+    |-sock_sendmsg()                # 调用统一的发送入口函数
+    | |-__sock_sendmsg()
+    |   |-__sock_sendmsg_nosec()
+    |     |-sock-&gt;ops-&gt;sendmsg()
+    |
+    |-fput_light()</code></pre></figure>
+
+<p>在 sockfd_lookup_light() 函数中，以 fd 为索引从当前进程的文件描述符表 files_struct 实例中找到对应的 file 实例，然后从 file 实例的 private_data 成员中获取 socket 实例。</p>
+
+<p>其中 sock-&gt;ops-&gt;sendmsg() 操作相关的结构体如下，其中 sock-&gt;ops 在 sys_socket() 中初始化。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">socket</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">const</span> <span class="k">struct</span> <span class="n">proto_ops</span>  <span class="o">*</span><span class="n">ops</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">proto_ops</span> <span class="p">{</span>
+    <span class="kt">int</span>     <span class="n">family</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">module</span>   <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">release</span><span class="p">)</span>   <span class="p">(</span><span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">);</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">bind</span><span class="p">)</span>      <span class="p">(</span><span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">myaddr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sockaddr_len</span><span class="p">);</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">connect</span><span class="p">)</span>   <span class="p">(</span><span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">vaddr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sockaddr_len</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">socketpair</span><span class="p">)(</span><span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock1</span><span class="p">,</span> <span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock2</span><span class="p">);</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">accept</span><span class="p">)</span>    <span class="p">(</span><span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span> <span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">newsock</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">listen</span><span class="p">)</span>    <span class="p">(</span><span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">shutdown</span><span class="p">)</span>  <span class="p">(</span><span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">sendmsg</span><span class="p">)</span>   <span class="p">(</span><span class="k">struct</span> <span class="n">kiocb</span> <span class="o">*</span><span class="n">iocb</span><span class="p">,</span> <span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span>
+                      <span class="k">struct</span> <span class="n">msghdr</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">total_len</span><span class="p">);</span>
+    <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">recvmsg</span><span class="p">)</span>   <span class="p">(</span><span class="k">struct</span> <span class="n">kiocb</span> <span class="o">*</span><span class="n">iocb</span><span class="p">,</span> <span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span>
+                      <span class="k">struct</span> <span class="n">msghdr</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">total_len</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>其中 socket(AF_INET, SOCK_STREAM, 0) 会将 sock-&gt;ops 设置为 inet_stream_ops 变量，那么后续的所有操作都会使用该结构体定义的函数进行操作。</p>
+
+<h1 id="参考">参考</h1>
+
+<p><a href="http://hellojavaer.iteye.com/blog/1087585">Linux 内核协议栈</a> 关于 socket 创建的过程详解，或者参考 <a href="http://blog.chinaunix.net/uid-21505072-id-3076743.html">Linux TCP/IP协议栈之Socket的实现分析(一 套接字的创建)</a> 。</p>
+
+<p><a href="http://blog.csdn.net/zhangskd/article/details/13631715">Socket 层实现</a> 同样是内核 Socket 层的相关实现。</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-monitor-network.html" title="Linux 网络常见监控项以及报错">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-communication-netlink_init.html" title="Linux 内核与用户态通讯机制 -- Netlink">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1391961600',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/network-socketfs_init.html" data-title="Linux 中的 socketfs" data-url="/post/network-socketfs_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

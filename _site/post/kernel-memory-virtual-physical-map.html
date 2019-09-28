@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Kernel 内存映射|JinYang's Blog</title>
+  <meta name="keywords" content="linux,内存,memory,映射">
+  <meta name="description" content="现在的操作系统在内存使用时，一般为逻辑地址，那么逻辑地址和物理地址之间是怎样映射的，或者说，通过逻辑地址如何找到物理内存中的内容。其实，包括动态共享库，mmap 映射等，都使用到了虚拟内存，也就是逻辑地址的映射。这里，简单介绍下逻辑地址到物理地址的映射关系。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Kernel 内存映射</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2013-04-05 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux ,  misc  
+      
+    </div>
+  </div>
+  <hr>
+  <p>现在的操作系统在内存使用时，一般为逻辑地址，那么逻辑地址和物理地址之间是怎样映射的，或者说，通过逻辑地址如何找到物理内存中的内容。</p>
+
+<p>其实，包括动态共享库，mmap 映射等，都使用到了虚拟内存，也就是逻辑地址的映射。</p>
+
+<p>这里，简单介绍下逻辑地址到物理地址的映射关系。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>如下，是 x86 系统中与内存相关的寄存器以及相关的转换关系。</p>
+
+<p><img src="/images/linux/kernel/memory-system-level-registers-and-data-structure.png" alt="memory system level registers and data structure" title="memory system level registers and data structure" class="pull-center" width="90%" /></p>
+
+<h2 id="地址转换">地址转换</h2>
+
+<p>在如下的程序中打印出 tmp 变量的地址，变量保存在栈中，假设地址为 <code>address:0x7FFF797B9698</code> ，该结果是逻辑地址。</p>
+
+<p>注意，现在的 Interl CPU 寄存器采用 64-bit，而其内存的寻址空间为 48-bits，也就是说，多余的位实际上是无效的。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">tmp</span> <span class="o">=</span> <span class="mh">0x12345678</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;tmp variable address:0x%08lX</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tmp</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>现在的 CPU 都会有内存管理单元，对于 IA-32e 类似架构的 CPU 规定，地址映射过程是 <code>逻辑地址 -&gt; 线性地址 -&gt; 物理地址</code>。当然运行在 Intel 上的 Linux 内核也采用相同的方法。</p>
+
+<p>Intel 通过 <code>IA32_EFER</code> 寄存器定义了不同的 CPU 模式，不过暂时不太清除如何读取该寄存器。</p>
+
+<p><img src="/images/linux/kernel/memory-extended-feature-enable-register.png" alt="memory extended feature enable register" title="memory extended feature enable register" class="pull-center" width="80%" /></p>
+
+<p>除此之外，先介绍下这里会使用到的工具。</p>
+
+<!-- 变量 a 定在了数据段， 通过 ds 段寄存器的值可以看出使用的是 GDT ，entry 是 15.-->
+
+<h3 id="x86-64-示例">x86-64 示例</h3>
+
+<p>以如下的值为例。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ ./address
+tmp address:0x7FFE07DB9A70
+CR4=1427E0 PSE(0) PAE(1)
+CR3=12A6E0000 CR0=80050033, pgd:0xFFFF88012A6E0000
+gdtr address:FFFF88021FB09000, limit:7F</code></pre></figure>
+
+<p>这里获取的 GDTR 基址是 <code>0xFFFF88021FB09000</code>，注意这里是线性地址，实际上对应的物理地址是减去一个偏移 <code>__PAGE_OFFSET</code> ，也就是 <code>0xFFFF880000000000</code>，因此对应的物理地址是 <code>0x21FB09000</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define __PAGE_OFFSET           _AC(0xffff880000000000, UL)</span></code></pre></figure>
+
+<p>应用程序中，tmp 变量的逻辑地址或者说线性地址为 <code>0x7FFE07DB9A70</code>，那么接下来，我们逐步映射到实际物理地址，看这个地址的数据是否真的为 <code>0x12345678beaf5dde</code> 。</p>
+
+<p>如下，是 x86 的分段与分页机制。</p>
+
+<p><img src="/images/linux/kernel/memory-segmentation-paging.png" alt="memory segmentation paging" title="memory segmentation paging" class="pull-center" width="80%" /></p>
+
+<h3 id="分段机制">分段机制</h3>
+
+<p>分段的存在更多就是为了兼容性，在 x86-64 下的 64-bit 程序该功能近似于 bypass，对于 CS 会根据 GDT 中的信息判断是 64-bit 还是 32-bit compatibility 模式，而对于数据段的选择器如 DS、ES、FS、GS、SS 可以为 00H。而对于 GS、SS 可以不为 00H，手册说仍然有效，不过没有仔细研究。</p>
+
+<p>上述输出的地址为 <code>0x7FFE07DB9A70</code>，这个就是逻辑地址，首先需要将逻辑地址转化成线性地址，也就是分段机制。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#ifdef CONFIG_X86_32</span>
+<span class="c1">//... ...</span>
+<span class="cp">#else</span>
+<span class="cp">#define GDT_ENTRY_KERNEL_CS 2</span>
+<span class="cp">#define GDT_ENTRY_KERNEL_DS 3</span>
+<span class="cp">#define GDT_ENTRY_DEFAULT_USER_DS 5</span>
+<span class="cp">#define GDT_ENTRY_DEFAULT_USER_CS 6</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#define __KERNEL_CS (GDT_ENTRY_KERNEL_CS*8)</span>
+<span class="cp">#define __KERNEL_DS (GDT_ENTRY_KERNEL_DS*8)</span>
+<span class="cp">#define __USER_DS   (GDT_ENTRY_DEFAULT_USER_DS*8+3)</span>
+<span class="cp">#define __USER_CS   (GDT_ENTRY_DEFAULT_USER_CS*8+3)</span>
+
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">start_thread_common</span><span class="p">(</span><span class="k">struct</span> <span class="n">pt_regs</span> <span class="o">*</span><span class="n">regs</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">new_ip</span><span class="p">,</span>
+            <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">new_sp</span><span class="p">,</span>
+            <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">_cs</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">_ss</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">_ds</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">loadsegment</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">loadsegment</span><span class="p">(</span><span class="n">es</span><span class="p">,</span> <span class="n">_ds</span><span class="p">);</span>
+    <span class="n">loadsegment</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">_ds</span><span class="p">);</span>
+    <span class="n">load_gs_index</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="n">current</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">usersp</span>  <span class="o">=</span> <span class="n">new_sp</span><span class="p">;</span>
+    <span class="n">regs</span><span class="o">-&gt;</span><span class="n">ip</span>        <span class="o">=</span> <span class="n">new_ip</span><span class="p">;</span>
+    <span class="n">regs</span><span class="o">-&gt;</span><span class="n">sp</span>        <span class="o">=</span> <span class="n">new_sp</span><span class="p">;</span>
+    <span class="n">this_cpu_write</span><span class="p">(</span><span class="n">old_rsp</span><span class="p">,</span> <span class="n">new_sp</span><span class="p">);</span>
+    <span class="n">regs</span><span class="o">-&gt;</span><span class="n">cs</span>        <span class="o">=</span> <span class="n">_cs</span><span class="p">;</span>
+    <span class="n">regs</span><span class="o">-&gt;</span><span class="n">ss</span>        <span class="o">=</span> <span class="n">_ss</span><span class="p">;</span>
+    <span class="n">regs</span><span class="o">-&gt;</span><span class="n">flags</span>     <span class="o">=</span> <span class="n">X86_EFLAGS_IF</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">start_thread</span><span class="p">(</span><span class="k">struct</span> <span class="n">pt_regs</span> <span class="o">*</span><span class="n">regs</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">new_ip</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">new_sp</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">start_thread_common</span><span class="p">(</span><span class="n">regs</span><span class="p">,</span> <span class="n">new_ip</span><span class="p">,</span> <span class="n">new_sp</span><span class="p">,</span>
+                <span class="n">__USER_CS</span><span class="p">,</span> <span class="n">__USER_DS</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>实际上有 6 个段寄存器，不过 FS、DS、ES、GS 的值都是 0，只有 CS 和 DS 的值有所区别，每个进程的 6 个寄存器是一样的，不同的是 IP 和 SP，从上面的代码中也可以看到。</p>
+
+<p>如下，是 x86 寄存器的段选择符。</p>
+
+<p><img src="/images/linux/kernel/memory-segment-selector.png" alt="memory segment selector" title="memory segment selector" class="pull-center" width="40%" /></p>
+
+<p>TI 表示选择的段描述符是存在 GDT 中还是 LDT 中，一般都只存在 GDT 中，几乎没有选择 LDT 的，只有像 wine 这种进程才会用到 LDT 。</p>
+
+<p>RPL 表示特权等级，Linux 中只使用了 0 和 3 两个特权级别，其中 0 表示最高权限，3 表示无特权；如上，也就是说 CS 和 SS 段是无特权的。</p>
+
+<p>另外，前面的 13 位表示在 GDT 表中的 index，或者说是第几项，而 GDT 存放的地址就保存在了 GDTR 寄存器中。</p>
+
+<h4 id="查找地址">查找地址</h4>
+
+<p>如上，对应的 GDTR 寄存器的地址是 <code>0xffff880223489000 - 0xffff880000000000 = 0x223489000</code>，不过这里有个 bug ，暂时还没有想好怎么解决。</p>
+
+<p>dram 获取的是可用页数，不过很多系统的可用内存的空间是不连续的，这就导致了部分的内存无法访问。</p>
+
+<!-- 也就是说对于 intel x86-64 我们可以直接忽略分段功能，而直接查看分页的处理。 -->
+
+<p>由于每个 GDT 项长 64-bits，所以对应的地址为 <code>0x223489000 + idx*8</code> ，然后根据对应的值参照下图的内容，然后计算地址即可。</p>
+
+<p><img src="/images/linux/kernel/memory-segment-descriptor.png" alt="memory segment descriptor" title="memory segment descriptor" class="pull-center" width="80%" /></p>
+
+<p>不过一般计算之后都是 <code>0x000000</code> ，也就是说虚拟地址直接等于线性地址。</p>
+
+<h3 id="分页机制">分页机制</h3>
+
+<p>分页过程会将 48-bit 的线性地址转换为 52-bit 的物理地址, 可以看出虽然是 64bit 的操作系统但在处理器层面并没有提供 2^64 大小的内存访问范围。</p>
+
+<p>另外需要注意的是，通过 CR3 映射的内存地址实际是 “物理地址”。对于分页机制 IA-32e 有 4K、2M、1G 的分页方式，Linux 中采用的通常为 4K ，在此仅以此为例。</p>
+
+<p>x86-64 采用了四层地址映射，</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">+-------+-------+-------+-------+-------+---------+
+| Index | PTE   | PMD   | PUD   | PGD   | Reseved |
+| 00~11 | 12~20 | 21~29 | 30~38 | 39~47 | 48~63   |
++-------+-------+-------+-------+-------+---------+</code></pre></figure>
+
+<p>如上，PGD、PUD、PMD、PTE 各占了 9 位，加上 12 位的页内 index，共用了 48 位，即可管理的地址空间为 <code>2^48=256T</code>，而在 32 位地址模式时，该值仅为 <code>2^32=4G</code> 。</p>
+
+<p>另外 64 位地址时支持的物理内存最大为 <code>2^46=64T</code>，见 <code>e820.c</code> 中 <code>MAX_ARCH_PFN</code> 的定义：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp"># define MAX_PHYSMEM_BITS   46</span>
+<span class="cp"># define MAXMEM       _AC(__AC(1, UL) &lt;&lt; MAX_PHYSMEM_BITS, UL)</span>
+<span class="cp"># define MAX_ARCH_PFN MAXMEM&gt;&gt;PAGE_SHIFT</span></code></pre></figure>
+
+<p>而在 32 位地址时，在开启 PAE 选项后最大支持的物理内存为 64G 。</p>
+
+<h3 id="实践">实践</h3>
+
+<p>这里的示例代码可以参考 <a href="https://github.com/Jin-Yang/examples/tree/master/linux/memory/to_physical/">github memory</a> ，主要包括了如下的文件：</p>
+
+<ul>
+  <li>registers.c 内核模块，用于读取 cr0、gdtr 等信息，可以通过 <code>/proc/registers</code> 读取；</li>
+  <li>address.c 返回临时对象的地址，也就是栈地址，目前是 48bits ；</li>
+</ul>
+
+<p><img src="/images/linux/kernel/memory_cr0_register.png" alt="memory cr0 register" title="memory cr0 registe" class="pull-center" width="80%" /></p>
+
+<h4 id="分页机制-1">分页机制</h4>
+
+<p>在满足 <code>CR0.PG = 1</code>、<code>CR4.PAE = 1</code>、<code>IA32_EFER.LME = 1</code> 条件时会打开 IA-32E Paging 机制，另外，在 <code>CR4.PCIDE = 0</code> 不同时，对应的 <code>CR3</code> 使用也略有区别，可以查看手册的 <code>4.5 IA-32E PAGING</code> 部分。</p>
+
+<p>线性地址到物理地址的转换关系如下。</p>
+
+<p><img src="/images/linux/kernel/memory-linear-address-translation.png" alt="memory linear address translation" title="memory linear address translation" class="pull-center" width="80%" /></p>
+
+<p>在分页机制中，有效的虚拟地址是 48-bits，会映射到 52-bits 的物理地址；将临时变量 tmp 的地址 <code>0x7FFE07DB9A70</code> 映射为二进制格式为。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0111 1111 1111 1110 0000 0111 1101 1011 1001 1010 0111 0000
+011111111 111111000 000111110 110111001 101001110000
+       FF       1F8        3E       1B9          A70</code></pre></figure>
+
+<h5 id="第一级映射">第一级映射</h5>
+
+<p>CR3 寄存器中的值是 <code>0x12A6E0000</code>，这是第一级映射表 (PML4) 的起始物理地址，这张表中保存着第二级映射表的物理地址。而线性地址中的 <code>bits[47:39]</code> 对应 <code>PML4E</code> 的序号。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0x12A6E0000 + 011111111b(0xFF) * 8 = 0x12A6E0000 + 0x7F8 = 0x12A6E07F8
+
+(FILEVIEW)
+000012A6E07F0    00000001DB9A6067      00000001F9ACC067
+000012A6E0800    0000000000000000      0000000000000000</code></pre></figure>
+
+<p>注意，因为每个单元是 64-bits 因此需要在序号基础上乘以 8 获得地址。最后，该地址对应的二级映射表的起始地址为：<code>0x1F9ACC000</code> (067 后面的 12-bits 是页面属性)。</p>
+
+<!--Bit17:PCIDE-->
+
+<h5 id="第二级映射">第二级映射</h5>
+
+<p>二级映射的任务是找到第三级映射表的起始地址。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0x1F9ACC000 + 111111000b * 8 = 0x1F9ACC000 + 0xFC0 = 0x1F9ACCFC0
+
+(FILEVIEW)
+00001F9ACCFC0    000000018B96D067      0000000000000000
+00001F9ACCFD0    0000000000000000      0000000000000000</code></pre></figure>
+
+<p>与上述类似，第三级映射表的起始地址为 <code>0x18B96D000</code> (067 后面的 12-bits 是页面属性)。</p>
+
+<h5 id="第三级映射">第三级映射</h5>
+
+<p>三级映射的任务是找到第四级映射表的起始地址。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0x18B96D000 + 000111110b * 8 = 0x18B96D000 + 0x1F0 = 0x18B96D1F0
+
+(FILEVIEW)
+000018B96D1F0    0000000154F81067      0000000000000000
+000018B96D200    0000000000000000      0000000000000000</code></pre></figure>
+
+<p>第四级映射表的起始地址为 <code>0x154F81000</code> (067 后面 12-bits 是页面属性)。</p>
+
+<h5 id="第四级映射">第四级映射</h5>
+
+<p>第四级映射的任务是找到临时变量 tmp 所在的物理页面起始地址。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0x154F81000 + 110111001b * 8 = 0x154F81000 + 0xDC8 = 0x154F81DC8
+
+(FILEVIEW)
+0000154F81DC0    800000011FDD7067      800000014DD61067
+0000154F81DD0    0000000000000000      800000017C7A6067</code></pre></figure>
+
+<p><code>0x154F81DC8</code> 地址单元中的数据，就是物理页面起始地址，也就是我们最后所得到的 tmp 对应的物理页为 <code>0x14DD61000</code> 。</p>
+
+<h5 id="最终物理地址计算">最终物理地址计算</h5>
+
+<p>tmp 变量所在内存页面物理地址为 <code>0x14DD61000</code>，这个地址仅是物理页面地址，tmp 变量所在的物理地址为。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">0x14DD61000 + 101001110000b = 0x14DD61000 + 0xA70 = 0x14DD61A70
+
+(FILEVIEW)
+000014DD61A70    12345678BEAF5DDE      0000000000400830
+000014DD61A80    0000000000000000      00007F1FF67EFAF5</code></pre></figure>
+
+<p>经过 4 级页面映射，终于找到了 tmp 对应的实际物理地址为 <code>0x14DD61A70</code> ，对应的数据也为 <code>0x12345678BEAF5DDE</code> 。</p>
+
+<h2 id="访问物理内存">访问物理内存</h2>
+
+<p>用户态的程序都是在内存保护模式下使用内存，无法直接访问物理内存，且用户程序使用的是逻辑地址，而非物理地址，dram 模块可以使用户态程序访问所有物理内存。</p>
+
+<p>内核模块通过文件读写的方式，实现物理地址访问，将物理地址，作为参数 pos 传递。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">ssize_t my_read( struct file *file, char *buf, size_t count, loff_t *pos )</code></pre></figure>
+
+<p>在内核代码中，是无法直接访问物理地址的，代码能访问的都是逻辑地址。此时我们需要先将物理地址转换成逻辑地址，才能在代码中对地址读写。</p>
+
+<p>物理地址转换成逻辑地址方法：</p>
+
+<h3 id="1-获取pfn以及偏移">1. 获取PFN以及偏移</h3>
+
+<p>根据物理地址，计算出对应的页面号和页内偏移。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">page_number = *pos / PAGE_SIZE;
+page_indent = *pos % PAGE_SIZE;</code></pre></figure>
+
+<h3 id="2-获取页面指针">2. 获取页面指针</h3>
+
+<p>将页面号找到对应的页面指针，注意在 2.6.32 及以上内核中，没有导出 mem_map 符号，只能通过 <code>pfn_to_page()</code> 来找到对应的页面指针。</p>
+
+<h3 id="3-映射为逻辑地址">3. 映射为逻辑地址</h3>
+
+<p>通过 kmap 映射成逻辑地址，TODO: 暂时还没有搞明白 kmap 是如何进行映射的。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">from = kmap( pp ) + page_indent;</code></pre></figure>
+
+<p>映射成逻辑地址后，我们直接通过 from 指针来访问物理地址 pos 了。</p>
+
+<h3 id="4-使用示例">4. 使用示例</h3>
+
+<p>模块加载和使用方式。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 编译模块
+# make
+----- 加载模块，会自动创建/dev/dram字符设备
+# insmod dram.ko
+
+----- 通过fileview查看数据
+# ./fileview /dev/dram</code></pre></figure>
+
+<p>我们使用简单的程序 fileview 来看物理内存中的实际数据，物理地址可以手工输入，程序的前半部分会显示所需的数据，后半部分会接收键盘输入的命令。</p>
+
+<h2 id="物理地址转换">物理地址转换</h2>
+
+<p>现在几乎所有的操作系统都支持虚拟地址 (Virtual Address) ，每个用户空间的进程都有自己的虚拟地址空间，内核配合 CPU 硬件 MMU 完成到物理地址的转换。</p>
+
+<p>Linux 内核保存了地址转换相关的数据结构，正常来说无法在用户空间访问，在 2.6.25 之后，提供了 <code>/proc/$(pid}/pagemap</code> <code>/proc/kpagecount</code> <code>/proc/kpageflags</code> 完成虚拟地址到物理地址的转换。</p>
+
+<h3 id="pagemap">pagemap</h3>
+
+<p><code>/proc/${pid}/pagemap</code> 文件包含了该进程的虚拟地址到物理地址转换相关的映射关系，每个转换包含了 64-bits，详细的内容可以参考内核文档 <a href="https://www.kernel.org/doc/Documentation/vm/pagemap.txt">pagemap.txt</a> 。</p>
+
+<p><img src="/images/linux/kernel/memory-proc-pagemap.png" alt="memory proc pagemap" title="memory proc pagemap" class="pull-center" width="80%" /></p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ cat /proc/$(pidof mysqld)/maps | head -3
+00400000-0283f000 r-xp 00000000 08:09 1308936      /opt/mysql-5.7/bin/mysqld
+02a3e000-02b18000 r--p 0243e000 08:09 1308936      /opt/mysql-5.7/bin/mysqld
+02b18000-02bc7000 rw-p 02518000 08:09 1308936      /opt/mysql-5.7/bin/mysqld
+
+$ ./pagemap `pidof mysqld` 0x00400000</code></pre></figure>
+
+<p>可以查看源码 <a href="https://github.com/Jin-Yang/examples/tree/master/linux/memory/pagemap/pagemap.c">pagemap.c</a> 以及 <a href="https://github.com/Jin-Yang/examples/tree/master/linux/memory/pagemap/pagemap.py">pagemap.py</a> 。</p>
+
+<h3 id="示例">示例</h3>
+
+<p>另外的一个示例是直接从 <a href="https://github.com/Jin-Yang/examples/tree/master/linux/memory/pagemap/foobar.c">foobar.c</a> 读取物理地址，然后通过之前介绍的 dram 和 fileview 读取物理地址对应的数据。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 编译后直接执行，获取对应变量的物理地址
+$ ./foobar
+vaddr = 0x7ffdafae39ec, phy = 0x350ea9ec
+Enter any key to exit</code></pre></figure>
+
+<p>如下，可以直接通过 dram 和 fileview 读取到对应物理地址的数据；注意，由于是小端存储，所以正常的 <code>0x12345678</code> 显示的内容如下。</p>
+
+<p><img src="/images/linux/kernel/memory-pagemap.png" alt="memory pagemap" title="memory pagemap" class="pull-center" width="70%" /></p>
+
+<!--
+https://github.com/dwks/pagemap
+http://blog.jeffli.me/blog/2014/11/08/pagemap-interface-of-linux-explained/
+http://www.cnblogs.com/lanrenxinxin/p/6216925.html
+-->
+
+<h2 id="参考">参考</h2>
+
+<p><a href="http://cs.usfca.edu/~cruse/cs635/">CS 635: Advanced Systems Programming</a> 网上一个牛掰的课程网站，包括了一些不错的源码，包括上面的 dram 和 fileview 。</p>
+
+<p><a href="http://ilinuxkernel.com/?p=1276">关于Linux内存地址映射的介绍</a>，可以参考 <a href="/reference/linux/kernel/linux_memap.tar.bz2">本地文档</a> ，含有x86_32/64详解，该博客对于Linux内存有比较详细的介绍；同时可以参考 <a href="http://blog.chinaunix.net/uid-24774106-id-3427836.html">Linux 从虚拟地址到物理地址</a> 。</p>
+
+<p><a href="http://www.mouseos.com/arch/segmentation.html">segmentation 情景分析</a> 关于段选择寄存器比较详细的介绍。
+<!-- [本地文档](/reference/linux/kernel/segmentation.maff) --></p>
+
+<!--
+
+Intel开发文档手册
+https://software.intel.com/en-us/articles/intel-sdm
+Linux 从虚拟地址到物理地址
+http://blog.chinaunix.net/uid-24774106-id-3427836.html
+在 linux x86-32 模式下分析内存映射流程
+http://www.cnblogs.com/ziyang3721/p/4269132.html
+
+Linux-3.14.12内存管理笔记【开启分页管理】
+http://blog.chinaunix.net/xmlrpc.php?r=blog/article&uid=26859697&id=4456082
+http://blog.chinaunix.net/xmlrpc.php?r=blog/article&uid=26859697&id=4470758
+
+/images/linux/kernel/memory-management-overview.jpg
+
+Linux内存管理--基本概念
+http://blog.csdn.net/myarrow/article/details/8624687
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-monitor.html" title="Linux 监控">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-monitor-memory.html" title="Linux 监控之 Memory">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1365091200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/kernel-memory-virtual-physical-map.html" data-title="Kernel 内存映射" data-url="/post/kernel-memory-virtual-physical-map.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL 执行简介|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,执行">
+  <meta name="description" content="最后是 MySQL 的执行。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL 执行简介</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2015-06-27 Saturday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>最后是 MySQL 的执行。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>MySQL 的 join 操作主要是采用 nest loop 算法，其它算法暂不讨论，其中涉及的主要函数有如下 do_select()、sub_select()、evaluate_join_record()，其简单的调用堆栈可以参考如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ pgrep mysqld                            ← 查看mysqld的进程号
+32204
+
+$ gdb
+(gdb) attach 32204                        ← 链接到mysqld服务器
+(gdb) b evaluate_join_record              ← 设置断点，然后另一个终端链接mysql
+(gdb) bt
+#0  evaluate_join_record (...)     at sql/sql_executor.cc:1473
+#1  sub_select (...)               at sql/sql_executor.cc:1291
+#2  do_select (...)                at sql/sql_executor.cc:944
+#3  JOIN::exec (...)               at sql/sql_executor.cc:199
+#4  handle_query (...)             at sql/sql_select.cc:184
+#5  execute_sqlcom_select (...)    at sql/sql_parse.cc:5143
+#6  mysql_execute_command (...)    at sql/sql_parse.cc:2756
+#7  mysql_parse (...)              at sql/sql_parse.cc:5559
+#8  dispatch_command (...)         at sql/sql_parse.cc:1427
+#9  do_command (...)               at sql/sql_parse.cc:995
+#10 handle_connection (...)        at sql/conn_handler/connection_handler_per_thread.cc:300
+#11 pfs_spawn_thread (...)         at storage/perfschema/pfs.cc:2188
+#12 start_thread ()                at pthread_create.c
+#13 clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S</code></pre></figure>
+
+<!--
+#0  evaluate_join_record (join=0x7fc2e9e635a8, qep_tab=0x7fc2e9e64ea8) at sql/sql_executor.cc:1473
+#1  0x00000000014c98bd in sub_select (join=0x7fc2e9e635a8, qep_tab=0x7fc2e9e64ea8, end_of_records=false) at sql/sql_executor.cc:1291
+#2  0x00000000014c913e in do_select (join=0x7fc2e9e635a8) at sql/sql_executor.cc:944
+#3  0x00000000014c70bf in JOIN::exec (this=0x7fc2e9e635a8) at sql/sql_executor.cc:199
+#4  0x0000000001560bbe in handle_query (thd=0x7fc2e9cb9000, lex=0x7fc2e9cbb2f8, result=0x7fc2e9ccaf80, added_options=0, removed_options=0)
+    at sql/sql_select.cc:184
+#5  0x0000000001516bab in execute_sqlcom_select (thd=0x7fc2e9cb9000, all_tables=0x7fc2e9cca490) at sql/sql_parse.cc:5143
+#6  0x00000000015103bc in mysql_execute_command (thd=0x7fc2e9cb9000, first_level=true) at /home/andy/Workspace/databases/mysql/mysql-5.7.16/sql/sql_parse.cc:2756
+#7  0x0000000001517ab9 in mysql_parse (thd=0x7fc2e9cb9000, parser_state=0x7fc30c92c660) at /home/andy/Workspace/databases/mysql/mysql-5.7.16/sql/sql_parse.cc:5559
+#8  0x000000000150d24d in dispatch_command (thd=0x7fc2e9cb9000, com_data=0x7fc30c92cdb0, command=COM_QUERY) at /home/andy/Workspace/databases/mysql/mysql-5.7.16/sql/sql_parse.cc:1427
+#9  0x000000000150c117 in do_command (thd=0x7fc2e9cb9000) at /home/andy/Workspace/databases/mysql/mysql-5.7.16/sql/sql_parse.cc:995
+#10 0x000000000163aecc in handle_connection (arg=0x7fc30a45c660) at /home/andy/Workspace/databases/mysql/mysql-5.7.16/sql/conn_handler/connection_handler_per_thread.cc:300
+#11 0x000000000186328a in pfs_spawn_thread (arg=0x7fc30a458a20) at /home/andy/Workspace/databases/mysql/mysql-5.7.16/storage/perfschema/pfs.cc:2188
+#12 0x00007fc30c370dc5 in start_thread () from /lib64/libpthread.so.0
+#13 0x00007fc30b037ced in clone () from /lib64/libc.so.6
+-->
+
+<p>MySQL 的执行器与优化器类似，同样共享 JOIN 中的内容，也就是一个查询的上下文信息；而真正执行的函数为 JOIN::exec()@sql/sql_executor.cc。</p>
+
+<p>在此主要查看下 exec 的执行过程，实际的执行函数在 do_select() 中，接下来简单分析下源码的执行过程。</p>
+
+<h2 id="源码解析">源码解析</h2>
+
+<p>MySQL 执行器的源码主要在 sql_executor.cc 中，如下简单说明下函数的执行过程，只是包含了主要的路径。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">do_select</span><span class="p">(</span><span class="n">JOIN</span> <span class="o">*</span><span class="n">join</span><span class="p">,</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Item</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">fields</span><span class="p">,</span><span class="n">TABLE</span> <span class="o">*</span><span class="n">table</span><span class="p">,</span><span class="n">Procedure</span> <span class="o">*</span><span class="n">procedure</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">Next_select_func</span> <span class="n">end_select</span><span class="o">=</span> <span class="n">setup_end_select_func</span><span class="p">(</span><span class="n">join</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">join</span><span class="o">-&gt;</span><span class="n">table_count</span><span class="p">)</span> <span class="p">{</span>
+       <span class="n">join</span><span class="o">-&gt;</span><span class="n">join_tab</span><span class="p">[</span><span class="n">join</span><span class="o">-&gt;</span><span class="n">top_join_tab_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="n">next_select</span><span class="o">=</span> <span class="n">end_select</span><span class="p">;</span>
+       <span class="n">join_tab</span><span class="o">=</span><span class="n">join</span><span class="o">-&gt;</span><span class="n">join_tab</span><span class="o">+</span><span class="n">join</span><span class="o">-&gt;</span><span class="n">const_tables</span><span class="p">;</span>        <span class="c1">// 对const表的优化</span>
+    <span class="p">}</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">join</span><span class="o">-&gt;</span><span class="n">table_count</span> <span class="o">==</span> <span class="n">join</span><span class="o">-&gt;</span><span class="n">const_tables</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">...</span> <span class="p">...</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">join</span><span class="o">-&gt;</span><span class="n">outer_ref_cond</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">join</span><span class="o">-&gt;</span><span class="n">outer_ref_cond</span><span class="o">-&gt;</span><span class="n">val_int</span><span class="p">())</span>
+        <span class="n">error</span><span class="o">=</span> <span class="n">NESTED_LOOP_NO_MORE_ROWS</span><span class="p">;</span>
+      <span class="k">else</span>
+        <span class="n">error</span><span class="o">=</span> <span class="n">sub_select</span><span class="p">(</span><span class="n">join</span><span class="p">,</span><span class="n">join_tab</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>   <span class="c1">// 会调用sub_select，且不是最后一条</span>
+      <span class="k">if</span> <span class="p">((</span><span class="n">error</span> <span class="o">==</span> <span class="n">NESTED_LOOP_OK</span> <span class="o">||</span> <span class="n">error</span> <span class="o">==</span> <span class="n">NESTED_LOOP_NO_MORE_ROWS</span><span class="p">)</span>
+          <span class="o">&amp;&amp;</span> <span class="n">join</span><span class="o">-&gt;</span><span class="n">thd</span><span class="o">-&gt;</span><span class="n">killed</span> <span class="o">!=</span> <span class="n">ABORT_QUERY</span><span class="p">)</span>
+        <span class="n">error</span><span class="o">=</span> <span class="n">sub_select</span><span class="p">(</span><span class="n">join</span><span class="p">,</span><span class="n">join_tab</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>   <span class="c1">// 最后的调用函数</span>
+      <span class="p">...</span> <span class="p">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">enum_nested_loop_state</span> <span class="nf">sub_select</span><span class="p">(</span><span class="n">JOIN</span> <span class="o">*</span><span class="n">join</span><span class="p">,</span><span class="n">JOIN_TAB</span> <span class="o">*</span><span class="n">join_tab</span><span class="p">,</span><span class="kt">bool</span> <span class="n">end_of_records</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="p">...</span> <span class="p">...</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">end_of_records</span><span class="p">)</span>     <span class="c1">// 如果已经到了记录的结束位置，则直接调用qep_tab-&gt;next_select()</span>
+  <span class="p">{</span>
+    <span class="n">enum_nested_loop_state</span> <span class="n">nls</span><span class="o">=</span>
+    <span class="p">(</span><span class="o">*</span><span class="n">qep_tab</span><span class="o">-&gt;</span><span class="n">next_select</span><span class="p">)(</span><span class="n">join</span><span class="p">,</span><span class="n">qep_tab</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">end_of_records</span><span class="p">);</span> <span class="c1">// 详见###1</span>
+    <span class="n">DBUG_RETURN</span><span class="p">(</span><span class="n">nls</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">READ_RECORD</span> <span class="o">*</span><span class="n">info</span><span class="o">=</span> <span class="o">&amp;</span><span class="n">qep_tab</span><span class="o">-&gt;</span><span class="n">read_record</span><span class="p">;</span>
+  <span class="p">...</span> <span class="p">...</span>
+
+  <span class="k">while</span> <span class="p">(</span><span class="n">rc</span> <span class="o">==</span> <span class="n">NESTED_LOOP_OK</span> <span class="o">&amp;&amp;</span> <span class="n">join</span><span class="o">-&gt;</span><span class="n">return_tab</span> <span class="o">&gt;=</span> <span class="n">qep_tab_idx</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">error</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">in_first_read</span><span class="p">)</span>                        <span class="c1">// 首先读取第一条记录</span>
+    <span class="p">{</span>                                         <span class="c1">// 详见###2，会在后面判断是否满足条件</span>
+      <span class="n">in_first_read</span><span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+      <span class="n">error</span><span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">qep_tab</span><span class="o">-&gt;</span><span class="n">read_first_record</span><span class="p">)(</span><span class="n">qep_tab</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+      <span class="n">error</span><span class="o">=</span> <span class="n">info</span><span class="o">-&gt;</span><span class="n">read_record</span><span class="p">(</span><span class="n">info</span><span class="p">);</span>         <span class="c1">// 循环读取记录直到结束位置，详见###3</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">error</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="p">(</span><span class="n">join</span><span class="o">-&gt;</span><span class="n">thd</span><span class="o">-&gt;</span><span class="n">is_error</span><span class="p">()))</span> <span class="c1">// Fatal error</span>
+      <span class="n">rc</span><span class="o">=</span> <span class="n">NESTED_LOOP_ERROR</span><span class="p">;</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">error</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">join</span><span class="o">-&gt;</span><span class="n">thd</span><span class="o">-&gt;</span><span class="n">killed</span><span class="p">)</span>               <span class="c1">// Aborted by user</span>
+    <span class="p">{</span>
+      <span class="n">join</span><span class="o">-&gt;</span><span class="n">thd</span><span class="o">-&gt;</span><span class="n">send_kill_message</span><span class="p">();</span>
+      <span class="n">rc</span><span class="o">=</span> <span class="n">NESTED_LOOP_KILLED</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>                                         <span class="c1">// 如果没有异常，则对记录判断是否满足条件</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">qep_tab</span><span class="o">-&gt;</span><span class="n">keep_current_rowid</span><span class="p">)</span>
+        <span class="n">qep_tab</span><span class="o">-&gt;</span><span class="n">table</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">file</span><span class="o">-&gt;</span><span class="n">position</span><span class="p">(</span><span class="n">qep_tab</span><span class="o">-&gt;</span><span class="n">table</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+      <span class="n">rc</span><span class="o">=</span> <span class="n">evaluate_join_record</span><span class="p">(</span><span class="n">join</span><span class="p">,</span> <span class="n">qep_tab</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="n">enum_nested_loop_state</span> <span class="nf">evaluate_join_record</span><span class="p">(</span><span class="n">JOIN</span> <span class="o">*</span><span class="n">join</span><span class="p">,</span> <span class="n">JOIN_TAB</span> <span class="o">*</span><span class="n">join_tab</span><span class="p">,</span> <span class="kt">int</span> <span class="n">error</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">COND</span><span class="o">*</span> <span class="n">select_cond</span><span class="o">=</span> <span class="n">join_tab</span><span class="o">-&gt;</span><span class="n">select_cond</span><span class="p">;</span> <span class="c1">// 取出相应的条件，其初始化在优化阶段里调用make_join_select()-&gt;</span>
+                             <span class="c1">// add_not_null_conds() -&gt; make_cond_for_table() 完成相应join_table的select_cond初始化</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">select_cond</span><span class="p">)</span> <span class="p">{</span>       <span class="c1">// 如果有查询条件</span>
+        <span class="n">select_cond_result</span><span class="o">=</span> <span class="n">MY_TEST</span><span class="p">(</span><span class="n">select_cond</span><span class="o">-&gt;</span><span class="n">val_int</span><span class="p">());</span> <span class="c1">// 完成从引擎获得的数据与query中该table的cond比较的过程</span>
+                             <span class="c1">// 其最终调用的是Item_cmpfunc里的接口，如对于简单的数字等值比较使用Item_func_eq::val_int()-&gt;</span>
+                             <span class="c1">// intArg_comparator::compare_int_signed()</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">rc</span><span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">join_tab</span><span class="o">-&gt;</span><span class="n">next_select</span><span class="p">)(</span><span class="n">join</span><span class="p">,</span><span class="n">join_tab</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">join_tab</span><span class="o">-&gt;</span><span class="n">read_record</span><span class="p">.</span><span class="n">unlock_row</span><span class="p">(</span><span class="n">join_tab</span><span class="p">);</span>   <span class="c1">// 调用rr_unlock_row最终调用引擎的unlock_row对行进行解锁</span>
+    <span class="p">}</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>对于如上的函数调用，其主要的处理过程在 sub_query() 函数中，暂时小结一下上面出现的三个比较重要的函数指针：</p>
+
+<ul>
+  <li>
+    <p>join_tab-&gt;read_first_record<br />读取第一条记录使用的方法。</p>
+  </li>
+  <li>
+    <p>info-&gt;read_record<br />读取非第一条记录使用的方法，对于多条记录会循环调用该函数，该方法是根据 optimize 选择的 join type 来指定的。</p>
+  </li>
+  <li>
+    <p>join_tab-&gt;next_select<br />在 sub_select() 中的最后一条记录调用，也就是连接下一个 table 的方法，这里除了最后一个表使用 end_select 之外，其它的都使用 sub_select。</p>
+  </li>
+</ul>
+
+<p>上述的三个指针基本组成了 nest loop 的主要过程。MySQL 会循环调用 read_record() 函数读取当前表的记录，如果有满足条件的记录则会调用 next_select 指针指定的函数。</p>
+
+<p>接下来，分别讲解上述源码中的标记部分。</p>
+
+<h4 id="next_select">next_select</h4>
+
+<p>这也就是源码中 <code>###1</code> 的标记；在创建 JOIN 实例时，也就是一个查询的上下文信息时，默认该变量的值是 sub_select() 。</p>
+
+<!--
+另外，在优化器中，会对该变量进行赋值。
+
+其中 next_select 是在 optimize 的 make_join_readinfo() 里初始化，会把所有的 join 表的 next_select 指针初始化为 sub_selec()，也就是说这里如果还有 join_tab 需要 join 的话，再次进入 sub_select，这就是 nest_loop 的思想所在。
+
+对于最后一个表的 next_select 则会在 do_select() 里调用 setup_end_select() 来选择对应的 end_select 函数。当执行到 end_select 时，这个就说明 join 操作完成，并把数据返回到客户端。
+-->
+
+<h4 id="read_first_record">read_first_record</h4>
+
+<p>对应源码中的 <code>###2</code>，该函数主要用于读取第一条记录。</p>
+
+<!--
+* 在 exec() -> exec_inner() -> make_simple_join() 中，将上述的值赋值为 join_init_read_record()，也就是默认值，对于没有被优化的 join 则会使用该方法。
+-->
+
+<ul>
+  <li>在 optimize() -&gt; pick_table_access_method() 根据 join type 的不同类型选择相应的方法。<font color="blue">注意：这里的 join type 就是 explain 中的 type 字段对应值</font> 。</li>
+</ul>
+
+<h4 id="read_record">read_record</h4>
+
+<p>也就是源码中的 <code>###3</code>，用于读取数据，该方法主要在两个地方做赋值：</p>
+
+<ul>
+  <li>
+    <p>在读取第一条记录的入口函数中，会调用 <font color="blue">init_read_record() 函数初始化 info-&gt;read_record 变量</font>，如全表扫描调用 rr_sequential() 函数，对于 ref join 则调用 join_read_next_same() 等。</p>
+  </li>
+  <li>
+    <p>同样在 pick_table_access_method() 函数中，设置 read_first_record 的同时设置了该变量。</p>
+  </li>
+</ul>
+
+<h2 id="总结">总结</h2>
+
+<p>实际上的执行流程如下，在此以简单的查询为例。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">JOIN::exec()                              ← 在优化完成之后，根据执行计划进行相应的查询操作
+  |-THD_STAGE_INFO()                      ← 设置线程的状态为executing，在sql/mysqld.cc文件中定义
+  |-set_executed()                        ← 设置为执行状态，JOIN::executed=true
+  |-prepare_result()
+  |-send_result_set_metadata()            ← 先将元数据发送给客户端
+  |
+  |-do_select()                           ←### 查询的实际入口函数，做JOIN操作，会返回给客户端或写入表
+    |                                     ←### &lt;1&gt;
+    |
+    |-join-&gt;first_select(join,qep_tab,0)  ← 1. 执行nest loop操作，默认会调用sub_select()函数，
+    | |                                   ←    也即循环调用rnd_next()+evaluate_join_record()
+    | |
+    | |###while循环读取数据###
+    | |                                   ← 2. 调用存储引擎接口读取数据
+    | |-qep_tab-&gt;read_first_record()      ← 2.1. 首次调用，实际为join_init_read_record()
+    | | |-tab-&gt;quick()-&gt;reset()           ← 对于quick调用QUICK_RANGE_SELECT::reset()函数
+    | | | |-file-&gt;ha_index_init()         ← 会调用存储引擎接口
+    | | | | |-index_init()
+    | | | |   |-change_active_index()
+    | | | |     |-innobase_get_index()
+    | | | |-file-&gt;multi_range_read_init()
+    | | |-init_read_record()              ← 设置read_record指针，在此为rr_quick
+    | |
+    | |-info-&gt;read_record()               ← 2.2 再次调用，如上，该函数在init_read_record()中初始化
+    | | |-info-&gt;quick-&gt;get_next()         ← 实际调用QUICK_RANGE_SELECT::get_next()
+    | |   |-file-&gt;multi_range_read_next() ← 调用handler.cc文件中函数
+    | |     |-read_range_first()          ← 对于第一次调用
+    | |     | |-ha_index_read_map()       ← 存储引擎调用
+    | |     |   |-index_read()
+    | |     |     |-row_search_mvcc()
+    | |     |
+    | |     |-read_range_next()           ← 对于非第一次调用
+    | |       |-ha_index_next()
+    | |         |-general_fetch()
+    | |           |-row_search_mvcc()
+    | |
+    | |-evaluate_join_record()            ← 2.3 处理读取的记录，判断是否满足条件，包括了第一条记录
+    |   |-qep_tab-&gt;next_select()          ← 对于查询，实际会调用end_send()
+    |     |-Query_result_send::send_data()
+    |
+    |-join-&gt;first_select(join,qep_tab,1)  ← 3. 一个table已经读取数据结束，同样默认调用sub_select()
+    | |-join_tab-&gt;next_select()           ← 调用该函数处理下个表或者结束处理
+    |
+    |-join-&gt;select_lex-&gt;query_result()-&gt;send_eof()</code></pre></figure>
+
+<p>在 <code>&lt;1&gt;</code> 中，对于简单的查询 (const且不需要临时文件)，实际上只需要执行 end_select() 即可，上述介绍的是常用的查询方式。</p>
+
+<h3 id="sub_select">sub_select()</h3>
+
+<p>这是 MySQL 的 JOIN 实现比较重要的函数，很多比较有用的函数信息，可以查看注释。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">enum_nested_loop_state sub_select(JOIN *join, QEP_TAB *const qep_tab,bool end_of_records);
+
+参数:
+  join          : 本次查询的上下文信息。
+  join_tab      :
+  end_of_records: 是否执行获取记录的最后一步。</code></pre></figure>
+
+<h2 id="示例">示例</h2>
+
+<p>接下来通过几个示例查看 nest loop 的执行过程。</p>
+
+<h3 id="全表扫描">全表扫描</h3>
+
+<p>如下是单表的全表扫描。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; explain select emp_no from salaries where salary = 90930;
++------+-------------+----------+------+---------------+------+---------+------+---------+-------------+
+| id   | select_type | table    | type | possible_keys | key  | key_len | ref  | rows    | Extra       |
++------+-------------+----------+------+---------------+------+---------+------+---------+-------------+
+|    1 | SIMPLE      | salaries | ALL  | NULL          | NULL | NULL    | NULL | 2838426 | Using where |
++------+-------------+----------+------+---------------+------+---------+------+---------+-------------+
+1 row in set (0.00 sec)</code></pre></figure>
+
+<p>这里只有一个表，所以 join_tab 只有一个；而且是全表扫描，所以 read_first_record、read_record 两个指针都被指定为 rr_sequential() 函数。</p>
+
+<p>又因为是 select 语句，会直接将数据返回给客户端，所以其中的 next_select 就是 end_send() 函数；如果是 insert … select … 语句的话，那么会在 setup_end_select_func() 中设置为 end_write() 完成数据的写入。</p>
+
+<p>其执行流程基本如下。</p>
+
+<p><img src="/images/databases/mysql/innodb-rr-sequential-1.png" alt="sequential" class="pull-center" /></p>
+
+<p>通过 gdb 查看的结果如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">(gdb) set print pretty on
+(gdb) b sub_select
+Breakpoint 1 at 0x7fe9b7453ac8: file sql/sql_select.cc, line 18197.
+
+----- 查看表的数量，此时join_tab只有一个
+(gdb) p join-&gt;table_count
+$1 = 1
+
+----- const表的数量，为0
+(gdb) p join-&gt;const_tables
+$2 = 0
+
+(gdb) p join_tab-&gt;next_select
+$3 = (Next_select_func) 0x7fe9b745653f &lt;end_send(JOIN*, JOIN_TAB*, bool)&gt;
+(gdb) p join_tab-&gt;read_first_record
+$4 = (READ_RECORD::Setup_func) 0x7fe9b7455d02 &lt;join_init_read_record(st_join_table*)&gt;
+(gdb) p join_tab-&gt;read_record-&gt;read_record
+$5 = (READ_RECORD::Read_func) 0x7fe9b776837b &lt;rr_sequential(READ_RECORD*)&gt;</code></pre></figure>
+
+<p>实际的处理流程很简单。</p>
+
+<h3 id="两表简单join">两表简单JOIN</h3>
+
+<p>如下的两个表的 JOIN 操作，其中 e.gender 和 s.salary 都不是索引。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; explain select * from salaries s join employees e on (s.emp_no=e.emp_no) where
+    -&gt; e.gender=&#39;F&#39; and s.salary=90930;
++------+-------------+-------+------+---------------+---------+---------+----------+--------+-------------+
+| id   | select_type | table | type | possible_keys | key     | key_len | ref      | rows   | Extra       |
++------+-------------+-------+------+---------------+---------+---------+----------+--------+-------------+
+| 1    | SIMPLE      | e     | ALL  | PRIMARY       | NULL    | NULL    | NULL     | 299469 | Using where |
+| 1    | SIMPLE      | s     | ref  | PRIMARY       | PRIMARY | 4       | e.emp_no | 4      | Using where |
++------+-------------+-------+------+---------------+---------+---------+----------+--------+-------------+
+2 rows in set (0.00 sec)</code></pre></figure>
+
+<p>如上的 explain 结果可以基本确定 MySQL 的执行过程。</p>
+
+<p>大概的执行过程是：e 表进入 sub_select() 执行，通过 rr_sequential() 函数获取该表的每条记录，然后通过 evaluate_join_record() 判断该记录是否满足 e.gender=’F’ [using where]，如果没有满足则接着取下一条，满足的话，则把它的 e.emp_no 传递给 s 表。</p>
+
+<p>接下来 s 执行 sub_select，其 type 是 ref，就是通过索引来获得记录而非全表扫描，也即拿 e.emp_no 的值来检索 s 的 PRIMARY KEY 来获得记录；最后再通过 s 的 evaluate_join_record() 判断是否满足 salary=90930 这个条件，如果满足是直接发送给客户端，否则获得记录进行判断。</p>
+
+<p><img src="/images/databases/mysql/innodb-rr-sequential-2.png" alt="sequential" class="pull-center" /></p>
+
+<p>接下来仍然通过 gdb 查看上面两个表的三个函数指针来验证上面的过程：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看表名的顺序，如下的两种方式相同
+(gdb) p join-&gt;join_tab[0]-&gt;table-&gt;alias-&gt;Ptr
+(gdb) p join-&gt;table[0]-&gt;alias-&gt;Ptr
+$1 = 0x7fe9870171c8 &quot;e&quot;
+
+----- 查看表以及const表的数量
+(gdb) p join-&gt;table_count
+$2 = 2
+(gdb) p join-&gt;const_tables
+$3 = 0
+
+(gdb) p join_tab[0]-&gt;next_select
+$4 = (Next_select_func) 0x7fe9b7453aac &lt;sub_select(JOIN*, st_join_table*, bool)&gt;
+(gdb) p join_tab[1]-&gt;next_select
+$5 = (Next_select_func) 0x7fe9b745653f &lt;end_send(JOIN*, JOIN_TAB*, bool)&gt;
+
+(gdb) p join_tab[0]-&gt;read_first_record
+$6 = (READ_RECORD::Setup_func) 0x7fe9b7455d02 &lt;join_init_read_record(st_join_table*)&gt;
+(gdb) p join_tab[1]-&gt;read_first_record
+$7 = (READ_RECORD::Setup_func) 0x7fe9b7455615 &lt;join_read_always_key(JOIN_TAB*)&gt;
+
+(gdb) p join_tab[0]-&gt;read_record-&gt;read_record
+$8 = (READ_RECORD::Read_func) 0x7fe9b776837b &lt;rr_sequential(READ_RECORD*)&gt;
+(gdb) p join_tab[1]-&gt;read_record-&gt;read_record
+$9 = (READ_RECORD::Read_func) 0x7fe9b7455985 &lt;join_read_next_same(READ_RECORD*)&gt;</code></pre></figure>
+
+<p>处理上述的处理过程是两个表的 JOIN 处理。</p>
+
+<h3 id="两表-const-join">两表 Const JOIN</h3>
+
+<p>与上面 SQL 不同的是，emp_no 采用的是主健，执行计划如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; explain select * from salaries s join employees e on (s.emp_no=e.emp_no) where
+    -&gt; e.emp_no=62476 and s.salary=90930;
++------+-------------+-------+-------+---------------+---------+---------+-------+------+-------------+
+| id   | select_type | table | type  | possible_keys | key     | key_len | ref   | rows | Extra       |
++------+-------------+-------+-------+---------------+---------+---------+-------+------+-------------+
+| 1    | SIMPLE      | e     | const | PRIMARY       | PRIMARY | 4       | const | 1    |             |
+| 1    | SIMPLE      | s     | ref   | PRIMARY       | PRIMARY | 4       | const | 15   | Using where |
++------+-------------+-------+-------+---------------+---------+---------+-------+------+-------------+
+2 rows in set (0.00 sec)</code></pre></figure>
+
+<p>正常来说，执行过程仍然如上所示，其中驱动表是 e，但是确实是这样的吗？实际上，在 sub_select() 设置断点后，实际第一次的入参时 s 表，而非我们开始认为的 e 表。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">----- 查看表名的顺序，如下的两种方式相同
+(gdb) p join-&gt;join_tab[0]-&gt;table-&gt;alias-&gt;Ptr
+$1 = 0x7fe9870171c8 &quot;e&quot;
+
+----- 查看表以及const表的数量
+(gdb) p join-&gt;table_count
+$2 = 2
+(gdb) p join-&gt;const_tables
+$3 = 1
+
+----- 查看第一次进入sub_select()时的表名称
+(gdb) p join_tab-&gt;table-&gt;alias-&gt;Ptr
+$4 = 0x7fe987017248 &quot;s&quot;
+
+(gdb) p join_tab[0]-&gt;next_select
+$4 = (Next_select_func) 0x7fe9b7453aac &lt;sub_select(JOIN*, st_join_table*, bool)&gt;
+(gdb) p join_tab[1]-&gt;next_select
+$5 = (Next_select_func) 0x7fe9b745653f &lt;end_send(JOIN*, JOIN_TAB*, bool)&gt;
+
+(gdb) p join_tab[0]-&gt;read_first_record
+$6 = (READ_RECORD::Setup_func) 0x7fe9b7455d02 &lt;join_init_read_record(st_join_table*)&gt;
+(gdb) p join_tab[1]-&gt;read_first_record
+$7 = (READ_RECORD::Setup_func) 0x7fe9b7455615 &lt;join_read_always_key(JOIN_TAB*)&gt;
+
+(gdb) p join_tab[0]-&gt;read_record-&gt;read_record
+$8 = (READ_RECORD::Read_func) 0x7fe9b776837b &lt;rr_sequential(READ_RECORD*)&gt;
+(gdb) p join_tab[1]-&gt;read_record-&gt;read_record
+$9 = (READ_RECORD::Read_func) 0x7fe9b7455985 &lt;join_read_next_same(READ_RECORD*)&gt;</code></pre></figure>
+
+<p>实际上对于 const 类型，我们可以直接获取到对应的查询条件，此时只需要对 s 表进行过滤即可。</p>
+
+<!--
+在代码中，选择第一个 table 时使用的时
+--->
+
+<p>如果直接查看 salaries 表中 emp_no 是 62476 的记录，会发现总共有 15 条记录；那么在 gdb 调试时，如果在 evaluate_join_record() 中设置断点之后，总共执行了 16 次。除了比较 15 次记录之外，在最后一条记录，同样会调用该函数。</p>
+
+<p>这一部分在优化器 make_join_statistics()，详细内容后面再介绍。</p>
+
+<!--
+其实有这个现象的根本原因是do_select调用sub_select时指定的join_tab：
+即这个join_tab是由const_tables指定的。而这个值则是在optimize的make_join_statistics根据优化情况进行赋值的。这个优化主要是指对const join可以直接获得它的记录，而不必通过sub_select去获得。
+这里我们简单说明一下make_join_statistics的过程：
+
+http://blog.csdn.net/wudongxu/article/details/6683846
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/python-datetime_init.html" title="Python 时间操作">&larr; Older</a></li> 
+         <li class="next"><a href="/post/mysql-plugin.html" title="MySQL 插件详解">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1435334400',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-executor.html" data-title="MySQL 执行简介" data-url="/post/mysql-executor.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

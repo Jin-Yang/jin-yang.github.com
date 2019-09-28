@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL 组提交|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,binlog,innodb,组提交">
+  <meta name="description" content="组提交 (group commit) 是为了优化写日志时的刷磁盘问题，从最初只支持 InnoDB redo log 组提交，到 5.6 官方版本同时支持 redo log 和 binlog 组提交，大大提高了 MySQL 的事务处理性能。下面将以 InnoDB 存储引擎为例，详细介绍组提交在各个阶段的实现原理。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL 组提交</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-02-26 Friday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>组提交 (group commit) 是为了优化写日志时的刷磁盘问题，从最初只支持 InnoDB redo log 组提交，到 5.6 官方版本同时支持 redo log 和 binlog 组提交，大大提高了 MySQL 的事务处理性能。</p>
+
+<p>下面将以 InnoDB 存储引擎为例，详细介绍组提交在各个阶段的实现原理。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>自 5.1 之后，binlog 和 innodb 采用类似两阶段提交的方式，不过不支持 group commit；在 5.6 中，将 binlog 的 commit 阶段分为三个阶段：flush stage、sync stage 以及 commit stage。</p>
+
+<p>这三个阶段中，每个阶段都会去维护一个队列，各个列表的定义如下。</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">Mutex_queue</span> <span class="n">m_queue</span><span class="p">[</span><span class="n">STAGE_COUNTER</span><span class="p">];</span></code></pre></figure>
+
+<p>如上，每个阶段都在维护一个队列，第一个进入该队列的作为 leader 线程，否则作为 follower 线程；leader 线程会收集 follower 的事务，并负责做 sync，follower 线程等待 leader 通知操作完成。</p>
+
+<p>尽管维护了三个队列，但队列中所有的 THD 实际上都是通过 next_to_commit 连接起来。binlog 在事务提交阶段，也就是在 MYSQL_BIN_LOG::ordered_commit() 函数中，开始 3 个阶段的流程。</p>
+
+<p>接下来，看看 MySQL 中事务是如何提交的。</p>
+
+<h2 id="事务提交">事务提交</h2>
+
+<p>接下来，看看 InnoDB 和 binlog 提交的流程。</p>
+
+<h3 id="二阶段提交">二阶段提交</h3>
+
+<p>详细介绍下二阶段提交的过程。</p>
+
+<h4 id="未开启binlog时">未开启binlog时</h4>
+
+<p>InnoDB 通过 redo 和 undo 日志来恢复数据库 (safe crash recovery)，当数据恢复时，通过 redo 日志将所有已经在存储引擎内部提交的事务应用 redo log 恢复，所有已经 prepared 但是没有 commit 的事务则会通过 undo log 做回滚。</p>
+
+<p>然后客户端连接时就能看到已经提交的数据存在数据库内，未提交被回滚地数据需要重新执行。</p>
+
+<h4 id="开启binlog时">开启binlog时</h4>
+
+<p>为了保证存储引擎和 MySQL 的 binlog 保持一致，引入二阶段提交 (two phase commit, 2pc) 。</p>
+
+<p>因为备库通过 binlog 重放主库提交的事务，假设主库存储引擎已经提交而 binlog 没有保持一致，则会使备库数据丢失造成主备数据不一致。</p>
+
+<h4 id="二阶段提交-1">二阶段提交</h4>
+
+<p>如下是二阶段提交流程。</p>
+
+<p><img src="/images/databases/mysql/groupcommit_2pc.png" alt="group commit 2pc" title="group commit 2pc" class="pull-center" /></p>
+
+<p>详细执行流程为：</p>
+
+<ol>
+  <li>
+    <p>InnoDB 的事务 Prepare 阶段，即 SQL 已经成功执行并生成 redo 和 undo 的内存日志；</p>
+  </li>
+  <li>
+    <p>binlog 提交，通过 write() 将 binlog 内存日志数据写入文件系统缓存；</p>
+  </li>
+  <li>
+    <p>fsync() 将 binlog 文件系统缓存日志数据永久写入磁盘；</p>
+  </li>
+  <li>
+    <p>InnoDB 内部提交，commit 阶段在存储引擎内提交，通过 innodb_flush_log_at_trx_commit 参数控制，使 undo 和 redo 永久写入磁盘。</p>
+  </li>
+</ol>
+
+<p>开启 binlog 的 MySQL 在崩溃恢复 (crash recovery) 时：</p>
+
+<ul>
+  <li>
+    <p>在 prepare 阶段崩溃，恢复时该事务未写入 binlog 且 InnoDB 未提交，该事务直接回滚；</p>
+  </li>
+  <li>
+    <p>在 binlog 已经 fsync() 永久写入 binlog，但 InnoDB 未来得及 commit 时崩溃；恢复时，将会从 binlog 中获取提交的信息，重做该事务并提交，使 InnoDB 和 binlog 始终保持一致。</p>
+  </li>
+</ul>
+
+<p>以上提到单个事务的二阶段提交过程，能够保证 InnoDB 和 binlog 保持一致，但是在并发的情况下怎么保证存储引擎和 binlog 提交的顺序一致？当并发提交的时，如果两者不一致会造成什么影响？</p>
+
+<h3 id="组提交异常">组提交异常</h3>
+
+<p>首先看看，对于上述的问题，当并发提交的时，如果两者不一致会造成什么影响？</p>
+
+<p><img src="/images/databases/mysql/groupcommit_2pc_concurrency_bug.png" alt="group commit 2pc concurrency bug" title="group commit 2pc" class="pull-center" /></p>
+
+<p>如上所示，事务按照 T1、T2、T3 顺序开始执行，并依相同次序按照写入 binlog 日志文件系统缓存，调用 fsync() 进行一次组提交，将日志文件永久写入磁盘。</p>
+
+<p>但是存储引擎提交的顺序为 T2、T3、T1，当 T2、T3 提交事务之后做了一个 On-line 的备份程序新建一个 slave 来做复制；而搭建备库时，<code>CHANGE MASTER TO</code> 的日志偏移量在 T3 事务之后。</p>
+
+<p>那么事务 T1 在备机恢复 MySQL 数据库时，发现 T1 未在存储引擎内提交，那么在恢复时，T1 事务就会被回滚，此时就会导致主备数据不一致。</p>
+
+<p><strong>结论</strong>：需要保证 binlog 的写入顺序和 InnoDB 事务提交顺序一致，用于 xtrabackup 备份恢复。</p>
+
+<h3 id="早期解决方案">早期解决方案</h3>
+
+<p>早期，使用 prepare_commit_mutex 保证顺序，只有当上一个事务 commit 后释放锁，下个事务才可以进行 prepara 操作，并且在每个事务过程中 binlog 没有 fsync() 的调用。</p>
+
+<p><img src="/images/databases/mysql/groupcommit_2pc_concurrency_mutex.png" alt="group commit 2pc concurrency mutex" title="group commit 2pc concurrency mutex" class="pull-center" /></p>
+
+<p>由于内存数据写入磁盘的开销很大，如果频繁 fsync() 把日志数据永久写入磁盘，数据库的性能将会急剧下降。为此提供 sync_binlog 参数来设置多少个 binlog 日志产生的时候调用一次 fsync() 把二进制日志刷入磁盘来提高整体性能，该参数的设置作用为：</p>
+
+<ul>
+  <li>
+    <p>sync_binlog=0，二进制日志 fsync() 的操作基于系统自动执行。</p>
+  </li>
+  <li>
+    <p>sync_binlog=1，每次事务提交都会调用 fsync()，最大限度保证数据安全，但影响性能。</p>
+  </li>
+  <li>
+    <p>sync_binlog=N，当数据库崩溃时，可能会丢失 N-1 个事务。</p>
+  </li>
+</ul>
+
+<p>prepare_commit_mutex 的锁机制会严重影响高并发时的性能，而且 binlog 也无法执行组提交。</p>
+
+<h3 id="改进方案">改进方案</h3>
+
+<p>接下来，看看如何保证 binlog 写入顺序和存储引擎提交顺序是一致的，并且能够进行 binlog 的组提交？5.6 引入了组提交，并将提交过程分成 Flush stage、Sync stage、Commit stage 三个阶段。</p>
+
+<p>这样，事务提交时分为了如下的阶段：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">InnoDB, Prepare
+    SQL已经成功执行并生成了相应的redo和undo内存日志；
+Binlog, Flush Stage
+    所有已经注册线程都将写入binlog缓存；
+Binlog, Sync Stage
+    binlog缓存将sync到磁盘，sync_binlog=1时该队列中所有事务的binlog将永久写入磁盘；
+InnoDB, Commit stage
+    leader根据顺序调用存储引擎提交事务；</code></pre></figure>
+
+<p>每个 Stage 阶段都有各自的队列，从而使每个会话的事务进行排队，提高并发性能。</p>
+
+<p>如果当一个线程注册到一个空队列时，该线程就做为该队列的 leader，后注册到该队列的线程均为 follower，后续的操作，都由 leader 控制队列中 follower 行为。</p>
+
+<p>leader 同时会带领当前队列的所有 follower 到下一个 stage 去执行，当遇到下一个 stage 为非空队列时，leader 会变成 follower 注册到此队列中；<strong>注意</strong>：follower 线程绝不可能变成 leader 。</p>
+
+<!--
+当一组事务在进行Commit阶段时，其他新的事务可以进行Flush阶段，从而使group commit不断生效。那么为了提高group commit中一组队列的事务数量，MySQL用binlog_max_flush_queue_time来控制在Flush stage中的等待时间，让Flush队列在此阶段多等待一些时间来增加这一组事务队列的数量使该队列到Sync阶段可以一次fysn()更多的事务。
+
+MySQL 5.7 Parallel replication实现主备多线程复制基于主库Binary Log Group Commit, 并在Binary log日志中标识同一组事务的last_commited=N和该组事务内所有的事务提交顺序。为了增加一组事务内的事务数量提高备库组提交时的并发量引入了binlog_group_commit_sync_delay=N 和binlog_group_commit_sync_no_delay_count=N (注：binlog_max_flush_queue_time 在MySQL的5.7.9及之后版本不再生效)参数，MySQL等待binlog_group_commit_sync_delay毫秒直到达到binlog_group_commit_sync_no_delay_count事务个数时，将进行一次组提交。
+-->
+
+<h3 id="配置参数">配置参数</h3>
+
+<p>与 binlog 组提交相关的参数主要包括了如下两个参数。</p>
+
+<h4 id="binlog_max_flush_queue_time">binlog_max_flush_queue_time</h4>
+
+<p>单位为微妙，用于从 flush 队列中取事务的超时时间，这主要是防止并发事务过高，导致某些事务的 RT 上升，详细的内容可以查看函数 <code>MYSQL_BIN_LOG::process_flush_stage_queue()</code> 。</p>
+
+<p><strong>注意</strong>：该参数在 5.7 之后已经取消了。</p>
+
+<h4 id="binlog_order_commits">binlog_order_commits</h4>
+
+<p>当设置为 0 时，事务可能以和 binlog 不同的顺序提交，其性能会有稍微提升，但并不是特别明显.</p>
+
+<!--
+The configuration variables for artificial delay are binlog-group-commit-sync-delay (delay in microseconds) and binlog-group-commit-sync-no-delay-count (number of transactions to wait for before deciding to abort waiting).
+-->
+
+<h2 id="源码解析">源码解析</h2>
+
+<p>binlog 的组提交是通过 Stage_manager 管理，其中比较核心内容如下。</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">Stage_manager</span> <span class="p">{</span>
+  <span class="k">public</span><span class="o">:</span>
+    <span class="k">enum</span> <span class="n">StageID</span> <span class="p">{</span>         <span class="c1">// binlog的组提交包括了三个阶段</span>
+      <span class="n">FLUSH_STAGE</span><span class="p">,</span>
+      <span class="n">SYNC_STAGE</span><span class="p">,</span>
+      <span class="n">COMMIT_STAGE</span><span class="p">,</span>
+      <span class="n">STAGE_COUNTER</span>
+    <span class="p">};</span>
+  <span class="k">private</span><span class="o">:</span>
+    <span class="n">Mutex_queue</span> <span class="n">m_queue</span><span class="p">[</span><span class="n">STAGE_COUNTER</span><span class="p">];</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>组提交 (Group Commit) 三阶段流程，详细实现如下。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">MYSQL_BIN_LOG::ordered_commit()           ← 执行事务顺序提交，binlog group commit的主流程
+ |
+ |-#########&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;                     ← 进入Stage_manager::FLUSH_STAGE阶段
+ |-change_stage(..., &amp;LOCK_log)
+ | |-stage_manager.enroll_for()           ← 将当前线程加入到m_queue[FLUSH_STAGE]中
+ | |
+ | |                                      ← (follower)返回true
+ | |-mysql_mutex_lock()                   ← (leader)对LOCK_log加锁，并返回false
+ |
+ |-finish_commit()                        ← (follower)对于follower则直接返回
+ | |-ha_commit_low()
+ |
+ |-process_flush_stage_queue()            ← (leader)对于follower则直接返回
+ | |-fetch_queue_for()                    ← 通过stage_manager获取队列中的成员
+ | | |-fetch_and_empty()                  ← 获取元素并清空队列
+ | |-ha_flush_log()
+ | |-flush_thread_caches()                ← 对于每个线程做该操作
+ | |-my_b_tell()                          ← 判断是否超过了max_bin_log_size，如果是则切换binlog文件
+ |
+ |-flush_cache_to_file()                  ← (follower)将I/O Cache中的内容写到文件中
+ |-RUN_HOOK()                             ← 调用HOOK函数，也就是binlog_storage-&gt;after_flush()
+ |
+ |-#########&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;                     ← 进入Stage_manager::SYNC_STAGE阶段
+ |-change_stage()
+ |-sync_binlog_file()
+ | |-mysql_file_sync()
+ |   |-my_sync()
+ |     |-fdatasync()                      ← 调用系统API写入磁盘，也可以是fsync()
+ |
+ |-#########&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;                     ← 进入Stage_manager::COMMIT_STAGE阶段
+ |-change_stage()                         ← 该阶段会受到binlog_order_commits参数限制
+ |-process_commit_stage_queue()           ← 会遍厉所有线程，然后调用如下存储引擎接口
+ | |-ha_commit_low()
+ |   |-ht-&gt;commit()                       ← 调用存储引擎handlerton-&gt;commit()
+ |   |                                    ← ### 注意，实际调用如下的两个函数
+ |   |-binlog_commit()
+ |   |-innobase_commit()
+ |-process_after_commit_stage_queue()     ← 提交之后的后续处理，例如semisync
+ | |-RUN_HOOK()                           ← 调用transaction-&gt;after_commit
+ |
+ |-stage_manager.signal_done()            ← 通知其它线程事务已经提交
+ |
+ |-finish_commit()</code></pre></figure>
+
+<p>在 enroll_for() 函数中，刚添加的线程如果是队列的第一个线程，就将其设置为 leader 线程；否则就是 follower 线程，此时线程会睡眠，直到被 leader 唤醒 (m_cond_done) 。</p>
+
+<p>注意，binlog_max_flush_queue_time 参数已经取消。</p>
+
+<h3 id="commit-stage">commit stage</h3>
+
+<p>如上所述，commit 阶段会受到参数 binlog_order_commits 的影响，当该参数关闭时，会直接释放 LOCK_sync ，各个 session 自行进入 InnoDB commit 阶段，这样不会保证 binlog 和事务 commit 的顺序一致。</p>
+
+<p>当然，如果你不关注两者的一致性，那么可以关闭这个选项来稍微提高点性能；当打开了上述的参数，才会进入 commit stage 。</p>
+
+<!--
+
+## 小结
+
+MySQL 的 group commit 只有两次 sync，即在 prepare 阶段的 redo-log sync，以及 sync binlog 文件（双一配置），为了保证rotate时，所有前一个binlog的事件的redo log都被刷到磁盘，会在函数new_file_impl中调用如下代码段：
+
+## 参考
+
+http://blog.csdn.net/woqutechteam/article/details/51178803
+http://www.cnblogs.com/cchust/p/4439107.html
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/kernel-modules.html" title="Linux 内核模块">&larr; Older</a></li> 
+         <li class="next"><a href="/post/linux-libevent_init.html" title="libevent">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1456416000',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-group-commit.html" data-title="MySQL 组提交" data-url="/post/mysql-group-commit.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

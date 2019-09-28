@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>MySQL Crash-Safe 复制|JinYang's Blog</title>
+  <meta name="keywords" content="mysql,crash-safe,replication,复制">
+  <meta name="description" content="简单来说，crash-safe replication 是指当主备库任何一个节点发生宕机等意外情况下，服务器重启后主备的数据依然能够保证一致性。接下来看看 MySQL 中是如何实现的。">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>MySQL Crash-Safe 复制</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2016-08-22 Monday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  mysql ,  database  
+      
+    </div>
+  </div>
+  <hr>
+  <p>简单来说，crash-safe replication 是指当主备库任何一个节点发生宕机等意外情况下，服务器重启后主备的数据依然能够保证一致性。</p>
+
+<p>接下来看看 MySQL 中是如何实现的。</p>
+
+<!-- more -->
+
+<h2 id="简介">简介</h2>
+
+<p>对于主库来说，crash-safe master 比较简单，只要使用事务的存储引擎，并且正确的配置就能达到 crash safe 的效果，对于 InnoDB 可以在配置文件中添加如下的设置，也即 <code>"双1" 模式</code> 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">sync_binlog                    = 1
+innodb-flush-log-at-trx-commit = 1</code></pre></figure>
+
+<p>在 MySQL 5.6 版本之前存在一个 bug，即当启用上述两个参数时，会使得 InnoDB 存储引擎的 group commit 失效，从而导致在写密集的环境中性能的急剧下降。</p>
+
+<p>MariaDB 真正解决了该问题，因此很多分支版本，比如 Percona、InnoSQL 都将 MariaDB 的 group commit 方案移植到了自己的分支中，解决 group commit 失效的问题。</p>
+
+<!--
+因此，DBA在性能和数据一致性中做了妥协，通常将参数innodb-flush-log-at-trx-commit设置为2，而这就导致了master不再是crash safe的，主从数据可能会不一致。
+
+MariaDB真正解决了该问题，因此很多分支版本，比如Percona，Facebook MySQL，InnoSQL都将MariaDB的group commit方案移植到了自己的分支中，从而解决group commit失效的问题。
+-->
+
+<h3 id="crash-safe-slave">crash-safe slave</h3>
+
+<p>这种情况要复杂的多，而且是 DBA 常见的问题，例如备库不断的报 1062 错误 (主健冲突)，或者发现主从数据不一致，特别是表没有主键的情况；这时，没有太好的办法，基本就是全库重建了。</p>
+
+<p>首先，说明下在这里用到的概念，我们将 event 在 binlog 所在的文件名以及其在文件中的偏移量称为位点。</p>
+
+<p>备库分别有两个线程负责复制 (IO-thread) + 回放 (SQL-thread)，前者会读取主库 binlog 并写入到备库的 relay-log 中，该线程会记录需要读取主库下个位点的信息，并将该信息记录到 master.info 文件中(包含如下的两个信息)；而后者则负责从 relay-log 中读取日志，并将位点信息更新到 relay-log.info 文件中(包含如下的四个信息)。</p>
+
+<p>当前备库的信息可以通过如下方式查看。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SHOW SLAVE STATUS;
+*************************** 1. row ***************************
+                          ... ...
+              Master_Log_File: mysql-bin.000002       IO-thread读取主库binlog的文件名
+          Read_Master_Log_Pos: 447                    IO-thread读取主库binlog的文件偏移
+               Relay_Log_File: relay-bin.000002       SQL-thread读取relay-log的文件名
+                Relay_Log_Pos: 320                    SQL-thread读取relay-log的文件偏移
+        Relay_Master_Log_File: mysql-bin.000002       SQL-thread读取的事件对应主库的文件名
+                          ... ...
+          Exec_Master_Log_Pos: 447                    SQL-thread读取的事件对应主库的文件偏移
+                          ... ...
+1 row in set (0.00 sec)</code></pre></figure>
+
+<p>这样，如果 IO-thread 崩溃后，而位点信息没有同步写入到文件中，那么就可能导致 event 被重复添加到 relay-log 中；而对于 SQL-thread 则会将 event 重复执行！！！</p>
+
+<p>对于 INSERT 来说，在重启备库时就可能会报 “Duplicate entry for key PRIMARY” 的错误，而对于 DELETE、UPDATE 等场景会更加复杂，而且可能更加难识别。</p>
+
+<p>早在 MySQL 4.0 时 Google 就发布过 <a href="https://code.google.com/p/google-mysql-tools/wiki/TransactionalReplication">补丁</a> 解决该问题，也就是在每次 InnoDB 提交时，将 binlog 的位置信息到事务系统段的段头；当备库重启时，将保存的这部分的信息重新生成 relay-info.log 文件。</p>
+
+<h2 id="解决方案">解决方案</h2>
+
+<p>在 5.5 中，增加了 <code>sync_master_info=1</code> 以及 <code>sync_relay_log_info=1</code> 两个参数，用来控制每次更新位点文件时，同时进行一次 fdatasync 操作，确保每个事务都会同时将位点刷新到日志中。<!--(这种对于write-back cache比较有效)--></p>
+
+<p>不过，即使这样，仍然存在小概率发生崩溃，因为一般是在事务提交之后，将位点信息写入文件；这样如果恰好在事务提交之后，但未写入文件之前崩溃，同样会导致最后一个事务的位点异常。</p>
+
+<p>为此，5.6 提供了两个参数 <code>relay_log_info_repository=TABLE</code> 和 <code>master_info_repository=TABLE</code>，用于将相关参数分别保存在 mysql 库的 slave_relay_log_info 和 slave_master_info 两个表中；而且，之前的数据提交方式将做如下的修改。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">START TRANSACTION;
+-- Statement 1
+-- ...
+-- Statement N
+COMMIT;
+-- Update replication info files</code></pre></figure>
+
+<p>修改为：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">START TRANSACTION;
+-- Statement 1
+-- ...
+-- Statement N
+-- Update replication info
+COMMIT;</code></pre></figure>
+
+<p>实际上，对于 SQL-thread 来说是有效的，因为在提交事务的时候同时将位点信息写入到了表中，保证了操作的原子性，进而可以保持一致性。</p>
+
+<h3 id="io-thread-线程">IO-thread 线程</h3>
+
+<p>但对于 IO-thread 仍然会有问题，因为写文件+写表仍然是两个操作，这两个操作不是在一个事务中，一个是数据库操作，一个是文件操作，因此不能达到原子的效果，从而还是无法保证一致性。</p>
+
+<p>为此，5.6 给出的解决方案是：</p>
+
+<ol>
+  <li>将 IO-thread 的初始位点设置为与 SQL-thread 相同；</li>
+  <li>SQL-thread 顺序执行到 relay-log 文件末尾。</li>
+</ol>
+
+<p>上述功能需要开启 <code>relay_log_recovery=ON</code> 配置，此时 IO 线程启动时，会从 <code>slave_relay_log_info</code> 表中读取需要读取的位点信息，然后从主库拉取数据，从而无需设置 <code>master_info_repository=TABLE</code> 。</p>
+
+<p>注意，实际上 IO-thread 是从 SQL-thread 保存的位点开始重新从主库获取 event 。</p>
+
+<h2 id="更多讨论">更多讨论</h2>
+
+<p>通过上述的方式，虽然可以解决更新 relay-info.log 的原子性问题，但是还存在一些缺陷。</p>
+
+<p>由于最后表 slave_relay_log_info 的更新会锁住记录，从而导致备库上的事务提交都是串行的。虽然 MySQL 5.6 之后支持并行复制，但由于串行更新表 slave_relay_log_info，再次导致 group commit 失效。</p>
+
+<p>再通过 --log-slave-updates 级联复制的话，性能又会受限。</p>
+
+<h3 id="关于relay_log_recovery">关于relay_log_recovery</h3>
+
+<p>当设置该参数之后，将会存在如下的问题：</p>
+
+<ol>
+  <li>每次启动备库时，都会从备库拉取数据，如果 SQL 线程已经落后很多，那么就会导致从主库复制大量的数据；</li>
+  <li>如果同时主库也宕机了，那么即使备库有大量的 binlog ，SQL 线程也不会去处理；</li>
+  <li>如果主库中的 binlog 已经被清理了，备库同样也无法进行恢复；</li>
+  <li>如果想要在备库备份 relay-log 的话，也即将 relay-log-purge 设置为 0，那么重启或者崩溃恢复将会导致备份的 relay-log 文件被损坏。</li>
+</ol>
+
+<p>对于第一个问题，当设置了延迟复制时，对于网络的压力将会更加明显。</p>
+
+<h3 id="ddl">DDL</h3>
+
+<p>对于 DDL 语句，即使设置了 binlog 为 ROW 模式，实际上仍保存为 SQL 语句，而且不会触发刷盘操作，这样就会导致 DDL 操作，仍然有可能会重复执行。</p>
+
+<p>例如，当你修改了表结构以后，突然宕机，slave_relay_log_info 表没刷进磁盘，下次重启服务后，会再次执行一次修改表结构，此时同步就挂了，只能手工去跳过这个错误。</p>
+
+<p><img src="/images/databases/mysql/replication-sync-relay-log-info.png" alt="replication sync-relay-log-info" title="replication sync-relay-log-info" class="pull-center" /></p>
+
+<p>此时，可以在备库中添加如下的参数。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">slave_skip_errors = ddl_exist_errors</code></pre></figure>
+
+<h2 id="总结">总结</h2>
+
+<p>简言之，需要设置如下两个参数。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">relay_log_info_repository = TABLE
+relay_log_recovery = ON</code></pre></figure>
+
+<p>表默认为 MyISAM 存储引擎，为了保证事务，需要将表设置为 InnoDB 。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; ALTER TABLE mysql.slave_master_info    ENGINE = InnoDB;
+mysql&gt; ALTER TABLE mysql.slave_relay_log_info ENGINE = InnoDB;
+mysql&gt; ALTER TABLE mysql.slave_worker_info    ENGINE = InnoDB;</code></pre></figure>
+
+<!--
+注意，当主备配置好之后，重启备库时不需要通过 change master 重新配置。
+
+从库上执行
+    STOP SLAVE IO_THREAD;
+    SHOW PROCESSLIST;
+其中，确保SQL-thread状体为"Slave has read all relay log"，然后再执行：
+    STOP SLAVE;    停SQL_THREAD
+    RESET MASTER;  清空主库的binlog，包括index文件，从头开始记录，show master status
+    RESET SLAVE;   清空备库relaylog、index，以及主备关系(master.info、relay-log.info)，并从头开始记录show slave status\G
+    show master status;
+
+11.3 主库上执行
+    RESETMASTER;
+    RESETSLAVE;
+
+    CHANGEMASTERTO
+    MASTER_HOST='192.168.119.129',
+    MASTER_USER='repl',
+    MASTER_PASSWORD='1234',
+    MASTER_LOG_FILE='mysql-bin.000001',
+    MASTER_LOG_POS=106;
+    startslave
+
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">init_recovery()</code></pre></figure>
+
+-->
+
+<h2 id="参考">参考</h2>
+
+<p>关于主备复制中备库的常用配置项可以参考 <a href="https://dev.mysql.com/doc/refman/en/replication-options-slave.html">Reference Manual - Replication Slave Options and Variables</a> 。</p>
+
+<p>关于 Crash-safe replication 的最佳实践，可以参考 <a href="https://blog.booking.com/better_crash_safe_replication_for_mysql.html">Better Crash-safe replication for MySQL</a> 中的介绍，或者 <a href="/reference/databases/mysql/Better Crash-safe replication for MySQL.mht">本地文档</a> 。</p>
+
+<!--
+https://www.percona.com/blog/2013/09/13/enabling-crash-safe-slaves-with-mysql-5-6/
+
+在主库中，binlog的事件如何发送给dump线程？备库中IO线程如何通知SQL线程执行？
+binlog的文件格式是什么样的？
+-->
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/mysql-utilities_init.html" title="MySQL 组提交">&larr; Older</a></li> 
+         <li class="next"><a href="/post/flask-route.html" title="Flask 路由控制">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1471795200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/mysql-crash-safe-replication.html" data-title="MySQL Crash-Safe 复制" data-url="/post/mysql-crash-safe-replication.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

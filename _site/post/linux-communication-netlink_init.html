@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>Linux 内核与用户态通讯机制 -- Netlink|JinYang's Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>Linux 内核与用户态通讯机制 -- Netlink</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2014-02-19 Wednesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>Netlink 机制是在 Linux 中作为内核态与用户态的一种通讯机制，它是基于 socket 的！！！怎么样，没有想到，除了 TCP/IP 协议外，这样也可以 ^_^</p>
+
+<p>另外的一个特性是，面向数据报文的无连接消息子系统，有点类似于 UDP 协议。</p>
+
+<!-- more -->
+
+<h1 id="简介">简介</h1>
+
+<p>如果要为新特性添加系统调用，那么相比传统的 ioctl 和 procfs 来说，netlink 要简单的多，只需要将一个常量以及协议类型加入到 netlink.h 文件中即可。然后，内核模块和用户程序可以通过 socket 类型的 API 进行通信。</p>
+
+<p>与其它基于 socket API 实现的通讯协议一样，Netlink 也是异步的，它通过一个 socket 队列来缓存突发的消息。</p>
+
+<h1 id="内核模块和用户测试程序">内核模块和用户测试程序</h1>
+
+<p>内核中的 Netlink 相关接口实际上一直在变化，最好的方式是参考内核中相关的实现，例如 TCP/IP 协议相关的诊断模块 sock_diag ，对应应用程序为 iproute2 包。</p>
+
+<p>对于 Netlink，不仅可以实现用户-内核空间的通信还可使现实用户空间两个进程之间，或内核空间两个进程之间的通信。</p>
+
+<h2 id="netlink-消息格式">Netlink 消息格式</h2>
+
+<p>消息体包括了两部分：消息头和有效数据载荷；其中，消息头固定为 16 字节，消息体长度可变。另外，整个 Netlink 消息是 4 字节对齐，很多与消息体相关的宏操作。</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">|&lt;====== 16B ======&gt;|&lt;======================= 2^32-16B =============================&gt;|
++-------------------+----------------------------------------------------------------+
+|    msg header     |                         msg body                               |
++-------------------+----------------------------------------------------------------+
+|                   |                                                                |
+|                   |&lt;--------------------- NLMSG_SPACE() --------------------------&gt;|
+|                                                                                    |
+|&lt;------------------------------- NLMSG_LENGTH() -----------------------------------&gt;|</code></pre></figure>
+
+<p>对于上述的 Netlink 消息，可以通过几个宏的进行操作：</p>
+
+<ul>
+  <li>
+    <p>NLMSG_SPACE(MAX_PAYLOAD)、NLMSG_LENGTH(LEN)：通常在申请内存时使用，两个宏都会返回 4 字节对齐的最小长度值，前者的入参为 body 大小，而后者为 header+body 的长度。</p>
+  </li>
+  <li>
+    <p>NLMSG_DATA(nlh)：返回 Netlink 消息中数据部分的首地址，写入和读取消息数据部分时会使用。</p>
+  </li>
+</ul>
+
+<p>其中消息头定义通过 struct nlmsghdr 表示：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">nlmsghdr</span> <span class="p">{</span>
+    <span class="n">__u32</span>        <span class="n">nlmsg_len</span><span class="p">;</span>     <span class="cm">/* Length of message including header */</span>
+    <span class="n">__u16</span>        <span class="n">nlmsg_type</span><span class="p">;</span>    <span class="cm">/* Message content */</span>
+    <span class="n">__u16</span>        <span class="n">nlmsg_flags</span>    <span class="cm">/* Additional flags */</span>
+    <span class="n">__u32</span>        <span class="n">nlmsg_seq</span><span class="p">;</span>     <span class="cm">/* Sequence number */</span>
+    <span class="n">__u32</span>        <span class="n">nlmsg_pid</span><span class="p">;</span>     <span class="cm">/* Sending process PID */</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>消息头结构体中各成员详细解释如下：</p>
+
+<ul>
+  <li>
+    <p>nlmsg_len： 包括消息头在内的整个消息长度，按字节计算。</p>
+  </li>
+  <li>
+    <p>nlmsg_type：消息的类型，即是数据还是控制消息。目前类型有 4 中：A) NLMSG_NOOP 空操作；B) NLMSG_ERROR 错误消息；C) NLMSG_DONE 若内核返回多个消息，最后一条为该类型，其它的消息的 nlmsg_flags 属性被设置 NLM_F_MULTI 位有效；D) NLMSG_OVERRUN 数据被覆盖。</p>
+  </li>
+  <li>
+    <p>nlmsg_flags：消息中的额外说明信息，通常用 NLM_F_XXX 表示，其中常用的如下：</p>
+
+    <ul>
+      <li>
+        <p>NLM_F_MULTI，消息从用户到内核是同步的立刻完成，而从内核用户则需要排队。如果用户发送的请求中有NLM_F_DUMP标志位，那么内核就会向用户发送多个 Netlink 消息，除了最后的消息外，其余都设置了该位。</p>
+      </li>
+      <li>
+        <p>NLM_F_REQUEST，标示请求消息。所有从用户到内核的消息都要设置该位，否则内核将返回一个 EINVAL 无效参数的错误。</p>
+      </li>
+      <li>
+        <p>NLM_F_ACK，内核对来自用户空间的 NLM_F_REQUEST 消息的响应。</p>
+      </li>
+      <li>
+        <p>NLM_F_ECHO，用户发送内核发送时置位，则说明用户要求内核以单播的方式再发送给用户，也就是 “回显” 。</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>nlmsg_seq：消息序号。类似于 UDP，Netlink 也可能会丢失数据，如果用户要保证其发送的每条消息都能成功被内核收到，那么在发送请求时需要设置序号，然后检查返回结果的该值是否相同。对于内核向用户发送的广播消息，该字段为 0 。</p>
+  </li>
+  <li>
+    <p>nlmsg_pid：Netlink 会为用户空间和内核空间建立的链接分配一个唯一标示，用于确保内核返回给用户时的进程 ID 。</p>
+  </li>
+</ul>
+
+<h2 id="netlink-地址结构体">Netlink 地址结构体</h2>
+
+<p>和 TCP/IP 协议中的地址结构体和标准结构体相似，Netlink 的结构体如下：</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">-----   sock标准结构体                    TCP/IP结构体                   Netlink结构体
+
+        struct sockaddr;             struct sockaddr_in;            struct sockaddr_nl;
+      +------------------+          +------------------+           +------------------+
+   2B |    sa_family     |       2B |    sin_family    |        2B |    nl_family     |
+      +------------------+          +------------------+           +------------------+
+  14B |   sa_data[14]    |       2B |     sin_port     |        2B |      nl_pad      |
+      +------------------+          +------------------+           +------------------+
+                                 4B |     sin_addr     |        4B |      nl_pid      |
+                                    +------------------+           +------------------+
+                                 8B |      __pad       |        4B |    nl_groups     |
+                                    +------------------+           +------------------+</code></pre></figure>
+
+<p>对于 Netlink 地址结构体，详细内容如下：</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">sockaddr_nl</span> <span class="p">{</span>
+    <span class="kt">sa_family_t</span>    <span class="n">nl_family</span><span class="p">;</span>    <span class="c1">// 总是为AF_NETLINK</span>
+    <span class="kt">unsigned</span> <span class="kt">short</span>    <span class="n">nl_pad</span><span class="p">;</span>    <span class="c1">// 目前未用到，填充为0</span>
+    <span class="n">__u32</span>        <span class="n">nl_pid</span><span class="p">;</span>         <span class="c1">// process pid</span>
+    <span class="n">__u32</span>        <span class="n">nl_groups</span><span class="p">;</span>      <span class="c1">// multicast groups mask</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>其中，各个成员的详细内容如下：</p>
+
+<ul>
+  <li>
+    <p>nl_family：对应 AF_NETLINK ，不用多说了。</p>
+  </li>
+  <li>
+    <p>nl_pad：暂未使用，填充为 0 。</p>
+  </li>
+  <li>
+    <p>nl_pid：PID 全称为 Port-ID，用于唯一标识一个基于 Netlink 的 socket 通道。通常为当前进程的进程号，对于多线程的应用可以设置为 <code>pthread_self() &lt;&lt; 16 | getpid()</code>。如果为 0 通常有两种情况：A) 用户空间发往内核空间；B)
+<!--
+ 第二，从内核发出的多播报文到用户空间时，如果用户空间的进程处在该多播组中，那么其地址结构体中nl_pid也设置为0，同时还要结合下面介绍到的另一个属性。
+--></p>
+  </li>
+  <li>
+    <p>nl_groups：对于多播，该字段标明了调用者希望加入的多播组号的掩码；0 表示调用者不希望加入任何多播组。</p>
+  </li>
+</ul>
+
+<p>如果用户空间的进程想加入某个多播组，则必须执行 bind() 系统调用；对于每个 Netlink 协议域中的协议，最多可支持 32 个多播组，每个多播组用一个比特来表示。</p>
+
+<h1 id="内核实现">内核实现</h1>
+
+<p>其中内核实现在 net/netlink/af_netlink.c 文件中。</p>
+
+<h2 id="初始化">初始化</h2>
+
+<p>Netlink 相关的内容通过 core_initcall() 指定，其初始化函数为 netlink_proto_init()，简化后的内容如下。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">net_proto_family</span> <span class="n">netlink_family_ops</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">family</span> <span class="o">=</span> <span class="n">PF_NETLINK</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">create</span> <span class="o">=</span> <span class="n">netlink_create</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">owner</span>  <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>  <span class="cm">/* for consistency 8) */</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">pernet_operations</span> <span class="n">__net_initdata</span> <span class="n">netlink_net_ops</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">netlink_net_init</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">exit</span> <span class="o">=</span> <span class="n">netlink_net_exit</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">netlink_proto_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">sock_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">netlink_family_ops</span><span class="p">);</span>
+    <span class="n">register_pernet_subsys</span><span class="p">(</span><span class="o">&amp;</span><span class="n">netlink_net_ops</span><span class="p">);</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span>
+<span class="n">core_initcall</span><span class="p">(</span><span class="n">netlink_proto_init</span><span class="p">);</span></code></pre></figure>
+
+<p>其中在创建命名空间时，会调用 netlink_net_init() 函数，而 netlink_family_ops 变量则定义了 sock 相关的函数，也就是如何创建 Netlink socket 。</p>
+
+<p>而 netlink_net_init() 函数就非常简单了，就是在 procfs 中创建 /proc/net/netlink 文件。</p>
+
+<h2 id="创建-socket">创建 Socket</h2>
+
+<p>如上述 netlink_family_ops 变量中的定义，创建 Socket 时最终会调用到 netlink_create() 函数。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">proto_ops</span> <span class="n">netlink_ops</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">family</span> <span class="o">=</span>       <span class="n">PF_NETLINK</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">owner</span> <span class="o">=</span>        <span class="n">THIS_MODULE</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">release</span> <span class="o">=</span>      <span class="n">netlink_release</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">bind</span> <span class="o">=</span>         <span class="n">netlink_bind</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">connect</span> <span class="o">=</span>      <span class="n">netlink_connect</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">socketpair</span> <span class="o">=</span>   <span class="n">sock_no_socketpair</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">accept</span> <span class="o">=</span>       <span class="n">sock_no_accept</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">getname</span> <span class="o">=</span>      <span class="n">netlink_getname</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">poll</span> <span class="o">=</span>         <span class="n">netlink_poll</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">ioctl</span> <span class="o">=</span>        <span class="n">sock_no_ioctl</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">listen</span> <span class="o">=</span>       <span class="n">sock_no_listen</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">shutdown</span> <span class="o">=</span>     <span class="n">sock_no_shutdown</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">setsockopt</span> <span class="o">=</span>   <span class="n">netlink_setsockopt</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">getsockopt</span> <span class="o">=</span>   <span class="n">netlink_getsockopt</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">sendmsg</span> <span class="o">=</span>      <span class="n">netlink_sendmsg</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">recvmsg</span> <span class="o">=</span>      <span class="n">netlink_recvmsg</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">mmap</span> <span class="o">=</span>         <span class="n">netlink_mmap</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">sendpage</span> <span class="o">=</span>     <span class="n">sock_no_sendpage</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">proto</span> <span class="n">netlink_proto</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">name</span>     <span class="o">=</span> <span class="s">&quot;NETLINK&quot;</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">owner</span>    <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">obj_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">netlink_sock</span><span class="p">),</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">__netlink_create</span><span class="p">(</span><span class="k">struct</span> <span class="n">net</span> <span class="o">*</span><span class="n">net</span><span class="p">,</span> <span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">,</span>
+                <span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">cb_mutex</span><span class="p">,</span> <span class="kt">int</span> <span class="n">protocol</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">sock</span><span class="o">-&gt;</span><span class="n">ops</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">netlink_ops</span><span class="p">;</span>
+    <span class="n">sk</span> <span class="o">=</span> <span class="n">sk_alloc</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">PF_NETLINK</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">netlink_proto</span><span class="p">);</span>
+    <span class="n">sock_init_data</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">sk</span><span class="p">);</span>
+    <span class="n">init_waitqueue_head</span><span class="p">(</span><span class="o">&amp;</span><span class="n">nlk</span><span class="o">-&gt;</span><span class="n">wait</span><span class="p">);</span>
+    <span class="p">...</span> <span class="p">..</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>也就是创建 struct sock 并初始化，其中最重要的是 netlink_ops 变量，定义了 sock 相关的操作函数，如常见的 sendmsg()、connect() 等操作。</p>
+
+<p>也就是说，接下来我们可以针对不同的接口进行分析。</p>
+
+<h2 id="其它">其它</h2>
+
+<p>netlink_rcv_skb();</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">netlink_rcv_skb</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">cb</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">nlmsghdr</span> <span class="o">*</span><span class="p">));</span></code></pre></figure>
+
+<p>该函数提供了一个通用的接收函数，会先做一些头文件的检查，判断是否有 NLM_F_ACK(回显) 标示，如果正常或者不需要 Netlink 处理，则会调用其传入的函数。</p>
+
+<h1 id="generic-netlink">Generic Netlink</h1>
+
+<p>该模块通过 subsys_initcall(genl_init) 定义初始化函数，也就是在系统启动的时候会调用 genl_init() 初始化函数。而在 genl_init() 函数中会调用 register_pernet_subsys()，该函数主要作用是将一个网络协议模块添加到每一个网络命令空间中。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="k">struct</span> <span class="n">pernet_operations</span> <span class="n">genl_pernet_ops</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">genl_pernet_init</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">exit</span> <span class="o">=</span> <span class="n">genl_pernet_exit</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">genl_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span> <span class="p">...</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">register_pernet_subsys</span><span class="p">(</span><span class="o">&amp;</span><span class="n">genl_pernet_ops</span><span class="p">);</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span>
+<span class="n">subsys_initcall</span><span class="p">(</span><span class="n">genl_init</span><span class="p">);</span></code></pre></figure>
+
+<p>也就是说实际的初始化函数为 genl_pernet_init()，该函数中调用 netlink_kernel_create() 创建回掉函数，也就是对应 genl_rcv() 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">int</span> <span class="n">__net_init</span> <span class="nf">genl_pernet_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">net</span> <span class="o">*</span><span class="n">net</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">netlink_kernel_cfg</span> <span class="n">cfg</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">.</span><span class="n">input</span>      <span class="o">=</span> <span class="n">genl_rcv</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">flags</span>      <span class="o">=</span> <span class="n">NL_CFG_F_NONROOT_RECV</span><span class="p">,</span>
+    <span class="p">};</span>
+    <span class="n">net</span><span class="o">-&gt;</span><span class="n">genl_sock</span> <span class="o">=</span> <span class="n">netlink_kernel_create</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">NETLINK_GENERIC</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">cfg</span><span class="p">);</span>
+    <span class="p">...</span> <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">genl_rcv</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">down_read</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cb_lock</span><span class="p">);</span>
+    <span class="n">netlink_rcv_skb</span><span class="p">(</span><span class="n">skb</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">genl_rcv_msg</span><span class="p">);</span>
+    <span class="n">up_read</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cb_lock</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如上，netlink_rcv_skb() 是 Netlink 提供的通用函数，如果正常则调用传入的回掉函数 genl_rcv_msg() 。</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">genl_rcv_msg</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="k">struct</span> <span class="n">nlmsghdr</span> <span class="o">*</span><span class="n">nlh</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">genl_family</span> <span class="o">*</span><span class="n">family</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
+
+    <span class="n">family</span> <span class="o">=</span> <span class="n">genl_family_find_byid</span><span class="p">(</span><span class="n">nlh</span><span class="o">-&gt;</span><span class="n">nlmsg_type</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">family</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">ENOENT</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">family</span><span class="o">-&gt;</span><span class="n">parallel_ops</span><span class="p">)</span>
+        <span class="n">genl_lock</span><span class="p">();</span>
+
+    <span class="n">err</span> <span class="o">=</span> <span class="n">genl_family_rcv_msg</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">skb</span><span class="p">,</span> <span class="n">nlh</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">family</span><span class="o">-&gt;</span><span class="n">parallel_ops</span><span class="p">)</span>
+        <span class="n">genl_unlock</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h1 id="参考">参考</h1>
+
+<p>Netlink 相关内容可以参考内核中的文档，以及 <a href="http://www.linuxfoundation.org/collaborate/workgroups/networking/generic_netlink_howto" title="netlink的相关帮助信息">www.linuxfoundation.org</a> 中关于 netlink 协议的基本介绍，或者 <a href="/reference/linux/communication/generic_netlink_howto.mht">本地保存</a> 信息。</p>
+
+<p>用户端的实现还可以参考 <a href="http://www.infradead.org/~tgr/libnl/" title="Netlink Protocol Library Suite (libnl)">Netlink Protocol Library Suite (libnl)</a>，一个不错的实现，还包括了 Python 的接口，偶然发现，没有仔细研究</p>
+
+<!--
+http://blog.chinaunix.net/uid-23069658-id-3400761.html    用户空间和内核空间通讯之【Netlink 上】
+http://www.linuxfoundation.org/collaborate/workgroups/networking/generic_netlink_howto      generic_netlink_howto
+
+
+http://www.linuxidc.com/linux/2011-09/42936.htm
+http://www.linuxidc.com/Linux/2011-07/39085p2.htm
+http://www.ibm.com/developerworks/cn/linux/l-netlink/index.html
+http://blog.chinaunix.net/uid-20788636-id-1841429.html
+http://www.tuicool.com/articles/fEFzY3a
+http://www.360doc.com/content/13/1214/19/8744436_337155545.shtml
+http://www.360doc.com/content/13/1214/19/8744436_337155240.shtml
+http://blog.csdn.net/daydring/article/details/24000081
+http://blog.chinaunix.net/uid-14753126-id-2983915.html
+http://blog.chinaunix.net/uid-9950859-id-98548.html
+http://blog.chinaunix.net/uid-26675482-id-3255770.html
+http://blog.chinaunix.net/uid-23069658-id-3400761.html             #####
+http://blog.chinaunix.net/uid-20788636-id-2980152.html
+http://blog.chinaunix.net/uid-26675482-id-3255770.html
+http://blog.csdn.net/love_life2011/article/details/7596190
+http://blog.csdn.net/zcabcd123/article/details/8275891
+http://blog.csdn.net/zcabcd123/article/details/8272423
+http://blog.csdn.net/wangjingfei/article/details/5288460
+http://blog.csdn.net/liumang_D/article/details/5413042
+
+
+http://blog.chinaunix.net/uid-20788636-id-2980152.html       IP路由
+
+
+http://bbs.chinaunix.net/thread-2162796-1-1.html
+
+
+
+
+http://www.linuxjournal.com/article/7356
+http://bbs.chinaunix.net/thread-2029813-1-1.html
+
+
+netlink是linux内核提供的一种用户空间与内核通讯基础组件，基于网络实现，可实现多播、单播、组播复杂的通讯功能。内核驱动建立服务端，用户程序通过socket绑定服务端，可发送消息与接收消息，实现监听、系统调用等功能。其中generic netlink(genetlink)是基于netlink机制实现的一种通用协议，可直接使用到一般用户程序环境中。
+
+本文实现的是一种通知机制，用户程序监听内核netlink创建的端口，不能通过端口发消息到内核。这种机制适用于报告系统硬件状态，如电池电量、温度，SIM卡移除等
+1. NETLINK内核编码相关
+
+本框架是基于netlink的一种通用协议generic netlink(genetlink)，并没有单独占用新的协议号，内核服务端部分注册genetlink接口、相关操作函数和指定数据传输格式。
+
+注册接口：用于通知内核有一个family添加，可提供服务
+
+
+ret = genl_register_family(&detect_family);     //注册family
+if (ret != 0)
+        return ret;
+
+ret = genl_register_ops(&detect_family, &user_pid_ops); //family相关的操作函数
+if (ret != 0)
+        goto unreg_fam;
+
+接口数据结构定义：family类型对应的操作接口，可定义多个，但cmd字段不同
+
+
+static struct genl_ops user_pid_ops = {
+        .cmd = 0x01,
+        .flags = 0,
+        .policy = user_msg_policy,
+        .doit = set_user_pid,
+        .dumpit = NULL,
+};
+
+操作接口用于响应消息，用户给内核发送命令时需指定命令号cmd，发送的内容格式为policy指定，其他字段程序中没用到。同一family可注册多个命令，不同命令对应各自的处理函数doit。
+
+
+static struct genl_family detect_family = {
+        .id = GENL_ID_GENERATE,
+        .hdrsize = 0,
+        .name = "DETECT_USB",
+        .version = 0x01,
+        .maxattr = DETECT_A_MAX,
+};
+
+协议结构，使用genl接口的id统一为GENL_ID_GENERATE，name字段用于标识特定的family，用户程序通过比较该字段连接到family。 此处用于响应用户消息的接口只接收用户进程的pid，之后内核会将消息发送到该pid进程
+
+内核消息发送接口：将指定消息发送到用户进程，消息是一个32位整数，消息的定义内核与用户程序要一致
+
+
+skb = genlmsg_new(size, GFP_KERNEL);    //申请发送数据缓冲
+if (skb == NULL)
+        goto end;
+
+//使用family协议发送数据，填充协议头
+msg_head = genlmsg_put(skb, 0, 0, &detect_family,
+                                           0x01);
+if (msg_head == NULL) {
+        nlmsg_free(skb);
+        goto end;
+}
+
+if (nla_put_u32(skb, DETECT_A_UINT32, event->event) <</span> 0) {
+        nlmsg_free(skb);
+        goto end;
+}
+
+if (genlmsg_end(skb, msg_head) <</span> 0) {
+        nlmsg_free(skb);
+        goto end;
+}
+
+genlmsg_unicast(&init_net, skb, g_detect->user_pid);
+
+在建立socket连接后内核可随时向用户空间发送消息，用户程序调用recv接收。框架暂时没有使用多播、组播功能。
+2. NETLINK用户程序框架
+
+基于NETLINK通讯的用户程序类似SOCKET程序，都是创建socket,绑定端口号，发送和接收数据等操作。框架中用户守护进程阻塞接收内核消息，再调用消息处理函数分发消息。
+
+创建socket并绑定： 创建一个netlink类型的socket
+
+
+struct sockaddr_nl local;
+
+fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_GENERIC);
+if (fd <</span> 0)
+        return -1;
+
+memset(&local, 0, sizeof(local));
+local.nl_family = AF_NETLINK;
+local.nl_groups = 0;
+if (bind(fd, (struct sockaddr *)&local, sizeof(local)) <</span> 0)
+        goto error;
+
+return fd;
+
+创建NETLINK_GENERIC类型socket，绑定端口。
+
+查找DETECT_USB服务端，这部分属于genetlink公用部分。
+
+
+
+family_req.n.nlmsg_type = GENL_ID_CTRL;
+family_req.n.nlmsg_flags = NLM_F_REQUEST;
+family_req.n.nlmsg_seq = 0;
+family_req.n.nlmsg_pid = getpid();
+family_req.n.nlmsg_len = NLMSG_LENGTH(GENL_HDRLEN);
+family_req.g.cmd = CTRL_CMD_GETFAMILY;
+family_req.g.version = 0x1;
+
+na = (struct nlattr *)GENLMSG_DATA(&family_req);
+na->nla_type = CTRL_ATTR_FAMILY_NAME;
+na->nla_len = strlen("DETECT_USB") + 1 + NLA_HDRLEN;
+strcpy(NLA_DATA(na), "DETECT_USB");
+
+family_req.n.nlmsg_len += NLMSG_ALIGN(na->nla_len);
+
+if (sendto_fd(sd, (char *)&family_req, family_req.n.nlmsg_len) <</span> 0)
+        return -1;
+
+rep_len = recv(sd, &ans, sizeof(ans), 0);
+if (rep_len <</span> 0)
+        return -1;
+
+na = (struct nlattr *)GENLMSG_DATA(&ans);
+
+na = (struct nlattr *)((char *)na + NLA_ALIGN(na->nla_len));
+if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+        id = *(__u16 *) NLA_DATA(na);
+
+这里查找使用的字符串必须与内核中注册接口结构中定义的字符串相同，用于绑定到我们注册的接口。
+
+发送消息相关程序：用户程序初始化时运行一次，用于将自己的pid通知到内核
+
+
+
+req.n.nlmsg_len = NLMSG_LENGTH(GENL_HDRLEN);
+req.n.nlmsg_type = id;
+req.n.nlmsg_flags = NLM_F_REQUEST;
+req.n.nlmsg_seq = 0;
+req.n.nlmsg_pid = getpid();
+req.g.cmd = 1;
+
+na = (struct nlattr *)GENLMSG_DATA(&req);
+na->nla_type = 1;                        //DETECT_A_MSG，消息格式类型
+snprintf(message, 63, "usb detect deamon setup with pid %d", getpid());
+na->nla_len = 64 + NLA_HDRLEN;
+memcpy(NLA_DATA(na), message, 64);
+req.n.nlmsg_len += NLMSG_ALIGN(na->nla_len);
+
+memset(&nladdr, 0, sizeof(nladdr));
+nladdr.nl_family = AF_NETLINK;
+
+sendto(sd, (char *)&req, req.n.nlmsg_len, 0, (struct sockaddr *)&nladdr, sizeof(nladdr));
+
+接收消息相关接口：这里放在一个循环里来做，也可以用poll实现
+
+
+rep_len = recv(sd, &ans, sizeof(ans), 0);  //阻塞接收内核消息
+if (ans.n.nlmsg_type == NLMSG_ERROR)
+        return -1;
+
+if (rep_len <</span> 0)
+        return -1;
+
+if (!NLMSG_OK((&ans.n), rep_len))
+        return -1;
+
+na = (struct nlattr *)GENLMSG_DATA(&ans);   //验证正确后做消息解析。
+
+总结
+
+上面实现了基于genetlink内核组件的内核消息单播框架，并不是一个完成的应用程序，这也是我在做netlink程序时认为最主要的内容，其实将内核与用户进程互发消息调试通过之后的事情就不与netlink相关了，知道这个框架能提供些什么服务，应用程序也好做扩展。
+
+-->
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/network-socketfs_init.html" title="Linux 中的 socketfs">&larr; Older</a></li> 
+         <li class="next"><a href="/post/kernel-compile.html" title="Linux 内核编译">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1392739200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/linux-communication-netlink_init.html" data-title="Linux 内核与用户态通讯机制 -- Netlink" data-url="/post/linux-communication-netlink_init.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>

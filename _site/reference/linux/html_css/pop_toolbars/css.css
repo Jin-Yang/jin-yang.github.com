@@ -1,0 +1,15 @@
+.toolbar-item, .toolbar-layer { background: transparent url("toolbar.png") no-repeat scroll 0% 0%; }
+.toolbar { position: fixed; right: 0px; bottom: 50px; }
+.toolbar-item { display: block; width: 52px; height: 52px; margin-top: 1px; position: relative; transition: background-position 1s ease 0s; }
+.toolbar-item:hover .toolbar-layer { opacity: 1; transform: scale(1); }
+.toolbar-item-weixin { background-position: 0px -798px; }
+.toolbar-item-weixin:hover { background-position: 0px -860px; }
+.toolbar-item-weixin .toolbar-layer { height: 212px; background-position: 0px 0px; }
+.toolbar-item-feedback { background-position: 0px -426px; }
+.toolbar-item-feedback:hover { background-position: 0px -488px; }
+.toolbar-item-app { background-position: 0px -550px; }
+.toolbar-item-app:hover { background-position: 0px -612px; }
+.toolbar-item-app .toolbar-layer { height: 194px; background-position: 0px -222px; }
+.toolbar-item-top { background-position: 0px -674px; }
+.toolbar-item-top:hover { background-position: 0px -736px; }
+.toolbar-layer { position: absolute; right: 46px; bottom: -10px; width: 172px; opacity: 0; transform-origin: 95% 95% 0px; transform: scale(0.01); transition: all 1s ease 0s; }

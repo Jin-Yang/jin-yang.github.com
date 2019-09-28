@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta name="baidu-site-verification" content="B786jeR0MV" />
+  <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
+  <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
+  <title>ETCD 存储模块|JinYang's Blog</title>
+  <meta name="keywords" content="golang,go,etcd">
+  <meta name="description" content="">
+
+  <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
+  </script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
+  </script>
+  <script type="text/javascript" src="/static/js/main.js"></script>
+  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
+  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
+  <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
+  <style type="text/css">
+  
+    .post-container > p {text-indent: 2em;}
+  
+  </style>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124556620-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124556620-1');
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top navbar-wrapper">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+      </button><a class="navbar-brand" href="/">Jin-Yang</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li  ><a href="/"> Home </a></li>
+        <li  ><a href="/archives.html"> Archive </a></li>
+        <li  ><a href="/categories.html"> Categories </a></li>
+        <li  ><a href="/projects.html"> Projects </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Others <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">常用网站</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="https://www.rtems.org/">www.rtems.org</a></li>
+            <li><a href="http://www.gnu.org/">www.gnu.org</a></li>
+            <li><a href="https://www.kernel.org/">www.kernel.org</a></li>
+            <li><a href="https://www.arduino.cc/">www.arduino.cc</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li  ><a href="/about.html"> About </a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>KISS</h1>
+          <h2>Keep It Simple and Stupid.</h2>
+          <!--<a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Seize The Day</h1><h1>And Get Busy Living</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Stay hungry</h1><h1>Stay foolish</h1>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+	  <h2>Ever tried, ever failed</h2><h2>No matter, try again</h2><h2>Fail again, fail better</h2>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Nothing is true</h1><h1>Every is permitted</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div><!-- /.carousel -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-9 blog-main" style="min-width: 500px">
+    
+<div class="post-container">
+  <div class="blog-header">
+    <h1>ETCD 存储模块</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> 2017-11-15 Wednesday &nbsp; &nbsp;
+      <i class="fa fa-tags"></i>  program ,  golang ,  linux  
+      
+    </div>
+  </div>
+  <hr>
+  <p>如前所述，ETCD 中 RAFT 协议的只是实现了其核心的部分，而其中的存储模块需要单独实现。</p>
+
+<!-- more -->
+
+<h2 id="storage">Storage</h2>
+
+<p>应用程序需要实现存储 IO 和网络通讯，其中存储在 RAFT 中通过 <code>type Storage interface</code> 定义，包括了读取 log、执行 Snapshot 等接口。</p>
+
+<p>其本身实现了基于内存的<code> MemoryStorage[raft/storage.go]</code>，ETCD 将其作为 Cache 使用，每次事务中会先将日志持久化到存储设备上，然后再更新 MemoryStorage 。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Storage</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// 初始化时会返回持久化之后的HardState和ConfState</span>
+	<span class="nx">InitialState</span><span class="p">()</span> <span class="p">(</span><span class="nx">pb</span><span class="p">.</span><span class="nx">HardState</span><span class="p">,</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">ConfState</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="c1">// 返回范围[lo,hi)内的日志数据</span>
+	<span class="nx">Entries</span><span class="p">(</span><span class="nx">lo</span><span class="p">,</span> <span class="nx">hi</span><span class="p">,</span> <span class="nx">maxSize</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">([]</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Entry</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="c1">// 获取entry i的term值</span>
+	<span class="nx">Term</span><span class="p">(</span><span class="nx">i</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">(</span><span class="kt">uint64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="c1">// 日志中最新一条日志的序号</span>
+	<span class="nx">LastIndex</span><span class="p">()</span> <span class="p">(</span><span class="kt">uint64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="c1">// 日志中的第一条日志序号，老的日志已经保存到snapshot中</span>
+	<span class="nx">FirstIndex</span><span class="p">()</span> <span class="p">(</span><span class="kt">uint64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nx">Snapshot</span><span class="p">()</span> <span class="p">(</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Snapshot</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">MemoryStorage</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">sync</span><span class="p">.</span><span class="nx">Mutex</span>
+	<span class="nx">hardState</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">HardState</span>
+	<span class="nx">snapshot</span>  <span class="nx">pb</span><span class="p">.</span><span class="nx">Snapshot</span>
+	<span class="nx">ents</span> <span class="p">[]</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Entry</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如上是，<code>Storage</code> 接口和 <code>MemoryStorage</code> 结构体的定义。</p>
+
+<!--
+与unstable一样，Storage也被嵌入在raftLog结构中。需要说明的一点是：将日志项追加到Storage的动作是由应用完成的，而不是raft协议核心处理层。目前尚不理解Storage存在的意义是什么，与unstable到底有什么区别？
+-->
+
+<h2 id="etcd-实现">ETCD 实现</h2>
+
+<p>实际上是在 <code>etcdserver/storage.go</code> 中的实现，其接口定义名称与上述相同，同样也是 <code>type Storage interface</code>，注意不要将两者混淆。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Storage</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nx">Save</span><span class="p">(</span><span class="nx">st</span> <span class="nx">raftpb</span><span class="p">.</span><span class="nx">HardState</span><span class="p">,</span> <span class="nx">ents</span> <span class="p">[]</span><span class="nx">raftpb</span><span class="p">.</span><span class="nx">Entry</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nx">SaveSnap</span><span class="p">(</span><span class="nx">snap</span> <span class="nx">raftpb</span><span class="p">.</span><span class="nx">Snapshot</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nx">Close</span><span class="p">()</span> <span class="kt">error</span>
+<span class="p">}</span>
+<span class="kd">type</span> <span class="nx">storage</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="o">*</span><span class="nx">wal</span><span class="p">.</span><span class="nx">WAL</span>
+	<span class="o">*</span><span class="nx">snap</span><span class="p">.</span><span class="nx">Snapshotter</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在上述定义的 <code>type storage struct</code> 结构体中，根据 Go 语言的特性，因为没有声明成员变量的名字，可以直接使用 WAL 和 Snapshotter 定义的方法，也就是该结构体是对后两者的封装。</p>
+
+<p>这里的 <code>storage</code> 和 <code>MemoryStorage</code> 的结合使用就是在 <code>etcdserver/raft.go</code> 实现，对应了 <code>type raftNode struct</code> 结构体，其中包含的是 <code>type raftNodeConfig struct</code> ，也就是真正的封装。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">raftNodeConfig</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">isIDRemoved</span> <span class="kd">func</span><span class="p">(</span><span class="nx">id</span> <span class="kt">uint64</span><span class="p">)</span> <span class="kt">bool</span>
+	<span class="nx">raft</span><span class="p">.</span><span class="nx">Node</span>
+	<span class="nx">raftStorage</span> <span class="o">*</span><span class="nx">raft</span><span class="p">.</span><span class="nx">MemoryStorage</span>
+	<span class="nx">storage</span>     <span class="nx">Storage</span>
+	<span class="nx">heartbeat</span>   <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span> <span class="c1">// for logging</span>
+	<span class="nx">transport</span> <span class="nx">rafthttp</span><span class="p">.</span><span class="nx">Transporter</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>如上，其中 <code>raftStorage</code> 是提供给 RAFT 协议层使用的，而 <code>storage</code> 则是 ETCD 实现持久化存贮的核心内容。</p>
+
+<!--
+在使用中，etcd以连续调用的方式实现二者一致的逻辑。以etcd server重启为例，我们看看同步是如何实现的，且看restartNode()的实现。
+-->
+
+<h2 id="启动流程">启动流程</h2>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">NewServer()                   etcdserver/server.go
+ |-store.New() store/store.go 根据入参创建一个初始化的目录
+ | |-newStore() 创建数据存储的目录
+ |-snap.New() snap/snapshotter.go 这里只是初始化一个对象，并未做实际操作
+ |-openBackend() etcdserver/backend.go
+ | |-newBackend() 在新的协程中打开，同时会设置10秒的超时时间
+ |
+ | &lt;&lt;&lt;haveWAL&gt;&gt;&gt; 存在WAL日志，也就是非第一次部署
+ |-Snapshotter.Load() snap/snapshotter.go 开始加载snapshot
+ | |-Snapshotter.snapNames() 会遍历snap目录下的文件，并逆序排列返回
+ | |-loadSnap() 依次加载上述返回的snap文件
+ |   |-Read() 读取文件，如果报错那么会添加一个.broken的后缀
+ |     |-ioutil.ReadFile() 调用系统接口读取文件
+ |     |-snappb.Unmarshal() 反序列化
+ |     |-crc32.Update() 更新并校验CRC的值
+ |     |-raftpb.Unmarshal() 再次反序列化获取值
+ |-store.Recovery() store/store.go 从磁盘中恢复数据
+ | |-json.Unmarshal() snap中保存的应该是json体
+ | |-newTtlKeyHeap() 一个TTL的最小栈，用来查看将要过期的数据
+ | |-recoverAndclean() ???没有理清楚具体删除的是什么过期数据
+ |-recoverSnapshotBackend() etcdserver/backend.go 开始恢复snapshot
+ | |-openSnapshotBackend() 这里会将最新的一次的snapshot重命名为DB
+ |   |-openBackend()
+ |
+ |-restartNode() etcdserver/raft.go
+ | |-readWAL()
+ | |-raft.NewMemoryStorage()
+ | |-ApplySnapshot()
+ | |-SetHardState()
+ | |-Append()
+ | |-RestartNode()
+ |-SetStore()
+ |-SetBackend()
+ |-Recover()</code></pre></figure>
+
+<!--
+
+
+## 日志更新
+
+这个函数的主要处理逻辑就是通过读取 Snapshot 和 WAL，然后通过 SetHardState() 和 Append() 恢复当前 memoryStrorage 的状态。
+
+
+## SnapShot
+
+涉及到几个重要的问题：
+
+1. 何时触发。
+2. 效率如何。
+
+保存的是某个时间节点系统当前状态的一个快照，便用户恢复到此时的状态，ECTD 中 snapshot 的目的是为了回收日志占用的存储空间，包括内存和磁盘。
+
+更新首先被转化为更新日志，按照顺序追加到日志文件，并在集群中进行同步，只有在写入多个节点的日志项会应用到状态机，日志会一直增长，因此需要特定的机制来回收那些无用的日志。
+
+ETCD 中的 snapshot 代表了应用的状态数据，而执行 snapshot 的动作也就是将应用状态数据持久化存储，这样，在该 snapshot 之前的所有日志便成为无效数据，可以删除。
+
+### 结构体
+
+SnapShot 的结构体在 raft/raftpb/raft.proto 中定义，`message Snapshot` 定义了序列化后的格式，其中包括了日志条目的序号等信息。
+
+### 持久化
+
+
+EtcdServer.snapshot() etcdserver/server.go 真正处理
+ |-store.Clone() store/store.go
+ | |-newStore() 会新建一个对象，并复制所需要的成员
+ | |-KV().Commit()
+ |
+ |-storage.SaveSnap()
+ | |-walpb.Snapshot{} 实例化对象，这里会设置Index和Term
+ | |-WAL.SaveSnapshot()
+ | |-Snapshotter.SaveSnap() snap/snapshotter.go
+ | | |-Snapshotter.save() 将数据序列化后保存到磁盘上
+ | |   |-pioutil.WriteAndSyncFile() 格式化并保存
+ | |-WAL.ReleaseLockTo()
+
+raftStorage.CreateSnapshot()
+
+
+
+
+BoltDB的COW技术
+http://www.d-kai.me/boltdb%E4%B9%8Bcow%E6%8A%80%E6%9C%AF/
+
+ETCD 监控
+https://coreos.com/etcd/docs/latest/op-guide/monitoring.html
+
+
+
+
+
+这里没有理清楚，为什么第一发送数据需要写入到 WAL 以及存储中？？？？？？
+
+
+也就是说在 Readyc 中包含了需要发送的数据、已经提交的数据、需要应用的数据，那么如何区分呢？？？？？
+
+
+经过该步之后，日志条目才写入到wal文件和memorty storage。消息也才经Transport发送给其他节点。
+
+
+消息处理。。。。
+
+
+
+
+http://blog.sina.com.cn/s/blog_4b146a9c0102yml3.html
+https://blog.csdn.net/xxb249/article/details/80787501
+http://www.ituring.com.cn/book/tupubarticle/16510
+
+https://my.oschina.net/fileoptions/blog/1825531
+https://blog.csdn.net/xxb249/article/details/80790587
+http://www.opscoder.info/ectd-raft-library.html
+https://yuerblog.cc/2017/12/10/principle-about-etcd-v3/
+
+
+## SnapShot
+
+
+snapshot是wal快照，为了节约磁盘空间，当wal文件达到一定数据，就会对之前的数据进行压缩，形成快照。
+2）snapshot另外一个原因，当新的节点加入到集群中，为了同步数据，就会把snapshot发送到新节点，这样能够节约传输数据(生成的快照文件比wal文件要小很多，5倍左右)，使之尽快加入到集群中。
+
+
+## Storage
+
+也就是静态存储，用来将数据持久化到磁盘上，是对 WAL 和 Snapshot 的封装。
+
+## MemoryStorage
+
+
+
+
+
+
+
+
+
+
+
+## Config
+
+降低 raftexample/raft.go 中的 defaultSnapCount 配置，修改为 100，然后进行测试。
+
+### loadSnapshot
+
+`raftNode.loadSnapshot()` 获取最新的一个 Snapshot，真正读取的时候是在 `snap/snapshotter.go` 中的 `Read()` 函数中实现，实际上是反序列化了两次。
+
+1. 反序列化为 `snappb.Snapshot[snap/snappb/snap.proto]` ，实际上就是在数据外外包了一层 CRC32 的校验值。
+2. 将上述反序列化后的数据再次执行反序列化，也即是 `raftpb.Snapshot[raft/raftpb/raft.proto]` 。
+
+// snap/snappb/snap.proto
+message snapshot {
+        optional uint32 crc  = 1 [(gogoproto.nullable) = false];
+        optional bytes data  = 2;
+}
+
+// raft/raftpb/raft.proto
+message ConfState {
+        repeated uint64 nodes    = 1;
+        repeated uint64 learners = 2;
+}
+
+message SnapshotMetadata {
+        optional ConfState conf_state = 1 [(gogoproto.nullable) = false];
+        optional uint64    index      = 2 [(gogoproto.nullable) = false];
+        optional uint64    term       = 3 [(gogoproto.nullable) = false];
+}
+
+message Snapshot {
+        optional bytes            data     = 1;
+        optional SnapshotMetadata metadata = 2 [(gogoproto.nullable) = false];
+}
+
+在 `raftpb.Snapshot` 中，除了要保存的数据之外，还包括了一些配置信息，例如集群配置、`Term`、`Index` 。
+
+### openWAL
+
+如果存在 Snapshot ，根据 Snapshot 中的 Term+Index 构建一个 `walpb.Snapshot[wal/walpb/record.proto]` ，然后在打开 WAL 日志时作为入参传入函数。
+
+message Snapshot {
+        optional uint64 index = 1 [(gogoproto.nullable) = false];
+        optional uint64 term  = 2 [(gogoproto.nullable) = false];
+}
+
+通过 `Open()[wal/wal.go]` 打开 WAL 文件，此时会遍历序号大于 Term 的文件。
+
+然后，通过 `ReadAll()[wal/wal.go]` 读取文件，此时会返回最后一次持久化的状态，以及日志文件。
+
+#### 记录类型
+
+每条记录同样是以 Protobuf 的格式进行保存，其定义的格式在 `raft/raftpb/raft.proto` 中定义。
+
+enum EntryType {
+    EntryNormal     = 0;
+    EntryConfChange = 1;
+}
+
+message Entry {
+    optional uint64     Term  = 2 [(gogoproto.nullable) = false]; // must be 64-bit aligned for atomic operations
+    optional uint64     Index = 3 [(gogoproto.nullable) = false]; // must be 64-bit aligned for atomic operations
+    optional EntryType  Type  = 1 [(gogoproto.nullable) = false];
+    optional bytes      Data  = 4;
+}
+
+### 其它
+
+
+注意，示例代码中的 raftStorage 实际上使用的是 `MemoryStorage[raft/storage.go]` 中的实现，也就是说默认是缓存到内存中的，如果重启需要重新更新状态到内存中。
+
+
+ApplySnapshot() raft/storage.go 更新MemoryStorage.snapshot，并在ents中添加一个记录
+SetHardState() raft/storage.go  更新MemoryStorage.hardState
+Append() raft/storage.go 将日志添加到MemoryStorage.ents中，这里会判断是否有重复的Entries
+
+replayWAL() 会从 Snapshot 和 WAL 恢复数据，并更新到 MemoryStorage 中。
+
+这里会同时更新 raftNode.lastIndex 的值。
+
+
+
+在启动时可以通过 `--snapshot-count` 参数(默认10000)指定何时触发执行 Snapshot ，此时会生成 `.snap` 文件。会在 `triggerSnapshot()` 函数中判断是否需要执行。
+
+EtcdServer.triggerSnapshot() etcdserver/server.go 判断是否需要触发Snapshot操作
+ |-EtcdServer.snapshot() 如果需要则执行Snapshot操作
+   |-store.Clone() store/store.go 这里实际上会复制一堆的数据结构？？？？具体作用是啥
+
+
+EtcdServer.applySnapshot() etcdserver/server.go 从Snapshot中恢复
+
+ECTD很不错的介绍
+http://blog.zhesih.com/2017/10/02/snap-file-of-etcd-v3/
+https://my.oschina.net/fileoptions/blog/1825531
+
+
+
+NewServer()                   etcdserver/server.go
+ |-store.New() store/store.go 根据入参创建一个初始化的目录
+ | |-newStore() 创建数据存储的目录
+ |-snap.New() snap/snapshotter.go 这里只是初始化一个对象，并未做实际操作
+ |-openBackend() etcdserver/backend.go 会等待打开Backend处理完成
+ | |-newBackend() 在新的协程中打开，同时会设置10秒的超时时间
+ |   |-DefaultBackendConfig() mvcc/backend/backend.go 更新检查配置
+ |     |-backend.New()
+ |       |-newBackend() mvcc/backend/backend.go
+ |         |-bolt.Open() 打开bolt中对应的DB
+ |         |-newBatchTxBuffered() 新建批量的缓冲区
+ |         |-backend.run() 启动一个单独协程处理，实际
+ |           |-batchTxBuffered.Commit() mvcc/backend/batch_tx.go
+ |               会通过管道等待处理打开Backend处理完成
+ |
+ | <<<haveWAL>>> 存在WAL日志，也就是非第一次部署
+ |-Snapshotter.Load() snap/snapshotter.go 开始加载snapshot
+ | |-Snapshotter.snapNames() 会遍历snap目录下的文件，并逆序排列返回
+ | |-loadSnap() 依次加载上述返回的snap文件
+ |   |-Read() 读取文件，如果报错那么会添加一个.broken的后缀
+ |     |-ioutil.ReadFile() 调用系统接口读取文件
+ |     |-snappb.Unmarshal() 反序列化
+ |     |-crc32.Update() 更新并校验CRC的值
+ |     |-raftpb.Unmarshal() 再次反序列化获取值
+ |-store.Recovery() store/store.go 如果snapshot不为空，则从磁盘中恢复数据
+ | |-json.Unmarshal() snap中保存的应该是json体
+ | |-newTtlKeyHeap() 一个TTL的最小栈，用来查看将要过期的数据
+ | |-recoverAndclean() ???没有理清楚具体删除的是什么过期数据
+ |-recoverSnapshotBackend() etcdserver/backend.go 开始恢复snapshot
+ | |-openSnapshotBackend() 这里会将最新的一次的snapshot重命名为DB
+ |   |-openBackend()
+ |
+ |-restartNode() etcdserver/raft.go
+ | |-readWAL()
+ | |-raft.NewMemoryStorage()
+ | |-ApplySnapshot()
+ | |-SetHardState()
+ | |-Append()
+ | |-RestartNode()
+ |-SetStore()
+ |-SetBackend()
+ |-Recover()
+
+为什么会有两次 openBackend() ？？？？？
+
+Etcd 定义了一个 `type storage struct` 数据结构，一起负责事务和快照。
+
+type storage struct {
+    *wal.WAL
+    *snap.Snapshotter
+}
+
+在上述的结构体中，没有指定 WAL 和 Snapshotter 的变量名称，对于 GoLang 语言来说，这两个类的方法都可直接通过 storage 来调用。比如 `WAL.Save()` 方法，可以通过 `storage.Save()` 来调用，也可以通过 `storage.WAL.Save()` 来调用，这两者是等价的。
+
+Etcd 中所有的持久化操作都是通过 snap 和 WAL 操作来完成的。
+
+在内存中的数据是保存在 `type store struct` 中。
+
+type store struct {
+	Root           *node            // 根节点 **
+	WatcherHub     *watcherHub      // 关于node的所有key的watcher   应该是保存了该store中保存的所有监听配置信息???
+	CurrentIndex   uint64           // 对应存储内容的index
+	Stats          *Stats           // 保存的监控指标数据 **
+	CurrentVersion int              // 最新数据的版本
+	ttlKeyHeap     *ttlKeyHeap      // 用于数据恢复的（需手动操作）
+	worldLock      sync.RWMutex     // 停止当前存储的world锁
+	clock          clockwork.Clock    //
+	readonlySet    types.Set        // 在internalCreate()中，会判断是否包含在该路径中，如果是则报错，主要是跟节点以namespace
+}
+
+type node struct {
+        Path string
+
+        CreatedIndex  uint64
+        ModifiedIndex uint64
+
+        Parent *node `json:"-"` // should not encode this field! avoid circular dependency.
+
+        ExpireTime time.Time
+        Value      string           // for key-value pair
+        Children   map[string]*node // for directory
+
+        // A reference to the store this node is attached to.
+        store *store
+}
+
+
+其中的节点以类似树的结构保存，其中非叶子节点的分支信息通过 `map` 保存，也就是 `node.Children` 成员；而对于叶子节点，则通过 `node.Value` 进行保存。
+
+New() store/store.go
+ |-newStore()
+   |-newDir() sotre/node.go 会新建一个根节点"/"，也就是store.Root
+   |-node.Add() store/node.go 将所有的namespace添加到根节点/下面
+   |-newStats() store/stats.go 用于保存一些监控数据
+   |-newWatchHub() store/watcher_hub.go
+     |newEventHistory() 保存的历史记录大小
+   |-newTtlKeyHeap() store/ttl_key_hub.go 用来保存所有节点的TTL过期信息
+
+
+store.Get() store/store.go 会根据给定的路径查找到相应的Node节点，然后返回一个Event结构用来响应客户端
+ |-store.internalGet() 会按照给定的路径查找
+ | |-store.walk()
+ |-newEvent() store/event.go 根据入参新建所需的结构体
+ |-NodeExtern.loadInternalNode()
+   |--->
+<p>如果是非叶子节点(目录节点)
+   |-node.List() 会遍历所有的Children中的对象
+   |-node.Repr() 如果需要则会递归遍历所有节点
+   |—&gt; 如果是叶子节点(文件节点)
+   |-node.Read() 实际上就是判断是否为叶子节点，然后直接返回node.Value信息
+   |
+   |-node.expirationAndTTL() store/node.go 用来计算TTL、过期时间等信息</p>
+
+<p>store.Create() store/store.go
+ |-store.internalCreate()
+  |-readonlySet.Contains() 判断是否为只读节点，此时会返回报错
+  |-store.walk() 遍历路径上的节点，回调函数是store.checkDir()，如果目录不存在则创建，并返回最后一个node
+  |-newEvent() 应该返回的结果信息
+  |-node.GetChild() 可能是一个已经存在的节点
+  |-node.Remove() 如果需要替换，会先执行删除操作</p>
+
+<p>applyEntryNormal() 会判断是否需要持久化，如何判断V2还是V3接口?????
+WAL中如何判断是否为Apply的日志，还是说在正式提交前不会写入到WAL中？？？
+–&gt;</p>
+
+
+  <hr>
+  <nav>
+    <ul class="pager">
+         <li class="previous"><a href="/post/linux-umask-and-open-introduce.html" title="Linux umask 使用">&larr; Older</a></li> 
+         <li class="next"><a href="/post/airflow-dac-introduce.html" title="AirFlow 工作流简介">Newer &rarr;</a></li> 
+    </ul>
+  </nav><br>
+<!--
+  <hr><div id="section-donate"><span>赏</span></div><br>
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p><br>
+  <div class="row" style="text-align:center;" >
+    <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+    <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+  </div><br><hr>
+-->
+  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
+  <div id="donate_module">
+    <style type="text/css">
+      .donate_bar a.btn_donate{
+        display: inline-block;
+        position:      relative;
+        text-align:    center;
+        width: 82px;
+        height: 82px;
+        background: url("/images/misc/btn_reward.gif") no-repeat;
+        _background: url("/images/misc/btn_reward.gif") no-repeat;
+        -webkit-transition: background 0s;
+        -moz-transition: background 0s;
+        -o-transition: background 0s;
+        -ms-transition: background 0s;
+        transition: background 0s;
+      }
+      .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+      .donate_bar .donate_txt {
+        display: block;
+        color: #9d9d9d;
+        font: 14px/2 "Microsoft Yahei";
+      }
+    </style>
+    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
+      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    </div>
+    <div id="donate_guide" class="donate_bar center hidden">
+      <div class="row" style="text-align:center;" >
+        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
+        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.getElementById('btn_donate').onclick = function(){
+        $('#donate_board').addClass('hidden');
+        $('#donate_guide').removeClass('hidden');
+      }
+      function donate_on_web(){
+        $('#donate').submit();
+      }
+    </script>
+  </div>
+
+  <hr>
+
+  <div id="gitmentContainer"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  var gitment = new Gitment({
+      id: '1510675200',
+      owner: 'Jin-Yang',
+      repo: 'jin-yang.github.com',
+      oauth: {
+          client_id: '6d89d48ce689192bf95d',
+          client_secret: 'c9a720aafb8e3084e3feb46cadee80b03cdc792f',
+      },
+  });
+  gitment.render('gitmentContainer');
+  </script>
+
+  <!-- 多说评论框 start -->
+  <!--<div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>-->
+  <!--
+  <div class="ds-thread" data-thread-key="/post/golang-raft-etcd-sourcode-storage.html" data-title="ETCD 存储模块" data-url="/post/golang-raft-etcd-sourcode-storage.html"></div>
+  -->
+  <!-- 多说评论框 end -->
+  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <!--
+  <script type="text/javascript">
+      var duoshuoQuery = {short_name:"jinyangposts"};
+      (function() {
+          var ds = document.createElement('script');
+          ds.type = 'text/javascript';ds.async = true;
+          ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+          ds.charset = 'UTF-8';
+          (document.getElementsByTagName('head')[0]
+           || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+  </script>
+  -->
+  <!-- 多说公共JS代码 end -->
+</div>
+
+    </div>
+    <div class="col-lg-3 visible-lg blog-sidebar">
+    <center><a href="/"><img src="/images/system/linux-liberty.png" width="200" /></a></center>
+<h2>About This Blog</h2>
+<div class="sidebar-module">
+<p style="text-indent:0em;margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions,
+just feel free to contact me :)</p>
+</div><!-- end of "node" "about" -->
+
+
+
+<h2>Recent Posts</h2>
+<div class="list-group">
+  
+    <a class="list-group-item" href="/post/linux-program-cpu-cache-introduce_init.html">CPU Cache</a>
+  
+    <a class="list-group-item" href="/post/artificial-intelligence-decision-tree-introduce.html">决策树</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-bcc-tools-introduce.html">BCC 工具使用</a>
+  
+    <a class="list-group-item" href="/post/linux-ebpf-basic-usage-introduce.html">eBPF 简介</a>
+  
+    <a class="list-group-item" href="/post/math-monte-carlo-sample-introduce.html">采样算法</a>
+  
+</div>
+
+<h2>Categories</h2>
+<ul class="list-group" style="margin:0px;">
+  
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#bash"> bash</a>
+    <span class="badge">2</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#database"> database</a>
+    <span class="badge">86</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#golang"> golang</a>
+    <span class="badge">28</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#linux"> linux</a>
+    <span class="badge">301</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#misc"> misc</a>
+    <span class="badge">244</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#mysql"> mysql</a>
+    <span class="badge">79</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#network"> network</a>
+    <span class="badge">49</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#postgresql"> postgresql</a>
+    <span class="badge">4</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#program"> program</a>
+    <span class="badge">138</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#python"> python</a>
+    <span class="badge">25</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#react"> react</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#rtems"> rtems</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#sql"> sql</a>
+    <span class="badge">10</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#tools"> tools</a>
+    <span class="badge">1</span>
+  </li>
+  
+    <li style="margin-left:0em" class="list-group-item"><a href="/categories.html#webserver"> webserver</a>
+    <span class="badge">25</span>
+  </li>
+  
+</ul><!-- end of "node" "categories" -->
+
+<h2>Related Links</h2>
+<ul class="list-group" style="margin:0px">
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.rtems.org" title="To RTEMS"><img class="img-thumbnail img-responsive" src="/images/system/rtems.png"  alt="RTEMS"/></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>RTEMS</strong><br>
+        <div class="sidebar-description">Real-Time Executive for Multiprocessor System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+       <a href="http://www.gnu.org" title="To GNU">
+       <img class="img-thumbnail img-responsive" src="/images/system/gnu.jpg" alt="GNU" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>GNU</strong><br>
+        <div class="sidebar-description">A Unix-linux Operating System</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://www.kernel.org" title="To Linux Kernel">
+    <img class="img-thumbnail img-responsive" src="/images/system/linux.png"  alt="LINUX" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Linux Kernel</strong><br>
+        <div class="sidebar-description">Maintained by Linux Kernel Organization</div>
+      </div>
+    </div>
+  </li>
+  <li style="margin-left:0em" class="list-group-item">
+    <div class="row">
+      <div class="col-xs-4">
+    <a href="http://arduino.cc" title="To Arduino">
+    <img class="img-thumbnail img-responsive" src="/images/system/arduino.png"  alt="ARDUINO" /></a>
+      </div>
+      <div class="col-xs-8 center-block" style="padding:0px;">
+        <strong>Arduino</strong><br>
+        <div class="sidebar-description">Open-source Electronic Prototyping Platform</div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<h2>Search</h2>
+<div class="sidebar-module">
+  <form class="search" method="GET" action="https://www.google.com.hk/search">
+    <input type="text" name="q" class="search-query" placeholder=" Search on Google">
+    <input type="hidden" name="ie" value="utf-8">
+    <input type="submit" name="sa" value="Search" />
+  </form><br>
+  <input type="text" class="search-field" placeholder=" Search This Site">
+  <div class="search-results"></div>
+</div>
+
+
+
+    </div>
+  </div>
+<hr><p class="text-center">This Site was built by Jin Yang, generated with Jekyll, and hosted on GitHub Pages<br/> &copy;2013-2019 &ndash; Jin Yang</p><div class="footer-logo"></div>
+
+</div>
+</body>
+</html>
