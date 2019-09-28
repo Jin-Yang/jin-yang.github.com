@@ -6,14 +6,15 @@ language: chinese
 category: [linux,misc]
 keywords:
 description:
-
 ---
+
+一种词法分析器，可以通过正则表达式识别文本中的词汇，然后自动生成对应的 C 代码，最后编译链接 C 代码就可以了。
+
+Flex 采用的是状态机，通过分析输入流 (字符流)，只要发现一段字符能够匹配一个关键字 (正则表达式)，就会采取对应的动作。
 
 <!-- more -->
 
 ## 简介
-
-Flex 采用的是状态机，通过分析输入流 (字符流)，只要发现一段字符能够匹配一个关键字 (正则表达式)，就会采取对应的动作。
 
 Flex 文件被 `%%` 分成了上中下三个部分：
 
@@ -83,6 +84,47 @@ yyin = fopen("filename","r");
 
 通过 flex 处理文件后，会将匹配转化为指定的符号，然后供 yacc 处理。
 
+例如 C 语言的 Lex 配置信息  [ANSI C grammar, Lex specification](https://www.lysator.liu.se/c/ANSI-C-grammar-l.html) ，可以作为参考。
+
+### 示例
+
+{% highlight text %}
+%option nounput
+%option noinput
+%option noyywrap
+%{
+        int yylineno;
+%}
+%%
+
+^(.*)\n printf("%4d\t%s", yylineno++, yytext);
+%%
+
+int main(void)
+{
+        const char *file = "test.txt";
+
+        yyin = fopen(file, "r");
+        if (yyin == NULL) {
+                fprintf(stderr, "open file '%s' failed, %d:%s.\n",
+                        file, errno, strerror(errno));
+                return -1;
+        }
+
+        yylex();
+        fclose(yyin);
+
+        return 0;
+}
+{% endhighlight %}
+
+如上是一个最简单的示例，会读取 `test.txt` 文件中的每行数据，并打印，可以通过如下方式编译。
+
+{% highlight text %}
+$ flex --outfile=test.yy.c test.l
+$ gcc test.yy.c -Wall -o test
+{% endhighlight %}
+
 ## 常用功能
 
 简单列举常用函数。
@@ -126,6 +168,14 @@ void main(void)
 %option noinput
 {% endhighlight %}
 
+如下是常见的示例。
+
+{% highlight text %}
+[ \t\n] ;                      // 忽略空格 Tab 换行字符
+[a-Z]+  printf("%s", yytext);  // 打印字符串输出
+[a-Z]+  ECHO;                  // 功能与上相同
+{% endhighlight %}
+
 ### 多规则匹配
 
 如果有多个值匹配，那么 flex 会按照如下的规则选取。
@@ -134,7 +184,22 @@ void main(void)
 2. 多个规则匹配，选择第一个；
 3. 没有规则匹配则会选择默认规则。
 
-例如，通过 `"/*"(.|\n)*"*/"` 规则匹配 C 语言中的注释，那么如下场景可能出错。
+例如，有如下的规则。
+
+{% highlight text %}
+integer ...; // 关键字
+[a-z]++ ...; // 标识符
+{% endhighlight %}
+
+当输入了 integers 后，会被识别为标识符，因为 `[a-z]++` 匹配的字符串更长，分别为 8 个和 7 个。当输入了 integer 之后，两个规则都匹配了 7 个字符，此时会选择第一个，也就是 `integer` 。
+
+<!--
+最长匹配原则可能会导致部分规则异常，例如 `'.*'` 本意是匹配单引号字符串，但是可能会导致匹配异常。
+
+当输入为 `'first' quoted string here, 'second' here` 时，会匹配到 `'second'` 位置，最好修改为 `'[^'\n]*'` 。
+-->
+
+另外，如果通过 `"/*"(.|\n)*"*/"` 规则匹配 C 语言中的注释，那么如下场景可能出错。
 
 {% highlight c %}
 #include <stdio.h>  /* definitions */
@@ -149,6 +214,8 @@ int main(int argc, char * argv[ ])
 	return 0;
 }
 {% endhighlight %}
+
+一般会有个默认的规则，例如 `. {}` ，否则，如果有不匹配的字符，那么默认会直接输出到终端。
 
 贪婪匹配，会从 `/* def` 到 `nts */` 之间的内容都作为注释，此时就需要使用条件 (Condition) 规则。例如，以 `<S>` 开始的规则，只有在条件 S 时才会进行匹配，可以在 definition section 段通过如下方式定义条件。
 
@@ -217,6 +284,16 @@ COMMENT #.*
 %%
 /* C语言，函数实现等 */
 {% endhighlight %}
+
+<!--
+### 使用语法
+
+在匹配到字符串之后，会保存到 `yytext` 变量中，同时将长度保存在 `yyleng` 变量中，那么最后一个字符可通过 `yytext[yyleng - 1]` 访问。
+
+yyless() yymore()
+
+当读取完成后会调用 `yywrap()` 函数，默认会返回 1 标示结束，也可以重新打开一个 `yyin` 并返回 0 ，此时会继续解析。
+-->
 
 
 {% highlight text %}

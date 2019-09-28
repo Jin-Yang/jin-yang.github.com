@@ -79,6 +79,35 @@ S -> ab
 关于上下文相关、无关语法可以参考 WiKi <a href="https://en.wikipedia.org/wiki/Context-free_grammar">Context-free grammar</a>、<a href="https://en.wikipedia.org/wiki/Context-sensitive_grammar">Context-sensitive grammar</a>，以及 <a href="http://cs.union.edu/~striegnk/courses/nlp-with-prolog/html/node37.html">Context Free Grammars</a>，也可以参考本地文档。
 -->
 
+## 参考
+
+关于最原始的论文，可以参考 [Lex - A Lexical Analyzer Generator](http://www.cs.utexas.edu/users/novak/lexpaper.htm) ([本地](/reference/databases/mysql/LEX_A_Lexical_Analyzer_Generator.html))，以及 [Yacc: Yet Another Compiler-Compiler](http://www.cs.utexas.edu/users/novak/yaccpaper.htm) ([本地](/reference/databases/mysql/YACC_Yet_Another_Compiler_Compiler.html))。
+
+对于 Lex 和 Yacc 来说，比较经典的入门可以参考 [Lex & Yacc Tutorial](http://epaperpress.com/lexandyacc/index.html)，其中包括了如何编写一个计算器，以及相关的调试等信息；也可以参考 [本地文档](/reference/databases/mysql/LexAndYaccTutorial.pdf)，以及相关的 [源码](/reference/databases/mysql/LexAndYaccCode.zip) 。
+
+关于总体介绍可以参考 [Lex and YACC primer](http://www.tldp.org/HOWTO/Lex-YACC-HOWTO.html)，或者 [本地文档](/reference/databases/mysql/LEX_YACC_Primer_HOWTO.html)，也可以查看中文翻译 [如何使用 Lex/YACC](http://segmentfault.com/blog/icattlecoder/1190000000396608)，以及 [本地](/reference/databases/mysql/LEX_YACC_Primer_HOWTO_cn.mht)，以及 [示例源码](/reference/databases/mysql/lex-yacc-examples.tar.gz) ；以及 [Bison-Flex 笔记](/reference/databases/mysql/Bison_Flex_Notes.mht)、[Flex/Bison Tutorial](/reference/databases/mysql/Tutorial-Flex_Bison.pdf) 。
+
+关于调试方法可以参考 [Understanding Your Parser](http://www.gnu.org/software/bison/manual/html_node/Understanding.html)，这个是 [Bison Offical Documents](http://www.gnu.org/software/bison/manual/html_node/index.html) 文档的一部分；更多可以参考 [dinosaur.compilertools.net](http://dinosaur.compilertools.net/) 查看相关的资料。
+
+
+<!--
+自己动手写编译器
+http://pandolia.net/tinyc/
+https://bellard.org/tcc/
+计算器
+http://good-ed.blogspot.tw/2010/04/lexyacc.html
+编写自己的编译器
+http://coolshell.cn/articles/1547.html
+
+http://blog.csdn.net/huyansoft/article/details/8860224
+http://blog.csdn.net/lidan3959/article/details/8237914
+http://www.tuicool.com/articles/3aMVzi
+http://blog.csdn.net/sfifei/article/details/9449629
+
+
+
+http://www.calvinneo.com/2016/07/29/flex%E5%92%8Cbison%E4%BD%BF%E7%94%A8/
+-->
 
 {% highlight text %}
 {% endhighlight %}

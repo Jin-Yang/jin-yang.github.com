@@ -52,9 +52,9 @@ Lex (A Lexical Analyzer Generator) 和 Yacc(Yet Another Compiler Compiler) 是 U
 这里简单介绍，包括常规表达式、声明、匹配模式、变量、Yacc 语法和解析器代码。
 
 * [基本概念](/post/program-lexical-basic-introduce.html) 关于词法语法分析的基本概念，例如 BNF、上下文无关等。
-* [Flex 使用简介](/post/program-concept-lexical-flex-introduce.html) 词法解析器的介绍。
-* [Bison 使用简介](/post/program-concept-syntax-bison-introduce.html) 语法解析器的介绍。
-* [MySQL 语法解析](/post/mysql-parser.html) 在 MySQL 中的使用方式。
+* [Flex 使用简介](/post/program-concept-lexical-flex-introduce.html) 词法解析器的介绍，在 Linux 中的实现。
+* [Bison 使用简介](/post/program-concept-syntax-bison-introduce.html) 语法解析器的介绍，Linux 中对应 Yacc 的实现。
+* [MySQL 语法解析](/post/mysql-parser.html) MySQL 中使用方式，词法解析独立实现，语法分析则使用 Bison 。
 
 ## VIM
 
