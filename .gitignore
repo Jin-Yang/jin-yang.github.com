@@ -1,4 +1,5 @@
 _site/
+.jekyll-cache/
 *.bak
 _posts/*_init.md
 .jekyll-metadata

@@ -38,6 +38,8 @@ Disk /dev/sdc: 4002 MB, 4002910208 bytes, 7818184 sectors
 # while killall -USR1 dd; do sleep 5; done
 {% endhighlight %}
 
+在重启之后进入到 BIOS 启动界面，然后选择从 USB 启动进入安装界面。
+
 接下来就看看如何配置一些常用的环境。
 
 ## 常用软件配置
@@ -50,6 +52,12 @@ Disk /dev/sdc: 4002 MB, 4002910208 bytes, 7818184 sectors
 # yum install gcc
 # yum install gcc-c++             # 安装g++
 {% endhighlight %}
+
+### 中文输入
+
+可以使用英文环境，但同时支持使用中文输入法，可以安装 `ibus-libpinyin` 包，然后在 `Applications->System Tools->Setting->Regin & Language` 中进行设置，一般是 `Chinese(Intelligent Pinyin)` 。
+
+注意，正常来说，安装完包之后不需要重启，但是没有找到恢复的手段。
 
 ### 支持 NTFS 文件系统
 
@@ -100,7 +108,7 @@ B）RPM 安装。在下载页面选择 ".rpm，适用于其它Linux"，此时将
 
 ### Gnome-Terminal配置
 
-A) 取消声音。Edit->Preferences->Profiles->选择对应配置文件[Edit]->General->取消Terminal bell。
+A) 取消声音，声音比较烦。Edit->Preferences->Profiles->选择对应配置文件[Edit]->General->取消Terminal bell。
 
 B) 设置启动快捷键。在 CentOS 的系统菜单中选择 Applications -> System Tools -> Keyboard -> Shortcuts -> Custom Shortcuts 设置命令为 gnome-terminal --hide-menubar --maximize，详细参数可以参考 gnome-terminal --help-window-options。
 
@@ -246,6 +254,10 @@ Icon=/usr/share/icons/hicolor/128x128/apps/haroopad.png
 gpg签名
 /etc/pki/rpm-gpg/RPM*
 rpm 安装时可能会报 NOKEY 的错误信息 --nogpgcheck nosignature
+
+
+
+安装 MPlayer 时，没有 `enca` 包，暂时安装 CentOS-7 版本的包，在 EPEL 仓库中。
 -->
 
 {% highlight text %}

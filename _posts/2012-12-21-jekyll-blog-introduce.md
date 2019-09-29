@@ -24,7 +24,7 @@ Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是
 
 ### 1. 安装Jekyll
 
-安装 Jekyll 环境。
+在 CentOS 中，Jekyll 需要安装 `redhat-rpm-config` 包，以及一些基本编译环境，例如 `gcc` `gcc-c++` `make` 等，然后再通过如下命令安装 Jekyll 环境。
 
 {% highlight text %}
 ----- 在Ubuntu平台上
@@ -46,7 +46,7 @@ $ jekyll -v
 
 ### 2. 创建默认目录结构
 
-Jekyll 会动态创建 Blog ，并将结果保存在 \_site 中，因此访问时直接访问静态文件。
+Jekyll 会动态创建 Blog ，并将结果保存在 `_site` 目录下，因此访问时直接访问静态文件。
 
 {% highlight text %}
 |-- _includes/                  ← 通常是一些页面的组建
@@ -74,7 +74,7 @@ Jekyll 会动态创建 Blog ，并将结果保存在 \_site 中，因此访问�
 $ jekyll server [port] -w --incremental
 {% endhighlight %}
 
-在浏览器中输入 [http://localhost:4000](http://localhost:4000)，其中 -w 与 \-\-watch 相同，修改文件时会自动刷新；\-\-incremental 参数表示只编译更新的文件。
+在浏览器中输入 [http://localhost:4000](http://localhost:4000)，其中 `-w` 与 `--watch` 相同，修改文件时会自动刷新；`--incremental` 参数表示只编译更新的文件。
 
 
 ### 4. 上传到 github

@@ -158,20 +158,11 @@ CentOS 中官方的源只包含了有限的安装包，为此需要安装一些�
 
 另外，关于 CentOS 的第三方源，可以参考 [CentOS Wiki](http://wiki.centos.org/zh/AdditionalResources/Repositories) 中给出的参考意见。
 
-#### 准备工作
-
-在使用时，最好先安装 `yum-priorities` 插件，该插件用来设置 yum 在调用软件源时的顺序，因为官方提供的软件源，都是比较稳定和被推荐使用的，因此，官方源的顺序要高于第三方源的顺序。
-
-{% highlight text %}
-# yum install yum-priorities
-{% endhighlight %}
-
-安装完后需要设置 `/etc/yum.repos.d/` 目录下的 `*.repo` 相关文件，例如 CentOS-Base.repo、epel.repo、nux-dextop.repo 等，在这些文件中插入顺序指令 priority=N (N为1到99的正整数，数值越小优先级越高)，一般第三的软件源设置的优先级大于 10 。
-
-
 #### 国内官方源
 
-也就是一些 CentOS 的镜像，常见的有 [centos.ustc.edu.cn](http://centos.ustc.edu.cn/)、[mirrors.163.com](http://mirrors.163.com/centos/)、[mirrors.sohu.com](http://mirrors.sohu.com/centos/)，只需要修改基本数据源中的 URL 配置选项。
+也就是一些 CentOS 的镜像，常见的有 [mirrors.aliyun.com](https://mirrors.aliyun.com/)、[centos.ustc.edu.cn](http://centos.ustc.edu.cn/)、[mirrors.163.com](http://mirrors.163.com/centos/)、[mirrors.sohu.com](http://mirrors.sohu.com/centos/)，只需要修改基本数据源中的 URL 配置选项。
+
+阿里云提供了很多的三方仓库，例如 EPEL RPMFusion 等。
 
 #### EPEL, Extra Packages for Enterprise Linux
 
@@ -182,6 +173,7 @@ EPEL是由 Fedora 社区打造，为 RHEL 及衍生发行版如 CentOS、Scienti
 {% highlight text %}
 # rpm -Uvh http://mirrors.ustc.edu.cn/epel/beta/7/x86_64/epel-release-7-0.2.noarch.rpm
 # rpm -Uvh http://dl.fedoraproject.org/pub/epel/beta/7/x86_64/epel-release-7-0.2.noarch.rpm
+# rpm -Uvh https://mirrors.aliyun.com/epel/epel-release-latest-8.noarch.rpm
 {% endhighlight %}
 
 接下来时导入证书，当然这步也可以在通过 yum 安装时根据提示自动导入。
@@ -198,6 +190,8 @@ EPEL是由 Fedora 社区打造，为 RHEL 及衍生发行版如 CentOS、Scienti
 {% highlight text %}
 # rpm -Uvh http://apt.sw.be/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-xxx.rpm
 {% endhighlight %}
+
+<!-- https://mirrors.aliyun.com/rpmfusion/free/el/rpmfusion-free-release-8.noarch.rpm -->
 
 #### nux-dextop
 
@@ -260,6 +254,37 @@ EOF
 {% endhighlight %}
 
 另外，可以参考 [How to create public mirrors for CentOS](https://wiki.centos.org/HowTos/CreatePublicMirrors)、[Create Local Repos](https://wiki.centos.org/HowTos/CreateLocalRepos) 。
+
+## 参考
+
+### 优先级
+
+在使用时，最好先安装 `yum-priorities` 插件，该插件用来设置 yum 在调用软件源时的顺序，因为官方提供的软件源，都是比较稳定和被推荐使用的，因此，官方源的顺序要高于第三方源的顺序。
+
+{% highlight text %}
+# yum install yum-priorities
+{% endhighlight %}
+
+安装完后需要设置 `/etc/yum.repos.d/` 目录下的 `*.repo` 相关文件，例如 CentOS-Base.repo、epel.repo、nux-dextop.repo 等，在这些文件中插入顺序指令 priority=N (N为1到99的正整数，数值越小优先级越高)，一般第三的软件源设置的优先级大于 10 。
+
+### Baseurl VS. MirrorList
+
+在 `/etc/yum.repo.d` 目录下，基本上每个仓库的配置文件都包含了这两个配置项，例如：
+
+{% highlight text %}
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=BaseOS&infra=$infra
+baseurl=http://mirror.centos.org/$contentdir/$releasever/BaseOS/$basearch/os/
+{% endhighlight %}
+
+另外，在 `/etc/yum.conf` 文件中看到如下配置项，实际上就是缓存。
+
+{% highlight text %}
+cachedir=/var/cache/yum/$basearch/$releasever
+{% endhighlight %}
+
+如果打开 `mirrorlist` 的配置项，实际上是一堆的 `baseurl`；而 `baseurl` 必须要指向 YUM 仓库上的 `repodata` 目录，该目录保存了 RPM 安装时的依赖信息。
+
+当需要配置三方的仓库时，就需要修改 `baseurl` 的值。
 
 {% highlight text %}
 {% endhighlight %}

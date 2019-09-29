@@ -395,7 +395,7 @@ kvServer.Range() api/v3rpc/key.go
 
 {% highlight go %}
 func (n *node) Propose(ctx context.Context, data []byte) error {
-	return n.step(ctx, pb.Message{Type: pb.MsgProp, Entries: []pb.Entry{{Data: data}}})
+	return n.step(ctx, pb.Message{Type: pb.MsgProp, Entries: []pb.Entry{Data: data}})
 }
 {% endhighlight %}
 

@@ -429,7 +429,7 @@ ServeHTTP()                           httpapi.go
 {% highlight go %}
 // raft/node.go
 func (n *node) Propose(ctx context.Context, data []byte) error {
-    return n.step(ctx, pb.Message{Type: pb.MsgProp, Entries: []pb.Entry{{Data: data}}})
+    return n.step(ctx, pb.Message{Type: pb.MsgProp, Entries: []pb.Entry{Data: data}})
 }
 {% endhighlight %}
 

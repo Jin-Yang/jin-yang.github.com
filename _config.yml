@@ -1,13 +1,13 @@
 permalink: /post/:title.html
 404: 404.html
 paginate: 8
-highlighter: pygments
+highlighter: rouge
 mardown: kramdown
 kramdown:
     input: GFM                  # use Github Flavored Markdown !important
     hard_wrap: false
     math_engine: mathjax
-gems:
+plugins:
     - jekyll-paginate
 production_url: 'https://jin-yang.github.io'
 example_repository: 'https://github.com/Jin-Yang/examples/tree/master'
