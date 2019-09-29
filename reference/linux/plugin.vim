@@ -75,13 +75,9 @@ Bundle 'lervag/vimtex'
 
 "" Go (golang) support for Vim
 Bundle 'fatih/vim-go'
-"
 Bundle 'Valloric/YouCompleteMe'
 
-
 "Bundle 'klen/python-mode'
-
-
 
 "
 "" support for Chinese.

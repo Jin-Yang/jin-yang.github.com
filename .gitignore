@@ -1,0 +1,4 @@
+_site/
+*.bak
+_posts/*_init.md
+.jekyll-metadata

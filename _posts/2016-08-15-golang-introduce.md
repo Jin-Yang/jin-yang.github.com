@@ -106,7 +106,13 @@ $ CGO_ENABLED=0 GOOS=windows GOARCH=386 go build test.go
 
 ### 最佳实践
 
+<<<<<<< HEAD
 一般来说，可以将已经编译好的二进制保存到 `/opt/golang` 目录下，然后设置 `GOROOT` 为上述值；对于常用的三方包，可以保存到 `/opt/golang/vendor` 目录下，此时就需要将 `GOPATH` 设置为该值。
+=======
+一般来说，可以将已经编译好的二进制保存到 `/usr/local/golang` ，然后设置 `GOROOT` 为上述值。
+
+对于三方包，可以保存到个人目录下，例如 `~/Workspace/golang` 目录下，此时就需要将 `GOPATH` 设置为该值，此时将三方包存放到 `${GOPATH}/src` 目录下即可。
+>>>>>>> d6dde2479ce654cfd1b3c9c84b5f8c8be1f5c2aa
 
 注意，此时通过 `go get` 等命令安装的包都会保存在 `GOPATH` 指定的目录下，也就是说，`GOROOT` 中保存的是原始的包，`GOPATH` 中保存新安装的三方包、二进制等。
 
