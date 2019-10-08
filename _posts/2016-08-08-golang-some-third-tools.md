@@ -94,6 +94,22 @@ Goreman 是一个 Foreman 的 Go 语言的克隆版本，一般在开发过程�
 
 在运行时，goreman 会独占当前 shell 窗口，可以通过 `Ctrl-C` 退出运行状态，如果要执行其它的命令，则需要重新开启一个 shell 执行。
 
+### 配置文件
+
+配置文件很简单，类似如下，可以通过环境变量进行传参，默认使用当前目录下的 `Procfile` 配置文件名。
+
+{% highlight text %}
+foobar1: ./foobar --name=$NAME --age=$AGE
+foobar2: ./foobar --name=$NAME
+foobar3: ./foobar
+{% endhighlight %}
+
+然后通过如下命令启动。
+
+{% highlight text %}
+NAME=Song AGE=18 goreman start
+{% endhighlight %}
+
 常用操作如下。
 
 {% highlight text %}

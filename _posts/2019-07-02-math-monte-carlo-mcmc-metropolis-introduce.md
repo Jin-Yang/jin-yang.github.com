@@ -58,6 +58,7 @@ Metropolis 采用正态分布来进行跳跃，正态分布的 $\mu$ 为当前�
 5. 如果 $a \leqslant \alpha$ 那么接受新生成的值 $\theta^{(t+1)}=\theta^{(*)}$，否则 $\theta^{(t+1)}=\theta^{(t)}$；
 6. 重复第2步。
 
+如下是对应的测试代码。
 
 {% highlight python %}
 import numpy as np
@@ -92,10 +93,19 @@ plt.plot(x, stats.cauchy.pdf(x, 0, 1), lw=1, c='blue')
 plt.show()
 {% endhighlight %}
 
+![sampling]({{ site.url }}/images/ai/monte-carlo-method-metropolis-example.png  "sampling"){: .pull-center width="90%"}
+
 <!--
 介绍Metropolis采样算法
 https://www.zybuluo.com/zhuanxu/note/1025594
 https://blog.csdn.net/google19890102/article/details/51755242
+
+Metropolis-Hastings
+https://www.zybuluo.com/zhuanxu/note/1026672
+https://blog.csdn.net/google19890102/article/details/51785156
+https://twiecki.io/blog/2015/11/10/mcmc-sampling/
+https://blog.csdn.net/google19890102/article/details/51755245
+https://www.quantstart.com/articles/Markov-Chain-Monte-Carlo-for-Bayesian-Inference-The-Metropolis-Algorithm
 -->
 
 {% highlight text %}

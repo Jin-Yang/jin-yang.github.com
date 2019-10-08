@@ -42,20 +42,23 @@ Disk /dev/sdc: 4002 MB, 4002910208 bytes, 7818184 sectors
 
 接下来就看看如何配置一些常用的环境。
 
-## 常用软件配置
+## 系统配置
+
+一些常见的系统配置。
 
 ### 安装编译环境
 
 如下是安装 C/C++ 编译工具。
 
 {% highlight text %}
-# yum install gcc
-# yum install gcc-c++             # 安装g++
+# yum install gcc gcc-c++ make cmake
 {% endhighlight %}
 
 ### 中文输入
 
-可以使用英文环境，但同时支持使用中文输入法，可以安装 `ibus-libpinyin` 包，然后在 `Applications->System Tools->Setting->Regin & Language` 中进行设置，一般是 `Chinese(Intelligent Pinyin)` 。
+在安装时可能误选英文环境，或者在使用英文环境的同时，需要支持中文输入法。
+
+可以安装 `ibus-libpinyin` 包，然后在 `Applications -> System Tools -> Setting -> Regin & Language` 中进行设置，一般是 `Chinese(Intelligent Pinyin)` 。
 
 注意，正常来说，安装完包之后不需要重启，但是没有找到恢复的手段。
 
@@ -65,8 +68,6 @@ Disk /dev/sdc: 4002 MB, 4002910208 bytes, 7818184 sectors
 
 {% highlight text %}
 # wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
-# yum update
-
 # yum --enablerepo=epel install ntfs-3g
 {% endhighlight %}
 
@@ -88,6 +89,54 @@ $ make
 UUID=xxxxxxxxxxx /media/disk  ntfs-3g defaults 0 0
 {% endhighlight %}
 
+其中的 UUID 可以通过 `blkid` 查看。
+
+### Gnome-Terminal 配置
+
+一些常见的配置选项。
+
+##### 取消声音
+
+有声音实在是太烦了，可以通过如下方式配置。Edit->Preferences->Profiles->选择对应配置文件[Edit]->General->取消Terminal bell。
+
+##### 设置启动快捷键
+
+在 CentOS 的系统菜单中选择 Applications -> System Tools -> Keyboard -> Shortcuts -> Custom Shortcuts 设置命令为 `gnome-terminal --hide-menubar --maximize`，详细参数可以参考 `gnome-terminal --help-window-options` 。
+
+##### 颜色设置
+
+个人比较喜欢的颜色配置，文本颜色 `#dbfef8` 背景颜色 `#2f4f4f` 。
+
+##### 设置为半透明
+
+首先尝试在 Edit->Preferences 菜单中设置，如果不生效，则在 `~/.bashrc` 文件中添加如下内容，其中 80 对应不同的透明度。
+
+{% highlight bash %}
+if [ -n "$WINDOWID" ]; then
+    TRANSPARENCY_HEX=$(printf 0x%x $((0xffffffff * 80 / 100)))
+    xprop -id "$WINDOWID" -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY "$TRANSPARENCY_HEX"
+fi
+{% endhighlight %}
+
+另外，可以将 bash 替换为 zsh 。
+
+{% highlight text %}
+# chsh -s /bin/zsh     # 修改默认shell
+{% endhighlight %}
+
+还有些弹出式终端工具，例如 guake ，很酷，不过感觉不太实用。
+
+## 常用软件配置
+
+{% highlight text %}
+MPlayer VLC   视频
+Deluge        BT客户端
+Thunderbird   邮件客户端
+Pidgin        即时消息
+ClamAV        病毒扫描
+Audacity      音频编辑
+{% endhighlight %}
+
 
 ### 安装 Flash 插件
 
@@ -106,29 +155,21 @@ B）RPM 安装。在下载页面选择 ".rpm，适用于其它Linux"，此时将
 # rpm -ivh flash-plugin-11.2.202.297-release.i386.rpm
 {% endhighlight %}
 
-### Gnome-Terminal配置
+### 音频/视频软件
 
-A) 取消声音，声音比较烦。Edit->Preferences->Profiles->选择对应配置文件[Edit]->General->取消Terminal bell。
+在 CentOS 中，默认是 `Rythmbox/Totem`，不过使用有点麻烦，还是用 `Mplayer/Audacious` 比较方便，不过需要依赖 nux-dextop 源，当然也可以从 [pkgs.org](http://pkgs.org/search/) 上下载相关的二进制文件。
 
-B) 设置启动快捷键。在 CentOS 的系统菜单中选择 Applications -> System Tools -> Keyboard -> Shortcuts -> Custom Shortcuts 设置命令为 gnome-terminal --hide-menubar --maximize，详细参数可以参考 gnome-terminal --help-window-options。
-
-C) 颜色设置。个人比较喜欢的颜色配置，文本颜色 #dbfef8，背景颜色 #2f4f4f 。
-
-D) 设置为半透明。首先尝试在 Edit->Preferences 菜单中设置，如果不生效，则在 ~/.bashrc 文件中添加如下内容，其中 80 对应不同的透明度。
-
-{% highlight bash %}
-if [ -n "$WINDOWID" ]; then
-    TRANSPARENCY_HEX=$(printf 0x%x $((0xffffffff * 80 / 100)))
-    xprop -id "$WINDOWID" -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY "$TRANSPARENCY_HEX"
-fi
-{% endhighlight %}
-
-另外，可以将 bash 替换为 zsh 。
 {% highlight text %}
-# chsh -s /bin/zsh     # 修改默认shell
+# yum --enablerepo=nux-dextop install mplayer audacious plugins-freeworld-mp3
 {% endhighlight %}
 
-guake，一个不错的弹出式终端工具，很酷，不过感觉不太实用。
+对于 Mplayer，如果使用时无法缩放，可以在 `~/.mplayer/config` 中添加 `zoom=yes` 配置项。
+
+其中 `plugins-freeworld-mp3` 是 Audacious 中的 MP3 解码器。不过默认的外观不太好看，不过还好支持其它主题，可以从 [gnome-look.org](http://gnome-look.org) 中的 XMMS Themes 中选择主题，保存在 `/usr/share/audacious/Skins` 目录下，然后可以从 Audacious 的 Settings 窗口中看到。
+
+对于中文，在主窗口中右击，选择 `Settings->Playlist->Compalibility[Fallback...]`，设置为 cp936 (比其它的要更通用)，重新加载播放列表即可。
+
+另外，除上述的 GUI 播放器之外，还有些终端播放器，如 [Console Music](https://github.com/cmus/cmus)、[Music On Console](https://moc.daper.net/) ([Github](https://github.com/sagitter/moc)) 。
 
 ### 绘图软件
 
@@ -187,26 +228,6 @@ Linux 中常见的 chm 阅读器有 xchm、kchmiewer 等，在 CentOS 可以直�
 {% highlight text %}
 # yum --enablerepo=nux-dextop,epel install xchm
 {% endhighlight %}
-
-
-
-### 音频/视频软件
-
-在 CentOS 中，默认使用的是 Rythmbox/Totem，不过感觉使用有点麻烦，还是用 Mplayer/Audacious 比较方便，不过需要依赖 nux-dextop 源，当然也可以从 [pkgs.org](http://pkgs.org/search/) 上下载相关的二进制文件。
-
-{% highlight text %}
-# yum --enablerepo=nux-dextop install mplayer audacious plugins-freeworld-mp3
-{% endhighlight %}
-
-对于 Mplayer，如果使用时无法缩放，可以在 ~/.mplayer/config 中添加 zoom=yes 配置项。
-
-其中 plugins-freeworld-mp3 是 Audacious 中的 MP3 解码器。不过默认的外观不太好看，不过还好支持其它主题，可以从 [gnome-look.org](http://gnome-look.org) 中的 XMMS Themes 中选择主题，保存在 /usr/share/audacious/Skins 目录下，然后可以从 Audacious 的 Settings 窗口中看到。
-
-对于中文，在主窗口中右击，选择 Settings->Playlist->Compalibility[Fallback...]，设置为 cp936 (比其它的要更通用)，重新加载播放列表即可。
-
-另外，除上述的 GUI 播放器之外，还有些终端播放器，如 [Console Music](https://github.com/cmus/cmus)、[Music On Console](https://moc.daper.net/) ([Github](https://github.com/sagitter/moc)) 。
-
-
 
 
 ### 笔记类

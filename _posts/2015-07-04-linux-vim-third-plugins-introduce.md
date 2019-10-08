@@ -20,16 +20,18 @@ Vim 是一个功能强大、高度可定制的文本编辑器，在 Vi 的基础
 
 {% highlight text %}
 插件管理
-  1. Vundle        +++ the plug-in manager for Vim
-  2. Vim-Plug      --- Minimalist Vim Plugin Manager
+  1. Vundle        --- the plug-in manager for Vim
+  2. Vim-Plug      +++ Minimalist Vim Plugin Manager
 
 自动补全
   1. YouCompleteMe +++ visual assist for vim
-  2. UltiSnips     +++ ultimate snippets
-  3. Zen Coding    --- hi-speed coding for html/css
+  2. Deoplete      --- asynchronous completion framework
+  3. UltiSnips     +++ ultimate snippets
+  4. Zen Coding    --- hi-speed coding for html/css
 
 导航与搜索
-  1. CtrlP         +++ fast file finder
+  1. CtrlP         --- fast file finder
+  2. LeaderF       +++ asynchronous fuzzy finder 
   2. NERDTree      +++ file navigation
   3. Tagbar        +++ tag generation and navigation
   4. Taglist       --- source code browser
@@ -69,6 +71,8 @@ EasyMotion 在当前文件中快速移动光标到指定查找位置的插件，
 ----- 直接下载安装，实际上就是github中的bootstrap.sh脚本
 $ curl https://j.mp/spf13-vim3 -L -o - | sh
 {% endhighlight %}
+
+可以通过 `scriptnames` 命令查看已经加载的插件列表。
 
 ## 插件管理
 
@@ -113,9 +117,57 @@ BundleSearch(!) foo    查找(先刷新cache)foo
 
 相比来说，所有的插件更新和安装都是并行的，比 Vundle 的效率要高很多，而且可以按需加载。
 
+直接从 [Github vim-plug](https://github.com/junegunn/vim-plug/releases) 下载，然后将 `plug.vim` 文件保存在 ` ~/.vim/autoload/plug.vim` 中即可，如下是添加 Nerdtree 。
+
+{% highlight text %}
+call plug#begin('~/.vim/plugged')
+Plug 'scrooloose/nerdtree'
+call plug#end()
+{% endhighlight %}
+
+如下是常见的命令。
+
+{% highlight text %}
+PlugStatus             查看插件状态
+PlugInstall            安装插件
+PlugUpdate             更新插件
+PlugClean              删除插件
+PlugUpgrade            升级vim-plug自己
+{% endhighlight %}
+
+## 语法检查
+
+### ALE
+
+[Asynchronous Lint Engine](https://github.com/w0rp/ale) 一个异步的检查引擎，相比来说更加快速，不会感到明显的卡顿。
+
+{% highlight text %}
+Plug 'dense-analysis/ale'
+{% endhighlight %}
+
+### Syntastic
+
+一个语法检查工具，支持多种语言，提供了基本的补全功能、自动提示错误的功能外，还提供了 tags 的功能；采用 C/S 模式，当 vim 关闭时，ycmd 会自动关闭。
+
+不过对于不同的语言需要安装相应的插件，详细内容可以查看 [doc/syntastic-checkers.txt](https://raw.githubusercontent.com/vim-syntastic/syntastic/master/doc/syntastic-checkers.txt)，安装方法可以参考 README.md 文件。
+
+![vim Syntastic]({{ site.url }}/images/misc/vim-syntastic-screenshot.png "vim Syntastic"){: .pull-center width='90%' }
+
+能够实时的进行语法和编码风格的检查，还集成了静态检查工具，支持近百种编程语言，像是一个集大成的实时编译器，出现错误之后，可以非常方便的跳转到出错处。
+
+
+
 ## 自动补全
 
-比较经典的是 YCM 。
+### UltiSnips
+
+一个牛摆的引擎，在写代码时经常需要在文件开头加一个版权声明之类的注释，又或者在头文件中要需要 `#ifndef... #def... #endif` 这样的宏，亦或写一个 `for` `switch` 等很固定的代码片段。
+
+该工具和 YouCompleteMe 以及 neocomplete 都很好的整合在一起了。
+
+不过 UltiSnips 只是个引擎，需要搭配预设的代码块才能运转起来，很多模版可以参考 [honza/vim-snippets](https://github.com/honza/vim-snippets)，不过建议自己再维护一套。
+
+<!-- http://vimcasts.org/episodes/meet-ultisnips/ -->
 
 <!--
 https://github.com/Shougo/deoplete.nvim
@@ -217,17 +269,9 @@ https://github.com/rasendubi/dotfiles/blob/master/.vim/.ycm_extra_conf.py
 https://github.com/robturtle/newycm_extra_conf.py/blob/master/ycm.cpp.py
 -->
 
-### UltiSnips
+### deoplete
 
-一个牛摆的引擎，在写代码时经常需要在文件开头加一个版权声明之类的注释，又或者在头文件中要需要 `#ifndef... #def... #endif` 这样的宏，亦或写一个 `for` `switch` 等很固定的代码片段。
-
-该工具和 YouCompleteMe 以及 neocomplete 都很好的整合在一起了。
-
-不过 UltiSnips 只是个引擎，需要搭配预设的代码块才能运转起来，很多模版可以参考 [honza/vim-snippets](https://github.com/honza/vim-snippets)，不过建议自己再维护一套。
-
-
-
-<!-- http://vimcasts.org/episodes/meet-ultisnips/ -->
+通过标准的协议进行通讯，对于不同的语言需要不同的后端支持，可以参考 [Completion Sources](https://github.com/Shougo/deoplete.nvim/wiki/Completion-Sources) 。
 
 ## 导航与搜索
 
@@ -240,6 +284,15 @@ https://github.com/robturtle/newycm_extra_conf.py/blob/master/ycm.cpp.py
 一个强大的搜索插件，可以模糊查询定位，包括了工程下的所有文件、打开的 Buffer、Buffer 内的 tag、最近访问的文件等，极大了方便了大规模工程代码的浏览。
 
 <!-- 据说还有一个 CopyCat ，暂时没有找到怎么使用 -->
+
+### LeaderF
+
+相比 CtrlP 来说，其速度更快、匹配更准确，支持函数列表、文件、MRU、Buffer 等，然后通过配置文件定义如下快捷键：
+
+* `CTRL-P` 当前项目目录打开文件搜索；
+* `CTRL-N` 打开MRU搜索，搜索你最近打开的文件；
+* `<leader>-F` 查找函数；
+* `<leader>-T` 所有的Tag信息。
 
 ### NERDTree
 
@@ -359,7 +412,7 @@ Tagbar 依赖于 ctags 命令，对于 CentOS 来说可以直接通过 `yum inst
 
 {% highlight text %}
 ----- 指定多个路径
-set tags+=tags,../tags,../../tags
+set tags+=./tags,tags
 set tags+=$HOME/.vim/systags
 
 ----- 或者允许自动切换路径，并使用当前目录下的文件
@@ -478,18 +531,6 @@ endfunction
 
 
 
-### Syntastic
-
-一个语法检查工具，支持多种语言，提供了基本的补全功能、自动提示错误的功能外，还提供了 tags 的功能；采用 C/S 模式，当 vim 关闭时，ycmd 会自动关闭。
-
-不过对于不同的语言需要安装相应的插件，详细内容可以查看 [doc/syntastic-checkers.txt](https://raw.githubusercontent.com/vim-syntastic/syntastic/master/doc/syntastic-checkers.txt)，安装方法可以参考 README.md 文件。
-
-![vim Syntastic]({{ site.url }}/images/misc/vim-syntastic-screenshot.png "vim Syntastic"){: .pull-center width='90%' }
-
-能够实时的进行语法和编码风格的检查，还集成了静态检查工具，支持近百种编程语言，像是一个集大成的实时编译器，出现错误之后，可以非常方便的跳转到出错处。
-
-另外，是一个 [Asynchronous Lint Engine](https://github.com/w0rp/ale) 一个异步的检查引擎。
-
 ### NERDCommenter
 
 用于快速，批量注释与反注释，适用于任何你能想到的语言，会根据不同的语言选择不同的注释方式，方便快捷。
@@ -533,102 +574,6 @@ Old text                  Command     New text ~
  <CTRL-s><CTRL-s> - in insert mode, add a new line + surrounding + indent
  <CTRL-g>s - same as <CTRL-s>
  <CTRL-g>S - same as <CTRL-s><CTRL-s>
-{% endhighlight %}
-
-### tags
-
-tags 记录了关于一个标识符在哪里被定义的信息，比如 C/C++ 程序中的一个函数定义。vim 默认是支持 tags 的，那么可以让 vim 从任何位置跳转到相应的标示位置。
-
-{% highlight text %}
-ctags -R --c++-kinds=+px --fields=+iaS --extra=+q .
-
-常用参数：
--R
-   遍历循环子目录生成tags；
---fields=+iaS
-  将可用扩展域添加到tags中，
-    i) 如有继承，则标识出父类；
-    a) 标明类成员的权限，如public、private等；
-    S) 函数的信息，如原型、参数列表等；
--I identifier-list
-   通常用于处理一些宏，如果只列出了那么则会忽略；
---c++-kinds=+px
-   记录c++文件中的函数声明和各种外部和前向声明，使用p时同时也会添加extern的声明；
---extra=+q
-  是否将特定信息添加到tags中，q) 类成员信息，包括结构体；
-
-其它常用命令：
------ 列举出当前支持的语言，也可以自定义，具体没研究过
-$ ctags --list-languages
------ 查看扩展名跟语言的映射关系，从而可以使用正确的分析器
-$ ctags --list-maps
------ 可识别的语法元素，默认打印所有，在生成时可以通过--c-kinds指定
-$ ctags --list-kinds=c
-
-生成的文件格式如下：
-{tagname} {TAB} {tagfile} {TAB} {tagaddress} {term} {field} ..
-   {tagname}     标识符名字，例如函数名、类名、结构名、宏等，不能含TAB符。
-   {tagfile}     包含 {tagname} 的文件。
-   {tagaddress}  可以定位到 {tagname} 光标位置的 Ex 命令，通常只包含行号或搜索命令。
-                 出于安全的考虑，会限制其中某些命令的执行。
-   {term}        设为 ;” ，主要是为了兼容vi编辑器，使vi忽略后面的{field}字段。
-   {field} ..    也就是扩展字段，可选，用于表示此 {tagname} 的类型是函数、类、宏或是其它。
-
-常见快捷键如下：
-Ctrl+]       跳转到定义处；
-Ctrl+T       跳转到上次tags处；
-Ctrl+i       (in)跳转下一个；
-Ctrl+o       (out)退回原来的地方；
-gd           转到当前光标所指的局部变量的定义；
-gf           打开头文件；
-:ju          显示所有可以跳转的地方；
-:set tags    查看加载的tags；
-:tag name    调转到name处；
-:stag name   等价于split+tag name
-:ta XXX      跳转到符号XXX定义处，如果有多个符号，直接跳转到第一处；
-:ts XXX      列出符号XXX的定义；
-:tj XXX      可看做上面两个命令的合并，如果只找到一个符号定义，那么直接跳转，有多个，则让用户自行选择；
-:ptag name   预览窗口显示name标签，光标跳到标签处；
-Ctrl-W + }   预览窗口显示当前光标下单词的标签，光标跳到标签处；
-:pclose      关闭预览窗口；
-:pedit file.h 在预览窗口中编辑文件file.h，在编辑头文件时很有用；
-:psearch atoi 查找当前文件和头文件中的单词并在预览窗口中显示匹配，在使用没有标签文件的库函数时十分有用。
-{% endhighlight %}
-
-如果有多个可以使用 `tfirst` `tlast` `tprevious` `tnext` `tselect` 选择，也可以 `:tag name_<TAB>` 自动补全，或者使用 `tselect /^write` 正则表达式。
-
-#### 生成系统tags
-
-{% highlight text %}
------ 添加系统的tags
-$ ctags --fields=+iaS --extra=+q -R -f ~/.vim/systags /usr/include /usr/local/include
-:set tags+=~/.vim/systags
-{% endhighlight %}
-
-此时，基本可以跳转到系统函数，不过仍有部分函数未添加到tags中，常见的有如下的示例。
-
-{% highlight c %}
-extern int listen (int __fd, int __n) __THROW;
-extern int strcmp (__const char *__s1, __const char *__s2)
-     __THROW __attribute_pure__ __nonnull ((1, 2));
-{% endhighlight %}
-
-也就是因为存在 `__THROW` `attribute_pure` `nonull` 等属性，导致认为上述的声明不是函数，都需要忽略。如果需要 `#if 0` 里面的定义，可以使用 `-if0=yes` 来忽略 `#if 0` 这样的定义。
-
-{% highlight text %}
-$ ctags -I __THROW -I __attribute_pure__ -I __nonnull -I __attribute__ \   忽略这里的定义
-    --file-scope=yes              \     例如对于static声明只在一个文件中可见
-    --langmap=c:+.h               \     定义扩展名和语言的映射关系，可以通过--list-maps查看
-    --languages=c,c++             \     使能哪些语言
-    --links=yes                   \     是否跟踪符号链接指向的文件
-    --c-kinds=+p --c++-kinds=+p   \     指定生成哪些C语言的tag信息
-    --fields=+iaS --extra=+q -R -f ~/.vim/systags /usr/include /usr/local/include
-{% endhighlight %}
-
-可以在配置文件中添加如下的内容，然后在源码目录内可以通过 `Ctrl-F12` 生成 tags 文件。
-
-{% highlight text %}
-map <C-F12> :!ctags -R --c-kinds=+px --fields=+iaS --extra=+q <CR>
 {% endhighlight %}
 
 ### cscope

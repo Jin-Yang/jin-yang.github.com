@@ -185,6 +185,50 @@ print Date.is_date_valid('11-09-2012')
 
 所以，从静态方法的使用中可以看出，不会访问到 class 本身，它基本上只是一个函数，在语法上就像一个方法一样，相反 ClassMethod 会访问 cls， InstanceMethod 会访问 self。
 
+## lambda
+
+通过 `lambda` 可以构造一个简单的匿名函数，几乎可以在任何需要函数的地方定义，在很多场景下会使得代码简单很多。
+
+通常只有一个简单的表达式，做简单的运算。
+
+{% highlight text %}
+>>> g = lambda x, y, z : (x + y) ** z
+>>> g(1, 2, 3)
+27
+{% endhighlight %}
+
+其功能和函数十分相似，因为是匿名函数，如果没有变量接收，那么就会无法使用，但是可以作为 list 或者 dict 的成员使用。
+
+可以定义一系列的幂函数。
+
+{% highlight text %}
+>>> fpowers = [lambda x: x, lambda x: x**2, lambda x: x**3]
+>>> fpowers[0]
+<function <lambda> at 0x7f0d04fe2500>
+>>> fpowers[2](3)
+27
+{% endhighlight %}
+
+在一些聚合函数中，例如 `filter`、`map`、`reduce` 中，也很好使用。
+
+{% highlight text %}
+>>> data = [2, 3, 9]
+>>> filter(lambda x: x % 3 == 0, data)   # 过滤3的倍数
+[3, 9]
+>>> map(lambda x: x * 2, data)           # 所有成员乘以2
+[4, 6, 18]
+>>> reduce(lambda x, y: x + y, data)     # 所有成员的和
+14
+{% endhighlight %}
+
+另外，在对象遍历处理方面，还可以使用 `for..in..if` 语法，相比来说更加强大而且易读，例如上面的例子。
+
+{% highlight text %}
+>>> [x * 2 for x in data]
+[4, 6, 18]
+>>> [x for x in data if x % 3 == 0]
+[3, 9]
+{% endhighlight %}
 
 
 {% highlight python %}

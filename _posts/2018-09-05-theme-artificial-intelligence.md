@@ -44,6 +44,11 @@ description:
 * [核密度函数](/post/math-statistics-kernel-density-estimates-introduce.html)
 * [熵概念简介](/post/artificial-intelligence-entropy-concept-introduce.html)
 
+### 优化算法
+
+* [基本优化算法](/post/math-basic-concept-optimize-method-introduce.html)
+
+
 ### 采样算法
 
 * [贝叶斯简介](/post/math-statistics-basic-concept-bayes-theorem-introduce.html)

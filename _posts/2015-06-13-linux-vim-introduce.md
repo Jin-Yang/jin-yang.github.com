@@ -113,6 +113,14 @@ vim 含有多种变量，`$HOME` 表示环境变量；`&options` 表示选项；
 
 在配置文件中，可以指定变量，而对应的变量可通过 ```:echo $VIM``` 查看。
 
+### 调试
+
+可以通过 `:verbose` 确定 vim 中的配置是在那里生效的，例如如下。
+
+{% highlight text %}
+:verbose set modeline? modelines?
+{% endhighlight %}
+
 ### Tab 操作
 
 {% highlight text %}
@@ -585,6 +593,8 @@ J           → 把所有的行连接起来，变成一行
 # vim: foldmarker={,} foldlevel=0 foldmethod=marker :
 {% endhighlight %}
 
+可以通过 `set modelines=10` 设置行数，如果设置为 0 则会将其关闭。
+
 #### 其它
 
 {% highlight text %}
@@ -710,6 +720,10 @@ https://github.com/vim-airline/vim-airline/wiki/FAQ
 http://ju.outofmemory.cn/entry/79671                      经典插件的介绍
 http://blog.chinaunix.net/uid-24118190-id-4077308.html    VIM终极配置
 /reference/linux/{default.vim, plugin.vim}                本地保存的版本
+
+
+一些项目中的常见操作
+https://blog.csdn.net/MDL13412/article/details/48768159
 -->
 
 {% highlight text %}
