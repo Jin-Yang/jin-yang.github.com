@@ -262,61 +262,54 @@ Docker 在与 Docker Registry 进行交互时默认使用 https，但是当前�
 {% endhighlight %}
 
 
-## Dockerfile
+## 资源清理
 
-用于表示 docker 镜像生成过程的文件，如果在某个目录下有名为 Dockfile 的文件，那么通过 `docker build --tag name:tag .` 命令生成镜像，其中 `name` 是镜像名称，而 `tag` 就是镜像的版本或者是标签号，默认是 `lastest` 。
+随着 Docker 的运行，会占用越来越多的资源，比较常见的是磁盘资源，对于一些无用的镜像、容器、网络、数据卷实际可以直接删除。
 
-从 Docker 1.10 起，在执行 `COPY`、`ADD` 和 `RUN` 语句时，会在镜像中添加新层。
-
-### 基本指令
-
-基本指令有十三个。
+可以通过如下命令查看当前使用的资源。
 
 {% highlight text %}
-FROM <image>
-    指定构建镜像的基础源镜像
-MAINTAINER <name> <email>
-    镜像的创建者和邮箱
-RUN <command> <param1> ... <paramN>
-    执行命令
-CMD <command> <param1> ... <paramN>
-    容器启动后执行的默认命令，可以在通过run命令启动的时候覆盖
+----- 所有的容器信息，不带-a参数之列举出运行的容器
+# docker container ls -a
 
-EXPOSE、ENV、ADD、COPY、ENTRYPOINT、VOLUME、USER、WORKDIR、ONBUILD。下面对这些指令的用法一一说明。
+----- 镜像信息，通过-a会列举出中间的镜像层
+# docker image ls -a
+
+----- 列出数据卷、网络信息、系统信息
+# docker volume ls
+# docker network ls
+# docker info
 {% endhighlight %}
 
-### 示例
+默认提供了 `docker system prune` 命令来删除已经停止的容器、dangling 镜像、为被容器引用的 network 以及构建过程中的 cache 。
 
-这里通过 BusyBox 中的 nc 命令作为一个 echo 服务器，通过本地的 `3030` 端口访问，容器内部监听 `2000` 。
-
-对应的 Dockerfile 文件内容如下。
+注意，为了安全，默认是不会删除为被任何容器引用的数据卷，如果需要删除，则应该显示指定 `--volumns` 参数。
 
 {% highlight text %}
-FROM busybox
-CMD ["nc", "-lk", "-p", "2000"]
+# docker system prune --all --force --volumns
 {% endhighlight %}
 
-然后可以通过如下方式进行测试。
+### dangling images
+
+所谓的 dangling images ，可以被理解为未被任何镜像引用的镜像，当通过 `docker image ls` 查看时，会在 `TAG` 中显示 `<none>` 。
+
+例如，重新构建镜像之后，之前依赖的镜像就变成了 dangling images 。
+
+另外，还有 `REPOSITOY` 和 `TAG` 都是 `<none>` 的镜像，一般是其它镜像的依赖层。
+
+## 常见问题
+
+
+
+### 容器已经在运行
+
+报错详细信息为 `The container name "XXX" is already in use by container` 。
 
 {% highlight text %}
------ 构建镜像
-# docker build -t foobar .
-# docker images
-
------ 启动新创建的镜像后台运行，然后本地建立连接
-# docker run -d -p 3030:2000 foobar
-# nc 127.1 3030
-
------ 查看容器的标准输出
-# docker logs -f e47ac47bd9af
-
------ 连接到容器，后者需要确保在执行sh命令
-# docker exec -it e47ac47bd9af /bin/bash
-# docker attach e47ac47bd9af
+----- 查看所有的容器信息，并根据ID删除
+# docker ps -a
+# docker rm 36bceeae4b22
 {% endhighlight %}
-
-
-
 
 <!--
 docker建立最简单最小的helloworld镜像

@@ -63,8 +63,11 @@ K8S 中通过配置文件保存了集群、用户、命名空间、鉴权等与�
 如下是常用的命令。
 
 {% highlight text %}
------ 查看配置，也就是~/.kube/config
+----- 查看配置，也就是~/.kube/config，可以通过 --minify 减少输出
 # client/bin/kubectl config view
+
+----- 设置ctl命令的默认NS
+# client/bin/kubectl config set-context --current --namespace=default
 
 ----- 列出所有上下文信息以及当前上下文信息
 # client/bin/kubectl config get-contexts
@@ -133,7 +136,87 @@ tier: middleware
 
 在部署服务时，通过 YMAL 文件进行定义，主要包括了两个配置文件：A) 服务文件，定义 POD 逻辑组及其策略；B) 部署文件，定义应用程序的运行状态，比如什么时间应该运行多少副本。
 
+## 鉴权
 
+
+https://www.cnblogs.com/breg/p/5923604.html
+
+
+除了双向认证方式，Kubernets 还提供了基于 Token 和 HTTP Base 的简单认证方式。通信方式仍然采用 HTTPS ，但不使用数字证书。
+
+### Token
+
+设置 Token 文件。
+
+{% highlight text %}
+----- 生成Token
+$ head -c 16 /dev/urandom | od -An -t x | tr -d ' '
+
+----- 设置并保存Token文件
+$ cat config/pki/token_auth_file
+731810196d8de1282306b2552d6b0bc5,admin,1
+{% endhighlight %}
+
+其中，第一列为 token ，第二列为用户名，第三列表示编号或者序列号。
+
+然后，重启 APIServer ，并添加参数 `--token-auth-file=config/pki/token_auth_file` 。
+
+#### 修改配置
+
+通过 `kubectl config` 修改配置文件。
+
+{% highlight text %}
+----- 设置集群参数
+# client/bin/kubectl config set-cluster kubernetes \
+	--insecure-skip-tls-verify=true            \
+	--server=http://127.0.0.1:8080
+
+----- 设置客户端认证参数
+# client/bin/kubectl config set-credentials admin  \
+	--token=731810196d8de1282306b2552d6b0bc5
+
+----- 设置上下文参数
+# client/bin/kubectl config set-context kubernetes \
+	--cluster=kubernetes                       \
+	--user=admin                               \
+	--namespace=crd
+
+----- 设置默认上下文
+# client/bin/kubectl config use-context kubernetes
+
+----- 查看配置，也就是~/.kube/config
+# client/bin/kubectl config view
+
+----- 列出所有上下文信息以及当前上下文信息
+# client/bin/kubectl config get-contexts
+{% endhighlight %}
+
+#### RBAC
+
+配置客户端 RBAC 相关，限制 `admin` 用户的行为，将该用户的行为限制在某个 namespace 空间范围内。
+
+
+<!--
+kubectl create -f crd-rbac.yaml
+
+这样 crd-admin 用户对 crd namespace 具有完全访问权限。
+
+crd-rbac.yaml具体内容：
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: crdadmin-admin-binding
+  namespace: crd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: crd-admin
+-->
 
 
 <!--
@@ -205,6 +288,8 @@ systemctl start docker
 systemctl start kubelet
 {% endhighlight %}
 
+Minikube 安装踩坑记
+https://www.jianshu.com/p/48804c8bb250
 
 ### kubeadm
 
@@ -227,9 +312,7 @@ kubeadm init --image-repository="gcr.azk8s.cn/google_containers"
 http://mirror.azure.cn/help/gcr-proxy-cache.html
 {% endhighlight %}
 
--->
-
-<!-- kubeadm config images pull http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html https://www.mdslq.cn/archives/5e6f338.html cubectl https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md https://yq.aliyun.com/articles/221687 https://www.jianshu.com/p/18441c7434a6 https://ehlxr.me/2018/01/12/kubernetes-minikube-installation/ https://blog.csdn.net/qq_26188449/article/details/77543093
+kubeadm config images pull http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html https://www.mdslq.cn/archives/5e6f338.html cubectl https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md https://yq.aliyun.com/articles/221687 https://www.jianshu.com/p/18441c7434a6 https://ehlxr.me/2018/01/12/kubernetes-minikube-installation/ https://blog.csdn.net/qq_26188449/article/details/77543093
 通过cobra进行命令行的处理
 https://github.com/spf13/cobra
 https://www.cnblogs.com/sparkdev/p/10856077.html
@@ -239,117 +322,6 @@ https://juejin.im/post/5b29c0d5e51d45588821399a
 http://www.10tiao.com/html/356/201706/2247484527/1.html
 
 runStart() 在start时实际调用的函数
-
-/post/golang-basic-package-introduce.html
-从 v1.5 开始开始引入 vendor 包模式，如果项目目录下有 vendor 目录，那么 go 工具链会优先使用 vendor 内的包进行编译、测试等。
-
-实际上，这之后第三方的包管理思路都是通过这种方式来实现，比如说由社区维护准官方包管理工具 dep ，不过官方不认可。
-
-在 v1.11 中加入了 Go Module 作为官方包管理形式，在 v1.11 和 v1.12 版本中 gomod 不能直接使用，可以执行 `go env` 命令查看是否有 GOMOD 判断是否已开启。
-
-如果没有开启，可以通过设置环境变量 `export GO111MODULE=on` 开启。
-
------ 查看所有依赖
-go list -u -m all
-
-当使用 modules 时，会完全忽略原有的 vendor 机制。
-
-## sync 扩展
-
-官方的 sync 包，提供了基础的 Map、Mutex、WaitGroup、Pool 等功能的支持。
-
-在基础的 sync 包的基础上，官方还提供了一个高效的扩展包 golang.org/x/sync，包括了 errgroup、semaphore、singleflight、syncmap 等工具。
-
-这里简单介绍其使用方法，以及部分实现原理。
-
-Shell的变量替换
-https://www.cnblogs.com/fhefh/archive/2011/04/22/2024750.html
-
-这里使用的是 Go 1.13 版本。
-
-假设将官方的库安装到 `/opt/golang` 目录下，常用的三方库保存在 `/opt/golang/vendor` 目录下，在 `/etc/profile` 文件中添加如下内容。
-
-export GOPATH=/opt/golang/vendor
-export GOROOT=/opt/golang
-pathmunge "${GOROOT}/bin"
-pathmunge "${GOPATH}/bin"
-
-这样，可以确保所有的 Go 版本保存在 `$GOROOT` 中，通用三方包保存在 `$GOPATH/src` 目录下。
-
-go install github.com/jstemmer/gotags
-https://github.com/jstemmer/gotags/releases
-
-#!/bin/bash
-
-#REPO_PATH="foobar.com/foobar"
-REPO_PATH="foobar"
-
-project_build() {
-        out="bin"
-        go build foobar
-}
-
-pathmunge() {
-        if [[ -z "${GOPATH}" ]]; then
-                GOPATH=$1
-                return
-        fi
-
-        case ":${GOPATH}:" in
-        *:"$1":*)
-                ;;
-        *)
-                if [[ "$2" = "after" ]] ; then
-                        GOPATH=${GOPATH}:$1
-                else
-                        GOPATH=$1:${GOPATH}
-                fi
-        esac
-}
-
-project_setup_gopath() {
-        DIR=$(dirname "$0")
-        CDIR=$(cd "${DIR}" && pwd)
-        cd "${CDIR}"
-
-        PRG_GOPATH="${CDIR}/gopath"
-        if [[ -d "${PRG_GOPATH}" ]]; then
-                rm -rf "${PRG_GOPATH:?}/"
-        fi
-        mkdir -p "${PRG_GOPATH}"
-
-        pathmunge "${PRG_GOPATH}"
-        echo "Current GOPATH=${GOPATH}"
-        ln -s "${CDIR}/vendor" "${PRG_GOPATH}/src"
-        if [[ ! -L "${CDIR}/vendor/${REPO_PATH}" ]]; then
-                ln -s "${CDIR}" "${CDIR}/vendor/${REPO_PATH}"
-        fi
-}
-
-ETCD_SETUP_GOPATH=1
-
-if [[ "${ETCD_SETUP_GOPATH}" == "1" ]]; then
-        project_setup_gopath
-fi
-
-# only build when called directly, not sourced
-if echo "$0" | grep "build$" >/dev/null; then
-        project_build
-fi
-https://n3xtchen.github.io/n3xtchen/go/2018/10/30/go-mod-local-pacakge
-http://www.r9it.com/20190611/go-mod-use-dev-package.html
-https://www.cnblogs.com/apocelipes/p/10295096.html
-https://allenwind.github.io/2017/09/16/Golang%E5%AE%9E%E7%8E%B0%E4%BF%A1%E5%8F%B7%E9%87%8F/
-https://yangxikun.com/golang/2017/03/07/golang-singleflight.html
-https://segmentfault.com/a/1190000018464029
-https://zhuanlan.zhihu.com/p/44585993
-https://studygolang.com/articles/22525
-https://github.com/golang/sync/tree/master/syncmap
-https://blog.csdn.net/mrbuffoon/article/details/85263480
-https://gocn.vip/question/161
-https://zhuanlan.zhihu.com/p/64983626
-https://blog.csdn.net/jiankunking/article/details/78818953
-https://medium.com/@deckarep/gos-extended-concurrency-semaphores-part-1-5eeabfa351ce
 -->
 
 
@@ -583,9 +555,57 @@ libnetfilter_cthelper
 libnetfilter_cttimeout
 libnetfilter_queue
 kubernetes-cni
+
+
+
+K8S国内安装步骤
+https://jiayi.space/post/kubernetescong-ru-men-dao-fang-qi-1-qiang-nei-an-zhuang-zi-yuan-gai-nian
 -->
 
 
+
+在使用 kubectl 命令时，一般会通过 YAML 格式定义一个任务，并用来创建所需要的对象，其中在配置中通过 spec 定义了期望的状态，同时 K8S 还会在内部维护一个状态信息。
+
+其中有几个参数是必须的。
+
+{% highlight text %}
+apiVersion  使用的K8S API版本号，可以通过 kubectl api-versions 命令查看支持版本号
+kind        对象的类型，例如Pod Deployment
+metadata    用于唯一确定创建的对象，包括了name UID 以及 namespace
+spec        对于这一对象的期望目标状态
+{% endhighlight %}
+
+在对 K8S 中的对象进行操作时，可以通过直接通过命令行，也可以是某个定义的配置文件，或者在某个目录下定义一组配置。
+
+## Namespace
+
+用来做逻辑隔离，一般在用户比较多的时候使用，在不同 Namespace 中可以出现相同的 name 。
+
+{% highlight text %}
+----- 查看当前所有的NS
+# kubectl get namespace
+
+----- 查看某个NS下的Pods信息
+# kubectl get pods --namespace=default
+{% endhighlight %}
+
+默认会创建三个命名空间：
+
+* `default` 如果在创建对象的时候不指定，则使用该空间；
+* `kube-system` 由K8S系统本身所使用的空间；
+* `kube-public` 一般在集群管理的时候使用，可以被多个集群同时访问。
+
+## Label
+
+可以附加到对象 (例如Pod) 的 KV 字符串，通常是一些标识信息，用来快速查询；对于非标识性质的，可以使用 annotations 。
+
+常用的 label 如。
+
+{% highlight text %}
+release       alpha beta stable canary
+environment   dev production
+tier          frontend backend cache
+{% endhighlight %}
 
 
 {% highlight text %}

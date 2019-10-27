@@ -121,7 +121,6 @@ https://github.com/fcten/webit
 
 HTTP Server
 https://github.com/bachan/ugh
-https://github.com/dexgeh/webserver-libev-httpparser
 https://github.com/Lupus/libevfibers
 https://github.com/h2o/h2o
 https://github.com/monkey/monkey

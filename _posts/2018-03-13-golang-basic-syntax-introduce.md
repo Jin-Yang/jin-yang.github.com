@@ -258,6 +258,45 @@ func (p myType) funcName ( a, b int, c string ) ( r, s int ) {
 
 而且，golang 可以为某个类型定义函数，也即为类型对象定义方法，也就是 `p myType` 参数，当然这不是必须的，如果为空则纯粹是一个函数，可以通过包名称访问。
 
+### switch
+
+类似于其它语言的 `switch` 语句，但同时继承了 GoLang 的简单有效，导致其语法略有区别。
+
+{% highlight go %}
+package main
+
+import "fmt"
+
+func main() {
+        i := 3
+
+        switch i {
+        case 0:
+                fmt.Println("0")
+        case 1, 2, 3:
+                fmt.Println("1, 2, 3")
+        case 4:
+                fallthrough
+        case 5:
+                fmt.Println("4 or 5")
+        default:
+                fmt.Println("Default")
+        }
+
+        switch {
+        case i <= 9:
+                fmt.Println("range(, 9]")
+        case i > 9 && i < 15:
+                fmt.Println("range(9, 15)")
+        }
+}
+{% endhighlight %}
+
+在每个 `case` 语句之后，默认会带有一个 `break` 语句，在匹配成功后不会自动向下执行其它分支，而是跳出整个 `switch` 语句，不过可以通过 `fallthrough` 语句强制执行后面的分支代码。
+
+如上代码中，当 `i := 4` 或者 `i := 5` 时，两者的输出相同。
+
+另外，也可以不在 `switch` 语句后添加变量，那么此时的行为与 `if ... else ...` 相同，也就是如上的最后示例。
 
 ## MAP
 

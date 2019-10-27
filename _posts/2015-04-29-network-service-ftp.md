@@ -137,6 +137,22 @@ verbose：同命令行的-v参数，即设置详尽报告方式，ftp 服务器�
 上传put e:\linghongli.txt即可上传了
 -->
 
+### Anonymous
+
+修改 `/etc/vsftpd/vsftpd.conf` 配置文件。
+
+{% highlight text %}
+#----- 允许匿名访问，且不需要密码
+anonymous_enable=YES
+no_anon_password=YES
+#----- 匿名用户的根目录路径
+anon_root=/opt/repos
+#----- 禁止匿名用户创建目录
+anon_mkdir_write_enable=NO
+#----- 禁止匿名用户删除或重命名文件、文件夹
+anon_other_write_enable=NO
+{% endhighlight %}
+
 ## 链接模式
 
 FTP 在建立链接时需要两个通道，分别为命令通道和数据通道，命令通道通常为 21 号端口，数据通道通常为 22 号端口。FTP 在建立链接时分为主动和被动链接，注意所谓主动被动是在建立数据通道时对于服务器而言。

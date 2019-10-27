@@ -185,5 +185,118 @@ GOBIN=/usr/local/golang/bin
 
 * [Organizing Go code](https://talks.golang.org/2014/organizeio.slide#1) 。
 
+<!--
+/post/golang-basic-package-introduce.html
+从 v1.5 开始开始引入 vendor 包模式，如果项目目录下有 vendor 目录，那么 go 工具链会优先使用 vendor 内的包进行编译、测试等。
+
+实际上，这之后第三方的包管理思路都是通过这种方式来实现，比如说由社区维护准官方包管理工具 dep ，不过官方不认可。
+
+在 v1.11 中加入了 Go Module 作为官方包管理形式，在 v1.11 和 v1.12 版本中 gomod 不能直接使用，可以执行 `go env` 命令查看是否有 GOMOD 判断是否已开启。
+
+如果没有开启，可以通过设置环境变量 `export GO111MODULE=on` 开启。
+
+----- 查看所有依赖
+go list -u -m all
+
+当使用 modules 时，会完全忽略原有的 vendor 机制。
+
+## sync 扩展
+
+官方的 sync 包，提供了基础的 Map、Mutex、WaitGroup、Pool 等功能的支持。
+
+在基础的 sync 包的基础上，官方还提供了一个高效的扩展包 golang.org/x/sync，包括了 errgroup、semaphore、singleflight、syncmap 等工具。
+
+这里简单介绍其使用方法，以及部分实现原理。
+
+Shell的变量替换
+https://www.cnblogs.com/fhefh/archive/2011/04/22/2024750.html
+
+这里使用的是 Go 1.13 版本。
+
+假设将官方的库安装到 `/opt/golang` 目录下，常用的三方库保存在 `/opt/golang/vendor` 目录下，在 `/etc/profile` 文件中添加如下内容。
+
+export GOPATH=/opt/golang/vendor
+export GOROOT=/opt/golang
+pathmunge "${GOROOT}/bin"
+pathmunge "${GOPATH}/bin"
+
+这样，可以确保所有的 Go 版本保存在 `$GOROOT` 中，通用三方包保存在 `$GOPATH/src` 目录下。
+
+go install github.com/jstemmer/gotags
+https://github.com/jstemmer/gotags/releases
+
+#!/bin/bash
+
+#REPO_PATH="foobar.com/foobar"
+REPO_PATH="foobar"
+
+project_build() {
+        out="bin"
+        go build foobar
+}
+
+pathmunge() {
+        if [[ -z "${GOPATH}" ]]; then
+                GOPATH=$1
+                return
+        fi
+
+        case ":${GOPATH}:" in
+        *:"$1":*)
+                ;;
+        *)
+                if [[ "$2" = "after" ]] ; then
+                        GOPATH=${GOPATH}:$1
+                else
+                        GOPATH=$1:${GOPATH}
+                fi
+        esac
+}
+
+project_setup_gopath() {
+        DIR=$(dirname "$0")
+        CDIR=$(cd "${DIR}" && pwd)
+        cd "${CDIR}"
+
+        PRG_GOPATH="${CDIR}/gopath"
+        if [[ -d "${PRG_GOPATH}" ]]; then
+                rm -rf "${PRG_GOPATH:?}/"
+        fi
+        mkdir -p "${PRG_GOPATH}"
+
+        pathmunge "${PRG_GOPATH}"
+        echo "Current GOPATH=${GOPATH}"
+        ln -s "${CDIR}/vendor" "${PRG_GOPATH}/src"
+        if [[ ! -L "${CDIR}/vendor/${REPO_PATH}" ]]; then
+                ln -s "${CDIR}" "${CDIR}/vendor/${REPO_PATH}"
+        fi
+}
+
+ETCD_SETUP_GOPATH=1
+
+if [[ "${ETCD_SETUP_GOPATH}" == "1" ]]; then
+        project_setup_gopath
+fi
+
+# only build when called directly, not sourced
+if echo "$0" | grep "build$" >/dev/null; then
+        project_build
+fi
+https://n3xtchen.github.io/n3xtchen/go/2018/10/30/go-mod-local-pacakge
+http://www.r9it.com/20190611/go-mod-use-dev-package.html
+https://www.cnblogs.com/apocelipes/p/10295096.html
+https://allenwind.github.io/2017/09/16/Golang%E5%AE%9E%E7%8E%B0%E4%BF%A1%E5%8F%B7%E9%87%8F/
+https://yangxikun.com/golang/2017/03/07/golang-singleflight.html
+https://segmentfault.com/a/1190000018464029
+https://zhuanlan.zhihu.com/p/44585993
+https://studygolang.com/articles/22525
+https://github.com/golang/sync/tree/master/syncmap
+https://blog.csdn.net/mrbuffoon/article/details/85263480
+https://gocn.vip/question/161
+https://zhuanlan.zhihu.com/p/64983626
+https://blog.csdn.net/jiankunking/article/details/78818953
+https://medium.com/@deckarep/gos-extended-concurrency-semaphores-part-1-5eeabfa351ce
+-->
+
 {% highlight text %}
 {% endhighlight %}

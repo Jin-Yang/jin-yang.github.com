@@ -116,6 +116,24 @@ func main() {
 2. 将数值设置为字符串，添加 `string` 注释。
 3. 忽略部分字段，将字段名称设置为 `-`。
 
+### omitempty
+
+使用的时候一定要慎重，注意 go 语言中的判空条件。
+
+有时候当有数据的时候需要嵌套数据，而正常则只有部分状态信息，例如如下。
+
+{% highlight go %}
+type Result struct {
+	Data       MyStruct  `json:"data,omitempty"`
+	Status     string    `json:"status"`
+	Reason     string    `json:"reason"`
+}
+{% endhighlight %}
+
+对于上述结构体，当 MyStruct 未赋值的时候，仍然会显示 `"data":{}` ，可以将其修改为 `Data *MyStruct` 指针。
+
+
+
 ## 解码
 
 解码就是将 JSON 字符串反序列化为 GoLang 对象，在匹配字段时 **大小写不敏感的**，而且不会设置私有字段，如果有不匹配的字段则直接忽略。

@@ -30,9 +30,9 @@ repos/CentOS/7/src/x86_64/RPMS              # 对应的源码包
 
 ### HTTP 服务
 
-如果要增加新配置，可以直接修改 `/etc/nginx/nginx.conf` 默认配置文件，这里会在 `/etc/nginx/conf.d` 目录下包含了各种配置文件。
+如果要增加新配置，可以直接修改 `/etc/nginx/nginx.conf` 默认配置文件，为了方便管理，这里会在 `/etc/nginx/conf.d` 目录下包含了各种配置文件。
 
-然后通过 `nginx -t` 检查语法是否正确，通过 `systemctl start nginx` 启动服务，如果已经启动可以直接通过 `nginx -s reload` 命令重新加载配置。
+通过 `nginx -t` 检查语法是否正确，通过 `systemctl start nginx` 启动服务，如果已经启动可以直接通过 `nginx -s reload` 命令重新加载配置。
 
 #### 安装包
 

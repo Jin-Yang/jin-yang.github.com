@@ -20,6 +20,7 @@ description:
 一个开源用于管理容器化应用的平台，其目标是让部署容器化的应用简单并且高效，提供了应用部署、规划、更新、维护。
 
 * [K8S 使用简介](/post/kubernets-basic-introduce.html)
+* [K8S Pod 简介](/post/kubernets-pod-info-introduce.html)
 
 
 ## Docker
@@ -29,6 +30,7 @@ description:
 一个开源的应用容器引擎，可以让开发者将应用及其依赖包打包到一个可移植的镜像中。
 
 * [Docker 使用简介](/post/docker-basic-introduce.html)
+* [Dockerfile 简介](/post/docker-basic-concept-dockfile-introduce.html)
 * [Docker RunC 简介](/post/docker-component-runc-introduce.html)
 * [Docker Containerd 简介](/post/docker-component-containerd-introduce.html)
 
@@ -48,6 +50,7 @@ description:
 * [LXC sshd 单进程启动](/post/linux-container-lxc-sshd.html) 介绍如何启动一个单进程，对于资源隔离有很大的参考意义。
 * [容器之 CGroup](/post/linux-container-cgroup-introduce.html) 介绍 CentOS 中 systemd 以及 cgroup-tools 相关的内容。
 * [cgroup 之 cpuset 简介](/post/linux-cgroup-cpuset-subsys-introduce.html) 简单介绍 cpuset 的使用方法。
+* [网络 namespace](/post/linux-namespace-network-introduce.html) 与网络相关的 namespace 介绍。
 
 <!--
 * [LXC 网络设置相关](/post/linux-container-lxc-network.html)，关于 Container 中网络的介绍，主要介绍 veth、vlan、macvlan 等概念。
@@ -58,6 +61,7 @@ description:
 * [Linux 资源限制](/post/linux-resource-limit-introduce.html) 在 Linux 中最原始的一种资源限制方法，也就是 ulimits 。
 * [Linux Chroot](/post/linux-chroot.html) 这实际上是做目录隔离的方法，也是最初的一种方式。
 * [LVM 使用简介](/post/linux-logical-volume-manager-introduce.html)
+* [KVM 虚拟平台](/post/linux-virtual-kvm-introduce.html)
 
 
 {% highlight text %}
