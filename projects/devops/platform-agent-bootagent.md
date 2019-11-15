@@ -6,7 +6,7 @@ language: chinese
 
 当管理的机器达到上万的数量级时，即使 Agent 的部署成功率能达到 99% 那也会导致有几百台的机器离线，如果 Agent 频繁变更可能会导致离线机器更多。
 
-BootAgent 就是为了管理各个 Agent ，同时保证机制简单、功能稳定。
+BootAgent 就是为了管理各个 Agent ，同时为了保证机制简单，可以使功能快速稳定。
 
 ## 简介
 
@@ -42,14 +42,17 @@ process.c   提供异步进程的实现
        自动拉起，可以配置是否在启动时拉起进程。
        状态检查、资源限制。
 
-1. 任务管理。
-   1.1 修改配置。
+2. 任务管理。
+   2.1 修改配置。
 
 3. 事件上报机制。
    3.1 子进程异常。
 
 4. 状态信息上报。与BootAgent相关的状态信息。
    4.1 任务信息。接收到的任务数、执行成功数、执行失败数、忽略执行数(任务已经存在)。
+
+5. 其它
+   5.1 元数据信息MetaFile，保存了一些元信息，例如AgentSN、Tags、ServerList等。
 {% endhighlight %}
 
 上述的子进程管理，支持基于 tag 的批量升级，同时允许按照比例升级部分 (用于灰度验证) 。
@@ -60,9 +63,9 @@ process.c   提供异步进程的实现
 
 默认会在配置目录下保存相关的配置，配置文件的后缀需要确保是 `*.json`，默认配置目录可以通过 `BootAgent -h` 查看。在管理进程时，会将配置的名称作为唯一标示，如果有重复则会忽略后面的配置。
 
-另外，配置文件的名称需要与文件中 `name` 字段的名称保持一致。
+另外，配置文件的名称一般要求与文件中 `name` 字段的名称保持一致(非强制)，其中名字允许 `[A-Za-z0-9_-]` ，不能出现 `.` ，长度不能超过 `50` 字节(`AGT_NAME_LEN_MAX`)。
 
-其中的配置文件示例如下，文件名为 `BasicAgent.json` ，文件最大为 16K(`PRG_FILE_MAXSIZE`)。
+其中的配置文件示例如下，文件名为 `BasicAgent.json` ，文件最大为 16K(`AGT_CONFIG_MAXSIZE`)。
 
 {% highlight text %}
 {
@@ -74,18 +77,33 @@ process.c   提供异步进程的实现
                                                        #       simple 以fork+exec方式运行，作为子进程
                                                        #       fork 子进程会fork子进程，也就是常驻进程
 
-	"single": true,                                # 可选，在启动前是否允许有多个进程存在 (默认是true)
-                                                       #       true 每次启动检查进程是否已经启动
-                                                       #       false 启动时直接拉起，如果需要单实例则由子进程自己控制
-
         "pidfile": "/var/run/cargo/gearman.pid",       # 对于fork必选，每行一条记录，不过只会检查第一行
         "user": "root",                                # 可选，默认是root
         "group": "root",
-
         "envs": {                                      # 可选
                 "PATH": "/usr/bin:/usr/local/bin",
                 "LANG": "en_US.UTF-8"
         },
+
+        "startsecs": 60,                               # 可选，启动多久之后认为正常，其中fork默认为60
+        "autostart": false,                            # 可选，是否在安装或者启动BootAgent时自动拉起该进程，默认false
+	"single": true,                                # 可选，在启动前是否允许有多个进程存在 (默认是true)
+                                                       #       true 每次启动检查进程是否已经启动
+                                                       #       false 启动时直接拉起，如果需要单实例则由子进程自己控制
+
+        "stopsecs": 60,                                # 可选，超过多久之后直接向进程发送SIGKILL
+        "stopit": false,                               # 可选，进程退出是否杀死进程，默认是false
+        "stopasgroup": true,                           # 可选，在kill进程时以组方式
+        "stopsignal": "SIGTERM"                        # 可选，在退出时向进程发送的信号，默认为SIGTERM
+                                                       #       支持信号TERM HUP INT QUIT KILL USR1 USR2
+
+        "restartsecs": 20,                             # 可选，失败之后启动前sleep时间
+        "retries": 3,                                  # 可选，重试次数，包括了启动、异常退出等状态时的重试
+        "exitcodes": "0,9",                            # 可选，认为正常的退出码，不会再重启，只支持正值
+        "autorestart": "yes",                          # 可选，失败之后的启动方式，默认或者非法是yes
+                                                       #       no 不再重启，无论退出的状态是什么
+                                                       #       yes 一直尝试重启，同样无论退出的状态是什么
+                                                       #       unexpect 只有退出码不在exitcode中时才会重启
 
         "cgroup": {                                    # 可选，会通过cgroup进行资源限制
                 "CPU": 20,                             # CPU资源限制，单位是%
@@ -99,35 +117,19 @@ process.c   提供异步进程的实现
 		"FDS":1000                             # 文件描述符
 	},
 
-	"check": {                                     # 可选，健康检查，超时时间是70%*interval
+	"check": {                                     # 可选，健康检查，由BA向子Agent发送请求，超时时间是70%*interval
 		"interval":60,                         # 检查间隔
 		"path":"/usr/run/BootAgent.sock",      # 目前只支持Unix Domain Socket
 		"match":"regex:success"                # 对返回信息进行检查，可以使用正则(regex)或字符串(string)
 	},
 
-	"heartbeat": {                                 # 可选，心跳检查
+	"heartbeat": {                                 # 可选，心跳检查，由子Agent向BA发送请求
 		"interval":60,                         # 心跳间隔，默认是1分钟
 		"match":"regex:success"                # 对上报报文的"message"字段进行匹配
 	},
+
         "checks": 3,                                   # 可选，如上的检查超过这里的设置次数后认为异常
-
-        "autostart": true,                             # 可选，是否在安装或者启动BootAgent时自动拉起该进程
-        "stopit": false,                               # 可选，进程退出是否杀死进程，默认是false
-        "autorestart": "yes",                          # 可选，失败之后的启动方式，默认或者非法是yes
-                                                       #       no 不再重启，无论退出的状态是什么
-                                                       #       yes 一直尝试重启，同样无论退出的状态是什么
-                                                       #       unexpect 只有退出码不在exitcode中时才会重启
-        "retries": 100,                                # 可选，重试次数，包括了启动、异常退出等状态时的重试
-
-        "exitcodes": "0,9",                            # 可选，认为正常的退出码，不会再重启，只支持正值
-        "restartsecs": 20,                             # 可选，失败之后启动前sleep时间
-        "startsecs": 20,                               # 可选，启动多久之后认为正常，其中fork默认为60
-        "checksecs": 20,                               # 可选，健康检查机制
-        "stopsecs": 20,                                # 可选，超过多久之后直接向进程发送SIGKILL
-
-        "stopasgroup": true,                           # 可选，在kill进程时以组方式
-        "stopsignal": "SIGTERM"                        # 可选，在退出时向进程发送的信号，默认为SIGTERM
-                                                       #       支持信号TERM HUP INT QUIT KILL USR1 USR2
+        "checksecs": 20,                               # 可选，健康检查默认时间
 }
 {% endhighlight %}
 
@@ -222,11 +224,17 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 
 ## 3. 任务管理
 
+关于 BootAgent 的任务主要包含两类：A) BootAgent 自身的配置管理；B) 子 Agent 的相关操作，包括了安装、升级、重启等等。其中前者会立即执行，而后者会依次执行，另外，为了提升对子 Agent 的管理，会有限处理子 Agent 的停止、重启等动作，前提是在此之前没有相关的任务，例如升级。
+
 BootAgent 不会持久化任务信息，因此实现的各种任务需要保证任务的可重入性，也就是可以重复执行多次不会带来逻辑上的问题。
 
 另外，为了防止由于服务端的 BUG 引起任务多次重复执行，在 Agent 的内存中会保存一段时间的任务信息(`1小时 50个`)，当检查到有重复执行的任务时则直接忽略。
 
-每次上报信息时会带上正在执行的任务信息，不过需要注意，如果报文非法(`id` 或者 `action` 不存在)、内存不足 那么不会返回相应的任务状态，此时就需要依赖上层重试。
+每次上报信息时会带上正在执行的任务信息，不过需要注意，如果报文非法(`id` 或者 `action` 不存在)、内存不足 那么不会返回相应的任务状态，此时就需要依赖上层重试，另外 `id` 不能超过 `TASK_ID_LEN_MAX(127)` 大小。
+
+对于相同的 Agent 在底层只能有一个任务在处理，因为如果中间有一个任务执行失败，在底层很难决策如何处理接下来的任务。唯一一个比较特殊的是对子 Agent 进程的管理，如果添加了强制参数，那么会取消之前所有的任务，同时可能引起不一致。
+
+最大的任务并发为 `TASK_NUM_MAX(50)`，注意，这里不包含配置管理任务，配置任务会立即处理。
 
 ### 任务状态
 
@@ -280,7 +288,7 @@ START  已经开始处理任务。
 	"checksum": "SHA256:4a34b8d7d3009bb9ef9475fbf33e7bbe4a1e8db003aefc578a241c2f51c2c2f2",
 }
 
------ 卸载任务，同步
+----- 卸载任务，异步
 {
 	"id": "ddc8a9b9-55bd-4ddd-b53d-47095ee19466",
 	"action": "uninstall",
@@ -289,7 +297,7 @@ START  已经开始处理任务。
 	"option": "force",                            # 可选，是否尝试强制卸载
 }
 
------ 进程操作，同步
+----- 进程操作，异步
 {
 	"id": "ddc8a9b9-55bd-4ddd-b53d-47095ee19466",
 	"action": "program",
@@ -352,7 +360,7 @@ BootAgent 在启动时通过判断是否存在 `MetaFile` 来决定是否为第�
 
 这里只针对 CPU、内存进行限制，简单来说，会新建一个管理所有 DEVOPS Agent 相关的分组，默认使用的是 `devops` ，也可以在启动的时候通过 `-C` 参数指定。
 
-当使用了 cgroup 机制后，其它 Agent 会存放到所对应分组目录下，如果没有配置则会添加到 cgroup 的根目录下，也就是资源不做限制。
+如果使用了 cgroup 机制，则对应的 Agent 会存放到所对应分组目录下，分组名为 Agent 的名称，如果没有配置则会添加到 cgroup 的根目录下，也就是资源不做限制。
 
 注意，此时各个子 Agent 指定的 CPU 使用率实际上是相对于总体而言，也就是说设置的是 `cpu.shares` 参数对应的值。
 

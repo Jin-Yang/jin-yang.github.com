@@ -10,6 +10,13 @@ description:
 
 负责周期性的采集数据，并将数据 PUSH 到服务器。
 
+默认是以系统用户 monitor 运行，此时对应的终端一般为 `/bin/false` 或者 `/sbin/nologin` ，在进行测试时，如果只执行 `su - monitor -c "xxx"` 一般不会有输出，应该通过如下方式执行。
+
+{% highlight text %}
+# su - monitor -s /bin/bash "pwd"
+{% endhighlight %}
+
+
 <!--
 为了简单起见，队列没有采用超时机制，简单来说，也就是读写线程采用协作型。
 对于读线程，不会设置超时时间，完全由采集线程控制，不过如果采集超时，会对读线程进行惩罚，简单来说就是增加采集的时间间隔。

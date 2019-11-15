@@ -37,6 +37,14 @@ Git 是一免费、开源的分布式版本控制系统，可有效、高速的�
 * [Git 统计工具](/post/git-some-statistic-commands-and-tools-introduce.html) 对于一些常见指标的统计。
 * [Git Patch 使用](/post/git-some-basic-patch-comand-usage.html) 通过 git 可以很容易将 Patch 提取出来。
 
+## CI/CD
+
+### Drone
+
+类似于 Jenkins ，一个基于容器的持续交付平台，支持 Pipeline 的定义，基于 GoLang 开发。
+
+* [Drone 使用](/post/linux-cicd-drone-tools-introduce.html)
+
 ### GOGS
 
 Gogs 的功能类似于 GitHub 或者 GitLab ，不过相比来说是一款极易搭建的 Git 服务，其目标是打造一个最简单、最快速和最轻松的方式搭建自助 Git 服务。
