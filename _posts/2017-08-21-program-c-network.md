@@ -197,6 +197,8 @@ int main(int argc, char **argv)
 		printf("%s:\t%s\n", ipver, ipaddr);
 	}
 
+	freeaddrinfo(res);
+
 	return 0;
 }
 {% endhighlight %}
