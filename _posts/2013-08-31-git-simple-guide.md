@@ -515,8 +515,9 @@ $ git checkout [tagname|branch]
 ----- 查看标签的版本信息
 $ git show v0.1.2
 
------ 删除标签，误操作需要删除后重新添加
+----- 删除标签，以及远端，误操作需要删除后重新添加
 $ git tag -d v0.1.2
+$ git push origin :refs/tags/v0.1.2
 
 ----- 标签发布，默认push不会将标签提交到git服务器，需要显示操作，可以提交单个或者所有的
 $ git push origin v0.1.2

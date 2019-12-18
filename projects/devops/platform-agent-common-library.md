@@ -336,6 +336,46 @@ http://cwndmiao.github.io/programming%20tools/2013/11/26/Dwarf/
 https://github.com/rouming/dla
 https://cloud.tencent.com/developer/article/1176832
 https://yq.aliyun.com/articles/579470
+
+
+https://github.com/antirez/visitors
+https://github.com/antirez/lloogg
+Btree
+https://github.com/antirez/otree
+
+用来替换readline and libedit的工具集
+https://github.com/antirez/linenoise
+
+一个很简单的文本编辑器
+https://github.com/antirez/kilo
+
+字符串压缩库
+https://github.com/antirez/smaz
+
+命令行中的备忘录
+https://github.com/cheat/cheat
+
+模糊搜索工具，一个交互式的命令行搜索
+https://github.com/junegunn/fzf
+
+可以将文件保存到照片中
+https://github.com/DimitarPetrov/stegify
+
+代码行统计工具，以及要快100倍的工具
+http://cloc.sourceforge.net/
+https://github.com/cgag/loc
+
+磁盘使用情况检查
+https://dev.yorhel.nl/ncdu
+
+https://www.zhihu.com/question/59227720
+命令行中的TODO支持Getting Things Done
+https://calcurse.org/
+
+
+很不错的终端工具
+https://www.zhihu.com/question/59227720
+
 -->
 
 {% highlight text %}

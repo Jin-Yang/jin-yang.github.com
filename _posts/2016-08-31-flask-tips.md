@@ -55,6 +55,17 @@ if __name__ == '__main__':
 [('foobar', u'hello'), ('foo', u'world'), ('bar', u'hi')]
 {% endhighlight %}
 
+另外，也可通过如下方式获取参数。
+
+{% highlight python %}
+from flask import request
+
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+    x = request.args.get("x")        # 获取url参数内容
+    y = request.form.get("y")        # 获取form表单内容
+    z = request.headers.get("z")     # 获取http头部内容
+{% endhighlight %}
 
 
 ## POST 请求处理

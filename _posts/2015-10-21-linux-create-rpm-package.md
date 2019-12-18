@@ -767,9 +767,22 @@ BuildRequires:  sysv
     指定默认的shell；
 {% endhighlight %}
 
+### Build-ID
+
+在新版本的 Fedora 27 以及 Redhat 8 中，增加了对于 build-id 的支持，在使用 rpmbuild 时默认会自动添加，会在 `/usr/lib/.build-id` 目录下生成相关的文件。
+
+可以通过 `--define "_build_id_links none"` 参数取消文件的生成。
+
+增加 build-id 的目的是为了可快速找到正确的二进制文件以及 Debuginfo 。
+
+<!--
+https://fedoraproject.org/wiki/Releases/FeatureBuildId
+https://fedoraproject.org/wiki/Changes/ParallelInstallableDebuginfo
+-->
+
 ### 初始宏定义
 
-很多的宏，是在 `/etc/rpm` 目录下定义的，如上面的 `dist` 在 `/etc/rpm/macros.dist` 文件中定义。
+很多宏在 `/etc/rpm` 目录下定义，如上面的 `dist` 在 `/etc/rpm/macros.dist` 文件中定义。
 
 ### RPM包查看
 
@@ -814,11 +827,15 @@ $ echo '%define debug_package %{nil}' >> ~/.rpmmacros
 $ rpmbuild --define "debug_package %{nil}"
 {% endhighlight %}
 
+注意，如果使用 `%global debug_package %{nil}` 定义，需要添加到 `%prep` 和 `%setup` 段之间。
+
 注意，如果要使用 rpm 的 debuginfo 包，在编译的时候就需要添加 `-g` 参数，否则即使生成了 debuginfo 包，也有可能会导致没有提取到完整的 debuginfo 包，在使用 gdb 时会报如下的错误。
 
 {% highlight text %}
 separate debug info file has no debug info
 {% endhighlight %}
+
+如果在 RedHat 中，也可能会报 `Empty %files file /your/file/path/debugsourcefils.list` 错误。
 
 ## 参考
 

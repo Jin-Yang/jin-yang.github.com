@@ -1,5 +1,5 @@
 ---
-title: Aspire 实现
+title: BootServer 实现
 layout: project
 comments: true
 language: chinese
@@ -191,11 +191,11 @@ curl -v -o RAFT.mp4 "http://localhost:8180/api/v1/server/package/download/os/x86
 
 ## 表结构
 
-记录了 BootAgent 以及 Aspire 服务端所生成的事件信息，通过 `AgentSN`、`局部ID`、`发生时间戳` 唯一确定一个事件。
+记录了 BootAgent 以及 BootServer 服务端所生成的事件信息，通过 `AgentSN`、`局部ID`、`发生时间戳` 唯一确定一个事件。
 
 {% highlight sql %}
-CREATE DATABASE IF NOT EXISTS `Aspire`;
-USE `Aspire`;
+CREATE DATABASE IF NOT EXISTS `BootServer`;
+USE `BootServer`;
 
 DROP TABLE IF EXISTS `subtasks`;
 CREATE TABLE IF NOT EXISTS `subtasks` (

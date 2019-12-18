@@ -75,7 +75,7 @@ process.c   提供异步进程的实现
 
         "type": "simple",                              # 可选，以不同的方式启动 (默认是simple)
                                                        #       simple 以fork+exec方式运行，作为子进程
-                                                       #       fork 子进程会fork子进程，也就是常驻进程
+                                                       #       daemon 子进程会fork子进程，也就是常驻进程
 
         "pidfile": "/var/run/cargo/gearman.pid",       # 对于fork必选，每行一条记录，不过只会检查第一行
         "user": "root",                                # 可选，默认是root
@@ -112,6 +112,7 @@ process.c   提供异步进程的实现
 
 	"limits": {                                    # 可选，BA会周期性的检查，超过资源限制后kill进程
 		"interval":60,                         # 检查间隔
+		"enable":true,                         # 启动检查，可以判断进程是否存在
 		"CPU":30,                              # CPU使用率，单位%
 		"MEM":102400,                          # RSS内存，单位KB
 		"FDS":1000                             # 文件描述符
@@ -180,15 +181,16 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 
 ## 2. 健康检查
 
-用来检查子进程是否正常，总共有三种方式。
+用来检查子进程是否正常，总共有三种方式，可以选择其中一种，如果配置了多种检查方式，那么只有当所有的检查都失败之后才认为进程是异常的。
 
 ### 资源检查
 
-主要是检查子进程的 CPU、内存、句柄等信息。
+主要是检查子进程的 CPU、内存、句柄等信息，也可以检查进程是否存在。
 
 {% highlight text %}
 "limits": {
 	"interval":60,
+	"enable":true,
 	"CPU":30,
 	"MEM":102400,
 	"FDS":1000
@@ -535,6 +537,8 @@ $ ls /sys/fs/cgroup/memory/system.slice/BootAgent.service
 	"hostname": "127.0.0.1",                            # 可以通过hostname命令查看
 	"ipaddr": "127.0.0.1",                              # 在发送注册信息时与服务端建立连接的IP
 	"agentsn": "bfdcc18c-b6b9-4725-9c47-37fd93dba5b6"   # 本地生成的UUID用来唯一标识一台主机
+	"version": "1.2.4-x86_64",                          # BootAgent的版本号
+	"feature": 7,                                       # 支持特性 0: cgroup
 }
 
 ----- 返回信息
@@ -554,10 +558,6 @@ $ ls /sys/fs/cgroup/memory/system.slice/BootAgent.service
 {% highlight text %}
 ----- POST /api/v1/agent/status 上报当前Agent状态
 {
-	"hostname": "127.0.0.1",                                # 主机名
-	"agentsn": "33c5b8b4-5a2c-43c5-ab90-96721451b4ec",      # AgentSN
-	"version": "1.2.4-x86_64",                              # BootAgent的版本号
-	"feature": 7,                                           # 支持特性 0: cgroup
 	"uptime": 1234,                                         # 进程已经启动时间，单位秒
 	"timestamp": 1232,                                      # 上报时的时间戳
 	"step": 600,                                            # 上报的时间间隔，可以做修改，默认10min
@@ -591,13 +591,13 @@ $ ls /sys/fs/cgroup/memory/system.slice/BootAgent.service
 		"name": "BasicAgent",                          # 需要操作的子Agent名称
 		"url": "ftp://server:port/BasicAgent/BasicAgent-0.1.0-0.x86_64.rpm",
 		"checksum": "SHA256:4a34b8d7d3009bb9ef9475fbf33e7bbe4a1e8db003aefc578a241c2f51c2c2f2",
-		"envs": {                                      # 运行时的环境变量，一般在初次安装时配置，可以每次更新
-			"PATH": "/usr/bin;/usr/local/bin"
+		"parameters": {                                      # 运行时的环境变量，一般在初次安装时配置，可以每次更新
+			"PATH": "/usr/bin;/usr/local/bin",
+			"limits": {                                    # 资源使用限制
+				"CPU": "10%",
+				"MEM": "20M"
+			}
 		},
-		"limits": {                                    # 资源使用限制
-			"CPU": "10%",
-			"MEM": "20M"
-		}
 	}, {
 		"id": "ddc8a9b9-55bd-4ddd-b53d-47095ee19466",
 		"action": "config",                            # 修改BootAgent的相关配置

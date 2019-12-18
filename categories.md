@@ -28,6 +28,10 @@ Programs must be written for people to read, and only incidentally for machines 
 * [Java 语言专题](/post/theme-language-java.html)
 * [JavaScript 语言专题](/post/theme-language-javascript.html)
 
+其它。
+
+* [常用算法](/post/theme-algorithm-introduce.html)
+
 #### 其它
 
 一些常用的网站参考。

@@ -18,11 +18,11 @@ Linux 防火墙是由 Netfilter 和 iptables 两个组件组成，其中前者�
 
 Netfilter 框架用来在网络协议栈的内核路径上过滤数据包，就像一条路上的关卡，一个数据包在被处理的路径上在经过这些关卡时会被检查，如果符合条件就进行处理，结果就是若干个动作，包括接受、丢弃、排队、导入其它路径等。
 
-框架只需针对一个数据包得出一个结果即可，关卡内部提供什么服务在Netfilter框架中并没有任何规定。
+### Hook/链
 
 Netfilter 是一个设计良好的框架，之所以说它是一个框架是因为它提供了最基本的底层支撑，而对于实现的关注度却没有那么高，这种底层支撑实际上就是其 5 个 HOOK 点。
 
-各个 hook 点其实就是固定的“检查点”，这些检查点是内嵌于网络协议栈的，它将检查点无条件的安插在协议栈中，这些检查点的检查是无条件执行的。
+各个 hook 点其实就是固定的"检查点"，这些检查点是内嵌于网络协议栈的，它将检查点无条件的安插在协议栈中，这些检查点的检查是无条件执行的。
 
 ![netfilter]({{ site.url }}/images/linux/netfilter_packet_flow.png "netfiler"){: .pull-center }
 
@@ -43,6 +43,108 @@ Netfilter 是一个设计良好的框架，之所以说它是一个框架是因�
 #define NF_IP_LOCAL_OUT     3
 #define NF_IP_POST_ROUTING  4
 {% endhighlight %}
+
+每个节点可以有多个规则，数据报文会按照顺序一个一个匹配这些规则，这些规则串起来就像一个链，所以也被称为 "链" 。其中 `PreRouting` 和 `PostRouting` 一般作为 DNAT 以及 SNAT，剩余的三个会作为 filter ，后面会详细介绍。
+
+对于应用常见来说，Input 和 Output 通常用在主机防火墙中，针对本机进出数据做安全控制；而 Forward、PreRouting 和 PostRouting 更多用在网络防火墙中，特别是防火墙作为网关使用时。
+
+### 表
+
+每条链上可以有多个规则，很多相似的规则就组成了一个表，iptables 提供了四个表，每个表通过内核中的 iptables_XXX 模块支持。
+
+#### filter 表
+
+用作数据包的过滤，可以根据规则处理包 (Drop、Accept、Reject、Log)，所谓的防火墙主要是指改规则。
+
+#### nat 表
+
+网络地址转换，用来修改数据包的 IP 地址、端口号等信息，常见操作有 SNAT、DNAT、Masquerade、Rediect 。
+
+注意，当一个包经过了一次之后，剩余的包不会再经过这个表，剩余包会自动做相应的转换。
+
+#### mangle 表
+
+修改包中的内容，一般会解包、修改、封装，通常修改数据包中的 TOS、TTL、Mark 等标记，以实现 Qos 或者策略路由等，需要依赖特定的路由设备支持，使用并不广泛。
+
+#### raw 表
+
+主要用于决定数据包是否被跟踪机制处理，其优先级会高于其它的表。)
+
+### 关系
+
+虽然数据包是按照链上的顺序匹配规则，实际上每一类是放到一块的，而且会按照 raw mangle nat filter 的规则进行匹配。
+
+![hello world logo]({{ site.url }}/images/network/iptables-hook-list.png "hello world logo"){: .pull-center }
+
+### 规则和动作
+
+一般 iptables 的处理方式是，匹配一个规则，然后进行相关的处理。
+
+#### 动作
+
+##### Accept
+
+允许数据包通过。
+
+##### Drop
+
+不向客户端返回任何信息，直接丢弃数据包，客户端只能通过超时机制处理。
+
+##### Reject
+
+拒绝数据包，客户端会收到一个数据包被丢弃的响应消息。
+
+##### SNAT
+
+源地址转换，用来解决使用相同公网 IP 上网问题。
+
+在经过路由之后，且在转发之前会将源地址改写，并在本机建立一个 NAT 表，当数据返回时，根据 NAT 表中的内容再次将目标地址修改。
+
+##### Masquerade
+
+也是 SNAT 的一种形式，用于动态、临时的 IP 上。
+
+##### DNAT
+
+目的地址转换，解决私网服务端接收公网请求的问题，可以隐藏后端服务器的真实地址。
+
+在路由之前会修改目标地址，同样会建立 NAT 表，然后数据返回时，会根据 NAT 表修改地址发送给远程主机。
+
+##### Rediect
+
+在本机做端口映射。
+
+##### Log
+
+会在 `/var/log/message` 中记录日志。
+
+注意，当前三条的规则匹配之后，就不会再向下进行处理了，所以规则的顺序十分关键。
+
+
+## State
+
+以 SSH 服务为例，在作为客户端通过 SSH 连接到服务端之后，本地会随机一个端口，而远端则仍然为 22 端口。最简单的规则是开放 22 端口的发送和接收，这样的话会导致本地的 22 端口被暴露，那么可以增加 IP 白名单，但是维护成本又会很高。
+
+实际上，iptables 的 state 扩展模块可以解决上述的问题，也就是实现连接跟踪。
+
+这里的连接并不仅限于类似 TCP 的方式，实际上 UDP ICMP 都可以，主要两台机器之间有通讯即可。
+
+### 状态类型
+
+连接的报文分成了五种：New、Established、Invalid、Untracked ，其中比较难理解的是 Related 状态。
+
+在一个服务中，可能开启了两个进程，而且这两个进程都需要跟服务器进行通信，例如 FTP 有两个通信链路，命令链路和传输数据的链路，这两个链路就是存在关系的，所以他们属于 RELATED 状态。
+
+所以，正常来说，对于主动发起的请求，可以放行 ESTABLISHED ，为了保证类似 FTP 这种的请求，可以同时放行 RELATED 这一状态。
+
+<!--
+iptables -t filter -I INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -t filter -A INPUT -j REJECT
+
+https://www.jianshu.com/p/586da7c8fd42
+https://wsgzao.github.io/post/iptables/
+https://www.xiebruce.top/1071.html
+-->
 
 ## iptables
 
@@ -69,7 +171,9 @@ iptables [-t table] command [chain] [match] [target]
 
 ### 常用操作
 
-首先是查看当前的记录，默认查看的是 filter 表，如果要查看 NAT 表，可以加上 -t nat 参数。
+#### 查看
+
+首先是查看当前的记录，默认查看的是 filter 表，如果要查看 NAT 表，可以加上 `-t nat` 参数。
 
 {% highlight text %}
 # iptables --line-number -nvL POSTROUTING -t nat
@@ -77,10 +181,31 @@ iptables [-t table] command [chain] [match] [target]
 如上参数包括：
    -n    不对IP进行反查，显示速度会快很多
    -v    输出详细信息，包括通过该规则的数据包数量、总字节数、相应的网络接口
+   -x    通过-v会显示统计信息，一般会做单位转换，该选项会严格显示字节
    --line-number   显示规则的序列号，这个参数在删除或修改规则时会用到
 {% endhighlight %}
 
-添加规则有两个参数：1) -A 添加到规则的末尾；2) -I 插入到指定位置，默认插入到规则的首部。
+默认是查看所有的链，也可以通过最后一个参数指定对应的链，注意，链名称必须要全大写。
+
+{% highlight text %}
+# iptables -nvL
+Chain INPUT (policy ACCEPT 2055 packets, 2419K bytes)   INPUT链上的规则，默认规则是ACCEPT
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain OUTPUT (policy ACCEPT 1928 packets, 2396K bytes)
+ pkts bytes target     prot opt in     out     source               destination 
+{% endhighlight %}
+
+当增加了 `-v` 参数之后，在列表中会添加 `pkts` `bytes` `in` `out` 几个监控的指标，其中 `target` 可以是动作 (Accept、Drop等)，也可以是另外一条规则，详见如下示例。
+
+上述实际包含了一个默认的参数 `-t filter` 也就是过滤表，而过滤只在 Input Forward Output 链中出现。
+
+#### 添加
+
+有两个参数：1) `-A` 添加到规则的末尾；2) `-I` 插入到指定位置，默认插入到规则的首部。
 
 {% highlight text %}
 ----- 添加一条规则到尾部
@@ -89,6 +214,8 @@ iptables [-t table] command [chain] [match] [target]
 ----- 插入一条规则到第三行
 # iptables -I INPUT 3 -s 192.168.1.3 -j DROP
 {% endhighlight %}
+
+#### 删除
 
 结下来可以通过如下方式删除。
 
@@ -153,6 +280,11 @@ num  target     prot opt source               destination
 ----- 修改规则，改为DROP
 # iptables -R INPUT 3 -j DROP
 
+----- 重置所有统计信息
+# iptables -Z
+# iptables -Z INPUT
+# iptables -Z INPUT 1
+
 ----- 删除input的第3条规则
 # iptables -D INPUT 3
 ----- 删除nat表中postrouting的第一条规则
@@ -166,8 +298,15 @@ num  target     prot opt source               destination
 
 ---- 设置filter表INPUT默认规则是DROP
 # iptables -P INPUT DROP
+
+---- 清理所有非默认的chain信息
+# iptables -X
 {% endhighlight %}
 
+<!--
+-F, --flush
+-X, --delete-chain
+-->
 
 ## 其它
 

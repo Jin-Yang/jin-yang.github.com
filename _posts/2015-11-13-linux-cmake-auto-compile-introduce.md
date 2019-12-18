@@ -303,48 +303,7 @@ message("Result is :${addResult}")
 
 函数与宏的区别是，函数中的变量是局部的，不能直接传出。
 
-
-## 常用示例
-
-### 内置变量
-
-如下是设置 C 编译器的参数，对于 CPP 则将 C 替换为 CXX 即可。
-
-{% highlight text %}
-set(CMAKE_C_COMPILER      "gcc" )               # 显示指定使用的编译器
-set(CMAKE_C_FLAGS         "-std=c99 -Wall")     # 设置编译选项，也可以通过add_definitions添加编译选项
-set(CMAKE_C_FLAGS_DEBUG   "-O0 -g" )            # 调试包不优化
-set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG " )     # release包优化
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wno-sign-compare")   # 忽略某些告警
-{% endhighlight %}
-
-内置变量可在 cmake 命令中使用，如 `cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Debug` 。
-
-<!--
-EXECUTABLE_OUTPUT_PATH：可执行文件的存放路径
-LIBRARY_OUTPUT_PATH：库文件路径
-CMAKE_BUILD_TYPE:：build 类型(Debug, Release, ...)，
-BUILD_SHARED_LIBS：Switch between shared and static libraries
--->
-
-
-### Build Type
-
-除了上述 `CMAKE_C_FLAGS_DEBUG` 指定不同类型的编译选项外，还可以通过如下方式指定。
-
-{% highlight text %}
-set(CMAKE_BUILD_TYPE Debug CACHE STRING "set build type to debug")
-if(NOT ${CMAKE_BUILD_TYPE} MATCHES "Debug")
-	SET(CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
-    set(LIBRARIES Irrlicht_S.lib)
-else()
-    set(LIBRARIES Irrlicht.lib)
-endif()
-{% endhighlight %}
-
-可以在命令行中通过如下方式编译 `cmake -DCMAKE_BUILD_TYPE=Debug ..`，最终的编译选项可以查看 `CMakeFiles/SRCFILE.dir/flags.make` 中的 `C_FLAGS` 选项，一般是 `CMAKE_C_FLAGS+CMAKE_C_FLAGS_MODE` 。
-
-### 测试用例
+## 测试
 
 可以通过如下方式添加测试用例。
 
@@ -387,6 +346,111 @@ PROPERTIES PASS_REGULAR_EXPRESSION "is 4")  #
 对于 valgrind，如果输出是 reachable 类型，那么实际上是依赖于 OS 的内存回收，此时及时已经配置了 `--error-exitcode=1` 也不会返回 0 ，尤其是对于全局变量。
 
 为此，对于 CMake 而言，就需要配置 `FAIL_REGULAR_EXPRESSION "reachable"`，同时对于其它的内存泄露也会报错。
+
+### SetUp TearDown
+
+一般在测试用例中会存在 SetUp 以及 TearDown ，分别用来做一些测试前后的准备工作，除此之外，还有一种方式 Fixture ，也就是打桩。
+
+相比来说，打桩的处理流程会更加复杂，通常为了方便管理，会将测试相关的内容单独抽象一层。
+
+{% highlight text %}
+CMAKE_MINIMUM_REQUIRED(VERSION 3.7)
+PROJECT(foo)
+
+ENABLE_TESTING()
+
+#ADD_TEST(NAME DBSetUp   COMMAND /usr/bin/false)
+ADD_TEST(NAME DBSetUp   COMMAND ${CMAKE_COMMAND} -E echo setup)
+ADD_TEST(NAME DBCleanUp COMMAND ${CMAKE_COMMAND} -E echo cleanup)
+ADD_TEST(NAME TCaseFoo  COMMAND ${CMAKE_COMMAND} -E echo "Needs Fixture Foo")
+ADD_TEST(NAME TCaseBar  COMMAND ${CMAKE_COMMAND} -E echo "Needs Fixture Bar")
+
+# Specified multi dependences, like "DB;File"
+SET_TESTS_PROPERTIES(TCaseFoo TCaseBar
+                                PROPERTIES FIXTURES_REQUIRED  DB)
+SET_TESTS_PROPERTIES(DBSetUp    PROPERTIES FIXTURES_SETUP     DB)
+SET_TESTS_PROPERTIES(DBCleanUp  PROPERTIES FIXTURES_CLEANUP   DB)
+SET_TESTS_PROPERTIES(DBSetUp DBCleanUp TCaseFoo TCaseBar
+        PROPERTIES RESOURCE_LOCK SerialDB
+)
+{% endhighlight %}
+
+在运行一堆的测试用例之前，需要准备一些资源，最常见的是 DB 相关的数据。
+
+{% highlight text %}
+----- 运行指定的测试用例
+$ ctest -R <TEST_NAME>
+
+----- 重新运行失败的用例
+$ ctest --rerun-failed
+{% endhighlight %}
+
+如果通过 ctest 单独测试某个用例，ctest 会先根据配置生成相关的依赖，如果 SetUp 执行失败会跳过相关的测试用例 (注意，清理函数还会继续执行) 。
+
+当已经完成测试，可以通过 `ctest -R cleanup` 执行清理操作。
+
+默认各个测试是并发执行的，如果需要串行执行，可以通过 `RESOURCE_LOCK` 来实现。
+
+<!--
+https://crascit.com/2016/10/18/test-fixtures-with-cmake-ctest/
+https://gitlab.kitware.com/cmake/community/wikis/doc/ctest/Testing-With-CTest
+https://docs.nersc.gov/services/cdash/with_cmake/
+-->
+
+### 其它
+
+#### 超时设置
+
+可以针对单个测试用例设置超时时间，单位是秒。
+
+{% highlight text %}
+ADD_TEST(yourtest ...)
+SET_TESTS_PROPERTIES(yourtest PROPERTIES TIMEOUT 30)
+{% endhighlight %}
+
+另外，如果单独使用 ctest 进行测试，那么可以在启动的时候添加 `--timeout 120` 参数，指定默认的超时时间。
+
+
+
+## 常用示例
+
+### 内置变量
+
+如下是设置 C 编译器的参数，对于 CPP 则将 C 替换为 CXX 即可。
+
+{% highlight text %}
+set(CMAKE_C_COMPILER      "gcc" )               # 显示指定使用的编译器
+set(CMAKE_C_FLAGS         "-std=c99 -Wall")     # 设置编译选项，也可以通过add_definitions添加编译选项
+set(CMAKE_C_FLAGS_DEBUG   "-O0 -g" )            # 调试包不优化
+set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG " )     # release包优化
+set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wno-sign-compare")   # 忽略某些告警
+{% endhighlight %}
+
+内置变量可在 cmake 命令中使用，如 `cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Debug` 。
+
+<!--
+EXECUTABLE_OUTPUT_PATH：可执行文件的存放路径
+LIBRARY_OUTPUT_PATH：库文件路径
+CMAKE_BUILD_TYPE:：build 类型(Debug, Release, ...)，
+BUILD_SHARED_LIBS：Switch between shared and static libraries
+-->
+
+
+### Build Type
+
+除了上述 `CMAKE_C_FLAGS_DEBUG` 指定不同类型的编译选项外，还可以通过如下方式指定。
+
+{% highlight text %}
+set(CMAKE_BUILD_TYPE Debug CACHE STRING "set build type to debug")
+if(NOT ${CMAKE_BUILD_TYPE} MATCHES "Debug")
+	SET(CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
+    set(LIBRARIES Irrlicht_S.lib)
+else()
+    set(LIBRARIES Irrlicht.lib)
+endif()
+{% endhighlight %}
+
+可以在命令行中通过如下方式编译 `cmake -DCMAKE_BUILD_TYPE=Debug ..`，最终的编译选项可以查看 `CMakeFiles/SRCFILE.dir/flags.make` 中的 `C_FLAGS` 选项，一般是 `CMAKE_C_FLAGS+CMAKE_C_FLAGS_MODE` 。
 
 ### 文件渲染
 
