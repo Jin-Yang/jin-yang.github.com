@@ -61,6 +61,17 @@ Community Enterprise Operating System, CentOS 是 Linux 发行版之一，它是
 * [Linux SED](/post/linux-commands-text-sed-introduce.html) 一个精简的、非交互式的编辑器，可以提供类似 VIM 的编辑能力。
 * [Linux 杂项](/post/linux-commands-tips.html)，常用命令，如 find 。
 
+## 善用嘉软
+
+<!--
+https://www.calcurse.org/
+http://todotxt.org/
+https://www.moneymanagerex.org/news
+
+https://www.gnucash.org/
+https://sourceforge.net/projects/gnucash/
+-->
+
 
 {% highlight text %}
 {% endhighlight %}
