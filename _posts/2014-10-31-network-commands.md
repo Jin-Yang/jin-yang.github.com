@@ -12,8 +12,6 @@ description: 简单记录一下 Linux 中的常用网络命令，如 tcpdump、n
 
 <!-- more -->
 
-
-
 ## Wget
 
 一个下载文件的工具，支持断点下载、FTP 和 HTTP 下载、代理服务器，如下简单介绍其使用方法。
@@ -1005,9 +1003,20 @@ curl -E localcert.pem https://remote_server
 curl dict://dict.org/d:computer
 -->
 
+## nmcli
 
+这是在 CentOS8 中添加的网络管理包。
 
+{% highlight text %}
+----- 设备的状态信息
+# nmcli device status
 
+----- 查看设备详细信息
+# nmcli device show eth0
+
+----- 查看所有连接，通过 -a 过滤活跃连接
+# nmcli connection show
+{% endhighlight %}
 
 
 

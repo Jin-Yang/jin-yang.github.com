@@ -62,6 +62,15 @@ description:
 
 然后通过 `docker run hello-world` 进行测试。
 
+### 常用镜像
+
+简单介绍下常用的镜像。
+
+#### Alpine
+
+一个面向安全的轻型 Linux 发行版，采用了 musl libc 和 busybox 以减小系统的体积和运行时资源消耗，但功能上比 busybox 又完善的多，通过 apk 管理包，也可以从 [pkgs](https://pkgs.alpinelinux.org/packages) 上查看。
+
+可以通过 `docker run alpine echo '123'` 或者 `docker run -it alpine sh` 简单运行。
 
 ### 仓库地址
 
@@ -120,15 +129,15 @@ docker.io/centos    latest              67fa590cfc1c        4 weeks ago         
 ----- 重命名镜像，通过ID指定
 # docker tag 67fa590cfc1c centos
 
-
 ----- 运行容器，指定名称为REPOSITORY:TAG
 # docker run hello-world
 # docker run -it docker.io/centos /bin/bash
 
------ 后台运行
-# docker run -d -it --name centos centos /bin/bash
+----- 后台运行，并attach到后台容器
+# docker run -itd --name centos centos /bin/bash
+# docker exec -it centos /bin/bash
 
------ 查看正在运行的容器
+----- 查看正在运行的容器，可以通过-a参数查看所有
 # docker ps
 
 ----- 链接到运行的容器，需要指定CONTAINER ID
@@ -140,6 +149,9 @@ docker.io/centos    latest              67fa590cfc1c        4 weeks ago         
 ----- 将已有的镜像保存，然后本地加载镜像
 $ docker save -o busybox.tar busybox:latest
 $ docker load -i busybox.tar
+
+----- 清理已经停止的容器
+# docker ps -a | grep "Exited" | awk '{print $1 }' | xargs docker rm
 {% endhighlight %}
 
 在通过 `run` 命令启动时，常用的参数如下。

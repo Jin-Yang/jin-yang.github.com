@@ -24,19 +24,36 @@ Compose 项目由 Python 编写，通过调用 Docker 服务提供的 API 来对
 
 在 [Github-Compose](https://github.com/docker/compose/releases) 同时提供了相关的二进制，暂时不太清楚一个 Python 怎么转换为二进制的，下载时需要注意与 Docker 版本的配套依赖关系。
 
-<!--
+### 安装
+
 因为是 Python 编写，可以利用 PIP 进行安装，也就是 `pip install -U docker-compose` 。
 
+<!--
 另外，还提供了自动补全工具
 contrib/completion/bash/docker-compose
 /etc/bash_completion.d/docker-compose
 https://yeasy.gitbooks.io/docker_practice/compose/
 -->
 
+### 示例
 
+这里使用的是 [Dockerfile 简介](/post/docker-basic-concept-dockfile-introduce.html) 中的示例镜像，然后创建 `docker-compose.yml` 文件，内容如下。
+
+{% highlight text %}
+version: '3'
+services:
+  foobar:
+    image: "foobar"
+    ports:
+      - "3030:2000"
+{% endhighlight %}
+
+最后，通过 `docker-compose up` 命令启动即可，可以通过 `-f` 参数指定文件。
+
+<!--
 ## 参考
-
 https://docs.docker.com/compose/gettingstarted/
+-->
 
 {% highlight text %}
 {% endhighlight %}

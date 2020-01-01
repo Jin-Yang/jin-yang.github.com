@@ -66,6 +66,11 @@ https://bolinfest.github.io/opensnoop-native/
 * [Dstat 使用及其原理](/post/details-about-dstat.html) 一个使用 Python 编写的跨平台监控工具。
 * [Systemtap 使用简介](/post/linux-systemtap.html) 介绍内核神器 Systemtap 的使用方式，包括了如何使用最新的安全特性。
 
+<!--
+主机监控指标
+https://github.com/cockpit-project/cockpit
+-->
+
 
 {% highlight text %}
 {% endhighlight %}

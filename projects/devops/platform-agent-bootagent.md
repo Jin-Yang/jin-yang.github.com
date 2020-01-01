@@ -129,6 +129,7 @@ process.c   提供异步进程的实现
 		"match":"regex:success"                # 对上报报文的"message"字段进行匹配
 	},
 
+        "checkall": true,                              # 可选，当所有都失败时才认为异常
         "checks": 3,                                   # 可选，如上的检查超过这里的设置次数后认为异常
         "checksecs": 20,                               # 可选，健康检查默认时间
 }
@@ -181,7 +182,7 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 
 ## 2. 健康检查
 
-用来检查子进程是否正常，总共有三种方式，可以选择其中一种，如果配置了多种检查方式，那么只有当所有的检查都失败之后才认为进程是异常的。
+用来检查子进程是否正常，总共有三种方式，可以选择其中一种，如果配置了多种检查方式，可以选择是都失败时认为异常，还是只要当单个检查失败就认为异常。
 
 ### 资源检查
 
@@ -201,8 +202,6 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 
 通过配置的健康检查端口判断，目前只支持 Unix Domain Socket，使用简单的换行进行分割。
 
-会发送 `health\r\n` 请求，返回的结果会读取到 `\r\n` 处为止，最大长度为 127 字节。
-
 {% highlight text %}
 "check": {
 	"interval":60,
@@ -211,11 +210,19 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 }
 {% endhighlight %}
 
+会发送如下内容的报文，并以 `\r\n` 结束，同时，返回的结果会读取到 `\r\n` 处为止，目前最大长度为 1023 字节。
+
+{% highlight text %}
+{
+	"gardian":"BootAgent",
+	"method":"health",
+}
+{% endhighlight %}
+
+
 ### 心跳
 
-
-
-由子 Agent 周期性的向 BootAgent 发送固定格式的心跳报文。
+由子 Agent 周期性的向 BootAgent 发送固定格式的心跳报文，报文同样需要以 `\r\n` 格式结束。
 
 {% highlight text %}
 "heartbeat": {
@@ -223,6 +230,21 @@ BootAgent 在调用子 Agent 之后，子 Agent 会作为 Daemon 进程存在，
 	"match":"regex:success"
 }
 {% endhighlight %}
+
+上报的示例报文如下，其中 `agent` 标识了被管理 Agent 的名称以及版本信息，版本信息暂未使用。
+
+{% highlight text %}
+{
+	"agent": {
+		"name": "MiniAgent",      // 必选
+		"version": "1.2.3"        // 可选
+	},
+	"message": "success"              // 必选
+}
+{% endhighlight %}
+
+可以通过 `BOOTSOCK` 环境变量向该 Unix Domain Socket 发送心跳信息。
+
 
 ## 3. 任务管理
 

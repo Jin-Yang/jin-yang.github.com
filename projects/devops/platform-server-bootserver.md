@@ -90,11 +90,26 @@ pyresttest http://booter.cargo.com:8180 contrib/tests/register.yaml --print-bodi
 ### 主机管理
 
 {% highlight text %}
------ GET  /api/v1/server/host?agentsn="845d6374-7d4e-402f-87cc-2a780e794dd6"
+----- GET  /api/v1/server/host?agentsn=845d6374-7d4e-402f-87cc-2a780e794dd6
 {
-
+	"count":1,
+	"online":0,
+	"hosts":[{
+		"status":0,
+		"hostname":"northA1.ECS.DB",
+		"agentsn":"845d6374-7d4e-402f-87cc-2a780e794dd6",
+		"ipaddr":"127.198.9.12",
+		"region":"northA1",
+		"status":"online",
+		"feature":["cgroup"],
+		"step":300,
+		"gmt_create": "2018-11-09T00:14:27+08:00",
+		"gmt_modify": "2018-11-09T00:14:27+08:00",
+	}]
 }
 {% endhighlight %}
+
+主机名规范。
 
 ### 包 VS. Agent 管理
 
