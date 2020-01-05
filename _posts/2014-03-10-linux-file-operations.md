@@ -122,22 +122,26 @@ chattr [-R] [-+=] [AacDdijsSu] 文件名
 {% endhighlight %}
 
 * A(atime)：如果设置了A属性，则这个文件的最后访问时间atime不能被修改。
-
 * a(append only)：如果设置了a属性，则这个文件只能增加数据，不允许任何进程覆盖或截断这个文件。如果某个目录具有这个属性，那么只能在这个目录下建立和修改文件，而不能删除任何文件。注意，由于vi会创建一些swp文件，因此此时会出错，使用nano。
-
 * d(No dump)：在进行文件系统备份时，dump程序将忽略这个文件。
-
 * i(immutable)：如果设置了i属性，则不能对这个文件做任何修改，包括删除、修改内容等，如果要删除必须去掉该属性。如果某个目录具有这个属性，那么只能修改该目录下的文件，而不能建立和删除文件。这个是针对所有用户，而修改目录的w权限对root无效。
+
+其中可以通过 `+` 添加，`-` 取消，以及 `=` 设置文件属性。
+
+其中 `e` 标示文件系统支持 `extents` 属性，一般会在 ext4 中使用，可以通过 `df -Th` `lsblk -f` 查看当前所挂载磁盘的文件系统类型。
+
+> 所谓的 extents 属性，主要是针对大文件，只需要记录文件的起始以及结束地址即可，无需记录所有的块，可以有效降低元数据的大小。
+
+{% highlight text %}
+----- 查看某个文件的磁盘分片
+# filefrag -v FILENAME
+{% endhighlight %}
 
 <!--
     c(compressed): 系统以透明的方式压缩这个文件。从这个文件读取时，返回的是解压之后的数据；而向这个文件中写入数据时，数据首先被压缩之后才写入磁盘。</li><br><li>
-
     s(secure deletion)：如果设置了s属性，则这个文件将从硬盘空间中完全删除，使用0填充所在区域。</li><br><li>
-
     u(undeletable)：与s完全相反。如果设置了u属性，则这个文件虽然被删除了，但是还在硬盘空间中存在，还可以用来还原恢复。
-
     （D）synchronous directory updates；（j）data journalling；（S）synchronous updates；（T）and top of directory hierarchy；（t）no tail-merging。-->
-
 
 ### 文件时间属性
 

@@ -690,7 +690,6 @@ curl 用于向服务器传输数据，它支持 http、https、ftp、ftps、scp�
 
 ### 常见示例
 
-
 {% highlight text %}
 ----- 查看源码，保存到某个文件；默认输出到终端
 $ curl -o filename www.sina.com
@@ -711,6 +710,8 @@ $ curl www.example.com/form.cgi?data=xxx
 
 ----- 发送POST表单信息，需要把数据和网址分开，也就是--data参数，通过第一个参数对表单编码
 $ curl --data-urlencode --data "data=April 1" www.example.com/form.cgi
+$ curl -H "Content-Type: application/json" -X POST   \
+	-d '{"userid":"123","address":100}' http://127.0.0.1:8001/test
 {% endhighlight %}
 
 #### 各阶段时间
@@ -1018,7 +1019,11 @@ curl dict://dict.org/d:computer
 # nmcli connection show
 {% endhighlight %}
 
+## 其它
 
+### 压侧工具
+
+[Vegeta](https://github.com/tsenart/vegeta)
 
 
 {% highlight text %}
