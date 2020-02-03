@@ -45,9 +45,31 @@ description:
 ./boot -L /tmp/booter.log -P /tmp/booter.pid -f
 {% endhighlight %}
 
-## 命令通道
+## 通道
 
-用于在服务器上执行命令。
+这里所有的请求都是通过插件实现，包括了：
+
+1. cmd 命令管道，可以是同步命令或者异步命令；
+2. info 用于查询主机上的相关信息，例如 `info.kernel` 查询内核信息，`info.users` 查询用户信息；
+3. chaos 混沌测试。
+
+### 消息格式
+
+{% highlight text %}
+-----> 请求报文
+{
+    "id": "xxxxxx",
+    "method": "sync.bash",    # 必选，指定同步命令类型
+    "arguments": {            # 可选，命令参数
+	    "cmd": "ls",
+	    "timeout": 10,
+	    "user": "root",
+	    "group": "root"
+    }
+}
+{% endhighlight %}
+
+## 命令通道
 
 ### 同步命令
 
@@ -80,7 +102,6 @@ description:
 {% endhighlight %}
 
 ### 异步任务
-
 
 ## 查询接口
 
@@ -118,17 +139,17 @@ description:
 {% highlight text %}
 BasicAgentCtl [options]
 参数：
-    -c <command>    指定命令，例如getinfo.kernel、getinfo.users等；
+    -c <command>    指定命令，例如info.kernel、info.users等；
     -a <arguments>  上述命令的参数，不同的指标参数略有区别；
 
 ===> getinfo.users 获取用户信息，注意执行需要ROOT权限
-./BasicAgentCtl -c "getinfo.users" -a "-U root" | python -m json.tool  # 指定用户
-./BasicAgentCtl -c "getinfo.users" -a "-A" | python -m json.tool  # 所有
-./BasicAgentCtl -c "getinfo.users" -a "-u" | python -m json.tool  # 普通用户
-./BasicAgentCtl -c "getinfo.users" -a "-S" | python -m json.tool  # 系统用户
+./BasicAgentCtl -c "info.users" -a "-U root" | python -m json.tool  # 指定用户
+./BasicAgentCtl -c "info.users" -a "-A" | python -m json.tool  # 所有
+./BasicAgentCtl -c "info.users" -a "-u" | python -m json.tool  # 普通用户
+./BasicAgentCtl -c "info.users" -a "-S" | python -m json.tool  # 系统用户
 
 ===> getinfo.kernel 获取内核信息
-./BasicAgentCtl -c "getinfo.kernel" | python -m json.tool
+./BasicAgentCtl -c "info.kernel" | python -m json.tool
 {% endhighlight %}
 
 

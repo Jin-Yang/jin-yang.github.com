@@ -12,21 +12,159 @@ Internet Control Message Protocol, ICMP(RFC-792) 基于 IP 协议，工作在七
 
 <!-- more -->
 
+## 简介
+
+ICMP 报文封装在 IP 报文内部，通过 RAW_SOCK 接收到的报文同时会包含 IP 头部信息，这也就意味着在使用时，需要将 IP 的头先拆掉，然后再获取 ICMP 报文。
+
+### ICMP 报文
+
+
+
 <!--
-![nmap logo]({{ site.url }}/images/network/nmap-logo.jpg "nmap logo"){: .pull-center width="50%" }
+IP 报文头为 20 字节 [IP头部结构详解](http://codingstone.com/content.php?blockTableName=network&blogID=2) 。
+
+ICMP 报文头根据 type 和 code 的不同，其对应的大小也有所区别，详见 [使用Python的Socket模块构建一个UDP扫描工具](http://www.cnnetsec.com/2308.html) 。
+
+关于 ICMP 也可以参考 http://courses.cs.vt.edu/cs4254/fall04/slides/raw_6.pdf
+
+ICMP 报文格式
+http://www.cnblogs.com/jingmoxukong/p/3811262.html
+-->
 
 
 
+Ping 使用的是 ICMP 报文，其报头为 8 字节，数据报长度最大为 64K 字节。
+
+#### Echo/Echo Reply Message
+
+{% highlight text %}
+0                   1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type      |     Code      |          Checksum             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|           Identifier          |        Sequence Number        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Data ...
++-+-+-+-+-+-+-
+{% endhighlight %}
+
+Ping 是用这一报文发送以及接收，其中 Type(8) 是请求报文，而 Type(0) 是应答报文。
+
+注意，如果需要扫描多个个主机，那么返回的报文中只有 ID 以及 SEQ ，所以，可以将相关的信息添加到 Data 字段中，这个字段是二进制的，可以以 `\0'` 终止。
+
+<!--
+GitHub 上不错的Hack技巧
+ICMP Tunnel
 
 
+type of service (ToS
 
 
+对于通过 SOCK_RAW + ICMP 实现套接字，会接收到所有发送到本机的报文。
+
+1. Destination Host Unreachable
+
+* 校验和算法，把被校验的数据 16 位进行累加，若数据字节长度为奇数，则数据尾部补一个字节的 0 以凑成偶数，然后取反码，。
+
+此算法适用于IPv4、ICMPv4、IGMPV4、ICMPv6、UDP和TCP校验和，更详细的信息请参考RFC1071，校验和字段为上述ICMP数据结构的icmp_cksum变量。
+标识符�D�D用于唯一标识ICMP报文, 为上述ICMP数据结构的icmp_id宏所指的变量。
+顺序号�D�Dping命令的icmp_seq便由这里读出，代表ICMP报文的发送顺序，为上述ICMP数据结构的icmp_seq宏所指的变量。
+-->
+
+## 代码实现
+
+### 非 root 套接字
+
+新版本的内核中提供了低权限的 Socket 访问方式，内核会自动过滤报文，不太适合大批量的监控，这里仅简单介绍下。
+
+ICMP 套接字的目的是允许在不设置 SUID 或者 CAP_NET_RAW 权限的时候允许 ping 程序的使用，详细的实现可以查看内核的邮件列表 [add IPPROTO_ICMP socket kind](https://lkml.org/lkml/2011/5/10/389) 。
+
+是否支持是通过内核的 `net.ipv4.ping_group_range` 指定，这是一对整数，指定了允许使用 ICMP 套接字的组 ID 的范围，默认为 `1 0` 也就意味着没有人能够使用这个特性。
+
+可以通过如下命令修改。
+
+{% highlight text %}
+# sysctl -w net.ipv4.ping_group_range='0 10'
+{% endhighlight %}
+
+然后可以通过如下方式创建 ICMP 的套接字。
+
+{% highlight text %}
+import socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_ICMP)
+{% endhighlight %}
+
+如果系统不支持这个特性，在创建套接字的时候会得到 `Protocol not supported` 的错误，而如果没有权限，则会得到 `Permission denied` 的错误。
+
+它的类型和 UDP 套接字一样，是 `SOCK_DGRAM` 而非 `SOCK_RAW`，这也就意味着你不会收到 20 字节的 IP 头，而且内核会计算校验和，并且填充 ICMP ID，在接收到响应后，内核会只把相应 ID 的 ICMP 响应返回给程序，不需要自己或者要求内核过滤了。
+
+### Socket 选项
+
+可以通过 `setsockopt()` 设置相关的参数，常用的参数如下。
+
+* `SOL_SOCKET` `SO_BINDTODEVICE` 绑定到某个网络设备上，也就是从某个指定的网卡发送数据。
+* `SOL_SOCKET` `SO_MARK` 用来添加标记，然后作策略路由之类的动作。
+* `SOL_SOCKET` `SO_TIMESTAMP` 让协议栈接受到一个网络帧时为其打上时间戳，并将此时间戳作为一笔附加数据，与网络帧数据一起递交到上层协议。
+
+#### Mark 标记
+
+用于将特定的数据包打上标签，供 `iptables` 配合 `TC` 做 `QOS` 流量限制、应用策略路由等。
+
+系统可用模块，对 CentOS 而言可通过 `ls /usr/lib64/xtables/ | grep -i mark` 查看，其中大写的为标记模块，小写的为匹配模块。
+
+<!--
+ls /usr/lib/iptables/|grep -i mark
+-->
+
+{% highlight text %}
+----- 查看关于Mark标记的帮助信息
+# iptables -j MARK --help
+# iptables -m mark --help
+
+----- 将所有TCP数据标记1
+# iptables -t mangle -A PREROUTING -p tcp -j MARK --set-mark 1
+
+----- 匹配标记1的数据并保存数据包中的MARK到连接中
+# iptables -t mangle -A PREROUTING -p tcp -m mark --mark 1 -j CONNMARK --save-mark
+{% endhighlight %}
+
+#### 策略路由
+
+标签并不是设置在数据包内容中，而是在内核中数据包的载体上，如果需要在数据包内容中设置标签，可以使用 TOS 规则目标，也就是修改 IP 数据包头的 TOS 值。
+
+{% highlight text %}
+----- 将从网络接口tun0进入的、目标端口为5222的TCP数据包设置mark值为1
+# iptables -t mangle -A PREROUTING -j MARK --set-mark 1 -i tun0 -p tcp --dport 5222
+{% endhighlight %}
+
+接着，根据设置的 mark 值可用来设定策略路由，比如，把 mark 值为 1 的数据包交由网关 192.168.0.1 转发。
+
+{% highlight text %}
+----- 1. 确定一张空路由表，这里选定300
+# ip route show table 300
+----- 2. 在表中添加路由条目
+# ip route add default via 192.168.0.1 table 300
+----- 3. 查看当前路由规则
+# ip rule list
+----- 4. 为mark值为1的数据包指定路由表策略
+# ip rule add fwmark 0x1 table 300
+{% endhighlight %}
+
+通过这种方法，可以使用 iptables 根据匹配规则设置 mark，再由路由模块根据 mark 值进行路由决策，从而实现复杂的策略路由。
+
+#### TIMESTAMP
+
+此时对端的机器会将当前机器的时间戳添加到 IP 包中。
 
 
-## struct msghdr
+但是，这依赖于两台机器上的时间戳，如果偏差比较大，那么会导致获取到的延迟有问题，所以尽量使用本地的时间戳。
+
+### 接收
 
 常用于 socket 的发送接收消息，函数声明如下。
 
+{% highlight text %}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -49,6 +187,7 @@ struct msghdr {
    size_t        msg_controllen; /* ancillary data buffer len */
    int           msg_flags;      /* flags on received message */
 };
+{% endhighlight %}
 
 看起来比较复杂，实际上结构成员可以分为四组：
 
@@ -57,33 +196,35 @@ struct msghdr {
 * 附属数据缓冲区成员 msg_control 与 msg_controllen；
 * 接收信息标记位 msg_flags，详细可以查看 man 手册。
 
-其中 msg_control 指向的是一个 struct cmsghdr 结构体。
+其中 `msg_control` 指向的是一个 `struct cmsghdr` 结构体。
 
+<!--
 https://blog.csdn.net/u014209688/article/details/71311973
 https://www.cnblogs.com/jimodetiantang/p/9190958.html
 https://ivanzz1001.github.io/records/post/linux/2017/11/04/linux-msghdr
-
-
-
-GitHub 上不错的Hack技巧
-ICMP Tunnel
+-->
 
 ### Socket 缓冲区
 
+<!--
 Linux 中可以设置 socket 缓冲区的大小，貌似对于 RAW_SOCKET 和 TCP 等都有效，没有从代码上确认。
+-->
 
-在使用 RAW_SOCKET 时，例如发送 ICMP 报文，因为不存在 TCP 中的滑动窗口、限流等机制，在流量过大时极易引起报文在缓冲区的静默丢失。此时可以通过 tcpdum 获取，但是通过 read、recvmsg 等系统接口无法接收到数据。
+使用 `RAW_SOCKET` 时，例如发送 ICMP 报文，因为不存在 TCP 中的滑动窗口、限流等机制，在流量过大时极易引起报文在缓冲区的静默丢失。此时可以通过 tcpdump 获取，但是无法通过 `read()`、`recvmsg()` 等接口无法接收到数据。
 
 接收缓冲区的大小可以使用 `setsockopt()` 设置 `SO_RCVBUF` 选项，其默认和最大值可以通过如下命令查看。
 
+{% highlight text %}
 $ cat /proc/sys/net/core/rmem_default
 $ cat /proc/sys/net/core/rmem_max
 
 $ cat /proc/sys/net/core/wmem_default
 $ cat /proc/sys/net/core/wmem_max
+{% endhighlight %}
 
 在设置 Socket 的时候，如果期望设置的缓存大于上述的 max ，实际上会得到两倍于 max 值。
 
+<!--
 ### TCP 缓冲区
 
 其中 TCP 的读写缓存可以通过如下方式查看，因为可以通过协议自身可以进行限流，那么由于缓存不足导致丢包的概率极小，只是效率问题：
@@ -99,10 +240,7 @@ $ cat /proc/sys/net/ipv4/tcp_wmem
 $ cat /proc/sys/net/ipv4/tcp_mem
 88371	117831	176742
 
-
 其中对应了三个数值，分别为最小、默认、最大值。
-
-##
 
 在大多数的 Linux 中 rmem_max 和 wmem_max 被分配的值为 128 k，在一个低延迟的网络环境中，一般是足够用的，对于负载和延迟较高的网络，就需要调整内存使用方法。
 
@@ -135,148 +273,13 @@ int sbuf = 1024 * 1024 * 8;
 err = setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof(bufsize));
 
 echo 8388608 > /proc/sys/net/core/rmem_default
+-->
 
+### 其它
 
 ICMP 报文在 Linux C 中通过 `struct icmp[netinet/ip_icmp.h]` 定义，而报文中的消息体，则根据不同 `TYPE`、`CODE` 会有所区别。
 
 在 C 中，通过 `union` 进行适配，为了方便使用，同时又定义了很多辅助的宏定义。
-
-#### Echo Request(8)/Reply(0)
-
-icmp_id
-icmp_seq
-
-
-
-
-
-
-
-IP 报文头为 20 字节 [IP头部结构详解](http://codingstone.com/content.php?blockTableName=network&blogID=2) 。
-
-ICMP 报文头根据 type 和 code 的不同，其对应的大小也有所区别，详见 [使用Python的Socket模块构建一个UDP扫描工具](http://www.cnnetsec.com/2308.html) 。
-
-关于 ICMP 也可以参考 http://courses.cs.vt.edu/cs4254/fall04/slides/raw_6.pdf
-
-
-ICMP 报文格式
-http://www.cnblogs.com/jingmoxukong/p/3811262.html
-
-Ping 使用的是 ICMP 报文，其报头为 8 字节，数据报长度最大为 64K 字节。
-
-
-ping4_run()
- |-ping4_parse_reply()
- | |-is_ours() 对于ICMP_ECHOREPLY返回类型
- | |-gather_statistics()
- |
- |  其它类型
- |
-
-type of service (ToS
-
-
-对于通过 SOCK_RAW + ICMP 实现套接字，会接收到所有发送到本机的报文。
-
-1. Destination Host Unreachable
-
-* 校验和算法，把被校验的数据 16 位进行累加，若数据字节长度为奇数，则数据尾部补一个字节的 0 以凑成偶数，然后取反码，。
-
-此算法适用于IPv4、ICMPv4、IGMPV4、ICMPv6、UDP和TCP校验和，更详细的信息请参考RFC1071，校验和字段为上述ICMP数据结构的icmp_cksum变量。
-标识符�D�D用于唯一标识ICMP报文, 为上述ICMP数据结构的icmp_id宏所指的变量。
-顺序号�D�Dping命令的icmp_seq便由这里读出，代表ICMP报文的发送顺序，为上述ICMP数据结构的icmp_seq宏所指的变量。
-
-
-
-setsockopt()
-* SOL_SOCKET, SO_BINDTODEVICE  绑定到某个设备上。
-* SOL_SOCKET, SO_MARK 用来添加标记。
-* SOL_SOCKET, SO_TIMESTAMP 让协议栈接受到一个网络帧时为其打上时间戳，并将此时间戳作为一笔附加数据，与网络帧数据一起递交到上层协议。
-
-/post/network-netfilter-iptables.html
-
-### Mark 标记
-
-用于将特定的数据包打上标签，供 iptables 配合 TC 做 QOS 流量限制、应用策略路由。
-
-系统可用模块，对 CentOS 而言可通过 `ls /usr/lib64/xtables/ | grep -i mark` 查看，其中大写的为标记模块，小写的为匹配模块。
-
-ls /usr/lib/iptables/|grep -i mark
-
------ 查看关于Mark标记的帮助信息
-# iptables -j MARK --help
-# iptables -m mark --help
-
------ 将所有TCP数据标记1
-# iptables -t mangle -A PREROUTING -p tcp -j MARK --set-mark 1
-
------ 匹配标记1的数据并保存数据包中的MARK到连接中
-# iptables -t mangle -A PREROUTING -p tcp -m mark --mark 1 -j CONNMARK --save-mark
-
-
-#### 策略路由
-
-标签并不是设置在数据包内容中，而是在内核中数据包的载体上，如果需要在数据包内容中设置标签，可以使用 TOS 规则目标，也就是修改 IP 数据包头的 TOS 值。
-
------ 将从网络接口tun0进入的、目标端口为5222的TCP数据包设置mark值为1
-# iptables -t mangle -A PREROUTING -j MARK --set-mark 1 -i tun0 -p tcp --dport 5222
-
-接着，设置的 mark 值可用来设定策略路由，比如，把 mark 值为 1 的数据包交由网关 192.168.0.1 转发。
-
------ 1. 确定一张空路由表，这里选定300
-# ip route show table 300
------ 2. 在表中添加路由条目
-# ip route add default via 192.168.0.1 table 300
------ 3. 查看当前路由规则
-# ip rule list
------ 4. 为mark值为1的数据包指定路由表策略
-# ip rule add fwmark 0x1 table 300
-
-通过这种方法，可以使用 iptables 根据匹配规则设置 mark，再由路由模块根据 mark 值进行路由决策，从而实现复杂的策略路由。
-
-switch (icmp_hdr->icmp_type) {
-case ICMP_ECHOREPLY:
-        ident = ntohs(icmp_hdr->icmp_id);
-        seq   = ntohs(icmp_hdr->icmp_seq);
-        break;
-
-case ICMP_ECHO: /* Maybe send by another ping tools */
-        return NULL;
-
-case ICMP_DEST_UNREACH:    /*  3 */
-case ICMP_SOURCE_QUENCH:   /*  4 */
-case ICMP_REDIRECT:        /*  5 */
-case ICMP_TIME_EXCEEDED:   /* 11 */
-case ICMP_PARAMETERPROB: { /* 12 */
-        struct iphdr *iph = (struct iphdr *)(buffer + sizeof(struct icmphdr));
-        struct icmphdr *icmph = (struct icmphdr *)(buffer +
-                        (sizeof(struct icmphdr) + iph->ihl * 4));
-
-        if (buffer_len < sizeof(struct iphdr) + 2 * ICMP_MINLEN ||
-                        buffer_len < (size_t)iph->ihl * 4 + 2 * ICMP_MINLEN) {
-                log_error(LIBNAME "error package too short, len %d, IP header %d",
-                                buffer_len, iph->ihl);
-                return NULL;
-        }
-
-        if (icmph->type != ICMP_ECHO) {
-                log_error(LIBNAME "invalid type %d(expect %d) for %d",
-                                icmph->type, ICMP_ECHO, icmp_hdr->icmp_type);
-                return NULL;
-        }
-
-        ident = ntohs(icmph->un.echo.id);
-        seq   = ntohs(icmph->un.echo.sequence);
-        status = (icmp_hdr->icmp_type << 8) + icmp_hdr->icmp_code;
-
-        break;
-}
-default:
-        log_warning(LIBNAME "IPv4 unexpected ICMP type 0x%02x", icmp_hdr->icmp_type);
-        return NULL;
-}
--->
-
 
 ## 其它
 
@@ -338,35 +341,11 @@ Windows 98         32
 UNIX               255
 {% endhighlight %}
 
-
 ### QoS
 
 Quality of Service, QoS 服务质量，提供的质量越好，表示有越低的延迟、丢包、抖动等，同时其吞吐量和可靠性要更高。简单来说，就是利用包的特定标志位，告诉路由器如何处理包，是先还是后。
 
 在第二层(Link Layer)和第三层(IP)都有标示位，其中 IP 层采用的是 8Bits，包括 IPv4 和 IPv6 都有，只是其位置不同。
-
-## 套接字
-
-ICMP 套接字的目的是允许在不设置 SUID 或者 CAP_NET_RAW 权限的时候允许 ping 程序的使用，详细的实现可以查看内核的邮件列表 [add IPPROTO_ICMP socket kind](https://lkml.org/lkml/2011/5/10/389) 。
-
-是否支持是通过内核的 `net.ipv4.ping_group_range` 指定，这是一对整数，指定了允许使用 ICMP 套接字的组 ID 的范围，默认为 `1 0` 也就意味着没有人能够使用这个特性。
-
-可以通过如下命令修改。
-
-{% highlight text %}
-# sysctl -w net.ipv4.ping_group_range='0 10'
-{% endhighlight %}
-
-然后可以通过如下方式创建 ICMP 的套接字。
-
-{% highlight text %}
-import socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_ICMP)
-{% endhighlight %}
-
-如果系统不支持这个特性，在创建套接字的时候会得到 `Protocol not supported` 的错误，而如果没有权限，则会得到 `Permission denied` 的错误。
-
-它的类型和 UDP 套接字一样，是 `SOCK_DGRAM` 而非 `SOCK_RAW`，这也就意味着你不会收到 20 字节的 IP 头，而且内核会计算校验和，并且填充 ICMP ID，在接收到响应后，内核会只把相应 ID 的 ICMP 响应返回给程序，不需要自己或者要求内核过滤了。
 
 ## 参考
 

@@ -97,74 +97,6 @@ HAVE_MALLOC_H:INTERNAL=1
 
 详细内容可以参考 [CMake:How To Write Platform Checks](https://itk.org/Wiki/CMake:How_To_Write_Platform_Checks) 。
 
-### 常见示例
-
-<!--
-CHECK_FUNCTION_EXISTS(backtrace HAVE_BACKTRACE)
-CHECK_LIBRARY_EXISTS(pthread pthread_setname_np "" HAVE_PTHREAD_SETNAME_NP)
--->
-
-#### 头文件检查
-
-{% highlight text %}
-CHECK_INCLUDE_FILE("regex.h" HAVE_REGEX_H)
-CHECK_INCLUDE_FILES("sys/prctl.h;sys/others.h" HAVE_SYS_PRCTL_H)
-{% endhighlight %}
-
-其中前者只能检查一个，后者可以检查多个头文件。
-
-#### 函数检查
-
-{% highlight text %}
-CHECK_FUNCTION_EXISTS(backtrace HAVE_BACKTRACE)
-{% endhighlight %}
-
-其中 `CHECK_FUNCTION_EXISTS()` 仅能判断在连接时能找到的函数，一般也就是标准头文件、标准库中的函数，如果是非标准的可以通过 `CHECK_SYMBOL_EXISTS()` 检查。
-
-#### 变量、宏检查
-
-{% highlight text %}
-CHECK_SYMBOL_EXISTS(ENAMETOOLONG errno.h HAVE_ENAMETOOLONG)
-{% endhighlight %}
-
-用来检查函数、变量或宏存在，其中文件列表可以是 `"foo.h;bar.h"` 这类的方式，注意无法识别类型或者枚举，此时可以考虑使用 `CheckTypeSize()` 或 `CheckCSourceCompiles()` 。
-
-其中 `CMakeLists.txt` 示例文件如下。
-
-{% highlight text %}
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-PROJECT(hello)
-
-INCLUDE(CheckIncludeFile)
-INCLUDE(CheckIncludeFiles)
-CHECK_INCLUDE_FILE("regex.h" HAVE_REGEX_H)
-
-INCLUDE(CheckFunctionExists)
-CHECK_FUNCTION_EXISTS(backtrace HAVE_BACKTRACE)
-
-INCLUDE(CheckLibraryExists)
-CHECK_LIBRARY_EXISTS(pthread pthread_setname_np "" HAVE_PTHREAD_SETNAME_NP)
-
-INCLUDE(CheckSymbolExists)
-CHECK_SYMBOL_EXISTS(ENAMETOOLONG errno.h HAVE_ENAMETOOLONG)
-
-CONFIGURE_FILE(config.h.in config.h @ONLY)
-{% endhighlight %}
-
-其中 `config.h.in` 文件内容如下。
-
-{% highlight text %}
-#ifndef CONFIG_H_
-#define CONFIG_H_
-
-#cmakedefine HAVE_REGEX_H            1
-#cmakedefine HAVE_BACKTRACE          1
-#cmakedefine HAVE_PTHREAD_SETNAME_NP 1
-#cmakedefine HAVE_ENAMETOOLONG       1
-
-#endif
-{% endhighlight %}
-
 ### 安装
 
 CMake 默认会在与源码目录相同的路径下生成二进制文件或者库文件，实际上可以通过如下方式进行设置。
@@ -414,6 +346,87 @@ SET_TESTS_PROPERTIES(yourtest PROPERTIES TIMEOUT 30)
 
 ## 常用示例
 
+### 平台依赖
+
+<!--
+CHECK_FUNCTION_EXISTS(backtrace HAVE_BACKTRACE)
+CHECK_LIBRARY_EXISTS(pthread pthread_setname_np "" HAVE_PTHREAD_SETNAME_NP)
+-->
+
+#### 头文件检查
+
+{% highlight text %}
+CHECK_INCLUDE_FILE("regex.h" HAVE_REGEX_H)
+CHECK_INCLUDE_FILES("sys/prctl.h;sys/others.h" HAVE_SYS_PRCTL_H)
+{% endhighlight %}
+
+其中前者只能检查一个，后者可以检查多个头文件。
+
+#### 函数检查
+
+{% highlight text %}
+CHECK_FUNCTION_EXISTS(backtrace HAVE_BACKTRACE)
+{% endhighlight %}
+
+其中 `CHECK_FUNCTION_EXISTS()` 仅能判断在连接时能找到的函数，一般也就是标准头文件、标准库中的函数，如果是非标准的可以通过 `CHECK_SYMBOL_EXISTS()` 检查。
+
+在检查是否支持某个函数时，可能会依赖于某些宏的定义，例如在使用 `pthread_setname_np()` 函数时，需要先定义 `_GNU_SOURCE` 宏才可以，那么可以通过如下方式使用。
+
+{% highlight text %}
+SET(CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
+CHECK_FUNCTION_EXISTS(pthread_setname_np HAVE_PTHREAD_SETNAME_NP)
+UNSET(CMAKE_REQUIRED_DEFINITIONS)
+{% endhighlight %}
+
+其它一些相关参数定义可以参考 [CheckFunctionExists](https://cmake.org/cmake/help/latest/module/CheckFunctionExists.html)，以及 [Github Zlib](https://github.com/luvit/zlib/blob/master/CMakeLists.txt) 中的使用方式。
+
+#### 变量、宏检查
+
+{% highlight text %}
+CHECK_SYMBOL_EXISTS(ENAMETOOLONG errno.h HAVE_ENAMETOOLONG)
+{% endhighlight %}
+
+用来检查函数、变量或宏存在，其中文件列表可以是 `"foo.h;bar.h"` 这类的方式，注意无法识别类型或者枚举，此时可以考虑使用 `CheckTypeSize()` 或 `CheckCSourceCompiles()` 。
+
+其中 `CMakeLists.txt` 示例文件如下。
+
+{% highlight text %}
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+PROJECT(hello)
+
+INCLUDE(CheckIncludeFile)
+INCLUDE(CheckIncludeFiles)
+CHECK_INCLUDE_FILE("regex.h" HAVE_REGEX_H)
+
+INCLUDE(CheckFunctionExists)
+CHECK_FUNCTION_EXISTS(backtrace HAVE_BACKTRACE)
+
+INCLUDE(CheckLibraryExists)
+CHECK_LIBRARY_EXISTS(pthread pthread_setname_np "" HAVE_PTHREAD_SETNAME_NP)
+
+INCLUDE(CheckSymbolExists)
+CHECK_SYMBOL_EXISTS(ENAMETOOLONG errno.h HAVE_ENAMETOOLONG)
+
+CONFIGURE_FILE(config.h.in config.h @ONLY)
+{% endhighlight %}
+
+其中 `config.h.in` 文件内容如下。
+
+{% highlight text %}
+#ifndef CONFIG_H_
+#define CONFIG_H_
+
+#cmakedefine HAVE_REGEX_H            1
+#cmakedefine HAVE_BACKTRACE          1
+#cmakedefine HAVE_PTHREAD_SETNAME_NP 1
+#cmakedefine HAVE_ENAMETOOLONG       1
+
+#endif
+{% endhighlight %}
+
+
+
+
 ### 内置变量
 
 如下是设置 C 编译器的参数，对于 CPP 则将 C 替换为 CXX 即可。
@@ -559,14 +572,15 @@ SET_SOURCE_FILES_PROPERTIES(${GEN_SOURCES} GENERATED)
 #----- 需要注意的是OUTPUTS一定要和${GEN_SOURCES}中文件一致，并且target设置对否则无法确保执行顺序
 ADD_CUSTOM_COMMAND(
 	SOURCE ${PARSER_DIR}/parser.y
-	COMMAND bison -d ${PARSER_DIR}/parser.y
+	COMMAND bison -d ${PARSER_DIR}/parser.y -o ${CMAKE_CURRENT_BINARY_DIR}/parser.c
 	TARGET GenServerSource
 	OUTPUTS ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.c ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.h
 	WORKING_DIRECTORY ${PARSER_DIR}
 )
 ADD_CUSTOM_COMMAND(
 	SOURCE ${PARSER_DIR}/parser.l
-	COMMAND flex  ${PARSER_DIR}/parser.l
+	COMMAND flex -o ${CMAKE_CURRENT_BINARY_DIR}/scanner.c
+			--header-file=${CMAKE_CURRENT_BINARY_DIR}/scanner.h ${PARSER_DIR}/scanner.l
 	TARGET GenServerSource
 	OUTPUTS ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.c ${CMAKE_CURRENT_BINARY_DIR}/parser.l.h
 	WORKING_DIRECTORY ${PARSER_DIR}
@@ -584,6 +598,18 @@ add_library(driver SHARED
 #      (outputs中给出的)，所以会先执行两个ADD_CUSTOM_COMMAND命令
 ADD_DEPENDENCIES(driver GenServerSource)
 {% endhighlight %}
+
+在最新的版本中 `ADD_CUSTOM_COMMAND()` 命名已经取消，可以看考 [CMP0050](https://cmake.org/cmake/help/latest/policy/CMP0050.html) 中的介绍，对于 flex 以及 bison 可以使用如下方式。
+
+{% highlight text %}
+BISON_TARGET(parser fl.ypp fl.tab.cpp)
+ADD_EXECUTABLE(fl ${BISON_parser_OUTPUTS})
+{% endhighlight %}
+
+<!--
+https://cmake.org/cmake/help/v2.8.8/cmake.html#module:FindBISON
+https://gist.github.com/scan/3179356
+-->
 
 ### 库使用
 

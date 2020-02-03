@@ -321,7 +321,7 @@ START  已经开始处理任务。
 	"option": "force",                            # 可选，是否尝试强制卸载
 }
 
------ 进程操作，异步
+----- 进程操作，同步
 {
 	"id": "ddc8a9b9-55bd-4ddd-b53d-47095ee19466",
 	"action": "program",
@@ -341,8 +341,10 @@ START  已经开始处理任务。
 }
 {% endhighlight %}
 
-
 ### 3. 事件上报
+
+
+
 
 简单来说就是将 Agent 中发生的关键事件上报，其中某个事件通过 `AgentSN` `TimeStamp` `LocalID` 来标识，表示在那台主机上何时发生了什么事件，其中 `LocalID` 在进程重启后会重新开始计数。
 
@@ -581,6 +583,7 @@ $ ls /sys/fs/cgroup/memory/system.slice/BootAgent.service
 ----- POST /api/v1/agent/status 上报当前Agent状态
 {
 	"uptime": 1234,                                         # 进程已经启动时间，单位秒
+	"uptime": 1234,                                         # 进程已经启动时间，单位秒
 	"timestamp": 1232,                                      # 上报时的时间戳
 	"step": 600,                                            # 上报的时间间隔，可以做修改，默认10min
 	"stats": {                                              # 当前BootAgent的状态统计信息
@@ -591,6 +594,15 @@ $ ls /sys/fs/cgroup/memory/system.slice/BootAgent.service
 		"version": "1.2.3",                             # Agent当前版本号
 		"status": "stoped",                             # Agent的状态
 		"uptime": 123,                                  # 已经运行时间
+		"resource": {
+			"cpu": 10,                              # % CPU使用率
+			"rss": 100,                             # B 内存使用
+			"fds": 10,                              # 文件句柄数
+		},
+		"cgroup": {                                     # 如果配置的cgroup组
+			"cpu": 10,                              # % cgroup的CPU使用率
+			"rss": 100,                             # B内存使用
+		},
 	}],
 	"tasks": [{                                             # 任务执行状态
 		"id": "ddc8a9b9-55bd-4ddd-b53d-47095ee19466",   # 任务ID
@@ -623,8 +635,8 @@ $ ls /sys/fs/cgroup/memory/system.slice/BootAgent.service
 	}, {
 		"id": "ddc8a9b9-55bd-4ddd-b53d-47095ee19466",
 		"action": "config",                            # 修改BootAgent的相关配置
-		"svrlist": "192.168.9.1:1234,",                # 服务端列表，不会修改默认的列表
-		"step": 1200,                                  # 状态上报时间间隔，其范围为[60, 3600]
+		"serverList": "192.168.9.1:1234,",             # 服务端列表，不会修改默认的列表
+		"interval": 1200,                              # 状态上报时间间隔，其范围为[60, 3600]
 	}]
 }
 
@@ -685,26 +697,28 @@ BUG:
 
 #### MetaFile
 
-用来记录 BootAgent 相关的配置信息，目前包括了 `AgentSN`、`Tags`、`ServerList` 三个，文件最大限制为 4K ，其配置信息示例如下。
+用来记录 BootAgent 相关的配置信息，以及当前主机的元信息，目前包括了 `AgentSN`、`Tags`、`ServerList` `Interval` 几个配置项，文件最大限制为 4K ，可以通过配置接口进行修改，并持久化。
+
+其配置信息示例如下。
 
 {% highlight text %}
 # 该机器的AgentSN信息
-AgentSN:7a5ae7ab-3878-4ecc-b367-810e5bc21a29
-Tags:
-ServerList:
+AgentSN:7a5ae7ab-3878-4ecc-b367-810e5bc21a29           # 主机唯一标识
+Tags:region=cn-north1,az=1a,svc=ECS,cmpt=MySQL         # TAG信息，标识主机类型
+ServerList:127.0.0.1:8090,168.9.1.15:8080              # 用户配置的Server地址列表
+Interval:10                                            # 数据状态上报的时间间隔
 {% endhighlight %}
 
 默认的配置文件路径可以通过 `-h` 查看，如果 MetaFile 不存在则会向服务端发送注册信息，否则会正常启动。
 
 #### 服务器地址
 
-总共有三种方式指定服务器的地址，可以在列表中指定多个，其格式为 `SVR1IP:PORT,SVR2IP` 。
+总共有两种方式指定服务器的地址，可以在列表中指定多个，其格式为 `SVR1IP:PORT,SVR2IP` 。
 
-1. 编译时通过 `-DBOOT_SERVER_ADDR="booter.cargo.com,127.0.0.1:8090"` 参数指定，该地址会编译到可执行文件中，会一直存在。
-2. 首次启动时通过 `-S` 指定(以后直接忽略)，该参数会持久化到 `metafile` 中，以后启动则忽略入参并直接使用 `metafile` 中的配置。
-3. 可以通过服务端进行修改，最终同样会持久化到 `metafile` 中。
+1. 启动时通过 `-S` 指定，该参数不会持久化到 `metafile` 中；
+2. 通过服务端进行修改，此时会持久化到 `metafile` 中。
 
-所以，在实践中，应该尽量保证 `<1>` 中的服务器可用，可以是 HAProxy、LVS 之类的负载均衡地址，如果要修改只能通过升级完成。
+所以，在实践中，应该尽量保证 `<1>` 中的服务器可用，可以是 HAProxy、LVS 之类的负载均衡地址，这种方式修改比较麻烦。
 
 **注意**，如果有重复的地址，是不会去重的。
 
@@ -728,6 +742,8 @@ ServerList:
 3. completion 命令自动补齐。
 4. Async DNS 目前的 DNS 使用同步方式。
 5. 数据上报压缩。
+6. 磁盘空间不足，只有内存时也可以使用。
+7. 包括了 normal、bypass 等几种模式。
 {% endhighlight %}
 
 <!--

@@ -110,11 +110,6 @@ void ares_process_fd(ares_channel channel, ares_socket_t read_fd, ares_socket_t 
 源码其实比较简单，无非就是如何发送请求报文，然后接收报文，并根据当前的处理状态进行相应的处理。
 
 <!--
-
-libev最新版本
-https://github.com/kindy/libev
-
-
 ## FAQ
 
 ### 状态修改
@@ -391,8 +386,6 @@ ares_process_fd()
    |     |-socket_write()
    |-process_broken_connections()
 
-libdaemon
-libproto
 用于实现一些通用异步协议的解析，例如 ICMP、DNS 等等。
 
 
@@ -403,7 +396,6 @@ https://github.com/jiashuChen/IP-Address-Validator
 http://www.voidcn.com/article/p-fntbvdwa-bav.html
 https://www.cnblogs.com/wenqiang/p/5959835.html
 https://blog.csdn.net/stpeace/article/details/38933031
-
 -->
 
 ## 参考
