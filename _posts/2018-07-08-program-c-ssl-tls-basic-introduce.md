@@ -213,115 +213,135 @@ int main(void)
 
 ## 双向认证
 
-这里采用子签发的证书，需要生成根证书，并分别向两端办法对应的证书。
-
-### 生成证书
-
-{% highlight text %}
-mkdir pki/{CA,SVR,CLI} -p
-{% endhighlight %}
-
-子签CA证书。
-
-{% highlight text %}
------ 生成根证书私钥 pem
-openssl genrsa -out cakey.pem 2048
------ 生成根证书签发申请文件 csr
-openssl req -new -key cakey.pem -out ca.csr    \
-	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyCA"
------ 自签发根证书 cer
-openssl x509 -req -days 3650 -sha1 -extensions v3_ca -signkey cakey.pem -in ca.csr -out cacert.pem
-{% endhighlight %}
-
-服务端私钥和证书。
-
-{% highlight text %}
------ 生成服务端私钥
-openssl genrsa -out key.pem 2048
------ 生成证书请求文件
-openssl req -new -key key.pem -out server.csr  \
-	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyServer"
------ 使用根证书签发服务端证书
-openssl x509 -req -days 365 -sha1 -extensions v3_req -CA ../CA/cacert.pem     \
-	-CAkey ../CA/cakey.pem -CAserial ca.srl -CAcreateserial -in server.csr -out cert.pem
------ 使用CA证书验证server端证书
-openssl verify -CAfile ../CA/cacert.pem cert.pem
-{% endhighlight %}
-
-
-客户端私钥和证书。
-
-{% highlight text %}
------ 生成客户端私钥
-openssl genrsa -out key.pem 2048
------ 生成证书请求文件
-openssl req -new -key key.pem -out client.csr  \
-	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyClient"
------ 使用根证书签发客户端证书
-openssl x509 -req -days 365 -sha1 -extensions v3_req -CA ../CA/cacert.pem     \
-	-CAkey ../CA/cakey.pem -CAserial ../SVR/ca.srl -in client.csr -out cert.pem
------ 使用CA证书验证客户端证书
-openssl verify -CAfile ../CA/cacert.pem cert.pem
-{% endhighlight %}
-
-也可以对私钥进行加密。
-
-{% highlight text %}
------ 通过AES256解密保护私钥
-openssl genrsa -aes256 -out keysec.pem 2048
-openssl req -new -key keysec.pem -out clientsec.csr   \
-	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyClient"
-openssl x509 -req -days 365 -sha1 -extensions v3_req -CA ../CA/cacert.pem     \
-	-CAkey ../CA/cakey.pem -CAserial ../SVR/ca.srl -in clientsec.csr -out certsec.pem
-
------ 去除私钥中的密码保护
-openssl rsa -in pki/CLI/keysec.pem -out pki/CLI/keyplain.pem
-{% endhighlight %}
-
-其它。
-
-{% highlight text %}
------ 查看证书的内容
-openssl x509 -in SVR/cert.pem -text -noout
-{% endhighlight %}
-
-<!--
-https://ningyu1.github.io/site/post/51-ssl-cert/
-吊销证书：$ openssl ca -revoke cert.pem -config openssl.cnf
-证书吊销列表：$ openssl ca -gencrl -out cacert.crl -config openssl.cnf
-查看列表内容：$ openssl crl -in cacert.crl -text -noout
--->
-
-### 测试
-
-OpenSSL 提供了 Server 和 Client 的相关工具，可以用来进行测试，如下是常用的参数。
-
-{% highlight text %}
--connect    指定服务器的地址以及端口，默认是localhost:443
--key        私钥文件的路径
--cert       证书文件的路径
--CAfile     根证书文件的路径
--showcerts  显示服务器的证书信息
--state      在SSL交互过程中的各种信息
--verify     根证书校验的深度
--debug      打印调试信息
--accept     监听的端口号
-{% endhighlight %}
-
-{% highlight text %}
-openssl s_server -accept 44330 -CAfile pki/CA/cacert.pem            \
-	-key pki/SVR/key.pem -cert pki/SVR/cert.pem -state
-openssl s_client -connect 127.0.0.1:44330 -CAfile pki/CA/cacert.pem \
-	-key pki/CLI/key.pem -cert pki/CLI/cert.pem -state
-{% endhighlight %}
 
 
 
 ### 同步方式
 
+在创建上下文时使用的是 `SSLv23_method()` 函数，这并不意味着只使用 TLSv1.2 以及 TLSv1.3 版本的协议，这是由于历史原因导致，实际的意思是指服务端和客户端协商使用双方都兼容最高版本，在 1.1.0 版本之后会修改为 `TLS_method()` 。
+
+如果要屏蔽部分版本，可以通过 `SSL_CTX_set_options()` 函数屏蔽，例如参数 `SSL_OP_NO_SSLv2` `SSL_OP_NO_TLSv1_1` 等等。
+
+
+
+
+
+
 <!--
 http://wzhnsc.blogspot.com/2012/12/openssl-api.html
 -->
+
+TLS 的握手主要为了三个目的：A) 确认加密套件以及参数；B) 鉴权，可以单向或者双向；C) 交换对称加密用的会话密钥。
+
+对于 TLSv1.2 之前的版本，完成握手需要 2 个 Round-Trip Time, RTT ，有些优化方案，例如 False Start 可以在 `Change Cipher Spec Finished` 过程中，同时带有业务数据，从而变相将握手过程简化为 1-RTT 。
+
+{% highlight text %}
+          <Client>                                          <Server>
+       [Client Hello] -------------------------------->
+                        * Supported Ciphers
+                        * Random Number
+                        * Session ID(any)
+                        * SNI
+
+                      <-------------------------------- [Server Hello]
+ {Verify Server Cert}   * Choosen Cipher                [Server Certificate]
+                        * Random Number                 [Server Hello Done]
+                        * Session ID(reuse/new)
+                        * Client Certificate(optional)
+
+[Client Key Exchange] -------------------------------->
+ <<<Key Generation>>>   * Pre-Master Secret(encrypted   <<<Key Generation>>>
+                          with server public key)
+                        * Send Client Certificate       {Verify Client Cert}
+ [Change Cipher Spec
+  Finished(encrypt)]
+
+                      <-------------------------------- [Change Cipher Spec
+                                                         Finished(encrypt)]
+
+   [Application Data] <-------------------------------> [Application Data]
+{% endhighlight %}
+
+如果中间交换证书时，由于证书比较大，那么可能会将报文拆分成多个 TCP 报文。如果要减小证书，可以使用 Elliptic Curve Cryptography, ECC 替换 RSA 。
+
+## 会话复用
+
+将上次通过握手计算出来的对称密钥复用，可以通过一次 RTT 完成握手。
+
+{% highlight text %}
+          <Client>                                          <Server>
+       [Client Hello] -------------------------------->
+                        * Supported Ciphers
+                        * Random Number
+                        * Session ID(**)
+                        * SNI
+
+                      <-------------------------------- [Server Hello]
+                        * Session ID(reuse)             [Change Cipher Spec
+                                                         Finished(encrypt)]
+ [Change Cipher Spec
+   Finished(encrypt)]
+
+   [Application Data] <-------------------------------> [Application Data]
+{% endhighlight %}
+
+客户端在发送 `Client Hello` 请求的时候，会将上次握手过程中 Server 发送的 SessionID 带上，如果在服务端可以匹配到相关的信息，那么就直接返回成功，然后就可以交换应用数据。
+
+SessionID 存在一些问题，如果服务端采用了分布式，当同一个客户端的请求没有落到上次的服务器时，会实效；服务端在使用 SessionID 时，很难判断其保存时间的长短。
+
+### SessionTicket
+
+而 Session Ticket 是在服务端加密之后的会话信息，然后保存在客户端中，下次请求会带上 Session Ticket ，只要服务端可以解密成功，那么就直接完成了握手。
+
+可以使用 [github.com](https://github.com/vincentbernat/rfc5077) 中提供的工具测试支持情况。
+
+OpenSSL 会将会话信息保存在上下文中，在 TLSv1.2 之前是在握手阶段发送会话 ID ，
+
+
+## 错误处理
+
+大部分 OpenSSL 的函数在成功时返回 1 ，大部分失败返回 0 ，也有少量函数返回 -1 的，例如 `SSL_connect()` 函数，所以，可以通过 `!= 1` 判断是否异常。
+
+详细的错误信息会保存在错误队列中 (一个 OpenSSL 实现的线程变量中)，可能会返回多个错误信息，可以通过函数 `ERR_print_errors_fp()` 或者 `ERR_print_errors()` 打印所有错误信息。
+
+
+
+
+## 注意事项
+
+对于 TLSv1.3 版本之后，Session Ticket 会在握手成功之后发送，此时需要调用 `SSL_read()` 函数，对于 OpenSSL 来说才会完成 Session 信息的接收。
+
+## 参考
+
+* [SSL Programming Tutorial](http://h30266.www3.hpe.com/odl/axpos/opsys/vmsos84/BA554_90007/ch04s03.html) 比较简单清晰介绍各个流程，不过有点老。
+
+<!--
+会话复用
+https://nachtimwald.com/2014/10/06/client-side-session-cache-in-openssl/
+
+可以参考 Nginx 的实现
+https://github.com/nginx/nginx/blob/master/src/http/modules/ngx_http_ssl_module.c
+src/event/ngx_event_openssl_stapling.c
+src/event/ngx_event_openssl.c
+
+Hitch 1.5.2 使用的是libev
+https://github.com/varnish/hitch
+
+一个简单的HTTP服务端实现
+https://github.com/criticalstack/libevhtp
+
+可以实现中间人攻击
+https://github.com/droe/sslsplit
+
+一个异步TLS的封装
+https://github.com/deleisha/evt-tls
+
+Golang的编程以及一些参考连接
+https://github.com/denji/golang-tls
+-->
+
+
+
 
 {% highlight text %}
 {% endhighlight %}

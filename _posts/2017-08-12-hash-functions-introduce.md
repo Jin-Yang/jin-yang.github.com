@@ -118,6 +118,9 @@ https://github.com/savoirfairelinux/opendht
 非加密 Hash 算法使用比较多的是 [xxHash](https://github.com/Cyan4973/xxHash)、
 
 
+
+Google实现的既简单的Consistent Hash
+https://blog.helong.info/blog/2015/03/13/jump_consistent_hash/
 -->
 
 ## 参考
