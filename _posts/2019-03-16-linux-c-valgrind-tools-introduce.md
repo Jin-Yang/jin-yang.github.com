@@ -204,6 +204,50 @@ $ valgrind --tool=helgrind ./race
 
 如上标示了在地址 `0x6010D8` 处有 4 个字节存在数据竞争，分别有两个线程在尝试访问这一地址，而且没有持有锁；最后一行标示了这个变量是 racy 。
 
+## Suppression
+
+可以通过 `--gen-suppressions=all` 参数生成 `suppression` 示例，然后略微编辑即可生成所需的 `suppression` 文件。
+
+文件中的每个 `suppression` 以 `{}` 开始结束，并由如下的行组成。
+
+* 第一行，对应的名称，可以通过这个名称对应 `suppression`；
+* 第二行，所使用的工具，以及异常类型，例如 `Memcheck:Leak`；
+* 第三行，如果第二行的工具需要参数，则在这行指定；
+* 剩余行，代表了上下文，类似于调用栈。
+
+其中上下文可以指定函数 `fun` 或者动态库 `obj` ，可以通过 `*` 或者 `?`  匹配任意字符，也可以使用 `...` 匹配上下文中的一条。
+
+{% highlight text %}
+{
+   foobar
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   fun:foobar
+   ...
+}
+{
+   g_type_register_static
+   Memcheck:Cond
+   obj:*
+   fun:g_type_register_static
+   ...
+}
+{% endhighlight %}
+
+对于 `Memcheck` 来说，常用的关键字如下。
+
+* Value1, Value2, Value4, Value8, Value16:代表1-16字节的未初始化变量的使用
+* Cond (or its old name, Value0)：表示未初始化的cpu条件变量
+* Addr1, Addr2, Addr4, Addr8, Addr16：表示1-16字节的不可addressable的内存访问
+* Jump：表示跳转到一个不可addressable的地方
+* Param：表示系统调用syscall的参数错误，这个类型需要另外一行指定syscall的那个参数
+* Free：表示不匹配的内存释放
+* Overlap：表示在memcpy时source和destination有重叠
+* Leak：表示内存泄漏
+
+
+
 
 <!--
 https://ivanzz1001.github.io/records/post/cplusplus/2018/11/14/cpluscplus-valgrind_usage

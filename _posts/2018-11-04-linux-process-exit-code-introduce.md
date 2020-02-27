@@ -209,5 +209,11 @@ if (pid < 0) {
 }
 {% endhighlight %}
 
+## 进程统计信息
+
+在等待进程退出的时候，常用的有几个 API 调用，例如 `wait()` `waitpid()` `wait3()` `wait4()` 等，其中后两者还会获取到进程在运行时的一些统计信息。
+
+实际上返回的是一个 `struct rusage` 结构体，也可以通过 `getrusage()` 函数获取当前进程的资源消耗。
+
 {% highlight text %}
 {% endhighlight %}

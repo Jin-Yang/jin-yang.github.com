@@ -79,6 +79,15 @@ R 语言作为统计学一门语言，一直属于一个小众的工具集，直
 
 * 官方文档 [www.rdocumentation.org](https://www.rdocumentation.org/) ，可以直接搜索相关的主题。
 
+<!--
+### 其它
+
+* [数据拟合] 通过numpy实现
+https://drivingc.com/p/5af5ab892392ec35c23048e2
+
+谈谈 Bias-Variance Tradeoff
+https://liam.page/2017/03/25/bias-variance-tradeoff/
+-->
 
 ## 机器学习 100 天
 

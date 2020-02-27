@@ -222,7 +222,45 @@ for i, d := range dataSlice {
 }
 -->
 
-### Receiver 类型
+### 其它
+
+如果实现的类型不一致，那么在如下的调用时同样会报错。
+
+{% highlight go %}
+package main
+
+import (
+	"fmt"
+)
+
+type Animal interface {
+	Speak() string
+}
+
+type Dog struct {}
+// #2 func (d Dog) Speak() string {
+func (d *Dog) Speak() string {
+	return "Woof!"
+}
+
+type Cat struct {}
+// #2 func (c Cat) Speak() string {
+func (c *Cat) Speak() string {
+	return "Meow!"
+}
+
+func main() {
+	// #2 animals := []Animal{Dog{}, Cat{}}
+	animals := []Animal{&Dog{}, &Cat{}}
+	for _, animal := range animals {
+		fmt.Println(animal.Speak())
+	}
+}
+{% endhighlight %}
+
+可以保持现状，或者都修改为 `#2` 的方式，但是如果有不一致的，将会报错。
+
+## Receiver 类型
 
 如果将上述 `SendNotification(&user)` 改为 `SendNotification(user)`，执行时会报如下的错。
 
@@ -235,6 +273,15 @@ cannot use user (type User) as type Notifier in argument to SendNotification:
 
 接口的定义并没有严格规定实现者的方法 Receiver 是个 `Value Receiver` 还是 `Pointer Receiver`，不过如果定义为 `Pointer` 而使用 `Value` ，那么会导致报错。
 
+与之相关可以参考 [Pointers vs. Values](https://golang.org/doc/effective_go.html#pointers_vs_values) ，关键信息为：
+
+> The rule about pointers vs. values for receivers is that value methods can be invoked on pointers and values, but pointer methods can only be invoked on pointers.
+>
+> This rule arises because pointer methods can modify the receiver; invoking them on a value would cause the method to receive a copy of the value, so any modifications would be discarded. The language therefore disallows this mistake.
+
+也就是说，value method 可以被 pointer 或者 value 对象调用，而 pointer method 只能被 pointer 对象调用。
+
+### 示例
 
 那么，反过来会怎样，如果 Receiver 是 Value，函数用 Pointer 的形式调用？
 
@@ -276,51 +323,32 @@ func main() {
 
 从执行代码可以看到无论是 Pointer 还是 Value 都可以正确执行。
 
-导致这一现象的原因是什么？
+### 原因
 
-如果是按 Pointer 调用，会自动进行转换，因为有了指针总是能得到指针指向的值是什么；如果是 Value 调用，GoLang 将无从得知 Value 的原始值是什么，因为 Value 是份拷贝。
+在调用某个对象的函数时，都会复制一份，包括了指针以及指，如果在函数中有修改对象中保存的值，那么指针对应的值会同步修改，而值因为是复制了一份，那么实际修改的是复制的值，并不会修改原来的值。
 
-**GoLang 会把指针进行隐式转换得到 Value，但反过来则不行。**
+传值会很容易出错，而且非常难排查，当然，这可以作为语言特性的一部分，但是为了防止出错，将这部分功能作为异常。
 
-对于 Receiver 是 Value 的方法来说，任何在方法内部对 Value 做出的改变都不影响调用者所看到的 Value，这就是按值传递。
+### 比较
 
-### 其它
+#### 何时使用 Pointer
 
-如果实现的类型不一致，那么在如下的调用时同样会报错。
+比较常见的有几个场景：
 
-{% highlight go %}
-package main
+1. 修改接收器中的成员，值传递会复制一份数据，如果修改实际操作的是复制后的对象；
+2. 如果结构体比较大，那么复制过程的成本会比较高。
 
-import (
-	"fmt"
-)
+#### 何时使用 Value
 
-type Animal interface {
-	Speak() string
-}
+* 不需要编辑接收器值；
+* 值接收器是并发安全的，而指针接收器不是并发安全的。
 
-type Dog struct {}
-// #2 func (d Dog) Speak() string {
-func (d *Dog) Speak() string {
-	return "Woof!"
-}
+如果某个接收器已经存在了指针，为了统一，最好是统一使用指针。
 
-type Cat struct {}
-// #2 func (c Cat) Speak() string {
-func (c *Cat) Speak() string {
-	return "Meow!"
-}
+#### 其它
 
-func main() {
-	// #2 animals := []Animal{Dog{}, Cat{}}
-	animals := []Animal{&Dog{}, &Cat{}}
-	for _, animal := range animals {
-		fmt.Println(animal.Speak())
-	}
-}
-{% endhighlight %}
-
-可以保持现状，或者都修改为 `#2` 的方式，但是如果有不一致的，将会报错。
+1. 如果是 map func chan 则不需要指针，而切片只有在需要修改切片时再使用指针；
+2. 当接收器中存在类似 `sync.Mutex` 同步字段时，需要使用指针；
 
 ## 参考
 

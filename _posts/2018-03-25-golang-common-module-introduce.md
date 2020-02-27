@@ -339,6 +339,43 @@ type Ring struct {
 
 初始化的时候，需要先定义好环的大小，然后可以对其每个元素进行操作。同时还提供一个 `Do()` 函数，能遍历一遍环，对每个元素执行次函数调用。
 
+## flag
+
+可以通过标准库中 `flag` 库作为命令行入参的校验，其定义的变量类型是指针，获取对应值的时候需要添加引用 `*` 。
+
+{% highlight go %}
+package main
+
+import (
+        "flag"
+        "fmt"
+)
+
+var (
+        name   = flag.String("name", "nick", "Input Your Name")
+        age    = flag.Int("age", 28, "Input Your Age")
+        gender = flag.String("gender", "male", "Input Your Gender")
+)
+var address string
+
+func main() {
+        flag.StringVar(&address, "address", "China", "Your Address")
+        flag.Parse()
+
+        fmt.Printf("args=%s, num=%d\n", flag.Args(), flag.NArg())
+        for i := 0; i != flag.NArg(); i++ {
+                fmt.Printf("arg[%d]=%s\n", i, flag.Arg(i))
+        }
+
+        fmt.Println("name=", *name)
+        fmt.Println("age=", *age)
+        fmt.Println("gender=", *gender)
+        fmt.Println("address=", address)
+}
+{% endhighlight %}
+
+在命令行中，可以使用如下的参数之一 `-age=XXX` `-age XXX` `--age=XXX` `--age XXX` 。
+
 ## exec
 
 exec 用来执行命令，实际上是将 `os.StartProcess()` 进行包装使得它更容易映射到 `stdin` 和 `stdout` 。

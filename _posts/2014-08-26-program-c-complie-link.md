@@ -619,6 +619,57 @@ An alias for –syms
 
 ## 其它
 
+### not a dynamic executable
+
+一般是由于不同的平台导致，例如在 x86 上查看 arm，或者在 64 位机器上查看 32 位。
+
+`ldd` 命令会通过默认的解析器进行解析，一般来说为 `ld-linux-aarch64.so.1` 或者 `ld-linux-x86-64.so.2` 。
+
+{% highlight text %}
+$ readelf -l <EXEC_FILE> | grep 'program interpreter'
+{% endhighlight %}
+
+如果存在 `locate` 命令，可以直接通过 `locate ld-linux` 查找当前机器所有类似文件。注意，可以通过 `updatedb` 更新。
+
+而这个二进制文件所支持的平台可以通过 `file <EXEC_FILE>` 或者 `readelf -h <EXEC_FILE>` 命令查看。
+
+### 库版本
+
+如果在高版本机器上编译二进制文件，然后复制到低版本 (主要是动态库) 上执行，那么就可能会出现类似 `version `GLIBC_2.12' not found` 的报错。
+
+完整的报错信息为。
+
+{% highlight text %}
+<EXEC_NAME>: /lib64/libpthread.so.0: version `GLIBC_2.12' not found (required by <EXEC_NAME>)
+{% endhighlight %}
+
+这里就是因为依赖的 glibc 版本太低导致的异常，可以通过 `strings /lib64/libc.so.6 | grep GLIBC` 查看当前库所支持的版本号。
+
+最高版本也可以通过 `ldd --verion` 或者 `/lib64/libc.so.6` 查看。
+
+最简单的，就是在编译的时候只依赖低版本的 glibc ，这样在高版本上也可以使用。
+
+#### 原因
+
+从 `glibc 2.1` 开始，引入了 [Symbol Versioning](https://akkadia.org/drepper/symbol-versioning) 的机制，每个符号都会对应一个版本号，例如：
+
+{% highlight text %}
+$ nm /lib64/libc.so.6 | grep " memcpy"
+{% endhighlight %}
+
+当前二进制文件所有依赖的版本号，可以通过如下命令查看。
+
+{% highlight text %}
+$ nm <EXEC_FILE> | grep GLIBC
+{% endhighlight %}
+
+<!--
+https://blog.blahgeek.com/glibc-and-symbol-versioning/
+https://blog.csdn.net/force_eagle/article/details/8684669
+-->
+
+### 杂项
+
 #### 1. 静态库生成动态库
 
 可以通过多个静态库生成动态库，而实际上静态库是一堆 `.o` 库的压缩集合，而生成动态库需要保证 `.o` 编译后是与地址无关的，也就是添加 `-fPIC` 参数。
@@ -627,11 +678,9 @@ An alias for –syms
 
 正常来说 `ld-linux(8)` 会查找一个程序需要加载的库，然后解析执行，通过 `LD_PRELOAD` 或者 `/etc/ld.so.preload` 可以提前加载一些动态库。
 
-
 <!--
 http://www.cirosantilli.com/elf-hello-world/
 -->
 
 {% highlight text %}
 {% endhighlight %}
-

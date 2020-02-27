@@ -85,7 +85,8 @@ https://github.com/sirupsen/logrus
 
 ### 其它
 
-* [GoLang 如何编码？](/post/golang-how-to-write-go-code.html)，一篇官方文章的翻译，介绍如何进行编写代码。
+* [GoLang 如何编码？](/post/golang-how-to-write-go-code.html) 一篇官方文章的翻译，介绍如何进行编写代码。
+* [GoLang 常见陷阱](/post/golang-some-pitfalls-introduce.html) 一些经常出错的点。
 
 ## InfluxDB
 
@@ -127,6 +128,10 @@ https://github.com/olekukonko/tablewriter
 
 JWT-GoLang
 https://github.com/dgrijalva/jwt-go
+
+Go Internals的介绍
+https://github.com/teh-cmc/go-internals
+https://github.com/go-internals-cn/go-internals
 -->
 
 {% highlight text %}

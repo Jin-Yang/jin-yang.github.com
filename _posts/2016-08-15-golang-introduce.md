@@ -36,6 +36,21 @@ golang 有多种安装方式，主要包括了三种最常见的安装方式：
 # yum install golang
 {% endhighlight %}
 
+### Proxy
+
+从 1.11 版本开始，新增了 `GOPROXY` 环境变量，如果设置了该变量，下载源代码时将会通过这个环境变量设置的代理地址下载。
+
+{% highlight text %}
+export GOPROXY=https://goproxy.io
+export GOPROXY=https://goproxy.cn
+{% endhighlight %}
+
+对于 1.13 以上版本，也可以执行 `go env -w GOPROXY=https://goproxy.cn,direct` 设置。
+
+<!--
+https://github.com/goproxy/goproxy.cn
+-->
+
 ### 标准包安装
 
 可以从 [golang.org/dl](https://golang.org/dl) 上下载源码包，当然也可以从 [studygolang.com](https://studygolang.com/) 上下载。其中包的名称类似于 go1.6.linux-amd64.tar.gz ，从中选择相应的平台，压缩包中是已经编译好的二进制包，可以直接下载解压即可。

@@ -22,7 +22,9 @@ description: 简单介绍下 C 语言中与正则表达式相关的内容。
 
 grep 支持 `BREs(默认-G)`、`EREs(-E)`、`PREs(-P)`，而 egrep 相当于使用了 `-E` 参数，会按照行处理关键字。sed 默认使用 BREs，可以通过 `-r` 参数使用 EREs，awk 使用 EREs 。
 
+<!--
 https://my.oschina.net/leejun2005/blog/76922
+-->
 
 ## 编程
 

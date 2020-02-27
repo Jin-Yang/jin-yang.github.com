@@ -80,7 +80,7 @@ import ("database/sql" _ "github.com/ziutek/mymysql/godrv")
 {% highlight text %}
 WORKSPACE
  |-src/github.com/hello/world   引用的三方库
- |    /foobar                   项目实现的代码	
+ |    /foobar                   项目实现的代码
  |    /foobar/mymath            项目子模块
  |-bin
  |-pkg
@@ -154,11 +154,293 @@ WORKSPACE
  |-pkg
 {% endhighlight %}
 
-### Module
+
+## Module
 
 到目前为止，仍然要强依赖于 GOPATH 变量的设置，所以要么已经完全设置好了，要么就每个项目维护一个打包脚本，在该脚本中设置相应的环境变量。
 
+### 示例
+
+可以在任意的目录下新建项目。
+
+{% highlight text %}
+$ mkdir hello && cd hello
+$ go mod init hello
+go: creating new go.mod: module hello
+$ cat go.mod
+module hello
+
+go 1.13
+{% endhighlight %}
+
+此时会生成一个 `go.mod` 文件，包含了模块名称以及 GoLang 的版本号，以后所有的工具链 `go get` `go build` 等都会修改以及维护这个 `go.mod` 文件。
+
+
+
+
 <!--
+go.mod 提供了module, require、replace和exclude 四个命令
+
+module  语句指定包的名字（路径）
+require 语句指定的依赖项模块
+replace 语句可以替换依赖项模块
+exclude 语句可以忽略依赖项模块
+
+
+添加依赖
+
+新建一个 server.go 文件，写入以下代码：
+
+
+package main
+
+import (
+	"net/http"
+
+	"github.com/labstack/echo"
+)
+
+func main() {
+	e := echo.New()
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
+	e.Logger.Fatal(e.Start(":1323"))
+}
+复制代码执行 go run server.go 运行代码会发现 go mod 会自动查找依赖自动下载：
+$ go run server.go
+go: finding github.com/labstack/echo v3.3.10+incompatible
+go: downloading github.com/labstack/echo v3.3.10+incompatible
+go: extracting github.com/labstack/echo v3.3.10+incompatible
+go: finding github.com/labstack/gommon/color latest
+go: finding github.com/labstack/gommon/log latest
+go: finding github.com/labstack/gommon v0.2.8
+# 此处省略很多行
+...
+
+   ____    __
+  / __/___/ /  ___
+ / _// __/ _ \/ _ \
+/___/\__/_//_/\___/ v3.3.10-dev
+High performance, minimalist Go web framework
+https://echo.labstack.com
+____________________________________O/_______
+                                    O\
+⇨ http server started on [::]:1323
+复制代码现在查看go.mod 内容：
+$ cat go.mod
+
+module hello
+
+go 1.12
+
+require (
+	github.com/labstack/echo v3.3.10+incompatible // indirect
+	github.com/labstack/gommon v0.2.8 // indirect
+	github.com/mattn/go-colorable v0.1.1 // indirect
+	github.com/mattn/go-isatty v0.0.7 // indirect
+	github.com/valyala/fasttemplate v1.0.0 // indirect
+	golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a // indirect
+)
+复制代码go module 安装 package 的原則是先拉最新的 release tag，若无tag则拉最新的commit，详见 Modules官方介绍。 go 会自动生成一个 go.sum 文件来记录 dependency tree：
+$ cat go.sum
+github.com/labstack/echo v3.3.10+incompatible h1:pGRcYk231ExFAyoAjAfD85kQzRJCRI8bbnE7CX5OEgg=
+github.com/labstack/echo v3.3.10+incompatible/go.mod h1:0INS7j/VjnFxD4E2wkz67b8cVwCLbBmJyDaka6Cmk1s=
+github.com/labstack/gommon v0.2.8 h1:JvRqmeZcfrHC5u6uVleB4NxxNbzx6gpbJiQknDbKQu0=
+github.com/labstack/gommon v0.2.8/go.mod h1:/tj9csK2iPSBvn+3NLM9e52usepMtrd5ilFYA+wQNJ4=
+github.com/mattn/go-colorable v0.1.1 h1:G1f5SKeVxmagw/IyvzvtZE4Gybcc4Tr1tf7I8z0XgOg=
+github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=
+... 省略很多行
+复制代码
+再次执行脚本 go run server.go 发现跳过了检查并安装依赖的步骤。
+可以使用命令 go list -m -u all 来检查可以升级的package，使用go get -u need-upgrade-package 升级后会将新的依赖版本更新到go.mod
+* 也可以使用 go get -u 升级所有依赖
+
+go get 升级
+
+运行 go get -u 将会升级到最新的次要版本或者修订版本(x.y.z, z是修订版本号， y是次要版本号)
+运行 go get -u=patch 将会升级到最新的修订版本
+运行 go get package@version 将会升级到指定的版本号version
+运行go get如果有版本的更改，那么go.mod文件也会更改
+
+示例二：改造现有项目(helloword)
+项目目录为：
+$ tree
+.
+├── api
+│   └── apis.go
+└── server.go
+
+1 directory, 2 files
+复制代码server.go 源码为：
+package main
+
+import (
+    api "./api"  // 这里使用的是相对路径
+    "github.com/labstack/echo"
+)
+
+func main() {
+    e := echo.New()
+    e.GET("/", api.HelloWorld)
+    e.Logger.Fatal(e.Start(":1323"))
+}
+复制代码api/apis.go 源码为：
+package api
+
+import (
+    "net/http"
+
+    "github.com/labstack/echo"
+)
+
+func HelloWorld(c echo.Context) error {
+    return c.JSON(http.StatusOK, "hello world")
+}
+复制代码
+使用 go mod init *** 初始化go.mod
+
+$ go mod init helloworld
+go: creating new go.mod: module helloworld
+复制代码
+运行 go run server.go
+
+go: finding github.com/labstack/gommon/color latest
+go: finding github.com/labstack/gommon/log latest
+go: finding golang.org/x/crypto/acme/autocert latest
+go: finding golang.org/x/crypto/acme latest
+go: finding golang.org/x/crypto latest
+build command-line-arguments: cannot find module for path _/home/gs/helloworld/api
+复制代码首先还是会查找并下载安装依赖，然后运行脚本 server.go，这里会抛出一个错误：
+build command-line-arguments: cannot find module for path _/home/gs/helloworld/api
+复制代码但是go.mod 已经更新：
+$ cat go.mod
+module helloworld
+
+go 1.12
+
+require (
+        github.com/labstack/echo v3.3.10+incompatible // indirect
+        github.com/labstack/gommon v0.2.8 // indirect
+        github.com/mattn/go-colorable v0.1.1 // indirect
+        github.com/mattn/go-isatty v0.0.7 // indirect
+        github.com/valyala/fasttemplate v1.0.0 // indirect
+        golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a // indirect
+)
+复制代码那为什么会抛出这个错误呢？
+这是因为 server.go 中使用 internal package 的方法跟以前已经不同了，由于 go.mod会扫描同工作目录下所有 package 并且变更引入方法，必须将 helloworld当成路径的前缀，也就是需要写成 import helloworld/api，以往 GOPATH/dep 模式允许的 import ./api 已经失效，详情可以查看这个 issue。
+
+更新旧的package import 方式
+
+所以server.go 需要改写成：
+package main
+
+import (
+    api "helloworld/api"  // 这是更新后的引入方法
+    "github.com/labstack/echo"
+)
+
+func main() {
+    e := echo.New()
+    e.GET("/", api.HelloWorld)
+    e.Logger.Fatal(e.Start(":1323"))
+}
+复制代码
+一个小坑：开始在golang1.11 下使用go mod 遇到过 go build github.com/valyala/fasttemplate: module requires go 1.12 这种错误，遇到类似这种需要升级到1.12 的问题，直接升级golang1.12 就好了。幸亏是在1.12 发布后才尝试的go mod 🤷‍♂️
+
+
+到这里就和新创建一个项目没什么区别了
+
+使用replace替换无法直接获取的package
+由于某些已知的原因，并不是所有的package都能成功下载，比如：golang.org下的包。
+modules 可以通过在 go.mod 文件中使用 replace 指令替换成github上对应的库，比如：
+replace (
+	golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a => github.com/golang/crypto v0.0.0-20190313024323-a1f597ede03a
+)
+复制代码或者
+replace golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a => github.com/golang/crypto v0.0.0-20190313024323-a1f597ede03a
+
+当执行 `go build` 或者 `go test` 时，会自动下载相关的包，并更新 `go.mod` 文件，如果需要特定的版本，那么可以通过如下方式指定。
+
+go get foobar@v1.2.3
+go get foobar@master
+go get foobar@e3702bed2
+
+也可以直接编辑 `go.mod` 文件。
+
+开启了 Module 之后，不在原来原有的 `GOPATH` 机制，下载的包会保存在 `
+
+在开启了 Module 机制后，其中 `go get` 的机制重新实现，分别对应了如下的代码。
+
+----- 不开启
+${GOROOT}/src/cmd/go/internal/get/get.go
+----- 开启
+${GOROOT}/src/cmd/go/internal/modget/get.go
+
+希望一个项目就在一个目录下，而不是类似 `src/github.com/foobar` 这样的目录。
+
+在 GoLang 中分为了三个层级：Module、Package、Files ，在如上的讨论中大部分都是基于 Package 的，在下面的讨论中是基于 Module 的。
+
+一般一个 Module 对应了一个仓库，当然，一个仓库中也允许存在多个 Module ，只是略复杂。
+
+https://github.com/golang/go/wiki/Modules
+
+### Replace
+
+因为网络等原因，有些包无法通过 `go get` 获取，此时就需要用到 `replace` 指令。
+
+src/github.com/foobar/saying  引用
+src/github.com/foobar/demo    主项目
+
+$ export GOPATH=/tmp/foobar
+$ mkdir -p "${GOPATH}/src/github.com/foobar/saying"
+$ cd "${GOPATH}/src/github.com/foobar/saying"
+$ go mod init
+$ cat <<EOF > saying.go
+package saying
+
+import "fmt"
+
+func Greet(name string) string {
+	return fmt.Sprintf("Hi, %s!", name)
+}
+EOF
+
+$ mkdir -p "${GOPATH}/src/github.com/foobar/demo"
+$ cd "${GOPATH}/src/github.com/foobar/demo"
+$ go mod init
+$ cat <<EOF > main.go
+package  main
+
+import (
+    "fmt"
+
+    "github.com/foobar/saying"
+)
+
+func main(){
+	fmt.Println(saying.Greet("GoModule"))
+}
+EOF
+
+然后在 `demo` 的目录下通过 `go run main.go` 直接运行，此时会尝试下载 `saying` 模块，但是因为没有实际上传，最终会下载失败。
+
+手动修改 `go.mod` 文件为如下，其中 `require` 为关键。
+
+module github.com/foobar/demo
+
+go 1.13
+
+require github.com/foobar/saying v0.0.0
+replace github.com/foobar/saying => ../saying
+
+注意，如果有多个版本，目前不会从本地获取相关的版本。
+
+### 多版本
+
+http://ljchen.net/2018/11/24/Go-Modules%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/
+
+
 https://juejin.im/post/5c8e503a6fb9a070d878184a
 -->
 

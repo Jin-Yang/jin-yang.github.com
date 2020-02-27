@@ -2429,15 +2429,6 @@ https://github.com/Hack-with-Github/Awesome-Hacking
 NTPL生产者消费者模型
 http://cis.poly.edu/cs3224a/Code/ProducerConsumerUsingPthreads.c
 
-netlink编程，以及比较有意思的程序
-http://edsionte.com/techblog/archives/4140
-https://github.com/lebougui/netlink
-https://github.com/eworm-de/netlink-notify
-以及ss程序使用示例
-http://www.binarytides.com/linux-ss-command/
-https://www.cyberciti.biz/files/ss.html
-https://serverfault.com/questions/510708/tail-inotify-cannot-be-used-reverting-to-polling-too-many-open-files
-https://serverfault.com/questions/561107/how-to-find-out-the-reasons-why-the-network-interface-is-dropping-packets
 
 多线程编程，其中有很多DESIGN_XXX.txt的文档，甚至包括了Systemtap的使用，其底层用到的是系统提供的 futex_XXX() 调用。
 https://github.com/lattera/glibc/tree/master/nptl
@@ -4409,6 +4400,227 @@ int __builtin_parity (unsigned int x)
 
 此外，这些函数都有相应的usigned long和usigned long long版本，只需要在函数名后面加上l或ll就可以了，比如int __builtin_clzll。
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://www.zfl9.com/c-regex-pcre.html
+
+其中 `regex.h` 是一个正则表达式实现的头文件，提供的常用函数有 `regcomp()`、`regexec()`、`regfree()` 和 `regerror()` 。
+
+注意，`regexec()` 函数在一次匹配成功之后就会返回，例如对于 IP 地址 `192.168.9.100` 来说，如果使用 `[0-9]+` 进行匹配会返回 `192` ，如果要匹配所有的数值，则需要使用 `([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)` 。
+
+当使用最后的匹配时，返回的第一条是整个完整的匹配字符串，然后是返回的匹配子串，也就是依次返回 `192.168.9.100` `192` `168` `9` `100` 五个字符串。
+
+/var/log/message 常见异常
+
+\<segfault at\> 段错误
+\<Out of memory:\> OOM
+
+#include <stdio.h>
+#include <string.h>
+#include <regex.h>
+
+#define MATCH_ITEMS_MAX    32
+
+int main(void)
+{
+        int rc, i;
+        regex_t regex;
+        regmatch_t matches[MATCH_ITEMS_MAX];
+
+        //const char *pattern = "([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)";
+        //char buff[] = "192.168.9.100";
+
+        //const char *pattern = "([0-9]+)";
+        //char buff[] = "192.168.9.100";
+
+        const char *pattern = "\\<size=([0-9]+)B\\>";
+        char buff[] = "Got package size=100B.";
+
+        rc = regcomp(&regex, pattern, REG_EXTENDED | REG_NEWLINE);
+        if (rc != 0) {
+                fprintf(stderr, "compile pattern '%s' failed, rc %d.\n", pattern, rc);
+                return -1;
+        }
+
+        rc = regexec(&regex, buff, MATCH_ITEMS_MAX, matches, 0);
+        if (rc == REG_NOMATCH) {
+                fprintf(stderr, "no match, pattern '%s' string '%s'.\n", pattern, buff);
+                regfree(&regex);
+                return -1;
+        }
+
+        //assert(rc == 0);
+        for (i = 0; i < MATCH_ITEMS_MAX; i++) {
+                if (matches[i].rm_eo < 0 || matches[i].rm_so < 0)
+                        break;
+                fprintf(stderr, "got match string '%.*s'.\n", matches[i].rm_eo - matches[i].rm_so,
+                        buff + matches[i].rm_so);
+        }
+
+        regfree(&regex);
+
+        return 0;
+}
+
+https://segmentfault.com/a/1190000008125359
+https://www.cnblogs.com/charlieroro/p/10180827.html
+https://github.com/digoal/blog/blob/master/201701/20170111_02.md
+
+/post/golang-syntax-interface-introduce.html
+
+接口继承
+
+一个接口可以继承多个其它接口，如果要实现这个接口，那么就必须要其所继承接口中的方法都实现。
+
+type Saying interface {
+        Hi() error
+}
+
+type Notifier interface {
+        Saying
+        Notify() error
+}
+
+func (u *User) Hi() error {
+        log.Printf("Hi %s\n", u.Name)
+        return nil
+}
+
+上述报错的大致意思是说 -->
+
+这里的关键是 User 的 Notify() 方法实现的是 Pointer Receiver ，而实际需要的是 Value Receiver 。
+
+
+在官方文档 [golang.org/doc](https://golang.org/doc/effective_go.html#pointers_vs_values) 中有相关的介绍。
+
+> The rule about pointers vs. values for receivers is that value methods can be invoked on pointers and values, but pointer methods can only be invoked on pointers.
+>
+> This rule arises because pointer methods can modify the receiver; invoking them on a value would cause the method to receive a copy of the value, so any modifications would be discarded. The language therefore disallows this mistake.
+
+通过 Pointer Method 可以直接修改对象的值，而 Value Method 在执行前会复制一份对应的对象，并在复制后的对象上执行相关操作，而不会修改原对象的值。
+
+原则上来说，这样定义也正常，但是很容易误用而且很难发现，所以 GoLang 放弃了这一特性。
+
+
+## 使用
+
+接口对于 GoLang 来说关键是其实现了泛型，类似于 C++ 中的多态特性，对于函数可以根据不同类型的入参生成不同的对象。
+
+注意，GoLang 是静态编程语言，会在编译过程中检查对应的类型，包括了函数、变量等，同时又有一定的灵活性。实际上处于纯动态语言 (例如 Python) 以及静态语言之间 (例如 C)，可以在一定程度上进行语法检查，同时又提供了高阶功能。
+
+通过 Go 的接口，可以使用 Duck Typing 方式编程。
+
+Duck typing in computer programming is an application of the duck test—"If it walks like a duck and it quacks like a duck, then it must be a duck"—to determine if an object can be used for a particular purpose.  With normal typing, suitability is determined by an object's type. In duck typing, an object's suitability is determined by the presence of certain methods and properties, rather than the type of the object itself.
+
+### 标准库
+
+比较典型的示例可以参考 `io/io.go` 中的读写接口。
+
+type Reader interface {
+        Read(p []byte) (n int, err error)
+}
+
+type Writer interface {
+        Write(p []byte) (n int, err error)
+}
+
+很多的标准库会使用这一接口，包括了网络、编码等类型，这里简单介绍 `encoding/binary` 的使用，其中 `Read()` 函数的声明为。
+
+func Read(r io.Reader, order ByteOrder, data interface{}) error
+
+其中的 `r` 参数可以是任意一个支持 `type Reader interface` 的实现，例如，使用示例如下。
+
+package main
+
+import (
+        "bytes"
+        "encoding/binary"
+        "log"
+)
+
+func main() {
+        var pi float64
+
+        buff := bytes.NewBuffer([]byte{0x18, 0x2d, 0x44, 0x54, 0xfb, 0x21, 0x09, 0x40})
+        if err := binary.Read(buff, binary.LittleEndian, &pi); err != nil {
+                log.Fatalln("binary.Read failed:", err)
+        }
+        log.Println(pi)
+}
+
+如上，从新建的一个内存缓存中读取，并格式化，也可以是文件或者网络。也就是说，只要支持 `Read()` 函数即可 (包括入参等，一般称为签名 Signature ) ，对于 Python 来说编译阶段就会报错。
+
+## 源码解析
+
+在 `runtime/runtime2.go` 文件中定义了 `type iface struct` 以及 `type eface struct` 两个结构体。
+
+type iface struct {
+        tab  *itab
+        data unsafe.Pointer
+}
+
+type eface struct {
+        _type *_type
+        data  unsafe.Pointer
+}
+
+分别表示包含方法以及不包含方法的接口。
+
+// iface 含方法的接口
+type Person interface {
+	Print()
+}
+
+// eface 不含方法的接口
+type Person interface {}
+var person interface{} = xxxx实体
+
+https://segmentfault.com/a/1190000017389782
+
+## eface
+
+由两个属性组成：`_type` 类型信息；`data` 数据信息。
+
+type eface struct {
+        _type *_type
+        data  unsafe.Pointer
+}
+
+其中 `_type` 是所有类型的公共描述，几乎所有的数据都可以抽象成 `_type` 。
+
+## iface
+
+type iface struct {
+        tab  *itab
+        data unsafe.Pointer
+}
+
+https://draveness.me/golang/docs/part2-foundation/ch04-basic/golang-reflect/
+
+SetDeadline
+SetReadDeadline
+SetWriteDeadline
+
+在 GoLang 提供的 net.Conn 结构中，提供了 Deadline 方法，包括了
+
+其中 Deadline是一个绝对时间值，当到达这个时间的时候，所有的 I/O 操作都会失败，返回超时(timeout)错误。
+
+https://colobu.com/2016/07/01/the-complete-guide-to-golang-net-http-timeouts/
+
+
+Answer to the Ultimate Question of Life, The Universe, and Everything. 42
 -->
 
 

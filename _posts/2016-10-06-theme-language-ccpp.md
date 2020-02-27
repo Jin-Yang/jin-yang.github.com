@@ -143,6 +143,10 @@ https://github.com/tinycthread/tinycthread
 需要注意的是，对于 64 位 Windows 系统，`_WIN32` 和 `_WIN64` 都会定义。
 
 https://blog.masterliu.net/gcc-predefined-macros/
+
+
+一个用户的函数trace
+https://github.com/namhyung/uftrace
 -->
 
 

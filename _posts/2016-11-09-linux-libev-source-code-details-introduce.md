@@ -659,6 +659,8 @@ ev_run()
 
 ## IO Watcher
 
+除了作为 IO 事件，很多的事件在内核中会转换为类似的方式。
+
 对 IO 事件的监控的函数，会在 `loop_init()` 中初始化 `backend_poll` 函数变量，正是通过该函数监控 IO 事件，如下是一个简单的示例。
 
 {% highlight text %}
@@ -667,9 +669,10 @@ void cb (struct ev_loop *loop, ev_io *w, int revents)
     ev_io_stop (loop, w);
     // .. read from stdin here (or from w->fd) and handle any I/O errors
 }
-ev_io watcher;
-ev_io_init (&watcher, cb, STDIN_FILENO, EV_READ);  // 初始化，第三个是文件描述符，第四个是监听事件
-ev_io_start (loop, &watcher);
+struct ev_io watcher;
+
+ev_io_init(&watcher, cb, STDIN_FILENO, EV_READ);  // 初始化，第三个是文件描述符，第四个是监听事件
+ev_io_start(EV_A_ &watcher);
 {% endhighlight %}
 
 其中，`ev_io_init()` 用来设置结构体的参数，除了初始化通用的变量之外，还包括 IO 观察器对应的 fd 和 event 。
@@ -696,10 +699,10 @@ typedef struct {
 	int events;
 } ANPENDING;
 
-ANFD andfs[];    // 保存了所有IO事件
+ANFD andfs[];    // 保存了所有IO事件，文件描述符作为其序号
 
-int fchangecnt;  // 记录被修改的fd个数，用来判断是否调用epoll
-int fdchanges[]; // 每次循环时需要修改的句柄
+int fchangecnt;  // 记录被修改的fd个数，用来判断是否调用epoll调整监听事件
+int fdchanges[]; // 记录具体被修改的事件，每次循环时根据这里进行更新
 {% endhighlight %}
 
 在 Linux 中，文件句柄会按照顺序增加，在 libev 中直接使用数组保存已经打开的文件句柄，而对应的数组序号就是文件句柄。

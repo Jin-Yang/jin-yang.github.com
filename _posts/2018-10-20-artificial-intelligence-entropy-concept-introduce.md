@@ -119,6 +119,149 @@ https://zhuanlan.zhihu.com/p/26551798
 
 
 
+/post/artificial-intelligence-entropy-concept-introduce.html
+
+决策树 (Decision Tree) 是一个树结构，可以是二叉树或者非二叉树，期间会对每个非叶节点表示的特征进行测试，每个分支代表这个特征属性在某个值域上的输出，而每个叶节点存放一个类别。
+
+使用决策树进行决策的过程就是从根节点开始，测试待分类项中相应的特征属性，并按照其值选择输出分支，直到到达叶子节点，将叶子节点存放的类别作为决策结果。
+
+## 简介
+
+常用的决策树算法有 `ID3`、`C4.5` 和 `CART` ，它们都是采用贪心 (非回溯) 方法，自顶向下递归的分治方法构造。
+
+这几个算法区别在于选择属性划分方法：A) `ID3` 信息增益；B) `C4.5` 信息增益率；C) `CART` Gini基尼指数。
+
+### 条件熵
+
+$$
+\begin{align}
+H(Y|X) & = \sum_{x \in X}p(x)H(Y|X=x) \\
+& = -\sum_{x \in X} p(x) \sum_{y \in Y}p(y|x)log\ p(y|x) \\
+& = -\sum_{x \in X} \sum_{y \in Y}p(x,y)log\ p(y|x) \\
+\end{align}
+$$
+
+#### 条件熵
+
+H(Y|X) = p(X=No)H(Y|X=No) + p(X=Yes)H(Y|X=Yes)
+
+>>> import math
+>>> HYX_Y = -(5/7) * math.log(5/7, 2) - (2/7) * math.log(2/7, 2)
+>>> HYX_N = -(2/3) * math.log(2/3, 2) - (1/3) * math.log(1/3, 2)
+>>> 0.7*HYX_Y + 0.3*HYX_N
+0.8796731482129885
+
+Entropy(S) = ∑ – p(I) . log2p(I)
+Gain(S, A) = Entropy(S) – ∑[p(S|A) . Entropy(S|A)]
+
+???Gain的计算方式有点疑问???
+
+/post/artificial-intelligence-decision-tree-introduce.html
+## ID3
+
+### 示例
+
+上面的训练集中有 4 个属性，即属性集合 `{OUTLOOK, TEMPERATURE, HUMIDITY, WINDY}`，而类标签有 2 个，即 `{Yes, No}`，分别表示适合户外运动和不适合户外运动，其实是一个二分类问题。
+
+总共有 14 个训练样本，其中 5 个为 No ，9 个为 Yes ，那么对应的信息熵计算为。
+
+$$
+\begin{align}
+Entropy(Decision) & = -p(Y) log_2 {p(Y)} - p(N) log_2 {p(N)} \\
+& = - \frac{9}{14} log_2( \frac{9}{14}) -  \frac{5}{14} log_2( \frac{5}{14}) = 0.940
+\end{align}
+$$
+
+可以通过 Python 直接计算。
+
+>>> import math
+>>> HY = -(9/14) * math.log(9/14, 2) - (5/14) * math.log(5/14, 2)
+0.9402859586706309
+
+接着，对每个属性分别计算其信息熵增益。
+有很多示例的介绍
+https://sefiks.com/2017/11/20/a-step-by-step-id3-decision-tree-example/
+http://shiyanjun.cn/archives/417.html
+关于GradientBoosting以及决策树的介绍
+https://github.com/serengil/chefboost
+
+
+
+React示例程序
+https://dev.to/drminnaar/11-react-examples-2e6d
+
+
+## CART
+https://www.csuldw.com/2015/05/08/2015-05-08-decision%20tree/
+import numpy as np
+import pandas as pd
+
+data = pd.DataFrame({
+	# Rain Overcast Sunny
+    "Outlook":     ["S", "S", "O", "R", "R", "R", "O", "S", "S", "R", "S", "O", "O", "R"],
+	# Hot Mild Cool
+    "Temperature": ["H", "H", "H", "M", "C", "C", "C", "M", "C", "M", "M", "M", "H", "M"],
+	# High Normal
+    "Humidity":    ["H", "H", "H", "H", "N", "N", "N", "H", "N", "N", "N", "H", "N", "H"],
+	# Weak Strong
+    "Windy":       ["W", "S", "W", "W", "W", "S", "S", "W", "W", "W", "S", "S", "W", "S"],
+	# Yes No
+    "Decision":    ["N", "N", "Y", "Y", "Y", "N", "Y", "N", "N", "Y", "N", "N", "N", "N"]
+})
+
+# Mapping the letters in the dataframe to numbers
+data["Outlook"]     = data["Outlook"].map({"R":0, "O": 1, "S": 2})
+data["Temperature"] = data["Temperature"].map({"C":0, "M": 1, "H": 2})
+data["Humidity"]    = data["Humidity"].map({"N":0, "H": 1})
+data["Windy"]       = data["Windy"].map({"F":0, "T": 1})
+data["Decision"]    = data["Decision"].map({"N":0, "Y": 1})
+
+ID3 is acronym of Iterative Dichotomiser.
+https://github.com/serengil/decision-trees-for-ml
+
+
+## 数据集
+import sklearn.datasets as ds
+print(ds.load_iris())
+
+sklearn 提供了多个类型的数据集，包括了：
+
+* 自带的小数据集，通过 `sklearn.datasets.load_<name>` 加载；
+* 可在线下载的数据集，通过 `sklearn.datasets.fetch_<name>` 下载；
+* 计算机生成，可通过 `sklearn.datasets.make_<name>` 生成；
+* svm 格式数据集，通过 `sklearn.datasets.load_svmlight_file(...)` 加载。
+
+如下是简单的示例。
+
+### 鸢尾花
+
+用来做统计分类，数据集包括了：A) 花瓣的长度和宽度；B) 花萼的长度和宽度。对应的单位是厘米，然后根据这些数据分成三类， Setosa、Versicolor、Virginica。
+
+数据文件通过 `csv` 格式保存，加载之后是一个字典类型，其中的 Key 包括了如下：
+
+* `data` 主要的数据集；
+* `feature_names` 数据集每列对应名称，也就是花瓣长宽、花萼长宽；
+* `target` 分类，也就是如上的三种，使用数值 `0~2` 标示；
+* `target_names` 分类名称，通过上面的序号对应名字；
+* `filename` 数据文件的保存路径；
+* `DESCR` 数据集相关信息的描述。
+
+可以用于分类、决策树等场景。
+
+<!--
+更多的数据集可以参考
+https://www.cnblogs.com/nolonely/p/6980160.html
+
+/post/program-c-gcc-security-options.html
+-fPIE 是编译选项；而 -pie 是连接选项
+https://andrewpqc.github.io/2019/08/04/go-pre-commit/
+
+
+Drone CI/CD
+	https://segmentfault.com/a/1190000018459195
+https://www.jianshu.com/p/ede1f917c41a
+-->
+
 
 {% highlight text %}
 {% endhighlight %}

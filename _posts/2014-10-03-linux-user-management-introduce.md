@@ -56,6 +56,21 @@ useradd 的操作的一般步骤为：
 
 其中 `-g` 表示 `initial login group`，`-G` 表示 `supplementary groups`。
 
+<!--
+#### 密码过期
+
+由于无法用root用户直接登陆，可以修改密码 >/etc/security/opasswd 。
+
+----- 锁用户，两者功能相同
+passwd -l username
+usermod -L username
+----- 解锁用户
+passwd -u username
+usermod -U username
+----- 查看，如果用passwd则为!!，usermod则为!，使用usermod且passwd为空则!!
+grep sharad /etc/shadow
+-->
+
 ### UID VS. EUID
 
 Linux 系统中每个进程都有 2 个 ID，分别为用户 ID(uid) 和有效用户 ID(euid)；其中，前者一般表示进程的创建者 (表示通过那个用户创建)，而 EUID 表示进程对于文件和资源的访问权限 (表示拥有那个用户的权限)。
