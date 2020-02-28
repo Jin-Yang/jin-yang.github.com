@@ -31,6 +31,7 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 ### 高阶语法
 
 * [GoLang Gopher](/post/golang-concept-much-more-gopher-introduce.html)
+* [GoLang 汇编语言](/post/golang-assembly-language-introduce.html)
 * [GoLang 调度机制](/post/golang-concept-scheduler-introduce.html)
 * [GoLang 内存管理](/post/golang-concept-memory-management-module-introduce.html)
 * [GoLang 并发模型](/post/golang-concept-concurrency-module-introduce.html)
@@ -44,9 +45,24 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 * [GoLang nil 解析](/post/golang-basic-concept-nil-introduce.html) nil 类似于其它语言的 None NULL 等，但又略有区别。
 * [GoLang 并发控制](/post/golang-concurrenct-control-introduce.html)，常见的并发控制方法，例如 WaitGroup、Context 等。
 * [GoLang 异常处理](/post/golang-basic-error-panic-introduce.html)，这是一个经常被讨论的话题，简单介绍其使用方法。
-* [GoLang 语法之接口](/post/golang-syntax-interface-introduce.html) 相比来说接口要复杂很多，这里拆出来单独讨论。
 * [GoLang 语法之结构体](/post/golang-syntax-structure-introduce.html) 类似于 C 中的结构体，各种对象的集合，但是使用更加复杂。
 * [GoLang 闭包简介](/post/golang-basic-closure-introduce.html) 与其它语言中的闭包概念相同，介绍下 GoLang 中的使用。
+
+#### 接口
+
+通过如下的文章，尝试解释如下几个问题：
+
+* 如何通过 DuckType 实现面向接口编程？面向对象编程如何实现？
+* 源码中的空接口以及非空接口如何实现？
+* 接口在赋值时如何进行转换？
+* 接口类型的断言底层如何实现？
+* 内置的reflect如何访问接口中的各种数据？
+
+文章列表如下。
+
+* [GoLang 接口简介](/post/golang-syntax-interface-introduce.html) 相比来说接口要复杂很多，这里拆出来单独讨论。
+* [GoLang 接口实现](/post/golang-interface-source-code-introduce.html)
+* [GoLang 反射简介](/post/golang-reflect-introduce.html)
 
 ### 测试相关
 
@@ -132,6 +148,9 @@ https://github.com/dgrijalva/jwt-go
 Go Internals的介绍
 https://github.com/teh-cmc/go-internals
 https://github.com/go-internals-cn/go-internals
+
+含有GoLang的实现简介
+https://github.com/qyuhen/book
 -->
 
 {% highlight text %}
