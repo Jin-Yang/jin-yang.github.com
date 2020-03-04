@@ -54,5 +54,26 @@ description:
 
 * [背包问题](/post/algorithm-knapsack-problem-introduce.html)
 
+<!--
+SkipList
+https://yuerblog.cc/2019/02/13/skiplist-rank/
+http://zhangtielei.com/posts/blog-redis-skiplist.html
+https://github.com/begeekmyfriend/skiplist
+
+一个基于SkipList的KV存储
+https://github.com/Softmotions/iowow
+
+Creating Good Looking Diagrams Using Inkscape
+http://www.ioncannon.net/utilities/123/10-tips-for-creating-good-looking-diagrams-using-inkscape/
+
+https://github.com/labuladong/fucking-algorithm
+## Queue
+
+队列的基本操作包括了 `push()` 以及 `pop()` 操作，其它的接口基本上是一些辅助操作。
+
+在实现时采用了循环队列，为了检查边界条件，实际上会有一个元素的浪费；队头的元素是 `front + 1` 而非 `front` 。
+-->
+
+
 {% highlight text %}
 {% endhighlight %}

@@ -105,9 +105,17 @@ https://stfpeak.github.io/2017/06/12/AFL-Cautions/
 https://paper.seebug.org/841/
 -->
 
+## libfuzzer
+
+<!--
+https://github.com/google/fuzzing/blob/master/tutorial/libFuzzerTutorial.md
+https://llvm.org/docs/LibFuzzer.html
+-->
+
 ## 参考
 
 * [American Fuzzy Lop](http://lcamtuf.coredump.cx/afl/) AFL 的官方网站，包括了基本介绍、下载路径等。
+* [Google Fuzzing](https://github.com/google/fuzzing) Google 关于 Fuzzing 的教程，包括了 [libFuzzer Tutorial](https://github.com/google/fuzzing/blob/master/tutorial/libFuzzerTutorial.md) 。
 
 <!--
 使用QEMU进行测试
@@ -126,6 +134,18 @@ http://www.hackdig.com/07/hack-24522.htm
 https://zhuanlan.zhihu.com/p/43432370
 
 二进制分析方面主要利用技术包括：动态分析(Dynamic Analysis)、静态分析(Static Analysis)、符号化执行(Symbolic Execution)、Constraint Solving、资讯流追踪技术(Data Flow Tracking)以及自动化测试(Fuzz Testing)
+
+
+https://source.android.com/devices/tech/debug/libfuzzer
+
+https://i-m.dev/posts/20190831-143715.html
+http://pwn4.fun/2017/07/15/libFuzzer%E8%8F%9C%E9%B8%9F%E5%85%A5%E9%97%A8/
+https://www.secpulse.com/archives/71898.html
+https://google.github.io/clusterfuzz/setting-up-fuzzing/libfuzzer-and-afl/
+https://chromium.googlesource.com/chromium/src/testing/libfuzzer/+/HEAD/getting_started.md
+
+
+https://bbs.pediy.com/thread-249986.htm
 -->
 
 {% highlight text %}

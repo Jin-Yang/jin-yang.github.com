@@ -12,6 +12,21 @@ description:
 
 ## 简介
 
+一般来说，无论是直接声明一个变量，或者通过 `new()` `make()` 创建，默认都会将对应的值设置为 0 ，可以参考 [Zero Value](https://golang.org/ref/spec#The_zero_value) ，也就是 `false` `0` `""` `nil` 等，每个类型对应的零值如下。
+
+{% highlight text %}
+bool       -> false
+numbers    -> 0
+string     -> ""
+
+pointers   -> nil
+slices     -> nil
+maps       -> nil
+channels   -> nil
+functions  -> nil
+interfaces -> nil
+{% endhighlight %}
+
 在 go 语言中，nil 是一个比较特殊的变量，其定义在 `builtin/builtin.go` 文件中，定义如下。
 
 {% highlight go %}
@@ -20,7 +35,7 @@ description:
 var nil Type // Type must be a pointer, channel, func, interface, map, or slice type
 {% endhighlight %}
 
-也即是说，实际上是对应了特定类型的空值，而其它基本类型，例如布尔类型(false)、整数(0)、字符串("") 。
+也即 `nil` 并不是一个关键字，可将 `nil` 定义成其它，例如 `var nil = errors.New("hi")` ，只是不建议这么做。
 
 另外，需要注意，结构体 `struct` 的零值不是 nil ，因为 struct 的零值跟其属性相关。
 

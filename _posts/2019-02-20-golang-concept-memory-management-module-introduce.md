@@ -28,9 +28,11 @@ schedinit()
 
 在 Go 程序启动的时候会先申请一块虚拟内存 (未真正分配物理内存)，然后会切割成小块自己管理，在 64 位的机器上，内容如下。
 
+{% highlight text %}
 +-------------+---------------+----------------------------+
 | spans(512M) |  bitmap(16G)  |        arena(512G)         |
 +-------------+---------------+----------------------------+
+{% endhighlight %}
 
 <!--
 https://juejin.im/post/5c888a79e51d456ed11955a8
@@ -135,6 +137,62 @@ https://www.cnblogs.com/zkweb/p/7880099.html
 
 站点SPM
 https://www.biaodianfu.com/spm.html
+
+
+
+
+
+
+###############################
+## GoLang 内存管理
+###############################
+
+## 引子
+
+首先看个示例。
+
+package main
+
+func foo() *int {
+        var m1 int = 11
+        return &m1
+}
+
+func main() {
+        m := foo()
+        println(*m)
+}
+
+对于 C/C++ 程序员来说，这个是完全无法理解的，在函数 `foo()` 中将局部变量 `m1` 的地址返回了，当函数 `foo` 退出时，`m1` 所使用的栈地址会同样消亡。一般 `C/C++` 都会给出告警，在运行时可能会出现异常。
+
+在 [GoLang FAQ](https://golang.org/doc/faq#stack_or_heap) 中有相关的介绍。
+
+简单来说，会自动决定变量存放在栈还是堆上，编译器会做逃逸分析(escape analysis)，当发现变量的作用域没有跑出函数范围，就可以在栈上，反之则必须分配在堆。
+
+一个函数内局部变量，不管是不是动态 `new` 出来的，它会被分配在堆还是栈，是由编译器做逃逸分析之后做出的决定。
+
+
+
+关于内存管理很不错的一片文章
+https://www.do1618.com/archives/1328/go-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90/
+
+
+Golang源码探索(三) GC的实现原理
+https://www.cnblogs.com/zkweb/p/7880099.html
+
+## 编译器提示
+https://segmentfault.com/a/1190000016743220
+https://golang.org/cmd/compile/#hdr-Compiler_Directives
+
+
+源码保存在 `src/cmd/compile` 路径下。
+https://segmentfault.com/a/1190000016523685
+https://juejin.im/post/5dccb05ee51d4510ba708ff1
+https://zhuanlan.zhihu.com/p/43845771
+
+https://www.do1618.com/archives/1328/go-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90/
+https://github.com/mushroomsir/blog/blob/master/Go%E4%B8%ADstring%E8%BD%AC%5B%5Dbyte%E7%9A%84%E9%99%B7%E9%98%B1.md#4-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90
+https://github.com/qcrao/Go-Questions/blob/master/%E7%BC%96%E8%AF%91%E5%92%8C%E9%93%BE%E6%8E%A5/%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90%E6%98%AF%E6%80%8E%E4%B9%88%E8%BF%9B%E8%A1%8C%E7%9A%84.md
 -->
 
 

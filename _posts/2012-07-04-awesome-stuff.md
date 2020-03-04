@@ -22,6 +22,10 @@ description: 简单记录一下一些常见的资源。
 * [Github System Design Primer](https://github.com/donnemartin/system-design-primer)，一个应用系统的整体架构。
 * [The Twelve-Factor App](https://12factor.net/)，称之为应用、服务开发的十二个关注点。
 
+## 善用嘉软
+
+* [CMUS](https://github.com/cmus/cmus) 终端音乐播放器。
+
 ## 其它
 
 * [www.msdmanuals.cn](https://www.msdmanuals.cn/)，默沙东诊疗手册，对于外行或者专业来说都是不错的医疗相关介绍。
@@ -81,9 +85,6 @@ https://github.com/aquynh/capstone
 
 图像解码、C解析器、printf输出等公共函数
 https://github.com/nothings/stb
-
-终端音乐播放器
-https://github.com/cmus/cmus
 
 HTTP相关
 https://github.com/nodejs/http-parser

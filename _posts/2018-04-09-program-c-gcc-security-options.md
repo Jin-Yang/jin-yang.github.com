@@ -196,6 +196,19 @@ gcc -z now -o test test.c              // 全部开启
 
 如果 RELRO 为 "Partial RELRO"，说明对 GOT 表具有写权限。
 
+## 动态库搜索路径
+
+防止将一些动态库恶意替换，以达到攻击目的。
+
+详细的加载过程可以参考 `man 1 ld` 中关于 `-rpath-link` 选项的介绍，比较关键的是使用 `--rpath` 或者 `LD_LIBRARY_PATH` 指定，分别是在编译阶段或者环境变量指定。
+
+### RPATH VS. RUNPATH
+
+在通过 `rpath` 指定路径后，会在二进制文件中生成这两个参数，可以通过 `readelf -d main | grep -E (RPATH|RUNPATH)` 命令查看，老版本中使用的是 `RPATH` 新版本使用 `RUNPATH` 替换掉。
+
+查找动态库的过程中，大致的顺序是 `RPATH` `LD_LIBRARY_PATH` `RUNPATH` ，所以，如果使用的是 `RPATH` 用户将无法进行调整，所以建议使用 `RUNPATH` ，这也是 gcc 的默认值。
+
+可以通过 `-Wl,--disable-new-dtags` 表明使用 `RPATH` ；通过 `-Wl,--enable-new-dtags` 标示使用 `RUNPATH` 。
 
 ## 其它
 
@@ -209,10 +222,32 @@ checksec 是一个 Bash 脚本，可以用来检查可执行文件属性，例�
 
 各种安全选择的编译参数如下：
 
-* NX `-z execstack` 关闭 `-z noexecstack` 开启
-* Canary `-fno-stack-protector` 关闭 `-fstack-protector` 开启 `-fstack-protector-all` 全开启
-* PIE `-no-pie` 关闭 `-pie` 开启
-* RELRO `-z norelro` 关闭 `-z lazy` 部分开启 `-z now` 完全开启
+{% highlight text %}
+----- (OS) Linux开启地址随机化
+echo 2 > /proc/sys/kernel/randomize_va_space
+
+----- (GCC) 栈保护，优先strong(4.9后gcc)，次优all
+-fstack-protector-strong -fstack-protector-all
+
+----- (GCC) GOT表保护，建议添加-z,now全部保护
+-Wl, -z,relro
+-Wl, -z,relro -z,now
+
+----- (GCC) 不建议指定搜索路径，用户可以配置
+
+----- (GCC) 堆栈不可执行
+-Wl,-z,noexecstack
+
+----- (GCC) 生成地址无关代码
+-fPIC
+
+----- (GCC) 随机化
+-fPIE
+
+----- (GCC) 检查缓冲区溢出(可选)
+_FORTIFY_SOURCE=2
+{% endhighlight %}
+
 
 ## 参考
 

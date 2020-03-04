@@ -125,6 +125,12 @@ $ CGO_ENABLED=0 GOOS=windows GOARCH=386 go build test.go
 
 注意，此时通过 `go get` 等命令安装的包都会保存在 `GOPATH` 指定的目录下，也就是说，`GOROOT` 中保存的是原始的包，`GOPATH` 中保存新安装的三方包、二进制等。
 
+### 其它
+
+按照 GoLang 的版本发布计划 [Go Release Cycle](https://github.com/golang/go/wiki/Go-Release-Cycle) ，当新版本发布之后，老版本的非安全问题将不再维护，而当第二个新版本发布后，安全问题也不再维护。
+
+所以，注意更新相关的 GoLang 版本。
+
 ## 示例代码
 
 ### Hello world

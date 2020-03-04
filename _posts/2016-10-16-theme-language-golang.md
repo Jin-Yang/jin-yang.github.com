@@ -36,6 +36,7 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 * [GoLang 内存管理](/post/golang-concept-memory-management-module-introduce.html)
 * [GoLang 并发模型](/post/golang-concept-concurrency-module-introduce.html)
 * [GoLang 内存模型](/post/golang-concept-memory-module-introduce.html) 主要是介绍一些协程同步相关的内容。
+* [GoLang 逃逸分析](/post/golang-escape-analysis-introduce.html)
 
 ### 语法相关
 
