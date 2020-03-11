@@ -8,6 +8,12 @@ keywords:
 description:
 ---
 
+LLVM 计划启动于 2000 年，由 UIUC 大学的 Chris Lattner 博士主持，后来入职 Apple 并继续推广，所以 Apple 也就成了主要的赞助商。
+
+最初是 Low Level Virtual Machine 的缩写，不过随着发展，逐渐整合成了一整套的编译工具，所以官方也就放弃了原有的缩写，而修改成 The LLVM Compiler Infrastructure 。
+
+其强大之处在于模块化，可以很方便适配不同的语言以及硬件平台。
+
 <!-- more -->
 
 ## LLVM

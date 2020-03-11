@@ -4621,6 +4621,11 @@ https://colobu.com/2016/07/01/the-complete-guide-to-golang-net-http-timeouts/
 
 
 Answer to the Ultimate Question of Life, The Universe, and Everything. 42
+
+
+## Reference
+
+* [miniz](https://github.com/richgel999/miniz) Single C source file zlib-replacement library.
 -->
 
 

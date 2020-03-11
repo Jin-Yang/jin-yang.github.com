@@ -107,15 +107,66 @@ https://paper.seebug.org/841/
 
 ## libfuzzer
 
-<!--
-https://github.com/google/fuzzing/blob/master/tutorial/libFuzzerTutorial.md
-https://llvm.org/docs/LibFuzzer.html
--->
+假设有如下的代码，其中 `FuzzMe()` 函数有问题，也就是其中的 `DataSize` 大小判断有问题，导致对 `Data[3]` 的访问越界，应该大于 3 。
+
+{% highlight cpp %}
+#include <stdint.h>
+#include <stddef.h>
+
+bool FuzzMe(const uint8_t *Data, size_t DataSize)
+{
+        return DataSize >= 3 &&
+                Data[0] == 'F' &&
+                Data[1] == 'U' &&
+                Data[2] == 'Z' &&
+                Data[3] == 'Z';  // :‑<
+}
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
+{
+        FuzzMe(Data, Size);
+        return 0;
+}
+{% endhighlight %}
+
+然后通过如下命令编译。
+
+{% highlight text %}
+$ clang++ -g -fsanitize=address,fuzzer fuzzme.cc
+$ ./a.out
+{% endhighlight %}
+
+会有如下的输出。
+
+{% highlight text %}
+INFO: Seed: 2418493788
+INFO: Loaded 1 modules   (7 inline 8-bit counters): 7 [0x7bbf40, 0x7bbf47),
+INFO: Loaded 1 PC tables (7 PCs): 7 [0x597c60,0x597cd0),
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes
+INFO: A corpus is not provided, starting from an empty corpus
+#0      READ units: 1
+#1      INITED cov: 3 ft: 3 corp: 1/1b exec/s: 0 rss: 26Mb
+#8      NEW    cov: 4 ft: 4 corp: 2/29b exec/s: 0 rss: 26Mb L: 28 MS: 2 InsertByte-InsertRepeatedBytes-
+#3405   NEW    cov: 5 ft: 5 corp: 3/82b exec/s: 0 rss: 27Mb L: 53 MS: 4 InsertByte-EraseBytes-...
+#8664   NEW    cov: 6 ft: 6 corp: 4/141b exec/s: 0 rss: 27Mb L: 59 MS: 3 CrossOver-EraseBytes-...
+#272167 NEW    cov: 7 ft: 7 corp: 5/201b exec/s: 0 rss: 51Mb L: 60 MS: 1 InsertByte-
+=================================================================
+==2335==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000155c13 at pc 0x0000004ee637...
+READ of size 1 at 0x602000155c13 thread T0
+    #0 0x4ee636 in FuzzMe(unsigned char const*, unsigned long) fuzzing/tutorial/libFuzzer/fuzz_me.cc:10:7
+    #1 0x4ee6aa in LLVMFuzzerTestOneInput fuzzing/tutorial/libFuzzer/fuzz_me.cc:14:3
+...
+artifact_prefix='./'; Test unit written to ./crash-0eb8e4ed029b774d80f2b66408203801cb982a60
+{% endhighlight %}
 
 ## 参考
 
 * [American Fuzzy Lop](http://lcamtuf.coredump.cx/afl/) AFL 的官方网站，包括了基本介绍、下载路径等。
 * [Google Fuzzing](https://github.com/google/fuzzing) Google 关于 Fuzzing 的教程，包括了 [libFuzzer Tutorial](https://github.com/google/fuzzing/blob/master/tutorial/libFuzzerTutorial.md) 。
+
+<!--
+https://llvm.org/docs/LibFuzzer.html
+-->
 
 <!--
 使用QEMU进行测试

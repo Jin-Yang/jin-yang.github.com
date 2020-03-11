@@ -11,6 +11,9 @@ description:
 
 <!-- more -->
 
+![knapsack logo]({{ site.url }}/images/algorithm/knapsack.svg "knapsack svg"){: .pull-center width="60%" }
+
+
 <!--
 https://oi.men.ci/noip2006-budget/
 树形 DP

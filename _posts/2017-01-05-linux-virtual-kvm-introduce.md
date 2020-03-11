@@ -269,15 +269,6 @@ http://abcdxyzk.github.io/blog/2015/07/29/kvm-src1/
 -->
 
 
-## 其它
-
-### kvmtools
-
-如上所述，KVM 只是一个内核模块，要构建一个完整的虚机需要同时模拟外设，其中使用比较多的是 QEMU 。除此之外，还有一个较小的工具 [KVMTool](https://github.com/kvmtool/kvmtool)，用来实现轻量级的虚拟机。
-
-代码比较少，不过质量较高，麻雀虽小，但五脏俱全，但是其只支持 Linux 客户机。
-
-
 ## 网络
 
 
@@ -376,6 +367,13 @@ group = "root"
 
 接着通过 `grub2-mkconfig -o /boot/grub2/grub.cfg` 更新 grub2 ，然后重启。
 
+## 其它
+
+### kvmtools
+
+如上所述，KVM 只是一个内核模块，要构建一个完整的虚机需要同时模拟外设，其中使用比较多的是 QEMU 。除此之外，还有一个较小的工具 [KVMTool](https://github.com/kvmtool/kvmtool)，用来实现轻量级的虚拟机。
+
+代码比较少，不过质量较高，麻雀虽小，但五脏俱全，但是其只支持 Linux 客户机。
 
 <!--
 https://github.com/jaywcjlove/handbook/blob/master/CentOS/CentOS7%E5%AE%89%E8%A3%85KVM%E8%99%9A%E6%8B%9F%E6%9C%BA%E8%AF%A6%E8%A7%A3.md

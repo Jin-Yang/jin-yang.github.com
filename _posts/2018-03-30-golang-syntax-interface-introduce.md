@@ -355,5 +355,10 @@ func main() {
 * [Go Data Structures: Interfaces](https://research.swtch.com/interfaces) 对接口的基本介绍。
 * [理解 Go interface 的 5 个关键点](https://sanyuesha.com/2017/07/22/how-to-understand-go-interface/) 很好的一篇介绍 GoLang 中接口的文章。
 
+<!--
+https://github.com/teh-cmc/go-internals/blob/master/chapter2_interfaces/README.md
+https://github.com/go-internals-cn/go-internals/blob/master/chapter2_interfaces/README.md
+-->
+
 {% highlight go %}
 {% endhighlight %}

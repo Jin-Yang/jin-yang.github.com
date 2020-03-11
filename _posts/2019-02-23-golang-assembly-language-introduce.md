@@ -141,5 +141,11 @@ func main() {
 
 * [A Quick Guide to Go's Assembler](https://golang.org/doc/asm) 官方关于汇编的介绍。
 
+
+<!--
+https://github.com/teh-cmc/go-internals/blob/master/chapter1_assembly_primer/README.md
+https://github.com/go-internals-cn/go-internals/blob/master/chapter1_assembly_primer/README.md
+-->
+
 {% highlight text %}
 {% endhighlight %}

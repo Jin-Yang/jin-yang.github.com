@@ -680,6 +680,64 @@ https://blog.csdn.net/force_eagle/article/details/8684669
 
 <!--
 http://www.cirosantilli.com/elf-hello-world/
+
+
+
+
+## 可执行程序分析
+
+## nm
+
+用来显示指定文件中的符号信息，可以是对象文件、可执行文件、动态库等。
+
+### 符号
+
+第二列标示了符号的类型，大写表示为全局变量，小写则表示为局部的变量。
+
+* I 对另一个符号的间接引用，一般为动态库。
+* T 位于代码区。
+
+当出现了 `I` 指定的符号时，另外比较常见的是通过 `@` 指定版本号，例如 `memcpy@@GLIBC_2.14` 或者 `memcpy@GLIBC_2.2.5` ，
+
+https://sourceware.org/binutils/docs/ld/VERSION.html
+
+Yubikey一个物理的USBKey，也可以参考Google开源的OpenSK，以及SOLO
+https://github.com/google/OpenSK
+https://github.com/solokeys/solo
+个人安全信息模型
+https://blog.blahgeek.com/personal-security-model/
+
+## Symbol Versioning
+https://blog.blahgeek.com/glibc-and-symbol-versioning/
+## GDB
+
+基于 ptrace 实现
+
+(gdb) info variables   查看全局和静态变量
+(gdb) info locals      当前栈的局部变量
+(gdb) info args        当前栈的参数
+
+bt full  显示各个函数的局部变量
+
+strip -d
+strip -s 同时删除.symtab符号表 .strtab字符串表
+
+软件调试的艺术 Linker and Loader
+https://github.com/Jessicahust/books/blob/master/%E8%BD%AF%E4%BB%B6%E8%B0%83%E8%AF%95%E7%9A%84%E8%89%BA%E6%9C%AF.pdf
+https://github.com/yuanyiyixi/book/blob/master/C-book/linkers%20and%20loaders-%E4%B8%AD%E6%96%87%E7%89%88.pdf
+
+/post/program-c-complie-link.html
+依赖版本号按照从大到小进行排序
+nm daemon/cloudagent_monitor | awk -F '@' '/@@GLIBC/{ print $3}' | sort -t. -k 2 -nur
+
+
+当在一台高版本 glibc 上编译包是无法在一个低版本 glibc 的机器上运行的，通常有几种办法：A) 升级 glibc 库；B) 重新在低版本 glibc 上编译；C) 修改二进制文件；
+
+https://blog.csdn.net/Mr_HHH/article/details/83104485
+一个不依赖glibc的程序
+https://www.cnblogs.com/softfair/p/hello-from-a-glibc-free-world.html
+
+
 -->
 
 {% highlight text %}
