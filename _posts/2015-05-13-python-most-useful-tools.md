@@ -83,7 +83,7 @@ Python 中的包管理工具，常见操作如下。
 
 #### 指定全局安装源
 
-在 `*nix` 和 `MacOS` 中，配置文件为 `$HOME/.pip/pip.conf` ，一般的内容如下。
+在 `*nix` 和 `MacOS` 中，配置文件为 `$HOME/.pip/pip.conf` ，对于 Windows 保存在 `C:\Users\<USRNAME>\pip\pip.ini` 文件中，一般的内容如下。
 
 {% highlight text %}
 [global]
@@ -93,9 +93,9 @@ index-url = https://pypi.douban.com/simple
 
 常用的源有：
 
-* 豆瓣 https://pypi.douban.com/simple
-* 中国科学技术大学 https://mirrors.ustc.edu.cn/pypi/web/simple/
-* 清华大学TUNA https://pypi.tuna.tsinghua.edu.cn/simple
+* 豆瓣 `https://pypi.douban.com/simple`
+* 中国科学技术大学 `https://mirrors.ustc.edu.cn/pypi/web/simple/`
+* 清华大学TUNA `https://pypi.tuna.tsinghua.edu.cn/simple`
 
 <!--
 https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/
@@ -103,7 +103,7 @@ https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/
 
 #### 代理设置
 
-可以通过如下方法设置其代理，也就是 `export https_proxy='https://USR:PASS@HOSTNAME:PORT'`，注意在使用时密码尽量不要带有类似 `#` `$` `@` 等这种特殊的字符，否则可能会鉴权失败。
+可以通过 `export https_proxy='https://USR:PASS@HOSTNAME:PORT'` 设置代理，注意在使用时密码尽量不要带有类似 `#` `$` `@` 等这种特殊的字符，否则可能会鉴权失败。
 
 ## pyenv & virtualenv
 

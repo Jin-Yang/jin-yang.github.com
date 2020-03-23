@@ -12,109 +12,17 @@ description: 详细介绍下与 C 语言相关的概念。
 
 <!-- more -->
 
-## 目标文件
-
-目标文件是编译器编译完后，还没有进行链接的文件，通常采用和可执行文件相同的存储格式，如 Windows 平台下的 `Portable Executable, PE`，Linux 平台下的 `Executable Linkale Format, ELF`，它们都是 `Common File Format, COFF` 的变种。
-
-除可执行文件，动态链接库 `(Dynamic Linking Library)` 和静态链接库 `(Statci Linking Library)` 也是按照可执行文件进行存储。
-
-对于文件的类型可以通过 file 命令进行查看，常见的类型包括了：
-
-* 可重定位文件(Relocatable File)<br>主要包含了代码和数据，主要用来链接成可执行文件或共享目标文件，如 `.o` 文件。
-* 可执行文件(Executable File)<br>主要是可以直接执行的程序，如 `/bin/bash` 。
-* 共享目标文件(Shared Object File)<br>包含了代码和数据，常见的有动态和静态链接库，如 `/lib64/libc-2.17.so` 。
-* 核心转储文件(Core Dump File)<br>进程意外终止时，系统将该进程的地址空间的内容及终止时的一些其他信息转储到该文件中。
-
-### 示例程序
-
-目标文件通过段 (Segment) 进行存储，在 Windows 中可以通过 `Process Explorer` 查看进程相关信息，Linux 可以通过 `objdump` 查看。主要的段包括了 `.text` `.data` `.bss(Block Started by Symbol)`，当然还有一些其它段，如 `.rodata` `.comment` 等。
-
-{% highlight c %}
-int printf(const char* format, ...);
-
-int global_init_var = 84;
-int global_uninit_var;
-
-void func1(int i)
-{
-    printf("%d\n", i);
-}
-
-int main(void)
-{
-    static int static_var = 85;
-    static int static_var2;
-
-    int a = 1;
-    int b;
-
-    func1(static_var + static_var2 + a + b);
-
-    return a;
-}
-{% endhighlight %}
-
-然后，可以通过 `gcc -c section.c` 编译，编译完上述的文件之后，可以通过 `objdump -h` 查看头部信息，也可以通过 `-x` 参数查看更详细的信息。
-
-比较重要的是 `File off` 和 `Size` 信息，一般头部信息的大小为 `0x34` ，因此第一个段的地址就会从 `0x34` 开始 (地址从 0 开始计数)，另外，由于需要 4bytes 对齐，因此会从 `54(0x36)` 开始。也可以通过 size 查看，采用的是十进制，最后会用十进制和十六进制表示总的大小。
-
-数据段 `.data` 用来保存已经初始化了的全局变量和局部静态变量，如上述的 `global_init_var` 和 `static_var` 。
-
-只读数据段 `.rodata` ，主要用于保存常量，如 `printf()` 中的字符串和 `const` 类型的变量，该段在加载时也会将其设置为只读。
-
-`BSS` 段保存了未初始化的全局变量和局部静态变量，如上述 `global_uninit_var` 和 `static_var2` 。
-
-<!--
-正常应该是 8 字节，但是查看时只有 4 字节，通过符号表(Symbol Table)可以看到，只有 static_var2 保存在 .bss 段，而 global_uninit_var 未存放在任何段，只是一个未定义的 COMMON 符号。这与不同的语言和编译器实现有关，有些编译器会将全局的为初始化变量存放在目标文件 .bss 段，有些则不存放，只是预留一个未定义的全局变量符号，等到最终链接成可执行文件时再在 .bss 段分配空间。
--->
-
-`.text` 为代码段，`.data` 保存含初始值的变量，`.bss` 只保存了变量的符号。
-
-
-### 添加一个段
-
-将以个二进制文件，如图片、MP3 音乐等作为目标文件的一个段。如下所示，此时可以直接声明 `_binary_example_png_start` 和 `_binary_example_png_end` 并使用。
-
-{% highlight text %}
-$ objcopy -I binary -O elf32-i386 -B i386 example.png image.o
-$ objdump -ht image.o
-
-image.o:     file format elf32-i386
-
-Sections:
-Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         000293d6  00000000  00000000  00000034  2**0
-                  CONTENTS, ALLOC, LOAD, DATA
-SYMBOL TABLE:
-00000000 l    d  .data	00000000 .data
-00000000 g       .data	00000000 _binary_example_png_start
-000293d6 g       .data	00000000 _binary_example_png_end
-000293d6 g       *ABS*	00000000 _binary_example_png_size
-{% endhighlight %}
-
-如果在编译时想将某个函数或者变量放置在一个段里，可以通过如下的方式进行。
-
-{% highlight c %}
-__attribute__((section("FOO"))) int global = 42;
-__attribute__((section("BAR"))) void foo() { }
-{% endhighlight %}
-
-### 运行库
-
-在 `main()` 运行之前通常会先执行一段代码，运行这些代码的函数称为 **入口函数** 或 **入口点** ，大致的步骤如下：
-
-* 操作系统创建进程后，把控制权交给程序入口，这个入口往往是运行库中的某个入口函数。
-* 入口函数对运行库和程序运行环境进行初始化，包括堆、I/O、线程、全局变量构造等。
-* 入口函数在完成初始化之后，调用 main 函数，正式开始执行程序主体部分。
-* `main()` 执行完后，返回到入口函数，入口函数进行清理工作，包括全局变量析构、堆销毁、关闭 IO 等，然后进行系统调用结束进程。
-
 ## 链接过程
 
-在程序由源码到可执行文件的编译过程实际有预处理 (Propressing)、编译 (Compilation)、汇编 (Assembly) 和链接 (Linking) 四步，在 `gcc` 中分别使用 `ccp`，`cc1`，`as`，`ld` 来完成。
-
-关于链接方面可以直接从网上搜索 《linker and loader》。
+在程序由源码到可执行文件的编译过程实际有预处理 (Propressing)、编译 (Compilation)、汇编 (Assembly) 和链接 (Linking) 四步，在 `gcc` 中分别通过 `ccp` `cc1` `as` `ld` 四个命令来完成。
 
 ![compile link gcc details]({{ site.url }}/images/linux/compile-link-gcc-details.jpg "compile link gcc details"){: .pull-center }
+
+<!--
+关于链接方面可以直接从网上搜索 《linker and loader》。
+-->
+
+如下详细介绍编译连接的过程。
 
 ### 预编译
 
@@ -168,36 +76,156 @@ $ gcc -c main.c -o main.o
 $ gcc hello.o -o hello.exe
 {% endhighlight %}
 
-## 静态库和动态库
+## 静态链接库
 
-库有动态与静态两种，Linux 中动态通常用 `.so` 为后缀，静态用 `.a` 为后缀，如：`libhello.so` `libhello.a`。为了在同一系统中使用不同版本的库，可以在库文件名后加上版本号为后缀，例如：`libhello.so.1.0`，然后，使用时通过符号链接指向不同版本。
+库有动态与静态两种，Linux 中动态通常用 `.so` 为后缀，静态用 `.a` 为后缀，如：`libhello.so` `libhello.a`，静态链接库实际上就是将各个 `.o` 文件打包合并。
 
-{% highlight text %}
-# ln -s libhello.so.1.0 libhello.so.1
-# ln -s libhello.so.1 libhello.so
+使用静态链接库时，连接器会找出程序所需的函数，然后将它们拷贝到执行文件，一旦连接成功，静态程序库也就不再需要了，缺点是占用的空间比较大，但是执行速度要快一些。
+
+### 示例
+
+如果编译时使用静态库，那么所有依赖的基础库都需要安装静态版本，否则链接会失败，例如对于 `libc` 基础库，在 CentOS 中可以通过 `yum install glibc-static` 命令安装。
+
+现在假设有一个 hello 程序开发包，它提供一个静态库 `libhello.a`，一个动态库 `libhello.so`，一个头文件 `hello.h`，头文件中提供 `foobar()` 这个函数的声明。
+
+下面这段程序 `main.c` 使用 hello 库中的 `foobar()` 函数。
+
+{% highlight c %}
+/* filename: foobar.c */
+#include "hello.h"
+
+void foobar(void)
+{
+	puts("FooBar!");
+}
 {% endhighlight %}
 
-在动态链接的情况下，可执行文件中还有很多外部符号的引用还处于无效地址的状态，因此需要首先启一个 **动态链接器 (Dynamic Linker)**，该连接器的位置在程序的 `".interp"` (interpreter) 中指定，可以通过如下的命令查询。
+{% highlight c %}
+/* filename: hello.c */
+#include "hello.h"
 
-{% highlight text %}
-$ readelf -l a.out | grep interpreter
+void hello(void)
+{
+	puts("Hello world!");
+}
 {% endhighlight %}
 
-### 共享库的更新
+{% highlight c %}
+/* filename: hello.h */
+#ifndef _HELLO_H__
+#define _HELLO_H__
+#include <stdio.h>
 
-对于共享库更新时通常会有兼容更新和不兼容更新，此处所说的兼容是指二进制接口，即 `ABI (Application Binary Interface)`。
+void hello();
+void foobar();
+#endif
+{% endhighlight %}
 
-为了保证共享库的兼容性， Linux 采用一套规则来命名系统中的共享库，简单来说，其规则如下 `libname.so.x.y.z`，name 为库的名称，x y z 的含义如下：
+{% highlight c %}
+/* filename: main.c */
+#include "hello.h"
 
-* x，主版本号(Major Version Number)，库的重大升级，不同的主版本号之间不兼容。
-* y，次版本号(Minor Version Number)，库的增量升级，增加了一些新的接口，且保持原来的符号不变。
-* z，发布版本号(Release Version Number)，库的一些错误的修正、性能的改进等，并不添加任何新的接口，也不对接口进行改进。
+int main(void)
+{
+	foobar();
+	hello();
+	return 0;
+}
+{% endhighlight %}
 
-由于历史的原因最基本的 C 语言库 glibc 动态链接库不使用这种规则，如 `libc-x.y.z.so` 、`ld-x.y.z.so` 。
+当生成静态库时，需要先对源文件进行编译，然后使用 `ar(archive)` 命令连接成静态库。
 
-下面这篇论文， Library Interface Versioning in Solaris and Linux ，对 Salaris 和 Linux 的共享库版本机制和符号版本机制做了非常详细的介绍。
+{% highlight text %}
+$ gcc -c hello.c -o hello.o
+$ gcc -c foobar.c -o foobar.o
+$ ar crv libhello.a hello.o foobar.o
+$ ar -t libhello.a                              // 查看打包的文件
+{% endhighlight %}
 
-在 Linux 中采用 SO-NAME 的命名机制，每个库会对应一个 SO-NAME ，这个 SO-NAME 只保留主版本号，也即 SO-NAME 规定了共享库的接口。
+`ar` 实际是一个打包工具，可以用来打包常见文件，不过现在被 `tar` 替代，目前主要是用于生成静态库，详细格式可以参考 [ar(Unix) wiki](http://en.wikipedia.org/wiki/Ar_(Unix)) 。
+
+{% highlight text %}
+$ echo "hello" > a.txt && echo "world" > b.txt
+$ ar crv text.a a.txt b.txt
+$ cat text.a
+{% endhighlight %}
+
+在与静态库连接时，需要指定库的路径，默认不会将当前目录添加到搜索目录中。
+
+{% highlight text %}
+$ gcc main.c -o test -lhello                    // 库在默认路径下，如/usr/lib
+$ gcc main.c -lhello -L. -static -o main        // 通过-L指定库的路径
+
+$ gcc main.o -o main -WI,-Bstatic -lhello       // 报错，显示找不到-lgcc_s
+{% endhighlight %}
+
+
+
+
+注意：这个特别的 `"-WI,-Bstatic"` 参数，实际上是传给了连接器 `ld`，指示它与静态库连接，如果系统中只有静态库可以不需要这个参数； 如果要和多个库相连接，而每个库的连接方式不一样，比如上面的程序既要和 `libhello` 进行静态连接，又要和 `libbye` 进行动态连接，其命令应为：
+
+{% highlight text %}
+$ gcc testlib.o -o test -WI,-Bstatic -lhello -WI,-Bdynamic -lbye
+{% endhighlight %}
+
+最好不要进行分别编译、链接，因为在生成可执行文件时往往需要很多的其他文件，可以通过 `-v` 选项进行查看，如果通过如下方式进行编译通常会出现错误。
+
+{% highlight text %}
+$ gcc -c main.c
+$ ld main.o -L. -lhello
+{% endhighlight %}
+
+### 链接顺序
+
+当一个项目中有多个静态库时，就可能会由于链接顺序不同导致 `undefined reference` 的报错，而实际上符号是有定义的，其根本原因是由于符号的查找算法引起的。
+
+链接器查找符号针对的是单个目标文件 `.o` ，而非整个静态库，如果在某个目标文件中找到了所需的符号，那么就会将整个目标文件单独从静态库中提取出来，而非将整个链接库添加。
+
+链接器在工作过程中，维护 3 个列表：A) 需要参与连接的目标文件列表 E；B) 一个未解析符号列表 U；C) 一个在 E 中所有目标文件定义过的所有符号列表 D 。
+
+<!--
+静态库的链接问题
+https://segmentfault.com/a/1190000006911973
+-->
+
+## 动态链接库
+
+动态链接就是在程序运行时对符号进行重定位，确定符号对应的内存地址的过程，默认采用的是 Lazy Mode ，只解析那些用得到的符号，如果不需要就不会查找。
+
+### 依赖库
+
+ELF 文件有一个特别的 Section `.dynamic`，存放了和动态链接相关的很多信息，例如动态链接器通过它找到该文件使用的动态链接库。
+
+通过 `readelf -d | grep NEEDED` 可以找到该文件直接依赖的库，如果要查看所有依赖的库，那么可以通过 `ldd` 命令查看。
+
+{% highlight text %}
+$ readelf -d /bin/bash | grep NEED
+ 0x0000000000000001 (NEEDED)             Shared library: [libtinfo.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libdl.so.2]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+
+$ ldd /bin/bash
+        linux-vdso.so.1 (0x00007ffd2438a000)
+        libtinfo.so.6 => /lib64/libtinfo.so.6 (0x00007fe7d3745000)
+        libdl.so.2 => /lib64/libdl.so.2 (0x00007fe7d3541000)
+        libc.so.6 => /lib64/libc.so.6 (0x00007fe7d317e000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007fe7d3c90000)
+{% endhighlight %}
+
+其中 `linux-vdso.so.1` 是一个虚拟的动态链接库，对应进程内存映像的内核部分，而 `/lib/ld-linux-x86_64.so.2` 正好是动态链接器，系统需要用它来进行符号重定位。
+
+而链接器实际上是在 `.interp` 中指定的，使用的是绝对路径，会先被装载到内存中，然后由该文件再加载其它动态库。
+
+{% highlight text %}
+$ readelf -p .interp /bin/bash
+
+String dump of section '.interp':
+  [     0]  /lib64/ld-linux-x86-64.so.2
+{% endhighlight %}
+
+<!--
+通过 LD_LIBRARY_PATH 参数，它类似 Shell 解释器中用于查找可执行文件的 PATH 环境变量，也是通过冒号分开指定了各个存放库函数的路径。该变量实际上也可以通过 /etc/ld.so.conf 文件来指定，一行对应一个路径名。为了提高查找和加载动态链接库的效率，系统启动后会通过 ldconfig 工具创建一个库的缓存 /etc/ld.so.cache 。如果用户通过 /etc/ld.so.conf 加入了新的库搜索路径或者是把新库加到某个原有的库目录下，最好是执行一下 ldconfig 以便刷新缓存。
+-->
 
 ### 路径问题
 
@@ -238,113 +266,36 @@ $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/test/lib
 
 修改 `/etc/ld.so.conf` 文件，把库所在的路径加到文件中，并执行 `ldconfig` 刷新配置。动态链接库通常保存在 `/etc/ld.so.cache` 文件中，执行 `ldconfig` 可以对其进行刷新。
 
+### 版本管理
 
-### 静态连接库
+对于共享库更新时通常会有兼容更新和不兼容更新，其实指的是二进制接口 (Application Binary Interface, ABI)，为了保证共享库的兼容性， Linux 采用一套规则来命名系统中的共享库。
 
-当要使用静态的程序库时，连接器会找出程序所需的函数，然后将它们拷贝到执行文件，由于这种拷贝是完整的，所以一旦连接成功，静态程序库也就不再需要了，缺点是占用的空间比较大。通常，静态链接的程序要比共享函数库的程序运行速度上快一些，大概 1-5％ 。
+实际上就是语意版本，其规则如下 `libname.so.x.y.z`，`name` 库名称，`x` `y` `z` 含义如下：
 
-<!--
-动态库会在执行程序内留下一个标记指明当程序执行时，首先必须载入这个库。
--->
+* `x` 主版本号(Major Version Number)，重大升级，不同主版本不兼容。
+* `y` 次版本号(Minor Version Number)，增量升级，增加了新接口，且保持原符号不变。
+* `z` 发布版本号(Release Version Number)，错误修正、性能改进等，不添加、不修改接口。
 
-注意，对于 CentOS 需要安装 `yum install glibc-static` 库。
+由于历史的原因最基本的 C 语言库 glibc 动态链接库不使用这种规则，如 `libc-x.y.z.so` 、`ld-x.y.z.so` ，在  [Library Interface Versioning in Solaris and Linux](https://www.usenix.org/legacy/publications/library/proceedings/als00/2000papers/papers/full_papers/browndavid/browndavid_html/) 中，对 Salaris 和 Linux 的共享库版本机制和符号版本机制做了非常详细的介绍。
 
-Linux 下进行连接的缺省操作是首先连接动态库，也就是说，如果同时存在静态和动态库，不特别指定的话，将与动态库相连接。
-
-现在假设有一个 hello 程序开发包，它提供一个静态库 `libhello.a`，一个动态库 `libhello.so`，一个头文件 `hello.h`，头文件中提供 `foobar()` 这个函数的声明。
-
-下面这段程序 `main.c` 使用 hello 库中的 `foobar()` 函数。
-
-{% highlight c %}
-/* filename: foobar.c */
-#include "hello.h"
-#include <stdio.h>
-void foobar()
-{
-   printf("FooBar!\n");
-}
-{% endhighlight %}
-
-{% highlight c %}
-/* filename: hello.c */
-#include "hello.h"
-#include <stdio.h>
-void hello()
-{
-   printf("Hello world!\n");
-}
-{% endhighlight %}
-
-{% highlight c %}
-/* filename: hello.h */
-#ifndef _HELLO_H__
-#define _HELLO_H__
-void hello();
-void foobar();
-#endif
-{% endhighlight %}
-
-{% highlight c %}
-/* filename: main.c */
-#include "hello.h"
-int main(int argc, char **argv)
-{
-   foobar();
-   hello();
-   return 0;
-}
-{% endhighlight %}
-
-生成静态库，先对源文件进行编译；然后使用 `ar(archive)` 命令连接成静态库。
+在 Linux 中采用 SO-NAME 的命名机制，每个库会对应一个 SO-NAME ，这个 SO-NAME 只保留主版本号，也即 SO-NAME 规定了共享库的接口。为了在同一系统中使用不同版本的库，可以在库文件名后加上版本号为后缀，例如：`libhello.so.1.0`，然后，使用时通过符号链接指向不同版本。
 
 {% highlight text %}
-$ gcc -c hello.c -o hello.o
-$ gcc -c foobar.c -o foobar.o
-$ ar crv libhello.a hello.o foobar.o
-$ ar -t libhello.a                              // 查看打包的文件
+# ln -s libhello.so.1.0 libhello.so.1
+# ln -s libhello.so.1 libhello.so
 {% endhighlight %}
 
-`ar` 实际是一个打包工具，可以用来打包常见文件，不过现在被 `tar` 替代，目前主要是用于生成静态库，详细格式可以参考 [ar(Unix) wiki](http://en.wikipedia.org/wiki/Ar_(Unix)) 。
+### 示例程序
 
-{% highlight text %}
-$ echo "hello" > a.txt && echo "world" > b.txt
-$ ar crv text.a a.txt b.txt
-$ cat text.a
-{% endhighlight %}
-
-与静态库连接麻烦一些，主要是参数问题。
-
-{% highlight text %}
-$ gcc main.c -o test -lhello                    // 库在默认路径下，如/usr/lib
-$ gcc main.c -lhello -L. -static -o main        // 通过-L指定库的路径
-
-$ gcc main.o -o main -WI,-Bstatic -lhello       // 报错，显示找不到-lgcc_s
-{% endhighlight %}
-
-注意：这个特别的 `"-WI,-Bstatic"` 参数，实际上是传给了连接器 `ld`，指示它与静态库连接，如果系统中只有静态库可以不需要这个参数； 如果要和多个库相连接，而每个库的连接方式不一样，比如上面的程序既要和 `libhello` 进行静态连接，又要和 `libbye` 进行动态连接，其命令应为：
-
-{% highlight text %}
-$ gcc testlib.o -o test -WI,-Bstatic -lhello -WI,-Bdynamic -lbye
-{% endhighlight %}
-
-最好不要进行分别编译、链接，因为在生成可执行文件时往往需要很多的其他文件，可以通过 `-v` 选项进行查看，如果通过如下方式进行编译通常会出现错误。
-
-{% highlight text %}
-$ gcc -c main.c
-$ ld main.o -L. -lhello
-{% endhighlight %}
-
-### 动态库
-
-用 gcc 编绎该文件，在编绎时可以使用任何编绎参数，例如 `-g` 加入调试代码等；`-fPIC` 生成与位置无关的代码（可以在任何地址被连接和装载）。
+通过 `-fPIC` 参数生成与位置无关的代码，这样允许在任何地址被连接和装载。
 
 {% highlight text %}
 $ gcc -c -fPIC hello.c -o hello.o
 
 $ gcc -shared -Wl,-soname,libhello.so.1 -o libhello.so.1.0 hello.o // 生成动态库，可能存在多个版本，通常指定版本号
 
-$ ln  -s  libhello.so.1.0  libhello.so.1                           // 另外再建立两个符号连接
-$ ln  -s  libhello.so.1  libhello.so
+$ ln -s libhello.so.1.0 libhello.so.1                           // 另外再建立两个符号连接
+$ ln -s libhello.so.1 libhello.so
 
 $ gcc -fPIC -shared -o libhello.so hello.c                         // 当然对于上述的步骤可以通过一步完成
 
@@ -358,39 +309,6 @@ $ nm -D libhello.so                                                // 查看符�
 
 其目的主要是允许系统中多个版本的库文件共存，习惯上在命名库文件的时候通常与 `soname` 相同 `libxxxx.so.major.minor` 其中，`xxxx` 是库的名字， `major` 是主版本号， `minor` 是次版本号。
 
-### 查看库中的符号
-
-有时候可能需要查看一个库中到底有哪些函数，`nm` 命令可以打印出库中的涉及到的所有符号，库既可以是静态的也可以是动态的。
-
-`nm` 列出的符号有很多，常见的有三种：
-
-* 在库中被调用，但并没有在库中定义(表明需要其他库支持)，用U表示；
-* 库中定义的函数，用T表示，这是最常见的；
-* 所谓的“弱态”符号，它们虽然在库中被定义，但是可能被其他库中的同名符号覆盖，用W表示。
-
-例如，希望知道上文提到的 `hello` 库中是否定义了 `printf()` 。
-
-{% highlight text %}
-$ nm libhello.so
-{% endhighlight %}
-
-发现其中没有 `printf()` 的定义，取而代之的是 `puts()` 函数，而且为 `U` ，表示符号 `puts` 被引用，但是并没有在函数内定义，由此可以推断，要正常使用 `hello` 库，必须有其它库支持，再使用 `ldd` 命令查看 `hello` 依赖于哪些库：
-
-{% highlight text %}
-$ ldd -v hello
-$ readelf -d hello     直接使用readelf
-{% endhighlight %}
-
-每行 `=>` 前面的，为动态链接程序所需的动态链接库的名字；而 `=>` 后面的，则是运行时系统实际调用的动态链接库的名字。所需的动态链接库在系统中不存在时，`=>` 后面将显示 `"not found"`，括号所括的数字为虚拟的执行地址。
-
-常用的系统动态链接库有：
-
-{% highlight text %}
-libc.so.x        基本C库
-ld-linux.so.2    动态装入库(用于动态链接库的装入及运行)
-{% endhighlight %}
-
-
 ## 动态库加载API
 
 对于 Linux 下的可执行文件 ELF 使用如下命令查看，可以发现其中有一个 `.interp` 段，它指明了将要被使用的动态链接器 (`/lib/ld-linux.so`)。
@@ -399,7 +317,7 @@ ld-linux.so.2    动态装入库(用于动态链接库的装入及运行)
 $ readelf -l EXECUTABLE
 {% endhighlight %}
 
-对于动态加载的函数主要包括了下面的四个函数，需要 `dlfcn.h` 头文件，定义在 `libdl.so` 库中。
+动态加载函数主要包括了下面的四个，依赖 `dlfcn.h` 头文件，定义在 `libdl.so` 库中。
 
 {% highlight text %}
 void *dlopen( const char *file, int mode );
@@ -479,144 +397,6 @@ $ gcc -rdynamic -o foobar foobar.c -ldl              # 编译测试
 
 <!-- https://www.ibm.com/developerworks/cn/linux/l-elf/part1/index.html -->
 
-## 常用命令
-
-### objdump
-
-详细参考 `man objdump` 。
-
-{% highlight text %}
--h, --section-headers, --headers
-  查看目标文件的头部信息。
--x, --all-headers
-  显示所有的头部信息，包括了符号表和重定位表，等价于 -a -f -h -p -r -t 。
--s, --full-contents
-  显示所请求段的全部信息，通常用十六进制表示，默认只会显示非空段。
--d, --disassemble
-  反汇编，一般只反汇编含有指令的段。
--t, --syms
-  显示符号表，与nm类似，只是显示的格式不同，当然显示与文件的格式相关，对于ELF如下所示。
-  00000000 l    d  .bss   00000000 .bss
-  00000000 g       .text  00000000 fred
-{% endhighlight %}
-
-<!--
-第一列为符号的值，有时是地址；下一个是用字符表示的标志位；接着是与符号相关的段，*ABS* 表示段是绝对的（没和任何段相关联）， *UND* 表示未定义；对于普通符号(Common Symbols)表示对齐，其它的表示大小；最后是符号的名字。<br><br>
-
-对于标志组的字符被分为如下的 7 组。
-<ol type="A"><li>
-    "l(local)" "g(global)" "u(unique global)" " (neither global nor local)" "!(both global and local)"<br>
-    通常一个符号应该是 local 或 global ，但还有其他的一些原因，如用于调试、"!"表示一个bug、"u"是 ELF 的扩展，表示整个进程中只有一个同类型同名的变量。</li><br><li>
-
-    "w(weak)" " (strong)"<br>
-    表示强或弱符号。</li><br><li>
-
-    "C(constructor)" " (ordinary)"<br>
-    为构造函数还是普通符号。</li><br><li>
-
-    "W(warning)" " (normal symbol)"<br>
-    如果一个含有警告标志的符号被引用时，将会输出警告信息。</li><br><li>
-
-    "I"
-   "i" The symbol is an indirect reference to another symbol (I), a function to be evaluated
-       during reloc processing (i) or a normal symbol (a space).
-
-   "d(debugging symbol)" "D(dynamic symbol)" " (normal symbol)"<br>
-    表示调试符号、动态符号还是普通的符号。</li><br><li>
-
-   "F(function)" "f(file)" "O(object)" " (normal)"<br>
-    表示函数、文件、对象或只是一个普通的符号。
--->
-
-### strip
-
-我们知道二进制的程序中包含了大量的符号表格(symbol table)，有一部分是用来 gdb 调试提供必要信息的，可以通过如下命令查看这些符号信息。
-
-{% highlight text %}
-$ readelf -S hello
-{% endhighlight %}
-
-其中类似与 `.debug_xxxx` 的就是 gdb 调试用的。去掉它们不会影响程序的执行。
-
-{% highlight text %}
-$ strip hello
-{% endhighlight %}
-
-### objcopy
-
-用于转换目标文件。
-
-{% highlight text %}
-常用参数：
-  -S / --strip-all
-    不从源文件中拷贝重定位信息和符号信息到输出文件(目的文件)中去。
-  -I bfdname/--input-target=bfdname
-    明确告诉程序源文件的格式是什么，bfdname是BFD库中描述的标准格式名。
-  -O bfdname/--output-target=bfdname
-    使用指定的格式来写输出文件(即目标文件)，bfdname是BFD库中描述的标准格式名，
-    如binary(raw binary 格式)、srec(s-record 文件)。
-  -R sectionname/--remove-section=sectionname
-    从输出文件中删掉所有名为section-name的段。
-{% endhighlight %}
-
-上一步的 strip 命令只能拿掉一般 symbol table，有些信息还是沒拿掉，而这些信息对于程序的最终执行没有影响，如: `.comment` `.note.ABI-tag` `.gnu.version` 就是完全可以去掉的。
-
-所以说程序还有简化的余地，我们可以使用 objcopy 命令把它们抽取掉。
-
-{% highlight text %}
-$ objcopy -R .comment -R .note.ABI-tag -R .gnu.version hello hello1
-{% endhighlight %}
-
-### readelf
-
-用于读取 ELF 格式文件，包括可执行程序和动态库。
-
-{% highlight text %}
-常用参数：
-  -a --all
-    等价于-h -l -S -s -r -d -V -A -I
-  -h --file-header
-    文件头信息；
-  -l --program-headers
-    程序的头部信息；
-  -S --section-headers
-    各个段的头部信息；
-  -e --headers
-    全部头信息，等价于-h -l -S；
-
-示例用法：
------ 读取dynstr段，包含了很多需要加载的符号，每个动态库后跟着需要加载函数
-$ readelf -p .dynstr hello
------ 查看是否含有调试信息
-$ readelf -S hello | grep debug
-{% endhighlight %}
-
-<!--
-readelf  -S hello
-readelf -d hello
-
-  --sections
-An alias for –section-headers
--s –syms 符号表 Display the symbol table
---symbols
-An alias for –syms
--n –notes 内核注释 Display the core notes (if present)
--r –relocs 重定位 Display the relocations (if present)
--u –unwind Display the unwind info (if present)
--d --dynamic
-  显示动态段的内容；
--V –version-info 版本 Display the version sections (if present)
--A –arch-specific CPU构架 Display architecture specific information (if any).
--D –use-dynamic 动态段 Use the dynamic section info when displaying symbols
--x –hex-dump=<number> 显示 段内内容Dump the contents of section <number>
--w[liaprmfFso] or
--I –histogram Display histogram of bucket list lengths
--W –wide 宽行输出 Allow output width to exceed 80 characters
--H –help Display this information
--v –version Display the version number of readelf
--->
-
-
 ## 其它
 
 ### not a dynamic executable
@@ -635,17 +415,13 @@ $ readelf -l <EXEC_FILE> | grep 'program interpreter'
 
 ### 库版本
 
-如果在高版本机器上编译二进制文件，然后复制到低版本 (主要是动态库) 上执行，那么就可能会出现类似 `version `GLIBC_2.12' not found` 的报错。
-
-完整的报错信息为。
+如果在高版本机器上编译二进制文件，然后复制到低版本 (主要是动态库) 上执行，那么就可能会出现类似 `version 'GLIBC_2.12' not found` 的报错，完整报错信息如下。
 
 {% highlight text %}
 <EXEC_NAME>: /lib64/libpthread.so.0: version `GLIBC_2.12' not found (required by <EXEC_NAME>)
 {% endhighlight %}
 
-这里就是因为依赖的 glibc 版本太低导致的异常，可以通过 `strings /lib64/libc.so.6 | grep GLIBC` 查看当前库所支持的版本号。
-
-最高版本也可以通过 `ldd --verion` 或者 `/lib64/libc.so.6` 查看。
+这里就是因为依赖的 glibc 版本太低导致，通过 `strings /lib64/libc.so.6 | grep GLIBC` 查看当前库支持版本号，最高版本可以通过 `ldd --verion` 或者 `/lib64/libc.so.6` 查看。
 
 最简单的，就是在编译的时候只依赖低版本的 glibc ，这样在高版本上也可以使用。
 
@@ -660,11 +436,17 @@ $ nm /lib64/libc.so.6 | grep " memcpy"
 当前二进制文件所有依赖的版本号，可以通过如下命令查看。
 
 {% highlight text %}
-$ nm <EXEC_FILE> | grep GLIBC
+$ nm <exec file> | awk -F '@' '/@@GLIBC/{ print $3}' | sort -t. -k 2 -nur
 {% endhighlight %}
 
+当在一台高版本 glibc 上编译包是无法在一个低版本 glibc 的机器上运行的，通常有几种办法：A) 升级 glibc 库；B) 重新在低版本 glibc 上编译；C) 修改二进制文件；
+
 <!--
+更改引用高版本glibc的程序到引用低版本的glibc
+https://blog.csdn.net/Mr_HHH/article/details/83104485
+glibc和Symbol Versioning和如何链接出低版本glibc可运行的程序
 https://blog.blahgeek.com/glibc-and-symbol-versioning/
+version `GLIBC_2.14' not found 解决方法.
 https://blog.csdn.net/force_eagle/article/details/8684669
 -->
 
@@ -679,26 +461,6 @@ https://blog.csdn.net/force_eagle/article/details/8684669
 正常来说 `ld-linux(8)` 会查找一个程序需要加载的库，然后解析执行，通过 `LD_PRELOAD` 或者 `/etc/ld.so.preload` 可以提前加载一些动态库。
 
 <!--
-http://www.cirosantilli.com/elf-hello-world/
-
-
-
-
-## 可执行程序分析
-
-## nm
-
-用来显示指定文件中的符号信息，可以是对象文件、可执行文件、动态库等。
-
-### 符号
-
-第二列标示了符号的类型，大写表示为全局变量，小写则表示为局部的变量。
-
-* I 对另一个符号的间接引用，一般为动态库。
-* T 位于代码区。
-
-当出现了 `I` 指定的符号时，另外比较常见的是通过 `@` 指定版本号，例如 `memcpy@@GLIBC_2.14` 或者 `memcpy@GLIBC_2.2.5` ，
-
 https://sourceware.org/binutils/docs/ld/VERSION.html
 
 Yubikey一个物理的USBKey，也可以参考Google开源的OpenSK，以及SOLO
@@ -709,6 +471,8 @@ https://blog.blahgeek.com/personal-security-model/
 
 ## Symbol Versioning
 https://blog.blahgeek.com/glibc-and-symbol-versioning/
+
+
 ## GDB
 
 基于 ptrace 实现
@@ -725,19 +489,8 @@ strip -s 同时删除.symtab符号表 .strtab字符串表
 软件调试的艺术 Linker and Loader
 https://github.com/Jessicahust/books/blob/master/%E8%BD%AF%E4%BB%B6%E8%B0%83%E8%AF%95%E7%9A%84%E8%89%BA%E6%9C%AF.pdf
 https://github.com/yuanyiyixi/book/blob/master/C-book/linkers%20and%20loaders-%E4%B8%AD%E6%96%87%E7%89%88.pdf
-
-/post/program-c-complie-link.html
-依赖版本号按照从大到小进行排序
-nm daemon/cloudagent_monitor | awk -F '@' '/@@GLIBC/{ print $3}' | sort -t. -k 2 -nur
-
-
-当在一台高版本 glibc 上编译包是无法在一个低版本 glibc 的机器上运行的，通常有几种办法：A) 升级 glibc 库；B) 重新在低版本 glibc 上编译；C) 修改二进制文件；
-
-https://blog.csdn.net/Mr_HHH/article/details/83104485
 一个不依赖glibc的程序
 https://www.cnblogs.com/softfair/p/hello-from-a-glibc-free-world.html
-
-
 -->
 
 {% highlight text %}

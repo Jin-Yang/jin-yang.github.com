@@ -235,8 +235,6 @@ int main()
 ptrace参考
 http://recursiveg.me/2014/05/programming-with-ptrace-part4/
 http://www.kgdb.info/playing_with_ptrace_part_i/
-gettimeofday() 的成本
-https://russelltao.iteye.com/blog/1405353
 -->
 
 

@@ -447,6 +447,9 @@ linux-gate.so 技术细节
 <!--
 http://blog.csdn.net/anzhsoft/article/details/18776111
 http://www.xfocus.net/articles/200109/269.html
+
+浅谈时间函数gettimeofday的成本（更正）
+https://www.iteye.com/blog/russelltao-1405353
 -->
 
 {% highlight text %}

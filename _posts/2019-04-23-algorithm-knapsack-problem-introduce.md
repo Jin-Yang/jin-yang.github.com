@@ -2,35 +2,38 @@
 title: 背包问题
 layout: post
 comments: true
+usemath: true
 language: chinese
 category: [linux,misc]
 keywords:
 description:
 ---
 
+分治算法和动态规划都是将大问题拆解为小问题，前者针对同一个子问题可能会计算多次，而后者则会将中间结果记录下来，通过空间节约时间，而 `0-1` 背包问题是最基本的动态规划问题。
 
 <!-- more -->
 
-![knapsack logo]({{ site.url }}/images/algorithm/knapsack.svg "knapsack svg"){: .pull-center width="60%" }
-
-
-<!--
-https://oi.men.ci/noip2006-budget/
-树形 DP
-Knapsack problem
-https://en.wikipedia.org/wiki/Knapsack_problem#/media/File:Knapsack.svg
-
-分治算法和动态规划都是将大问题拆解为小问题，前者针对同一个子问题可能会计算多次，而后者则会将中间结果记录下来。
-
 ## 01 背包问题
+
+![knapsack logo]({{ site.url }}/images/algorithm/knapsack.svg "knapsack svg"){: .pull-center width="50%" }
 
 给定 `N` 种物品和一个容量为 `C` 的背包，其中物品 `i` 的重量是 `w[i]`，其对应的价值为 `v[i]` ；那么，如何选择装入背包的物品，使得装入背包中物品的总价值最大？
 
 对于一个物品来说，只能是取或者不取，且只能取一次，这也就是 0-1 的含义。
 
-https://zhuanlan.zhihu.com/p/30959069
+### 贪婪算法
 
-如果以贪婪算法求解，很容易可以找出反例。
+以单位质量的价值作为衡量标准进行选取，很容易找出反例。
+
+{% highlight text %}
+(20, 20) (30, 30) (40, 44) (50, 55) (60, 60)
+{% endhighlight %}
+
+其中容量为 100 ，如果按照上述的贪婪规则获取，那么应该是 40 50 ，总价值为 99；而实际最优为 20 30 50 ，价值为 105 。
+
+<!--
+https://blog.csdn.net/Jhno99/article/details/78555982
+-->
 
 ### 问题求解
 
@@ -43,7 +46,7 @@ https://zhuanlan.zhihu.com/p/30959069
 
 而最优方案就是比较这两种方案，那个会更好，也即是选取两者的最大值。
 
-$$m(i, W) = max{m(i - 1, W - w[i]) + v[i], m(i - 1, W)}$$
+$$m(i, W) = max\{m(i - 1, W - w[i]) + v[i], m(i - 1, W)\}$$
 
 可以得到最终的公式为。
 
@@ -59,19 +62,21 @@ $$
 
 上述等式的第三行意味着，如果第 $i$ 个物品的重量大于背包的容量，那么这个物品是无法装入背包的，那么仍然保持前 $i - 1$ 的价值。
 
-对于上述的公式，会申请 $(n + 1) \times (C + 1)$ 大小的数组，其中第 0 行以及第 0 列会初始化为 0 ；那么，算法可以表示为：
+对于上述的公式，会申请 $(n + 1) \times (C + 1)$ 大小的数组，其中第 0 行以及第 0 列均会初始化为 0 ；那么，算法可以表示为：
 
+{% highlight text %}
 for i=0 to N
-	m[i, 0] = 0
+    m[i, 0] = 0
 for j=1 to C
-	m[0, j] = 0
+    m[0, j] = 0
 for i = 1 to N
-	for j = 1 to C
-		if w[i] > j
-			m[i][j] = m[i-1][j]
-		else
-			m[i][j] = max(m[i-1][j-w[i]] + v[i], m[i-1][j])
+    for j = 1 to C
+        if w[i] > j
+            m[i][j] = m[i-1][j]
+        else
+            m[i][j] = max(m[i-1][j-w[i]] + v[i], m[i-1][j])
 return m[N][C]
+{% endhighlight %}
 
 最后的值就是背包可容纳的最大价值。
 
@@ -90,7 +95,7 @@ return m[N][C]
 
 也就是最大的值是 40 ，接着需要判断具体选取了那些物品。
 
-从最后一列开始，也就是当容量最大时最后选取的是哪一个，显然，是使得容量增加到最大的那个值，也就是第 4 个；去除掉第四个的容量 6 ，应该查找容量为 5 时选取的物品，同理，应该是第 3 个。
+从最后一列开始，也就是当容量最大时最后选取的是哪一个，是使得容量增加到最大的那个值，也就是第 4 个；去除掉第四个的容量 6 ，应该查找容量为 5 时选取的物品，同理，应该是第 3 个。
 
 所以，选择的是 3 和 4 。
 
@@ -102,25 +107,12 @@ return m[N][C]
 
 以上方法的时间和空间复杂度均为 `O(NC)` ，时间复杂度已经不太好优化，但是空间复杂度可以优化到 `O(C)` ，但是未确定其原理，以及如何确定所选择的物品。
 
-## 贪婪算法
-
-以单位质量的价值作为衡量标准进行选取，很容易找出反例。
-
-(20, 20) (30, 30) (40, 44) (50, 55) (60, 60)
-
-其中容量为 100 ，如果按照上述的贪婪规则获取，那么应该是 40 50 ，总价值为 99；而实际最优为 20 30 50 ，价值为 105 。
-
-https://blog.csdn.net/Jhno99/article/details/78555982
 
 
-
-
-
-
-
-
-
-
+<!--
+https://oi.men.ci/noip2006-budget/
+树形 DP
+https://zhuanlan.zhihu.com/p/30959069
 
 
 ## 完全背包问题

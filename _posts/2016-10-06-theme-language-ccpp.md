@@ -16,11 +16,29 @@ description:
 
 <!--* [C 持续集成](/post/program-c-continuous-integration.html)，一些与 C 语言的持续集成相关的工具集。-->
 
-## C 语言
+## 程序基本概念
 
-* [C 编译链接](/post/program-c-complie-link.html)，与 C 语言相关的编译链接概念
-* [C 加载过程](/post/program-c-load-process.html)，通过动态库可以减小空间，提高效率，这里简单介绍加载过程。
-* [GCC 安全编译选项](/post/program-c-gcc-security-options.html) GCC 中提供的一系列安全编译的选项，简单介绍。
+不只是 C 相关代码，实际上是 Linux 中的基本介绍。
+
+* [程序简介](/post/program-exec-basic-concept-introduce.html) 与执行程序相关的一些基本概念，例如 ELF 格式、内存分布等。
+* [编译链接](/post/program-c-complie-link.html) 编译链接过程，以及静态库和动态库基本概念的介绍。
+* [ELF 详解](/post/program-c-elf-details.html) 介绍 ELF 文件格式的详细内容。
+* [安全编译选项](/post/program-c-gcc-security-options.html) GCC 提供的一系列安全编译的选项，简单介绍。
+* [解析二进制](/post/program-executable-binary-parse-tools.html) 分析二进制文件时常用的命令，例如readelf、nm、ldd等。
+
+### 程序加载
+
+详细介绍从 Bash 启动运行，到最终调用到函数执行。
+
+* [加载过程](/post/program-c-load-process.html) 包括从Bash到内核加载，再到用户态的ld加载解析。
+* [Preload 简介](/post/program-c-preload-introduce.html) 允许应用在加载其它动态库之前先加载，可以用来替换某些函数。
+* [PLT GOT 介绍](/post/program-c-load-process-plt-got.html) 介绍动态库在运行过程中如何寻找到函数的地址。
+
+#### 其它
+
+* [Linux 系统调用](/post/kernel-syscall.html) 关于系统调用的介绍，同时也包括了 VDSO 。
+
+## C 语言
 
 #### 杂项
 
@@ -79,6 +97,7 @@ description:
 可以认为是在 C 的基础上添加了面向对象的功能，其编译、链接、调试等基本都可以通过一个工具链完成。
 
 * [C++ 基本概念](/post/language-cpp-basic-syntax-introduce.html)
+* [C++ STL 使用](/post/language-cpp-stl-basic-usage-introduce.html)
 
 
 ## libev
@@ -102,7 +121,7 @@ https://github.com/tinycthread/tinycthread
 
 ## 原子操作
 
-早期 CPU 通过提高主频来提升 CPU 的性能，不过因为工艺问题，主频很难再提升，目前更加倾向于多核心的发展。
+早期 CPU 通过提高主频来提升 CPU 的性能，不过因为工艺问题以及摩尔定律的终结，目前更加倾向于多核心的发展，对于编程来说，更像一个小型的分布式系统，也导致多线程编程要难很多。
 
 另外，为了弥补 CPU 与主存处理速度的差异，在两者之间增加了多级缓存，提升性能的同时，也带来很多编程上的问题，尤其对于 Lock-Free 的编程。
 
@@ -116,10 +135,13 @@ https://github.com/tinycthread/tinycthread
 
 ### 编程方法
 
+并发编程涉及到很多的知识点，包括了从编译器、到 CPU 、内存与 Cache 的关系等等，都有可能会导致代码与实际执行不一致，原则是保证单线程下的一致。
+
 * [Memory Reordering 简析](/post/linux-c-memory-reordering-basic-introduce.html) 包括了编译器乱序、CPU 乱序等，及其实例。
 * [内存屏障简析](/post/linux-c-memory-barriers-basic-introduce.html) 也就是为了处理乱序时使用的机制。
 * [GCC 原子操作](/post/linux-c-gcc-atomic-operation-introduce.html) GCC 实际上已经提供了一些简单的原子操作，这里简单介绍。
 * [Lock Free 编程](/post/linux-c-program-lock-free-queue-introduce.html)
+* [C++ 内存模型](/post/language-cpp-memory-module-introduce.html)
 
 
 #### 相关资料

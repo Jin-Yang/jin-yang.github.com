@@ -332,8 +332,12 @@ int main (int argc, char **argv)
 	char *endptr;
 	long int li1, li2, li3, li4, li5;
 
-	errno = 0;
-	li1 = strtol(numbers, &endptr, 10);
+        errno = 0;
+        li1 = strtol(numbers, &endptr, 0);
+<!--
+        if (endptr == NULL || *endptr != 0 || errno != 0)
+		exit(EXIT_FAILURE);
+-->
 	if ((errno == ERANGE && (li1 == LONG_MAX || li1 == LONG_MIN)) || (errno != 0 && li1 == 0)) {
 		perror("strtol");
 		exit(EXIT_FAILURE);

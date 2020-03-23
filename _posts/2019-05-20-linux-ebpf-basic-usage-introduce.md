@@ -153,9 +153,6 @@ https://github.com/zoidbergwill/awesome-ebpf
 https://qmonnet.github.io/whirl-offload/2016/09/01/dive-into-bpf/
 
 
-libelf的使用
-https://www.zybuluo.com/devilogic/note/139554
-
 介绍如何使用eBPF的最简单内容
 https://github.com/pratyushanand/learn-bpf/
 https://opensource.com/article/17/9/intro-ebpf
@@ -174,6 +171,9 @@ https://github.com/bolinfest/rust-ebpf-demo
 ulimits的设置
 https://feichashao.com/ulimit_demo/
 https://blogs.oracle.com/linux/notes-on-bpf-1
+
+
+https://sematext.com/blog/linux-kernel-observability-ebpf/
 -->
 
 

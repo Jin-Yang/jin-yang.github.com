@@ -4626,6 +4626,449 @@ Answer to the Ultimate Question of Life, The Universe, and Everything. 42
 ## Reference
 
 * [miniz](https://github.com/richgel999/miniz) Single C source file zlib-replacement library.
+
+
+
+TAIL日志方式
+https://www.vanheusden.com/turbotail/
+加密方式
+https://www.lysator.liu.se/~nisse/nettle/
+https://github.com/Rupan/blowfish
+CICD
+https://github.com/buildbot/buildbot
+https://github.com/ice799/ltrace
+libelf格式化
+https://github.com/WolfgangSt/libelf
+内存测试
+https://github.com/jnavila/memtester
+https://github.com/david415/linux-ftools
+skynety游戏的网络框架
+https://github.com/cloudwu/skynet
+HashTable
+https://troydhanson.github.io/uthash/
+https://github.com/jamesroutley/write-a-hash-table
+监控
+https://github.com/ice799/ltrace
+https://github.com/lebinh/ngxtop
+内存时序数据库
+https://github.com/facebookarchive/beringei
+PID控制
+https://github.com/m-lundberg/simple-pid
+http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/
+文件CheckSUM校验
+https://github.com/cjavad/hashit
+消息队列
+https://github.com/beanstalkd/beanstalkd
+HASH库的实现
+https://github.com/troydhanson/uthash
+Fuzz
+https://github.com/thiemonagel/bunny-the-fuzzer
+Cron
+https://github.com/dubiousjim/dcron
+https://github.com/yo8192/fcron
+常用的网络工具
+https://github.com/iputils/iputils
+https://github.com/flok99/httping
+序列化库
+https://github.com/troydhanson/tpl
+https://github.com/nanopb/nanopb
+一系列C语言实现的wrap工具，可以用来测试
+https://cwrap.org/
+一个简单的状态机实现
+https://github.com/misje/stateMachine
+Go语言中实现的平滑重启
+https://github.com/cloudflare/tableflip
+logfmt格式解析
+https://github.com/clibs/logfmt
+
+容器中使用的init
+https://github.com/krallin/tini
+ChaosMonkey 2.0
+https://github.com/Netflix/chaosmonkey/
+
+P2P协议详解
+http://www.52im.net/thread-50-1-1.html
+
+
+
+HPACK HTTP2协议解析
+https://github.com/Dridi/cashpack
+高并发通用库
+https://github.com/concurrencykit/ck
+有很多不错的测试库
+https://github.com/clibs/cmocka
+https://github.com/samvrlewis/cmocka-embedded-example
+模板库C++
+https://github.com/pantor/inja
+很多代码库，包括了一个HTTP的压测程序
+http://home.tiscali.cz/~cz210552/
+高性能的statsd服务器
+https://github.com/github/brubeck
+https://github.com/statsite/statsite
+用户面的流量整形
+https://github.com/mariusae/trickle
+死锁检测
+https://github.com/rouming/dla
+通过SCM_RIGHTS传递进程描述符
+https://github.com/vomlehn/libpassfds
+一个WebSocket的实现，还包括了一系列的基于libev的实现
+https://github.com/zhaojh329/libuwsc
+https://github.com/warmcat/libwebsockets
+libev+c-ares实现的异步DNS解析
+https://github.com/Mons/libevares
+QUIC或者说http3的实现
+https://github.com/ngtcp2/ngtcp2
+https://github.com/nghttp2/nghttp2
+协程实现
+https://github.com/sustrik/libdill
+URL解析
+https://github.com/uriparser/uriparser
+HTTP库
+https://github.com/h2o/h2o
+https://acme.com/software/mini_httpd/
+https://github.com/Karlson2k/libmicrohttpd
+lynis安全审计
+https://github.com/CISOfy/lynis
+读取进程中内存数据
+https://github.com/rek7/mXtract
+https://github.com/citypw/lcamtuf-memfetch
+resiliency库实现
+https://github.com/eapache/go-resiliency
+https://github.com/afex/hystrix-go
+SkipList的实现
+https://github.com/begeekmyfriend/skiplist
+无锁队列
+https://github.com/je-so/iqueue
+基于wxWidgets的十六进制编辑器
+https://wxmedit.github.io/
+
+
+
+malloc产生SEGV问题排查方法
+https://blog.csdn.net/win_lin/article/details/7822762
+
+https://eklitzke.org/memory-protection-and-aslr
+
+TIME_WAIT和端口复用
+https://www.cnblogs.com/kex1n/p/7437290.html
+https://blog.csdn.net/u010585120/article/details/80826999
+
+内存数据提取
+https://github.com/rek7/mXtract
+https://github.com/hephaest0s/usbkill
+
+查找敏感信息
+https://www.freebuf.com/articles/system/23993.html
+
+通过使用 Access Key ID(AK)/Secret Access Key(SK) 加密的方法来验证某个请求发送者身份。
+
+在调用 API 时，需要对参数以及 AK 使用 SK 进行签名，生成一个签名信息；服务端会根据 AK 查询到预制的 SK 进行签名，并确保一致。
+
+所以，需要保证 Secure Key 不能在网络中传输，以及不能在不受信任的位置存放。
+
+https://insights.thoughtworks.cn/api-2/
+
+c++ pitfall
+
+
+## 指针
+
+### 数组指针
+
+`int (*arr)[3]` 这定义了一个指向数组的指针，数组的元素必须是 3 。
+
+#include <stdio.h>
+
+int main(void)
+{
+        int (*ptr)[3], i, *data;
+        int array[3] = {1, 2, 3}; // size MUSTBE 3.
+
+        ptr = &array; // ptr is a pointer to array.
+        for (i = 0; i < 3; i++)
+                printf("%d\n", (*ptr)[i]); // got the array first
+
+        data = array;
+        for (i = 0; i < 3; i++)
+                printf("%d\n", data[i]);
+
+        return 0;
+}
+
+如上是容易出错的三个点：
+
+1. 数组的大小必须与声明的数组指针变量大小相同；
+2. 因为ptr是一个数组指针，所以必须对数组取地址；
+3. 由于ptr是数组指针，那么在获取数组中的元素时，需要先取地址，而且要加括号保证优先级。
+
+后面是比较常用的使用方法，如果要传递给一个函数，那么数组的大小同样需要传递。
+
+
+
+
+
+
+
+https://stackoverflow.com/questions/11167907/compression-in-openssl
+https://blog.csdn.net/liujiayu2/article/details/51860184
+
+SSH-Key的选择
+https://medium.com/@honglong/%E9%81%B8%E6%93%87-ssh-key-%E7%9A%84%E5%8A%A0%E5%AF%86%E6%BC%94%E7%AE%97%E6%B3%95-70ca45c94d8e
+
+很多不错的网络开发介绍
+http://www.52im.net/thread-50-1-1.html
+
+## 文件格式
+
+假设下载的是一个 [CentOS 8](http://mirrors.163.com/centos/8/isos/x86_64/) 的镜像，可以直接下载。
+
+协议简介，官方以及非官方
+https://wiki.theory.org/index.php/Main_Page
+http://bittorrent.org/beps/bep_0003.html
+
+https://github.com/skeeto/bencode-c
+https://github.com/amwales-888/ambencode
+https://github.com/janneku/bencode-tools
+https://github.com/willemt/heapless-bencode
+https://github.com/somemetricprefix/tbl
+https://segmentfault.com/a/1190000000681331
+https://github.com/Rudde/mktorrent
+
+其中比较关键的是 `announce` URL 以及 `info` 字典，
+
+MP3格式解析
+https://github.com/lieff/minimp3
+https://blog.csdn.net/u010650845/article/details/53520426
+https://www.cnblogs.com/ranson7zop/p/7655474.html
+
+GO客户端
+https://github.com/anacrolix/torrent
+Tracker
+https://github.com/chihaya/chihaya
+https://github.com/masroore/opentracker
+https://github.com/xaiki/opentracker
+https://github.com/danielfm/bttracker
+https://github.com/willemt/tracker-client
+http://erdgeist.org/arts/software/opentracker/
+https://github.com/crosbymichael/tracker
+
+http://www.kristenwidman.com/blog/33/how-to-write-a-bittorrent-client-part-1/
+https://www.cnblogs.com/hnrainll/archive/2011/07/26/2117423.html
+
+https://blog.jse.li/posts/torrent/
+https://www.jianshu.com/p/22205fa24c9b
+https://skerritt.blog/bit-torrent/
+µTorrent Vuze Deluge Transmission
+
+DFS非stack模式
+https://segmentfault.com/a/1190000010632749
+安全编译选项
+https://firmianay.gitbooks.io/ctf-all-in-one/doc/4.4_gcc_sec.html
+https://blog.lao-yuan.com/2018/06/09/Linux-GCC%E5%AE%89%E5%85%A8%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6.html
+https://blog.lao-yuan.com/2018/05/29/Linux%E4%B8%8B%E5%A0%86%E6%A0%88%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90.html
+
+* 不会存在环，即使存在不能存在总和为负值的环；
+* 对于有 V 的节点的图，最多经过 V - 1 个边，此时退化成了链表；
+* 最短路径上的较小段 (subpath) 也是最短路径。
+
+
+/post/program-c-gcc-security-options.html
+VSDO随机化
+https://zhuanlan.zhihu.com/p/58419878
+
+
+为了方便调试，GDB 会自动关闭随机选项，可以通过 `set disable-randomization off` 打开该选项。
+
+https://blog.csdn.net/Plus_RE/article/details/79199772
+https://yifengyou.gitbooks.io/learn-linux_exploit/
+
+反ptrace
+http://eternalsakura13.com/2018/02/01/ptrace/
+/proc/<PID>/environ
+
+/post/kernel-memory-virtual-physical-map
+/post/kernel-memory-management-from-userspace-view
+
+
+文件 `/proc/<PID>/maps` 显示了进程映射的内存区域和访问权限，通过 `proc_pid_maps_op` 实现，对应的函数为 `show_map()` ，对应内核中的 `task->mm->mmap` 链表。
+
+https://blog.csdn.net/lijzheng/article/details/23618365
+
+/post/charsets-encoding.html
+https://upload.wikimedia.org/wikipedia/commons/d/dd/ASCII-Table.svg
+
+#include <stdio.h>
+#include <errno.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include <sys/ptrace.h>
+
+int strsplit(char *string, char **fields, size_t size)
+{
+        size_t i = 0;
+        char *ptr = string, *saveptr = NULL;
+
+        while ((fields[i] = strtok_r(ptr, ", \t\r\n", &saveptr)) != NULL) {
+                ptr = NULL;
+                i++;
+
+                if (i >= size)
+                        break;
+        }
+
+        return ((int)i);
+}
+
+static void *read_data_range(int pid, void *start, void *end)
+{
+        long word;
+        void *data;
+        size_t len, offset;
+
+        len = end - start;
+        if ((len % sizeof(void *)) != 0) {
+                fprintf(stderr, "malformed memory address, length %d.", len);
+                return NULL;
+        }
+        if (len > 1024 * 1024)
+                return NULL;
+        //fprintf(stdout, "read data from %p to %p, length %ld.\n", start, end, len);
+
+        data = malloc(len);
+        if (data == NULL) {
+                fprintf(stderr, "malformed memory address, length %d.", len);
+                return NULL;
+        }
+
+        errno = 0;
+        for (offset = 0; offset < len; offset += sizeof(long)) {
+                word = ptrace(PTRACE_PEEKTEXT, pid, start + offset, NULL);
+                if (word < 0 && errno != 0) {
+                        fprintf(stderr, "peek text from %p failed, %d:%s.",
+                                start + offset, errno, strerror(errno));
+                        free(data);
+                        return NULL;
+                }
+                memcpy((uint8_t *)data + offset, &word, sizeof(word));
+        }
+
+        return data;
+}
+int main(void)
+{
+        FILE *maps;
+        int pid = 27898, rc, idx, len, i;
+        char path[128], line[1024], *fields[32], *end, *ptr, *data;
+        unsigned long long addr_start, addr_end;
+
+        if (geteuid() != 0) {
+                fprintf(stdout, "Running as root is recommended.");
+                return -1;
+        }
+
+        rc = snprintf(path, sizeof(path), "/proc/%d/maps", pid);
+        if (rc < 0 || rc >= (int)sizeof(path)) {
+                fprintf(stderr, "format maps filepath failed, rc %d.", rc);
+                return -1;
+        }
+
+        maps = fopen(path, "r");
+        if (maps == NULL) {
+                fprintf(stderr, "open map file '%s' failed, %d:%s.", path, errno, strerror(errno));
+                return -1;
+        }
+
+        // /proc/<PID>/environ
+        if (ptrace(PTRACE_ATTACH, pid, NULL, NULL) < 0) {
+                fprintf(stderr, "Attach to PID %d failed, %d:%s.", pid, errno, strerror(errno));
+                fclose(maps);
+                return -1;
+        }
+        wait(NULL);
+
+        while (feof(maps) == 0) {
+                if (fgets(line, sizeof(line), maps) == NULL)
+                        break;
+
+                rc = strsplit(line, fields, (sizeof(fields)/sizeof(fields[0])));
+                if (rc < 2) {
+                        fprintf(stderr, "invalid line '%s', at least 2 fields expect.", line);
+                        break;
+                }
+
+                if (strchr(fields[1], 'r') == 0)
+                        continue;
+                fprintf(stderr, "======= %s\n", line);
+
+                end = strchr(fields[0], '-');
+                if (end == NULL)
+                        continue;
+                *end = 0;
+                end++;
+
+                errno = 0;
+                addr_start = strtoull(line, &ptr, 16);
+                if (line == ptr || errno != 0) {
+                        fprintf(stderr, "convert start address '%s' failed, %d:%s.\n",
+                                        line, errno, strerror(errno));
+                        continue;
+                }
+                addr_end = strtoull(end, &ptr, 16);
+                if (end == ptr || errno != 0) {
+                        fprintf(stderr, "convert end address '%s' failed, %d:%s.\n",
+                                        end, errno, strerror(errno));
+                        continue;
+                }
+
+                data = read_data_range(pid, (void *)addr_start, (void *)addr_end);
+                if (data == NULL)
+                        continue;
+
+                len = addr_end - addr_start;
+                for (idx = 0, i = 0; i < len; i++) {
+                        if (data[i] < ' ' || data[i] > '~')
+                                continue;
+                        data[idx++] = data[i];
+                }
+                data[idx] = 0;
+                fprintf(stdout, "got data: %s\n", data);
+
+                free(data);
+                //fprintf(stderr, "%p %p 0x%llx   0x%llx\n", line, ptr, addr_start, addr_end);
+        }
+
+        fclose(maps);
+
+        if (ptrace(PTRACE_DETACH, pid, NULL, NULL) < 0) {
+                fprintf(stderr, "Attach to PID %d failed, %d:%s.", pid, errno, strerror(errno));
+                return -1;
+        }
+
+        return 0;
+}
+
+## 内存保护
+
+简单来说，就是针对不同的场景设置内存的读写权限。
+
+https://www.gnu.org/software/libc/manual/html_node/Memory-Protection.html
+https://www.informit.com/articles/article.aspx?p=23618&seqNum=10
+https://www.cnblogs.com/rim99/p/5523289.html
+https://unix.stackexchange.com/questions/211951/how-does-the-kernel-prevent-a-malicious-program-from-reading-all-of-physical-ram
+
+ASLR实现以及漏洞分析
+https://www.cnblogs.com/wangaohui/p/7122653.html
+https://www.freebuf.com/articles/system/228731.html
+
+## 参考
+
+* [Linux Kernel Memory Protection](http://ijcsit.com/docs/Volume%205/vol5issue04/ijcsit20140504225.pdf)
+
+检测在什么样的虚拟机里的脚本
+https://www.freebuf.com/articles/network/229040.html
+
 -->
 
 

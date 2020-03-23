@@ -31,14 +31,14 @@ Vim 是一个功能强大、高度可定制的文本编辑器，在 Vi 的基础
 
 导航与搜索
   1. CtrlP         --- fast file finder
-  2. LeaderF       +++ asynchronous fuzzy finder 
+  2. LeaderF       +++ asynchronous fuzzy finder
   2. NERDTree      +++ file navigation
   3. Tagbar        +++ tag generation and navigation
   4. Taglist       --- source code browser
 
 其它
   1. Tabularize    +++ align everything
-  2. vim-airline   +++ lean & mean status/tabline for vim that's light as air 
+  2. vim-airline   +++ lean & mean status/tabline for vim that's light as air
 
   2. Easymotion    - jump anywhere
   3. NERDCommenter - comment++
@@ -117,7 +117,7 @@ BundleSearch(!) foo    查找(先刷新cache)foo
 
 相比来说，所有的插件更新和安装都是并行的，比 Vundle 的效率要高很多，而且可以按需加载。
 
-直接从 [Github vim-plug](https://github.com/junegunn/vim-plug/releases) 下载，然后将 `plug.vim` 文件保存在 ` ~/.vim/autoload/plug.vim` 中即可，如下是添加 Nerdtree 。
+直接从 [Github vim-plug](https://github.com/junegunn/vim-plug/releases) 下载，然后将 `plug.vim` 文件保存在 `~/.vim/autoload/plug.vim` 中即可，如下是添加 Nerdtree 。
 
 {% highlight text %}
 call plug#begin('~/.vim/plugged')
@@ -590,7 +590,7 @@ Old text                  Command     New text ~
 
 和 tags 一样，默认支持，可以通过 `:version` 查看，没有则增加 `--enable-cscope` 编译选项，详细可查看官方网址为 [cscope.sourceforge.net](http://cscope.sourceforge.net/) 。
 
-确定 Vim 已支持 Cscope 后，将文件 
+确定 Vim 已支持 Cscope 后，将文件
 [cscope_maps.vim](http://cscope.sourceforge.net/cscope_maps.vim) 下载到 `~/.vim/plugin` 目录下；也可以将其内容添加到 `~/.vimrc` 配置文件中。
 
 在 CentOS 中，可以通过 `yum install cscope` 安装，在第一次解析时扫描全部文件，以后再调用 cscope 只会扫描那些改动过的文件。
@@ -1022,6 +1022,17 @@ https://github.com/ryanoasis/vim-devicons
 
 
 <!--
+VIM
+https://zhuanlan.zhihu.com/p/24742679
+https://segmentfault.com/a/1190000011466454
+http://aiezu.com/article/linux_vim_plugin_autoformat_install.html
+http://www.skywind.me/blog/archives/2084
+http://oenhan.com/vim8-c-ide-plugin-vimrc
+https://bewaremypower.github.io/2019/06/19/%E6%88%91%E7%9A%84vim%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-2-%E5%B8%B8%E7%94%A8%E7%9A%84vim%E6%8F%92%E4%BB%B6/
+http://cppcheck.sourceforge.net/
+
+
+
 https://xiaozhou.net/from-vim-to-neovim-2016-05-21.html
 https://github.com/plasticboy/vim-markdown
 https://github.com/TimothyYe/mydotfiles

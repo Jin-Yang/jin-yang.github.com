@@ -8,19 +8,16 @@ keywords: linux,c,加载过程
 description: 利用动态库，可以节省磁盘、内存空间，而且可以提高程序运行效率；不过同时也导致调试比较困难，而且可能存在潜在的安全威胁。这里主要讨论符号的动态链接过程，即程序在执行过程中，对其中包含的一些未确定地址的符号进行重定位的过程。
 ---
 
-利用动态库，可以节省磁盘、内存空间，而且可以提高程序运行效率；不过同时也导致调试比较困难，而且可能存在潜在的安全威胁。
 
 这里主要讨论符号的动态链接过程，即程序在执行过程中，对其中包含的一些未确定地址的符号进行重定位的过程。
 
 <!-- more -->
 
-## 简介
+## Shell 执行
 
-`ld.so` (Dynamic Linker/Loader) 和 `ldd` 都会使用到 ELF 格式中的 `.dynstr` (dynamic linking string table) 字段，如果通过 `strip -R .dynstr hello` 命令将该字段删除，那么 `ldd` 就会报错。
+在 Linux 中，可以在 Bash 中直接调用一个执行命令，甚至是一个脚本，脚本中甚至不需要指定解析器，这里简单介绍下 Bash 的执行过程。
 
-### Shell 执行
-
-大致记录一下 bash 的执行过程，当打开终端后，可以通过 `tty` 命令查看当前的虚拟终端，假设为 `/dev/pts/27`，然后再通过 `ps -ef | grep pts/27 | grep bash | grep -v grep` 查看对应的 PID 。
+目前一般使用的是虚拟终端，可以在当前终端中通过 `tty` 命令查看，假设为 `/dev/pts/27`，然后再通过 `ps -ef | grep pts/27 | grep bash | grep -v grep` 查看对应的 PID 。
 
 打开另一个终端，通过 `pstack PID` 即可看到对应的调用堆栈。
 
@@ -45,98 +42,11 @@ $ rpm2cpio bash-version.src.rpm | cpio -id  // 解压源码
 
 通过 `strace ./hello` 查看系统调用，定位到 `execve()` ，也就是通过该函数执行。
 
-### 常见概念
-
-解释器 `.interp` 分区用于指定程序动态装载、链接器 `ld-linux.so` 的位置，而过程链接表 `plt`、全局偏移表 `got`、重定位表则用于辅助动态链接过程。
-
-#### 符号
-
-对于可执行文件除了编译器引入的一些符号外，主要就是用户自定义的全局变量、函数等，而对于可重定位文件仅仅包含用户自定义的一些符号。
-
-{% highlight text %}
------ 生成可重定位文件，并通过nm命令查看ELF文件的符号表信息
-$ gcc -c main.c
-$ nm main.o
-0000000000000000 B global
-0000000000000000 T main
-                 U printf
-{% endhighlight %}
-
-上面包含全局变量、自定义函数以及动态链接库中的函数，但不包含局部变量，而且发现这三个符号的地址都没有确定。
-
-{% highlight text %}
------ 生成可执行文件
-$ gcc -o main main.o
-$ nm main | egrep "main$| printf|global$"
-0000000000601038 B global
-000000000040052d T main
-                 U printf@@GLIBC_2.2.5
-{% endhighlight %}
-
-经链接之后，`global` 和 `main` 的地址都已经确定了，但是 `printf` 却还没，因为它是动态链接库 `glibc` 中定义函数，需要动态链接，而不是这里的静态链接。
-
-也就是说 main.o 中的符号地址没有确定，而经过链接后部分符号地址已经确定，也就是对符号的引用变成了对地址的引用，这样程序运行时就可通过访问内存地址而访问特定的数据。对于动态链接库，也就是上述的 `printf()` 则需要在运行时通过动态链接器 ld-linux.so 进行重定位，即动态链接。
-
-另外，除了 nm 还可以用 `readelf -s` 查看 `.dynsym` 表或者用 `objdump -tT` 查看。
-
-{% highlight text %}
-$ nm -D /lib64/libc-2.17.so | grep "\ printf$"
-{% endhighlight %}
-
-注意，在部分新系统上，如果不使用参数 `-D` ，那么可能会无法查看符号表，因为 nm 默认打印 `.symtab` 和 `.strtab`，不过一般在打包时会通过 strip 删除掉，只保留了动态符号 (在 `.dynsym` 和 `.dynstr` 中)，以便动态链接器在执行程序时寻址这些外部用到的符号。
-
-<!-- https://stackoverflow.com/questions/9961473/nm-vs-readelf-s -->
-
-<!--
-## 动态链接
-
-动态链接就是在程序运行时对符号进行重定位，确定符号对应的内存地址的过程。为了提高效率，Linux 下符号的动态链接默认采用 Lazy Mode 方式，也就是在程序运行过程中用到该符号时才去解析它的地址。
-
-不过这种默认是可以通过设置 LD_BIND_NOW 为非空来打破的（下面会通过实例来分析这个变量的作用），也就是说如果设置了这个变量，动态链接器将在程序加载后和符号被使用之前就对这些符号的地址进行解析。
-
-## 动态链接库
-
-在程序中，保存了依赖的库信息。
-
-$ readelf -d main | grep NEEDED
- 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
-
-在 `.dynamic` 分区中保存了和动态链接相关的信息，当然只有版本信息，而没有保存绝对路径，其搜索路径如上所述。
-
-### FIXME: 获取动态链接器
-
-动态链接器保存在 `.interp` 分区，可以通过 `readelf -x .interp main` 命令查看。
-
-
-注意，与 libc.so 之类的动态库不同，ld-linux.so 的路径是绝对路径，而类似于 libc.so 库则只包含了文件名。
-
-这是因为，程序执行时 ld-linux.so 最先被加载到内存，没有其他程序知道去哪里查找 ld-linux.so，所以它的路径必须是绝对的；当 ld-linux.so 被装载以后，由它来去装载可执行文件和相关的共享库，它会根据下面介绍的流程去加载。
-
-### 动态链接器
-
-可以通过 `man ld-linux` 获取与动态链接器相关的资料，包括各种相关的环境变量和文件都有详细的说明。
-
-对于环境变量，除了上面提到过的 LD_LIBRARY_PATH 和 LD_BIND_NOW 变量外，还有其他几个重要参数，比如 LD_PRELOAD 用于指定预装载一些库，以便替换其他库中的函数，从而做一些安全方面的处理 [6]，[9]，[12]，而环境变量 LD_DEBUG 可以用来进行动态链接的相关调试。
-对于文件，除了上面提到的 ld.so.conf 和 ld.so.cache 外，还有一个文件 /etc/ld.so.preload 用于指定需要预装载的库。
-
-实际上，ELF 格式可以从两个角度去看，包括链接和执行，分别通过 `Section Header Table` 和 `Program Header Table` 表示。
-
-SHT 保存了 ELF 所包含的段信息，可以通过 `readelf -S /bin/bash` 查看，其中比较重要的有 REL sections (relocations), SYMTAB/DYNSYM (symbol tables), VERSYM/VERDEF/VERNEED sections (symbol versioning information).
-
-#### 1. 加载到内存
-
-在 ELF 文件的文件头中就指定了该文件的入口地址，程序的代码和数据部分会相继映射到对应的内存中。
-
-$ readelf -h /bin/bash | grep Entry
-  Entry point address:               0x41d361
--->
-
-
 ## 内核加载
 
-ELF 有静态和动态链接两种方式，加载过程由内核开始，而动态链接库的加载则可以在用户层完成。GNU 对于动态链接过程为 A) 把 ELF 映像的装入/启动加载在 Linux 内核中；B) 把动态链接的实现放在用户空间 (glibc)，并为此提供一个称为 "解释器" (ld-linux.so.2) 工具。
+上述的 `execve()` 实际上就是内核提供的一个系统调用，会将 ELF 文件加载到内存中，如果涉及到动态链接，那么还会在用户态中解析相关函数的地址，这也就是解析器的功能。
 
-注意，解释器的装入/启动也由内核负责，详细可以查看 [内存-用户空间](/post/kernel-memory-management-from-userspace-view.html) 中的介绍，在此只介绍 ELF 的加载过程。
+一般解析器是 `ld-linux.so.2`，解释器的装入/启动也由内核负责，详细可以查看 [内存-用户空间](/post/kernel-memory-management-from-userspace-view.html) 中的介绍，在此只介绍 ELF 的加载过程。
 
 ### 内核模块
 
@@ -276,11 +186,128 @@ static int load_elf_binary(struct linux_binprm *bprm)
 }
 {% endhighlight %}
 
+## 用户态执行
+
+内核加载完之后，那么就交给了用户态执行，在 `main()` 运行之前通常会先执行一段代码，运行这些代码的函数称为 **入口函数** 或 **入口点** ，大致的步骤如下：
+
+* 操作系统创建进程后，把控制权交给程序入口，这个入口往往是运行库中的某个入口函数。
+* 入口函数对运行库和程序运行环境进行初始化，包括堆、I/O、线程、全局变量构造等。
+* 入口函数在完成初始化之后，调用 `main()` 函数，正式开始执行程序主体部分。
+* `main()` 执行完后，返回到入口函数，入口函数进行清理工作，包括全局变量析构、堆销毁、关闭 IO 等，然后进行系统调用结束进程。
+
+
+{% highlight text %}
+$ readelf -h main | grep 'Entry point'
+  Entry point address:               0x4004a0
+{% endhighlight %}
+
+
+
+`ld.so` (Dynamic Linker/Loader) 和 `ldd` 都会使用到 ELF 格式中的 `.dynstr` (dynamic linking string table) 字段，如果通过 `strip -R .dynstr hello` 命令将该字段删除，那么 `ldd` 就会报错。
+
+
+
+
+
+
+
+
+
+
+
+### 常见概念
+
+解释器 `.interp` 分区用于指定程序动态装载、链接器 `ld-linux.so` 的位置，而过程链接表 `plt`、全局偏移表 `got`、重定位表则用于辅助动态链接过程。
+
+#### 符号
+
+对于可执行文件除了编译器引入的一些符号外，主要就是用户自定义的全局变量、函数等，而对于可重定位文件仅仅包含用户自定义的一些符号。
+
+{% highlight text %}
+----- 生成可重定位文件，并通过nm命令查看ELF文件的符号表信息
+$ gcc -c main.c
+$ nm main.o
+0000000000000000 B global
+0000000000000000 T main
+                 U printf
+{% endhighlight %}
+
+上面包含全局变量、自定义函数以及动态链接库中的函数，但不包含局部变量，而且发现这三个符号的地址都没有确定。
+
+{% highlight text %}
+----- 生成可执行文件
+$ gcc -o main main.o
+$ nm main | egrep "main$| printf|global$"
+0000000000601038 B global
+000000000040052d T main
+                 U printf@@GLIBC_2.2.5
+{% endhighlight %}
+
+经链接之后，`global` 和 `main` 的地址都已经确定了，但是 `printf` 却还没，因为它是动态链接库 `glibc` 中定义函数，需要动态链接，而不是这里的静态链接。
+
+也就是说 main.o 中的符号地址没有确定，而经过链接后部分符号地址已经确定，也就是对符号的引用变成了对地址的引用，这样程序运行时就可通过访问内存地址而访问特定的数据。对于动态链接库，也就是上述的 `printf()` 则需要在运行时通过动态链接器 ld-linux.so 进行重定位，即动态链接。
+
+另外，除了 nm 还可以用 `readelf -s` 查看 `.dynsym` 表或者用 `objdump -tT` 查看。
+
+{% highlight text %}
+$ nm -D /lib64/libc-2.17.so | grep "\ printf$"
+{% endhighlight %}
+
+注意，在部分新系统上，如果不使用参数 `-D` ，那么可能会无法查看符号表，因为 nm 默认打印 `.symtab` 和 `.strtab`，不过一般在打包时会通过 strip 删除掉，只保留了动态符号 (在 `.dynsym` 和 `.dynstr` 中)，以便动态链接器在执行程序时寻址这些外部用到的符号。
+
+<!-- https://stackoverflow.com/questions/9961473/nm-vs-readelf-s -->
+
+<!--
+## 动态链接
+
+动态链接就是在程序运行时对符号进行重定位，确定符号对应的内存地址的过程。为了提高效率，Linux 下符号的动态链接默认采用 Lazy Mode 方式，也就是在程序运行过程中用到该符号时才去解析它的地址。
+
+不过这种默认是可以通过设置 LD_BIND_NOW 为非空来打破的（下面会通过实例来分析这个变量的作用），也就是说如果设置了这个变量，动态链接器将在程序加载后和符号被使用之前就对这些符号的地址进行解析。
+
+## 动态链接库
+
+在程序中，保存了依赖的库信息。
+
+$ readelf -d main | grep NEEDED
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+
+在 `.dynamic` 分区中保存了和动态链接相关的信息，当然只有版本信息，而没有保存绝对路径，其搜索路径如上所述。
+
+### FIXME: 获取动态链接器
+
+动态链接器保存在 `.interp` 分区，可以通过 `readelf -x .interp main` 命令查看。
+
+
+注意，与 libc.so 之类的动态库不同，ld-linux.so 的路径是绝对路径，而类似于 libc.so 库则只包含了文件名。
+
+这是因为，程序执行时 ld-linux.so 最先被加载到内存，没有其他程序知道去哪里查找 ld-linux.so，所以它的路径必须是绝对的；当 ld-linux.so 被装载以后，由它来去装载可执行文件和相关的共享库，它会根据下面介绍的流程去加载。
+
+### 动态链接器
+
+可以通过 `man ld-linux` 获取与动态链接器相关的资料，包括各种相关的环境变量和文件都有详细的说明。
+
+对于环境变量，除了上面提到过的 LD_LIBRARY_PATH 和 LD_BIND_NOW 变量外，还有其他几个重要参数，比如 LD_PRELOAD 用于指定预装载一些库，以便替换其他库中的函数，从而做一些安全方面的处理 [6]，[9]，[12]，而环境变量 LD_DEBUG 可以用来进行动态链接的相关调试。
+对于文件，除了上面提到的 ld.so.conf 和 ld.so.cache 外，还有一个文件 /etc/ld.so.preload 用于指定需要预装载的库。
+
+实际上，ELF 格式可以从两个角度去看，包括链接和执行，分别通过 `Section Header Table` 和 `Program Header Table` 表示。
+
+SHT 保存了 ELF 所包含的段信息，可以通过 `readelf -S /bin/bash` 查看，其中比较重要的有 REL sections (relocations), SYMTAB/DYNSYM (symbol tables), VERSYM/VERDEF/VERNEED sections (symbol versioning information).
+
+#### 1. 加载到内存
+
+在 ELF 文件的文件头中就指定了该文件的入口地址，程序的代码和数据部分会相继映射到对应的内存中。
+
+$ readelf -h /bin/bash | grep Entry
+  Entry point address:               0x41d361
+-->
+
 ## 加载过程
 
 依赖动态库时，会在加载时根据可执行文件的地址和动态库的对应符号的地址推算出被调用函数的地址，这个过程被称为动态链接。
 
-假设，现在使用的是 Position Independent Code, PIC 模型。
+假设，现在使用的是 Position Independent Code, PIC 模型，动态库加载的过程以及一些环境变量可以通过 `man ld-linux` 查看。
+
+
 
 #### 1. 获取动态链接器
 
@@ -327,7 +354,7 @@ int main(int argc, char **argv)
 }
 {% endhighlight %}
 
-{% highlight makefile %}
+{% highlight text %}
 # filename: Makefile
 all:
     gcc --shared -fPIC foobar.c -o libfoobar.so -ldl
@@ -385,7 +412,7 @@ void hello(const char* name)
 void hello(const char* name);
 {% endhighlight %}
 
-{% highlight makefile %}
+{% highlight text %}
 # filename: Makefile
 all:
     gcc hello.c -fPIC -shared -Wl,-soname,libhello.so.0 -o libhello.so.0.0.1
@@ -470,195 +497,6 @@ LD_TRACE_LOADED_OBJECTS=1 LD_BIND_NOW=1 LD_TRACE_PRELINKING=t ./daemon/cloudagen
 https://blog.csdn.net/jq0123/article/details/1340839
 https://stackoverflow.com/questions/11643666/python-importerror-undefined-symbol-for-custom-c-module?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 -->
-
-
-
-
-## 动态解析
-
-如上所述，控制权先是提交到解释器，由解释器加载动态库，然后控制权才会到用户程序。动态库加载的大致过程就是将每一个依赖的动态库都加载到内存，并形成一个链表，后面的符号解析过程主要就是在这个链表中搜索符号的定义。
-
-<!--
-对于静态文件通常只有一个文件要被映射，而动态则还有所依赖的共享目标文件，通过 /proc/PID/maps 可以查看在内存中的分布。
-地址随机实际上包括了动态链接库、堆、栈，而对于程序本身的函数，其地址是固定的。
--->
-
-
-{% highlight text %}
-$ cat test.c
-#include <stdio.h>
-void foobar (void)
-{
-    puts("Hello World");
-}
-
-int main(void)
-{
-    foobar();
-    return 0;
-}
-
------ 编译连接
-$ gcc test.c -o test -g
------ 打印程序的反汇编
-$ objdump -S test
-
------ 使用gdb调式
-$ gdb test -q
-(gdb) break main
-(gdb) run
-(gdb) disassemble
-Dump of assembler code for function main:
-   0x000000000040053d <+0>:     push   %rbp
-   0x000000000040053e <+1>:     mov    %rsp,%rbp
-=> 0x0000000000400541 <+4>:     callq  0x40052d <foobar>    此处调用的地址是固定的
-   0x0000000000400546 <+9>:     mov    $0x0,%eax
-   0x000000000040054b <+14>:    pop    %rbp
-   0x000000000040054c <+15>:    retq   
-End of assembler dump.
-(gdb) disassemble foobar
-Dump of assembler code for function foobar:
-   0x000000000040052d <+0>:     push   %rbp
-   0x000000000040052e <+1>:     mov    %rsp,%rbp
-   0x0000000000400531 <+4>:     mov    $0x4005e0,%edi
-   0x0000000000400536 <+9>:     callq  0x400410 <puts@plt>  反汇编
-   0x000000000040053b <+14>:    pop    %rbp
-   0x000000000040053c <+15>:    retq   
-End of assembler dump.
-{% endhighlight %}
-
-从上面反汇编代码可以看出，在调用 `foobar()` 时，使用的是绝对地址，`printf()` 的调用已经换成了 `puts()` ，调用的是 `puts@plt` 这个标号，位于 `0x400410`，实际上这是一个 PLT 条目，可以通过反汇编查看相应的代码，不过它代表什么意思呢？
-
-在进一步说明符号的动态解析过程以前，需要先了解两个概念，一个是 `Global Offset Table`，一个是 `Procedure Linkage Table` 。
-
-#### Global Offset Table, GOT
-
-在位置无关代码中，如共享库，一般不会包含绝对虚拟地址，而是在程序中引用某个共享库中的符号时，编译链接阶段并不知道这个符号的具体位置，只有等到动态链接器将所需要的共享库加载时进内存后，也就是在运行阶段，符号的地址才会最终确定。
-
-因此，需要有一个数据结构来保存符号的绝对地址，这就是 GOT 表的作用，GOT 表中每项保存程序中引用其它符号的绝对地址，这样，程序就可以通过引用 GOT 表来获得某个符号的地址。
-
-<!--
-在x86结构中，GOT表的前三项保留，用于保存特殊的数据结构地址，其它的各项保存符号的绝对地址。对于符号的动态解析过程，我们只需要了解的就是第二项和第三项，即GOT[1]和GOT[2]：GOT[1]保存的是一个地址，指向已经加载的共享库的链表地址（前面提到加载的共享库会形成一个链表）；GOT[2]保存的是一个函数的地址，定义如下：GOT[2] = &_dl_runtime_resolve，这个函数的主要作用就是找到某个符号的地址，并把它写到与此符号相关的GOT项中，然后将控制转移到目标函数，后面我们会详细分析。
--->
-
-#### Procedure Linkage Table, PLT
-
-过程链接表的作用就是将位置无关的函数调用转移到绝对地址。在编译链接时，链接器并不能控制执行从一个可执行文件或者共享文件中转移到另一个中（如前所说，这时候函数的地址还不能确定），因此，链接器将控制转移到PLT中的某一项。而PLT通过引用GOT表中的函数的绝对地址，来把控制转移到实际的函数。
-
-在实际的可执行程序或者共享目标文件中，GOT表在名称为.got.plt的section中，PLT表在名称为.plt的section中。
-
-
-### PLT
-
-在通过 `objdump -S test` 命令返汇编之后，其中的 `.plt` 内容如下。
-
-{% highlight text %}
-Disassembly of section .plt:
-
-0000000000400400 <puts@plt-0x10>:
-  400400:       ff 35 02 0c 20 00       pushq  0x200c02(%rip)        # 601008 <_GLOBAL_OFFSET_TABLE_+0x8>
-  400406:       ff 25 04 0c 20 00       jmpq   *0x200c04(%rip)        # 601010 <_GLOBAL_OFFSET_TABLE_+0x10>
-  40040c:       0f 1f 40 00             nopl   0x0(%rax)
-
-0000000000400410 <puts@plt>:
-  400410:       ff 25 02 0c 20 00       jmpq   *0x200c02(%rip)        # 601018 <_GLOBAL_OFFSET_TABLE_+0x18>
-  400416:       68 00 00 00 00          pushq  $0x0
-  40041b:       e9 e0 ff ff ff          jmpq   400400 <_init+0x20>
-
-0000000000400420 <__libc_start_main@plt>:
-  400420:       ff 25 fa 0b 20 00       jmpq   *0x200bfa(%rip)        # 601020 <_GLOBAL_OFFSET_TABLE_+0x20>
-  400426:       68 01 00 00 00          pushq  $0x1
-  40042b:       e9 d0 ff ff ff          jmpq   400400 <_init+0x20>
-
-0000000000400430 <__gmon_start__@plt>:
-  400430:       ff 25 f2 0b 20 00       jmpq   *0x200bf2(%rip)        # 601028 <_GLOBAL_OFFSET_TABLE_+0x28>
-  400436:       68 02 00 00 00          pushq  $0x2
-  40043b:       e9 c0 ff ff ff          jmpq   400400 <_init+0x20>
-
-Disassembly of section .text:
-{% endhighlight %}
-
-当然，也可以通过 `gdb` 命令进行反汇编。
-
-{% highlight text %}
-(gdb) disassemble 0x400410
-Dump of assembler code for function puts@plt:
-   0x0000000000400410 <+0>:     jmpq   *0x200c02(%rip)        # 0x601018 <puts@got.plt>   查看对应内存
-   0x0000000000400416 <+6>:     pushq  $0x0
-   0x000000000040041b <+11>:    jmpq   0x400400
-End of assembler dump.
-{% endhighlight %}
-
-可以看到 `puts@plt` 中包含三条指令，而且可以看出，除 `PLT0(__gmon_start__@plt-0x10)` 所标记的内容，其它的所有 `PLT` 项的形式都是一样的，而且最后的 `jmp` 指令都是 `0x400400`，即 `PLT0` 为目标的；所不同的只是第一条 `jmp` 指令的目标和 `push` 指令中的数据。
-
-`PLT0` 则与之不同，但是包括 `PLT0` 在内的每个表项都占 16 个字节，所以整个 PLT 就像个数组。
-
-另外，需要注意，每个 PLT 表项中的第一条 `jmp` 指令是间接寻址的，比如的 `puts()` 函数是以地址 `0x601018` 处的内容为目标地址进行中跳转的。
-
-### GOT
-
-{% highlight text %}
------ 实际等价于jmpq *0x601018 ，而*0x601018就是0x00400416，就是会调转到0x400416所在的地址执行，
------ 实际是顺序执行，最终会调转到0x400400
-(gdb) x/w 0x601018
-0x601018 <puts@got.plt>:        0x00400416
-
-(gdb) x /3i 0x400400            查看反汇编
-   0x400400:    pushq  0x200c02(%rip)         # 0x601008
-   0x400406:    jmpq   *0x200c04(%rip)        # 0x601010   跟踪进入
-   0x40040c:    nopl   0x0(%rax)
-
-(gdb) b *0x400406               设置断点
-(gdb) c
-Breakpoint 2, 0x0000000000400406 in ?? ()
-(gdb) ni
-_dl_runtime_resolve () at ../sysdeps/x86_64/dl-trampoline.S:58
-58              subq $REGISTER_SAVE_AREA,%rsp
-(gdb) i r rip
-rip            0x7ffff7df0290   0x7ffff7df0290 <_dl_runtime_resolve>
-{% endhighlight %}
-
-从上面可以看出，这个地址实际上就是顺序执行，也就是 `puts@plt` 中的第二条指令，不过正常来说这里应该保存的是 `puts()` 函数的地址才对，那为什么会这样呢？
-
-<!--这里的功能就是 Lazy Load，也就是延迟加载，只有在需要的时候才会加载。-->原来链接器在把所需要的共享库加载进内存后，并没有把共享库中的函数的地址写到 GOT 表项中，而是延迟到函数的第一次调用时，才会对函数的地址进行定位。
-
-如上，在 `jmpq` 中设置一个断点，观察到，实际调转到了 `_dl_runtime_resolve()` 这个函数。
-
-### 地址解析
-
-在 gdb 中，可以通过 `disassemble _dl_runtime_resolve` 查看该函数的反汇编，感兴趣的话可以看看其调用流程，这里简单介绍其功能。
-
-从调用 `puts@plt` 到 `_dl_runtime_resolve` ，总共有两次压栈操作，一次是 `pushq  $0x0`，另外一次是 `pushq  0x200c02(%rip) # 601008`，分别表示了 `puts` 函数在 `GOT` 中的偏移以及 `GOT` 的起始地址。
-
-在 `_dl_runtime_resolve()` 函数中，会解析到 `puts()` 函数的绝对地址，并保存到 `GOT` 相应的地址处，这样后续调用时则会直接调用 `puts()` 函数，而不用再次解析。
-
-![elf load]({{ site.url }}/images/linux/elf-load-process.png "elf load"){: .pull-center }
-
-上图中的红线是解析过程，蓝线则是后面的调用流程。
-
-
-## 参考
-
-关于动态库的加载过程，可以参考 [动态符号链接的细节](https://github.com/tinyclub/open-c-book/blob/master/zh/chapters/02-chapter4.markdown)。
-
-<!--
-reference/linux/linux-c-dynamic-loading.markdown
-
-ELF文件的加载和动态链接过程
-http://jzhihui.iteye.com/blog/1447570
-
-linux是如何加载ELF格式的文件的，包括patchelf
-http://cn.windyland.me/2014/10/24/how-to-load-a-elf-file/
-
-
-readelf -h /usr/bin/uptime
-可以找到 Entry point address ，也即程序的入口地址。
-
-http://michalmalik.github.io/elf-dynamic-segment-struggles
-https://greek0.net/elf.html
-https://lwn.net/Articles/631631/
-https://www.haiku-os.org/blog/lucian/2010-07-08_anatomy_elf/
- -->
 
 {% highlight text %}
 {% endhighlight %}

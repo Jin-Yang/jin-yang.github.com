@@ -16,51 +16,7 @@ description: 操作系统提供了许多安全机制来尝试降低或阻止缓�
 
 操作系统提供了许多安全机制来尝试降低或阻止缓冲区溢出攻击带来的安全风险，例如 NX ASLR PIE CANARY FORTIFY RELRO 等手段，存在 NX 的话就不能直接执行栈上的数据，存在 ASLR 的话各个系统调用的地址就是随机化的等等。
 
-GCC 在生成代码时，实际上已经提供了一些针对安全相关的编译选项，在介绍详细内容前，首先介绍下基本概念。
-
-### Linux 程序段介绍
-
-在 Linux 中大致会有如下的 5 种数据区：
-
-* BSS Segment 用来存放程序中未初始化的全局/静态变量的一块内存区域，属于静态内存分配，其全称为 Block Started by Symbol 。
-* DATA Segment 保存已经初始化的全局变量，属于静态内存分配。
-* TEXT Segment 用来存放真正执行的代码，大小在编译后已经确定，一般是只读。
-* HEAP Segment 保存堆的内容，一般是通过 malloc() 动态分配的内存。
-* STACK Segment 栈空间，一般是存放程序临时创建的局部变量。
-
-可以通过如下程序查看进程各个段的地址。
-
-{% highlight c %}
-#include <stdio.h>
-#include <stdlib.h>
-
-static char bss[1024];
-static int data = 1234;
-static const char *text = "foobar";
-
-static void foobar(void)
-{
-        printf("Hi foobar\n");
-}
-
-int main(void)
-{
-        int stack = 0;
-        char *heap = (char *)malloc(1000);
-
-        printf("Address of various segments:\n");
-        printf("     Text Segment: %p\n", foobar);
-        printf("       RO Segment: %p\n", text);
-        printf("     Data Segment: %p\n", &data);
-        printf("              BSS: %p\n", bss);
-        printf("    Stack Segment: %p\n", &stack);
-        printf("     Heap Segment: %p\n", heap);
-
-        return 0;
-}
-{% endhighlight %}
-
-注意，目前的程序一般都会有多个这样的段，所以基本上无法确认每个段的边界。
+GCC 在生成代码时，实际上已经提供了一些针对安全相关的编译选项。
 
 ## ASLR 地址随机
 

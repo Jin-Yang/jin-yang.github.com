@@ -14,6 +14,9 @@ description:
 
 <!-- more -->
 
+
+
+
 ![cache hierarchy]({{ site.url }}/images/hardware/cache-hierarchy-intel-i5-m450.svg "cache hierarchy"){: .pull-center }
 
 ## Cache

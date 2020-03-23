@@ -128,12 +128,16 @@ addr2line -j .text -e libtst.so 0x26887
 https://stackoverflow.com/questions/7556045/how-to-map-function-address-to-function-in-so-files/7557756
 https://blog.csdn.net/force_eagle/article/details/51980558
 https://blog.csdn.net/tenfyguo/article/details/6623967
+
+
+https://blog.csdn.net/chenyijun/article/details/85284867
 -->
 
 
 ## 参考
 
-DWARF 格式的详细信息可以参考 [www.dwarfstd.org](http://www.dwarfstd.org/) 官网中的介绍吧，包括了一个基础的教程 [DWARF Tutorial](http://www.dwarfstd.org/doc/Debugging%20using%20DWARF-2012.pdf) 。
+* DWARF 格式的详细信息可以参考 [www.dwarfstd.org](http://www.dwarfstd.org/) 官网中的介绍，包括了一个基础的教程。
+* [Articles in tag "Debuggers"](https://eli.thegreenplace.net/tag/debuggers) 一个简单的调试器，包括了 ptrace 以及 DWARF 的使用方式。
 
 {% highlight python %}
 {% endhighlight %}

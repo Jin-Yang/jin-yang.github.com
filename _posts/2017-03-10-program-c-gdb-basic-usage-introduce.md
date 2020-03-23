@@ -4,10 +4,11 @@ layout: post
 comments: true
 language: chinese
 category: [program]
-keywords:  program,c,stack frame
-description: 栈是一块内存空间，会从高地址向低地址增长，同时在函数调用过程中，会通过栈寄存器来维护栈帧相关的内容。函数运行时，栈帧 (Stack Frame) 非常重要，包含了函数的局部变量以及函数调用之间的传参。
+keywords: gdb
+description:
 ---
 
+GNU Project Debugger, GDB 一个代码调试工具，通过系统提供的 ptrace 接口实现的控制进程，然后可以在进程内部查看信息，甚至调用函数。
 
 <!-- more -->
 
@@ -102,7 +103,20 @@ pwd 显示当前的所在目录。
   - g 八字节；
 {% endhighlight %}
 
-### 变量查看
+### 信息查看
+
+主要是通过 `info` 命令查看各种信息。
+
+
+{% highlight text %}
+----- 查看函数信息，可以使用正则表达式
+(gdb) info functions
+{% endhighlight %}
+
+
+#### 变量查看
+
+包括了全局、局部、静态变量，以及调用函数的参数。
 
 {% highlight text %}
 ----- 查看所有的全局和静态变量
@@ -112,6 +126,26 @@ pwd 显示当前的所在目录。
 ----- 查看参数
 (gdb) info args
 {% endhighlight %}
+
+### 其它
+
+{% highlight text %}
+----- 查看版本信息，默认启动时会打印
+(gdb) show version
+
+----- 查看版权信息
+(gdb) show copying
+(gdb) show warranty
+
+----- 退出时无需确认，直接退出
+(gdb) set confirm off
+
+----- 关闭分页，会将信息全部输出
+(gdb) set pagination off
+(gdb) set height 0
+{% endhighlight %}
+
+其中时通过 `-q` 或者 `--quiet` 可以禁止打印版本信息，
 
 ## 多线程
 
@@ -419,8 +453,185 @@ grep switches /proc/78000/status
 注意，通过 `backtrace()` 打印的栈，其显示的地址是将要执行的下个地址。
 
 在 GDB 中可以通过 call 直接调用某个函数。
-
 -->
+
+## 暂停
+
+通过 BreakPoint、WatchPoint、CatchPoint 来设置程序在某段代码处或者满足某个条件时停止。
+
+如下是一个测试程序。
+
+{% highlight c %}
+#include <stdio.h>
+
+int main(void)
+{
+        int i, sum = 0;
+
+        for (i = 1; i <= 200; i++)
+                sum += i;         // line #8
+        printf("%d\n", sum);
+        return 0;
+}
+{% endhighlight %}
+
+### Breakpoint
+
+直接在某个指定的位置停止。
+
+{% highlight text %}
+(gdb) break <FunctionName>                # 当前文件指定函数
+(gdb) break <LineNumber>                  # 当前文件指定行数
+(gdb) break <FileName:FunctionName>
+(gdb) break <FileName:LineNumber>
+
+(gdb) info breakpoints                    # 查看断点信息
+
+(gdb) delete <NUM1 NUM2>                  # 根据上述的序号删除
+(gdb) delete <Range>
+
+(gdb) enable/disable
+
+(gdb) clear <...>                         # 指定行删除，类似上述的break设置方式
+{% endhighlight %}
+
+另外，也可以通过 `tbreak` 设置临时断点，也就是在执行到一次之后会立即退出。
+
+<!--
+匿名空间设置断点
+(gdb) b (anonymous namespace)::bar
+-->
+
+#### 指定地址
+
+在调试汇编程序时，如果没有调试信息，就需要在程序地址上打断点，方法为 `b *ADDRESS` 。
+
+#### 程序入口
+
+当没有调试信息时，是无法通过 `start` 命令启动并在入口处暂停的，可以通过如下方式获取程序入口。
+
+<!--
+https://github.com/hellogcc/100-gdb-tips/blob/master/src/break-on-entry.md
+-->
+
+#### 保存断点
+
+可以将断点保存在某个文件中，然后下次直接加载再次使用。
+
+{% highlight text %}
+(gdb) save breakpoints <FilenameToSave>
+(gdb) source <FilenameToSave>
+{% endhighlight %}
+
+注意，如果通过行号指定，那么当源码修改之后可能会是非预期的。
+
+#### 条件断点
+
+可以通过 `break ... if cond` 设置条件断点，也就是当满足某个条件时，断点才会触发。在上述示例的第 8 行，根据变量 `i` 设置一个条件断点。
+
+{% highlight text %}
+(gdb) start
+Temporary breakpoint 1 at 0x40059e: file main.c, line 5.
+Starting program: /tmp/test/a.out
+Temporary breakpoint 1, main () at main.c:5
+5               int i, sum = 0;
+(gdb) break 8 if i == 100
+Breakpoint 2 at 0x4005ae: file main.c, line 8.
+(gdb) c
+Continuing.
+
+Breakpoint 2, main () at main.c:8
+8                       sum += i;
+(gdb) print sum
+$1 = 4950
+(gdb) print i
+$2 = 100
+{% endhighlight %}
+
+#### 忽略 N 次断点
+
+通过命令 `ignore bnum count` 设置，意味着在接下来 `count` 次编号为 `bnum` 的断点触发都不会让程序中断，只有第 `count + 1` 次断点触发才会让程序中断。
+
+{% highlight text %}
+(gdb) start
+Temporary breakpoint 3 at 0x40059e: file main.c, line 5.
+Starting program: /tmp/foobar/a.out
+
+Temporary breakpoint 3, main () at main.c:5
+5               int i, sum = 0;
+(gdb) break 8
+Breakpoint 1 at 0x4005ae: file main.c, line 8.
+(gdb) ignore 1 5
+Will ignore next 5 crossings of breakpoint 1.
+(gdb) c
+Continuing.
+
+Breakpoint 5, main () at main.c:8
+8                       sum += i;
+(gdb) p i
+$4 = 6
+{% endhighlight %}
+
+如果想让断点下次就生效，可以将 `count` 置为 0 ，也就是 `ignore 1 0` 。
+
+### Watchpoint
+
+当某个变量或者表达式发生变化时暂停，可扩展为变量读、写时停止。
+
+上述示例可以通过 `watch i` 设置，或者直接通过地址，假设地址为 `0x7fffffffdeec` ，那么也可以通过 `watch *(int *)0x7fffffffdeec` 设置观察点，两者作用相同。
+
+当变量修改后，会打印老的以及新的值。
+
+#### 硬件观测点
+
+观测点分为两类：软件观察点 (Software Watchpoint) 和硬件观察点 (Hardware Watchpoint)。其使用软件观察点的方式就是单步执行程序同时测试变量的值，这样会导致程序的执行速度变慢。
+
+现在很多 CPU 提供了硬件观测点，不过因为寄存器有限，所以只能设置有限观测点，可以通过 `disable` 关闭不需要的观测点。
+
+当触发观测点后，才会告知是否启用硬件观测点，也就是 `Hardware watchpoint num` 信息。
+
+{% highlight text %}
+(gdb) show can-use-hw-watchpoints
+(gdb) set can-use-hw-watchpoints 0
+{% endhighlight %}
+
+另外，可以设置读写观测点，不过只针对硬件生效。
+
+* 读观测点 `rwatch`，只对硬件观测点生效。
+* 读写观测点 `awatch`，只对硬件观测点生效。
+
+#### 针对线程
+
+可以通过 `watch expr thread threadnum` 设置观察点只针对特定线程生效。
+
+<!--
+https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-watchpoint-on-specified-thread.md
+-->
+
+### Catchpoint
+
+其作用是在发生某种事件时候停止运行，常用的有如下几类：
+
+* C++ 异常，`throw` 抛出异常，`catch` 捕获异常；
+* 程序调用，针对的是不同的系统 API 接口，包括了 `exec` `fork` `vfork`；
+* 动态库，加载或者卸载动态库会停止，也可以指定动态库的名称 `load` `unload` ；
+* 系统调用，可以指定系统调用号或名称 `syscall` 。
+
+<!--
+https://github.com/hellogcc/100-gdb-tips/blob/master/src/index.md
+b. tcatch event: 设置只停一次的catchpoint，第一次生效后，该catchpoint被自动删除
+-->
+
+## init
+
+在启动时，会在当前用户目录下寻找文件名为 `.gdbinit` 的文件，如果存在，会执行该文件中的所有命令，通常用于简单的配置命令。
+
+<!--
+https://blog.csdn.net/gatieme/article/details/63254211
+-->
+
+## 参考
+
 
 {% highlight text %}
 {% endhighlight %}
