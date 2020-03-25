@@ -141,7 +141,7 @@ https://github.com/tinycthread/tinycthread
 * [内存屏障简析](/post/linux-c-memory-barriers-basic-introduce.html) 也就是为了处理乱序时使用的机制。
 * [GCC 原子操作](/post/linux-c-gcc-atomic-operation-introduce.html) GCC 实际上已经提供了一些简单的原子操作，这里简单介绍。
 * [Lock Free 编程](/post/linux-c-program-lock-free-queue-introduce.html)
-* [C++ 内存模型](/post/language-cpp-memory-module-introduce.html)
+* [C++ 内存模型](/post/language-cpp-memory-module-introduce.html) 通过对内存模型的统一约束，提供了跨平台的能力。
 
 
 #### 相关资料

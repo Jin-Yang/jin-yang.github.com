@@ -445,7 +445,6 @@ li {
 //  z-index: 99999;
 }
 
-
 /** timeline content **/
 
 .tl-heading {
@@ -456,7 +455,6 @@ li {
 .tl-body p {
   font-size: 0.9em;
 }
-
 
 /** media queries **/
 @media (max-width: 991px) {
@@ -508,6 +506,7 @@ li {
     right: auto;
   }
 }
+
 blockquote {
   margin-left: 5em;
   padding-left: 1em;
@@ -517,33 +516,33 @@ blockquote {
   background-color: #DCF7A1;
   border-radius: 10px;
 }
-
-
-table, th, td {
-    //border: 1px solid black;
-    padding: 3px 9px 3px 9px;
-}
 caption {
     font-size: larger;
     margin: 1em auto;
 }
+
 table {
     margin: 0 auto;
     margin-bottom: 1em;
     margin-top: 1em;
-    border-collapse:collapse;
+    border-collapse: collapse;
+}
+table, th, td {
+    padding: 3px 9px 3px 9px;
 }
 th {
-    background-color:#8192D6;
+    background-color: lightgray;
 }
 th, td {
-    border-bottom: 1px solid #ddd;
-    border-top: 1px solid #ddd;
+    border: 1px solid gray;
+    border-bottom: 1px solid gray;
+    border-top: 1px solid gray;
     text-align: center;
 }
-tbody tr:nth-child(even) {
-    background: #ccc;
-}
+
+//tbody tr:nth-child(even) {
+//    background: #ccc;
+//}
 //tbody tr:hover {
 //    background: linear-gradient(#fff,#aaa);
 //}

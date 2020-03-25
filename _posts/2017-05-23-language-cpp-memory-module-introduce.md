@@ -403,5 +403,16 @@ https://software.intel.com/en-us/articles/what-s-new-about-modern-hardware
 
 
 
+## 参考
+
+
+* [C++ Concurrency In Action 2nd](/reference/programs/CPPConcurrencyInAction2ndEdition.pdf)
+
+<!--
+http://www.allitebooks.org/c-concurrency-in-action-2nd-edition/
+
+https://www.jb51.net/article/55885.htm
+-->
+
 {% highlight text %}
 {% endhighlight %}
