@@ -622,16 +622,5 @@ https://github.com/hellogcc/100-gdb-tips/blob/master/src/index.md
 b. tcatch event: 设置只停一次的catchpoint，第一次生效后，该catchpoint被自动删除
 -->
 
-## init
-
-在启动时，会在当前用户目录下寻找文件名为 `.gdbinit` 的文件，如果存在，会执行该文件中的所有命令，通常用于简单的配置命令。
-
-<!--
-https://blog.csdn.net/gatieme/article/details/63254211
--->
-
-## 参考
-
-
 {% highlight text %}
 {% endhighlight %}

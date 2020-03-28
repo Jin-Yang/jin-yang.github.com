@@ -69,6 +69,7 @@ description:
 * [GDB 基本使用](/post/program-c-gdb-basic-usage-introduce.html) 一些常用的使用方法。
 * [GDB 栈帧简介](/post/program-c-gdb-stack-frame-introduce.html) 函数传参、局部变量使用的方式。
 * [GDB 死锁分析](/post/program-c-gdb-deadlock-analyze-introduce.html)
+* [GDB INIT 使用](/post/program-c-gdb-init-scripts-introduce.html)
 * [DWARF 格式简介](/post/program-c-gdb-dwarf-format-introduce.html)
 
 ### 其它
@@ -98,6 +99,8 @@ description:
 
 * [C++ 基本概念](/post/language-cpp-basic-syntax-introduce.html)
 * [C++ STL 使用](/post/language-cpp-stl-basic-usage-introduce.html)
+* [C++ 内存分布](/post/language-cpp-memory-layout-introduce.html)
+* [C++ 内存模型](/post/language-cpp-memory-module-introduce.html) 通过对内存模型的统一约束，提供了跨平台的能力。
 
 
 ## libev
@@ -141,7 +144,6 @@ https://github.com/tinycthread/tinycthread
 * [内存屏障简析](/post/linux-c-memory-barriers-basic-introduce.html) 也就是为了处理乱序时使用的机制。
 * [GCC 原子操作](/post/linux-c-gcc-atomic-operation-introduce.html) GCC 实际上已经提供了一些简单的原子操作，这里简单介绍。
 * [Lock Free 编程](/post/linux-c-program-lock-free-queue-introduce.html)
-* [C++ 内存模型](/post/language-cpp-memory-module-introduce.html) 通过对内存模型的统一约束，提供了跨平台的能力。
 
 
 #### 相关资料

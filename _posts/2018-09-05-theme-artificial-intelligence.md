@@ -47,6 +47,7 @@ description:
 ### 优化算法
 
 * [基本优化算法](/post/math-basic-concept-optimize-method-introduce.html)
+* [梯度下降算法](/post/math-gradient-descent-optimize-method-introduce.html)
 
 
 ### 采样算法
