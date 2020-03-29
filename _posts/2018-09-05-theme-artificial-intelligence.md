@@ -22,11 +22,50 @@ description:
 
 ## Python 包
 
-* [环境准备](/post/python-ai-environment-prepare.html) 包括了常用的 Python 工具、MNIST 数据集、TensorFlow 等。
+目前 AI 使用较多的是 Python，主要是因为这是一个简单 (包括语法、环境)的胶水语言，如果性能不满足，完全可以通过 C 重新实现，例如 NumPy 。
+
+如下是常用库的使用简介。
+
+* [环境准备](/post/python-ai-environment-prepare.html) 包括了常用的 Python 工具、TensorFlow 等。
 * [Numpy 简介](/post/python-numpy-package-introduce.html) 一个扩充程序库，支持高级大量的维度数组与矩阵运算。
 * [Scipy 简介](/post/python-scipy-package-intorduce.html) 可以处理插值、积分、优化、图像处理、常微分方程数值解的求解。
 * [Pandas 简介](/post/python-pandas-package-introduce.html) 基于 NumPy 的工具库，主要是为了解决数据分析任务。
 * [Matplotlib 简介](/post/python-matplotlib-package-intorduce.html) 绘图库包大量工具，几乎可以完成所有的图形绘制。
+
+<!--
+* [StatsModels 简介](/post/python-matplotlib-package-intorduce.html)
+
+https://www.statsmodels.org/stable/index.html
+
+skleran 常用子模块 ：
+
+sklearn 是一个机器学习包。
+ 分类 ：SVM ， K近邻 ，随机森林 ， 逻辑回归等。
+ 回归 ：Lasso ,岭回归 等。
+ 聚类 ：K-means ,谱聚类等。
+ 降维 ：PCA ,特征选择 ，矩阵分解等。
+ 模型选择 ：网格搜索， 交叉验证 ，指标矩阵。
+ 预处理： 特征提取，正态化。
+
+statsmodels常用子模块
+
+回归模型：线性回归 ，通用线性回归，鲁邦线性模型  ，线性混合效应模型等。
+方差分析（ANOVA）。
+时间序列分析：AR , ARMA , ARIMA , VAR等。
+非参数方法： 核密度估计 ， 核回归。
+统计模型结果可视化。
+
+statsmodels更专注于统计推理，提供不确定性评价和P值参数，
+sklearn更专注于预测。
+
+
+
+
+-->
+
+### 其它
+
+* [数据集简介](/post/math-machine-learning-some-datasets-introduce.html) 包括 CSV、示例函数、SciKit-Learn 测试集等。
 
 ## 概率论与数理统计
 
@@ -50,31 +89,57 @@ description:
 * [梯度下降算法](/post/math-gradient-descent-optimize-method-introduce.html)
 
 
-### 采样算法
+
+### 其它
+
+* [基本初等函数](/post/math-basic-elementary-function.html)
+
+## 机器学习
+
+* [线性回归](/post/machine-learning-algorithms-linear-regression-introduce.html)
+
+<!--
+
+Linear Regression
+Logistic Regression
+Decision Tree
+SVM
+Naive Bayes
+kNN
+K-Means
+Random Forest
+Dimensionality Reduction Algorithms
+Gradient Boosting algorithms
+	GBM
+	XGBoost
+	LightGBM
+	CatBoost
+-->
+
+## 概率编程
 
 * [贝叶斯简介](/post/math-statistics-basic-concept-bayes-theorem-introduce.html)
 * [马尔科夫简介](/post/math-statistics-markov-process-introduce.html)
 * [基本采样算法](/post/math-monte-carlo-sample-introduce.html) 一些常见的基本概念，例如蒙特卡罗、简单采样等。
 * [MCMC采样 - Metropolis 算法](/post/math-monte-carlo-mcmc-metropolis-introduce.html) 介绍 MCMC 的基本概念，以及很简单的算法。
+* [Stan 简介](/post/statistic-tools-stan-introduce.html) 包括了 Stan 的基本概念、使用方法，以及 RStan 的安装使用。
 
 <!--
 概率统计公式大全
 https://www.zybuluo.com/catscarf/note/986628
 
-关于矩阵介绍的不错资料
-神奇的矩阵——第二季
 
-iacs-courses.seas.harvard.edu/courses/am207/tag/lectures2.html
+机器学习的基本算法
+https://www.analyticsvidhya.com/blog/2017/09/common-machine-learning-algorithms/
 -->
 
-### R 语言
+## R 语言
 
 R 语言作为统计学一门语言，一直属于一个小众的工具集，直到大数据爆发后，越来越多的人开始使用 R 语言进行数据分析。
 
 * [R 语言简介](/post/linux-R-language-basic-introduce.html) 介绍 R 语言的基本概念。
 * [R 绘图简介](/post/linux-R-language-graph-function-introduce.html) R 语言提供了非常强大的绘图功能，这里简单介绍。
 * [R 概率函数](/post/linux-R-language-some-statistic-function-introduce.html) 一些常用概率函数的使用方法。
-* [Stan 简介](/post/statistic-tools-stan-introduce.html) 包括了 Stan 的基本概念、使用方法，以及 RStan 的安装使用。
 
 #### 参考
 
@@ -88,15 +153,11 @@ https://drivingc.com/p/5af5ab892392ec35c23048e2
 
 谈谈 Bias-Variance Tradeoff
 https://liam.page/2017/03/25/bias-variance-tradeoff/
--->
 
 ## 机器学习 100 天
 
 也就是 [Github 100 Days Of ML Code](https://github.com/Avik-Jain/100-Days-Of-ML-Code) 中的学习，可以参考 [Github 机器学习 100 天](https://github.com/MLEveryday/100-Days-Of-ML-Code) 。
 
-* [AI 100 天 \-\- 01](/post/artificial-intelligence-100-days-01.html) 如何准备所需的数据。
-
-<!--
 https://blog.csdn.net/ybdesire/article/details/67701289
 https://tracholar.github.io/wiki/machine-learning/sklearn-source.html
 -->

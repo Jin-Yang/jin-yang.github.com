@@ -1,5 +1,5 @@
 ---
-title: AI 100 天 -- 02
+title: 线性回归
 layout: post
 comments: true
 usemath: true

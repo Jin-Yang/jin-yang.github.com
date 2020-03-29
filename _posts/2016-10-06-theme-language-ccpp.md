@@ -101,6 +101,7 @@ description:
 * [C++ STL 使用](/post/language-cpp-stl-basic-usage-introduce.html)
 * [C++ 内存分布](/post/language-cpp-memory-layout-introduce.html)
 * [C++ 内存模型](/post/language-cpp-memory-module-introduce.html) 通过对内存模型的统一约束，提供了跨平台的能力。
+* [C++ 内存模型](/post/language-cpp-some-pitfalls.md.html)
 
 
 ## libev

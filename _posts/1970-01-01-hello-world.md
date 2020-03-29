@@ -5069,6 +5069,11 @@ https://www.freebuf.com/articles/system/228731.html
 检测在什么样的虚拟机里的脚本
 https://www.freebuf.com/articles/network/229040.html
 
+
+Non-Deterministic Polynomial Complete Problem, NPC 问题
+Non-Deterministic Polynomially, NP 是指一个问题不能确定是否在多项式时间内找到答案，但是可以在多项式时间内验证答案是否正确，如完全子图问题、图着色问题、旅行商(TSP)问题等。
+
+之所以要定义 NP 问题，是因为通常只有 NP 问题才可能找到多项式的算法，不能指望一个连多项式验证一个解都不行的问题存在一个解决它的多项式级的算法。
 -->
 
 
