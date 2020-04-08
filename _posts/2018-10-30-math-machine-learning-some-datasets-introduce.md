@@ -8,9 +8,19 @@ keywords:
 description:
 ---
 
-简单来说，就是准备所需的数据。
+简单来说，就是准备所需的数据，包括一些从官方下载的数据，动态生成的测试数据，以及部分经典的函数等。
 
 <!-- more -->
+
+## 简介
+
+在进行测试时，通常需要将数据分成两部分，一部分用来作生成模型，另外一部分会用来作验证，在 SKlearn 包中提供了相关的函数。
+
+{% highlight python %}
+from sklearn.cross_validation import train_test_split
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.25, random_state = 0)
+{% endhighlight %}
 
 ## CSV
 
@@ -46,6 +56,84 @@ with open("test.csv", "r") as csvfile:
 		print line
 {% endhighlight %}
 
+## 测试数据集
+
+Scikit-Learn 工具包中提供的数据集，通常用来学习或者模拟算法的数据库，有很多不错的模型，详细可以参考 [Dataset loading utilities](https://scikit-learn.org/stable/datasets/index.html) 。
+
+### make_blobs
+
+<!--
+https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_blobs.html
+-->
+
+用于生成具有高斯分布的 blobs 点，可以控制生成 blobs 的数量，生成样本的数量以及一系列其它属性。考虑到 blobs 的线性可分性质，适用于线性分类问题。
+
+{% highlight text %}
+sklearn.datasets.make_blobs(n_samples=100, n_features=2, centers=None, cluster_std=1.0,
+		center_box=(-10.0, 10.0), shuffle=True, random_state=None)
+
+其中参数如下：
+   n_samples 待生成的样本的总数。
+   n_features 每个样本的特征数，会保存在返回的对象中。
+   centers 表示类别数。
+   cluster_std 表示每个类别的方差。
+{% endhighlight %}
+
+例如生成 2 类数据，其中一类比另一类具有更大的方差，可以将 `cluster_std` 设置为 `[1.0, 3.0]` ，如下是生成三类数据用于聚类 (100 个样本，每个样本有 2 个特征)：
+
+{% highlight python %}
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+
+data, target = make_blobs(
+	n_samples=100,             # 生成的总样本数，注意是总数
+	n_features=2,              # 样本的特征数，也就是生成数据的维度，默认是2
+	centers=3,                 # 总的类别，需要与如下的方差保持一致，默认是5
+	cluster_std=[1.0,2.0,3.0]) # 每个类别的方差，默认是1
+
+# 在2D图中绘制样本的散点图，每个样本颜色不同
+plt.scatter(data[:,0], data[:,1], c=target);
+plt.show()
+{% endhighlight %}
+
+其中 `scatter()` 函数中的 c 参数标示了分类。
+
+#### centers
+
+也可以根据 `n_features` 设置不同聚类的中心坐标位置，例如，当 `n_features=2` 时，可以设置 `centers=[[0, 0], [2, 2]]` ，此时会出现两个分类，其中心坐标分别是 `(0, 0)` 和 `(2, 2)` 。
+
+### make_moons
+
+用于二进制分类并且将生成一个漩涡模式，可以控制 moon 形状中的噪声量，以及要生产的样本数量，适用于能够学习非线性类边界的算法。
+
+{% highlight python %}
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_moons
+
+data, target = make_moons(
+	n_samples=500,     # 生成的样本总数
+	noise=0.05,        # 噪声的大小
+	random_state=1)    # 随机状态
+
+plt.scatter(data[:,0], data[:,1], c=target);
+plt.show()
+{% endhighlight %}
+
+其中 `random_state` 的作用可以参考后面的介绍，简单来说，默认每次都会生成一个随机值，如果设置为固定值，那么每次生成的结果集都是固定的。
+
+### make_circles
+
+用于生成一个数据集落入同心圆的二进制分类问题，适用于可以学习复杂的非线性流行的算法。
+
+示例可以直接将上述 `make_moons` 替换为 `make_circles` 即可。
+
+### 其它
+
+#### random_state
+
+实际上，这个是一个生成随机数的种子，在生成的测试数据集中可以用来生成不同的测试数据。
+
+因为 sklearn 中很多算法都含有随机的因素，为了进行可重复的训练或者验证，那么就可以固定一个 `random_state` ，然后再对模型进行调参。
 
 ## MNIST
 
@@ -210,85 +298,6 @@ y_test = np.genfromtxt('test_labels.csv',
 
 不过, 从 CSV 文件中加载 MNIST 数据将会显著发给更长的时间, 因此如果可能的话, 还是建议你维持数据集原有的字节格式.
 -->
-
-## 测试数据集
-
-Scikit-Learn 工具包中提供的数据集，通常用来学习或者模拟算法的数据库，有很多不错的模型，详细可以参考 [Dataset loading utilities](https://scikit-learn.org/stable/datasets/index.html) 。
-
-### make_blobs
-
-<!--
-https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_blobs.html
--->
-
-用于生成具有高斯分布的 blobs 点，可以控制生成 blobs 的数量，生成样本的数量以及一系列其它属性。考虑到 blobs 的线性可分性质，适用于线性分类问题。
-
-{% highlight text %}
-sklearn.datasets.make_blobs(n_samples=100, n_features=2, centers=None, cluster_std=1.0,
-		center_box=(-10.0, 10.0), shuffle=True, random_state=None)
-
-其中参数如下：
-   n_samples 待生成的样本的总数。
-   n_features 每个样本的特征数，会保存在返回的对象中。
-   centers 表示类别数。
-   cluster_std 表示每个类别的方差。
-{% endhighlight %}
-
-例如生成 2 类数据，其中一类比另一类具有更大的方差，可以将 `cluster_std` 设置为 `[1.0, 3.0]` ，如下是生成三类数据用于聚类 (100 个样本，每个样本有 2 个特征)：
-
-{% highlight python %}
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_blobs
-
-data, target = make_blobs(
-	n_samples=100,             # 生成的总样本数，注意是总数
-	n_features=2,              # 样本的特征数，也就是生成数据的维度，默认是2
-	centers=3,                 # 总的类别，需要与如下的方差保持一致，默认是5
-	cluster_std=[1.0,2.0,3.0]) # 每个类别的方差，默认是1
-
-# 在2D图中绘制样本的散点图，每个样本颜色不同
-plt.scatter(data[:,0], data[:,1], c=target);
-plt.show()
-{% endhighlight %}
-
-其中 `scatter()` 函数中的 c 参数标示了分类。
-
-#### centers
-
-也可以根据 `n_features` 设置不同聚类的中心坐标位置，例如，当 `n_features=2` 时，可以设置 `centers=[[0, 0], [2, 2]]` ，此时会出现两个分类，其中心坐标分别是 `(0, 0)` 和 `(2, 2)` 。
-
-### make_moons
-
-用于二进制分类并且将生成一个漩涡模式，可以控制 moon 形状中的噪声量，以及要生产的样本数量，适用于能够学习非线性类边界的算法。
-
-{% highlight python %}
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_moons
-
-data, target = make_moons(
-	n_samples=500,     # 生成的样本总数
-	noise=0.05,        # 噪声的大小
-	random_state=1)    # 随机状态
-
-plt.scatter(data[:,0], data[:,1], c=target);
-plt.show()
-{% endhighlight %}
-
-其中 `random_state` 的作用可以参考后面的介绍，简单来说，默认每次都会生成一个随机值，如果设置为固定值，那么每次生成的结果集都是固定的。
-
-### make_circles
-
-用于生成一个数据集落入同心圆的二进制分类问题，适用于可以学习复杂的非线性流行的算法。
-
-示例可以直接将上述 `make_moons` 替换为 `make_circles` 即可。
-
-## 其它
-
-### random_state
-
-实际上，这个是一个生成随机数的种子，在生成的测试数据集中可以用来生成不同的测试数据。
-
-因为 sklearn 中很多算法都含有随机的因素，为了进行可重复的训练，那么可以固定一个 random_state ，然后对模型进行调参。
 
 {% highlight text %}
 {% endhighlight %}

@@ -11,6 +11,13 @@ description:
 
 <!-- more -->
 
+## 数据结构
+
+* [最小堆](/post/algorithm-min-heap-basic-introduce.html)
+* [SkipList](/post/linux-program-structure-skiplist-introduce.html)
+
+
+
 ## 排序算法
 
 最基础的算法。
@@ -38,6 +45,23 @@ description:
 
 比较排序测试<br><br>
 如果想要进行测试只需要输入如下命令
+
+
+
+
+### 符号表示
+
+一般如 LeetCode 中，会约束算法完成的时间以及使用内存数，时间就是约束的算法复杂度，通常会用如下的符号进行表示。
+
+$\Theta$ 是上界也是下界 (tight)，等于的意思。
+$O$ 上界 (tightness unknown)，小于等于的意思。
+$o$ 上界 (not tight)，小于的意思。
+$\Omega$ 下界 (tightness unknown)，大于等于的意思。
+$\omega$ 下界 (not tight)，大于的意思。
+
+其中 $Ο$ 是渐进上界，$\Omega$ 是渐进下界；$\Theta$ 需要同时满足 $Ο$ 和 $\Omega$，称为确界 (必须同时符合上界和下界)。
+
+在实际使用时，$Ο$ 极其有用，因为它表示了最差性能。
 -->
 
 ## 树
@@ -55,19 +79,10 @@ description:
 * [背包问题](/post/algorithm-knapsack-problem-introduce.html)
 
 <!--
-SkipList
-https://yuerblog.cc/2019/02/13/skiplist-rank/
-http://zhangtielei.com/posts/blog-redis-skiplist.html
-https://github.com/begeekmyfriend/skiplist
-
-一个基于SkipList的KV存储
-https://github.com/Softmotions/iowow
-
 Creating Good Looking Diagrams Using Inkscape
 http://www.ioncannon.net/utilities/123/10-tips-for-creating-good-looking-diagrams-using-inkscape/
 
 https://github.com/labuladong/fucking-algorithm
-
 
 关于很多算法的Python实现，也同时包括了其它的一些语言的实现
 https://github.com/TheAlgorithms/Python

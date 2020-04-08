@@ -139,11 +139,15 @@ PlugUpgrade            升级vim-plug自己
 
 ### ALE
 
-[Asynchronous Lint Engine](https://github.com/w0rp/ale) 一个异步的检查引擎，相比来说更加快速，不会感到明显的卡顿。
+[Asynchronous Lint Engine](https://github.com/dense-analysis/ale) 一个异步的检查引擎，相比来说更加快速，不会感到明显的卡顿。
+
+实际上是一个 `Language Server Protocol` 客户端，对应的 linter 都需要自己安装，不过大部分 (例如 gcc、gofmt 等) 都已经存在了，其它一些需要进行安装。
 
 {% highlight text %}
 Plug 'dense-analysis/ale'
 {% endhighlight %}
+
+
 
 ### Syntastic
 

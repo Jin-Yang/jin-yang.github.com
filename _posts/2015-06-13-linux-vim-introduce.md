@@ -453,6 +453,12 @@ Vim 会根据不同的文件类型，分别设置高亮、缩进等功能。可�
 autocmd FileType c,cpp set shiftwidth=4 | set expandtab
 {% endhighlight %}
 
+当无法识别文件类型或者识别错误时，可以通过 `:set filetype=markdown` 命令设置，或者在文件头通过 `/* vim: set filetype=markdown : */` 指定，也可以通过如下方式指定。
+
+{% highlight text %}
+au BufRead,BufNewFile *.md set filetype=markdown
+{% endhighlight %}
+
 ## 高级进阶
 
 ### 区域选择
@@ -724,6 +730,8 @@ http://blog.chinaunix.net/uid-24118190-id-4077308.html    VIM终极配置
 
 一些项目中的常见操作
 https://blog.csdn.net/MDL13412/article/details/48768159
+
+gf 跳转到头文件
 -->
 
 {% highlight text %}

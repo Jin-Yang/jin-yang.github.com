@@ -129,11 +129,69 @@ plt.title('histogram of normal distribution: $\mu = 0$, $\sigma=1$')
 plt.show()
 {% endhighlight %}
 
-## 多元正态分布
+## 多元高斯分布
 
-多元正态分布是一维正态分布向更高维度的推广，这种分布由其均值和协方差矩阵来确定，类似于一维正态分布中的均值和方差。
+多元高斯分布 (Multivariate Gaussian Distribution) 的形式很简单，就是一元高斯分布的在向量形式中的推广，把向量 $X=[x_1, x_2,\cdots, x_n]^T$ 称作是均值为 $\mu \in {\bf R}^n$ ，协方差矩阵为 $\Sigma \in S^n$ 的多元高斯分布，其概率密度函数的形式为。
 
-### 二元绘图
+$$f_x(x_1, \cdots ,x_n)=\frac{1}{\sqrt{(2 \pi)^n |\Sigma|}} e^{-\frac{(x-\mu)^T (x-\mu)}{2\Sigma}}$$
+
+这种分布由均值和协方差矩阵确定，类似于一维正态分布中的均值和方差，可以看到，与一维的高斯分布有两点不同。
+
+* 多维高斯公式把一维中的 $(x - \mu)^2$ 替换成了 $(x - \mu)^T (x - \mu)$ 矩阵操作，而该公式也可以写成 $(x_1 - \mu_1)^2 + (x_1 - \mu_1 )^2 + \cdots + (x_n - \mu_n )^2$，那么一维就只对应了 $(x_1 - \mu_1 )^2$ 。
+* 多维高斯分布把方差 $\sigma^2$ 换为了协方差矩阵 $\Sigma$，也就是说到了高维之后，不仅仅有各维自己的方差，还有两两之间的协方差。
+
+协方差反应两个变量的相关程度，将方差和协方差放到一个矩阵中就是协方差矩阵 $\Sigma$ 。
+
+
+<!--
+https://drivingc.com/p/5b793eac2392ec689a39c56b
+-->
+
+### 其它
+
+在 Python 中，可以通过 `numpy.random.multivariate_normal()` 方法用于根据实际情况生成一个多元正态分布矩阵，该函数定义如下：
+
+{% highlight text %}
+multivariate_normal(mean, cov, size=None, check_valid=None, tol=None)
+    mean        1*N 均值
+    cov         N*N 协方差矩阵，对称且为半正定的矩阵。
+    size        生成数据的维度，例如size=(10, 100则输出的矩阵为10*100*N
+    check_valid 检查协方差矩阵是否合法。
+{% endhighlight %}
+
+如下是个一个参考的示例。
+
+{% highlight python %}
+import numpy as np
+import matplotlib.pyplot as plt
+
+## Gaussian Distribution
+#cov = np.eye(1) * 3
+#mean = np.array([3])
+#Y = np.random.multivariate_normal(mean, cov, 10, 'raise')
+
+## Multivariate Gaussian Distribution
+cov = np.eye(2) * 3
+mean = np.array([3, 100])
+Y = np.random.multivariate_normal(mean, cov, (10, 3), 'raise')
+{% endhighlight %}
+
+如上生成了一个 `10 * 3 * 2` 的数据，因为协方差矩阵使用的是对角矩阵，也就意味着各个变量之前是独立的，其中均值对应 `mean` 变量，方差就都是 `1` ，可以通过如下方式计算均值、方差等信息。
+
+{% highlight text %}
+>>> np.mean(Y, axis=0)  # 计算均值，同样可以计算方差等信息
+array([[  2.96771613,  99.65476306],
+       [  2.8397508 ,  99.88631836],
+       [  3.09584658, 100.50960993]])
+>>> np.std(Y, axis=0)
+array([[0.98685019, 0.99880091],
+       [0.98338639, 1.02355389],
+       [1.00234377, 0.98393021]])
+{% endhighlight %}
+
+如下是一个示例。
+
+#### 二元绘图
 
 ![normal distribution 2d example]({{ site.url }}/images/ai/normal_distribution_2d_display01.png "normal distribution 2d example"){: .pull-center width="60%" }
 

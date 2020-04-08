@@ -77,6 +77,12 @@ Vim 是一个功能强大、高度可定制的文本编辑器，与其相匹敌�
 * [VIM Tags 相关](/post/linux-vim-third-plugins-tags-stuff-introduce.html)
 * [VIM LaTeX 使用](/post/linux-vim-latex-snippets-introduce.html)
 
+常用快捷键整理。
+
+{% highlight text %}
+<Leader>k  ALE向上查找错误
+{% endhighlight %}
+
 ## 其它
 
 一些在开发阶段常见的使用工具。

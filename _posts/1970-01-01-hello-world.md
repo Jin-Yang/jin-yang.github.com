@@ -4735,8 +4735,6 @@ https://github.com/citypw/lcamtuf-memfetch
 resiliency库实现
 https://github.com/eapache/go-resiliency
 https://github.com/afex/hystrix-go
-SkipList的实现
-https://github.com/begeekmyfriend/skiplist
 无锁队列
 https://github.com/je-so/iqueue
 基于wxWidgets的十六进制编辑器

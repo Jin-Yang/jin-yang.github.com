@@ -120,12 +120,14 @@ $ list-tubes-watched
 SocketPair进程间通讯
 http://blog.csdn.net/PirLCK/article/details/52526523
 
-人工智能之机器学习常见算法
-http://blog.csdn.net/baihuaxiu123/article/details/51475384
 
 https://github.com/kr/beanstalkd/blob/master/doc/protocol.zh-CN.md
 http://www.hulkdev.com/posts/think_in_beanstalkd
 https://segmentfault.com/a/1190000009604082
+
+
+一个消息队列，可以和任务队列相互参考
+https://github.com/antirez/disque
 -->
 
 {% highlight text %}

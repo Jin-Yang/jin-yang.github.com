@@ -76,6 +76,7 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 * [GoLang 常用模块](/post/golang-common-module-introduce.html) 常见的三方模块使用，例如 log、unsafe 等。
 * [GoLang time 模块](/post/golang-common-module-time-introduce.html) 主要是与定时器相关的内容。
 * [GoLang bytes 模块](/post/golang-common-module-bytes-introduce.html) 包括了 String、Bytes 的基本概念，序列化以及反序列化等操作。
+* [GoLang pprof 模块](/post/golang-common-module-pprof-performace-introduce.html) 常用的性能检查以及问题排查方法。
 
 ### 三方模块
 

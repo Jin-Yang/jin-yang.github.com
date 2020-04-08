@@ -26,6 +26,8 @@ $ git log --author="username" --pretty=tformat: --numstat |  \
     printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }' -
 {% endhighlight %}
 
+也可以指定范围，参数包括了 `--since=2018-05-01` `--until=2018-09-07` `--since=2.days 2.weeks 2.months 2.years` 等等。
+
 #### 统计所有人提交代码量
 
 {% highlight text %}

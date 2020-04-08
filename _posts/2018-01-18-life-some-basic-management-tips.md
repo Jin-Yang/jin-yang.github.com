@@ -106,10 +106,6 @@ https://gettingthingsdone.com/what-is-gtd/
 https://zhuanlan.zhihu.com/p/37258117
 https://zhuanlan.zhihu.com/p/22210818 图片不错
 https://zhuanlan.zhihu.com/p/31398385
-
-
-https://github.com/willemt/heap
-https://github.com/armon/c-minheap-array
 -->
 
 {% highlight text %}

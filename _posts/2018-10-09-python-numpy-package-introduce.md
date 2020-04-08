@@ -68,9 +68,48 @@ data.max(axis=0)
 
 ## NDArray
 
-这是一个多维数组对象，该对象由 `实际数据` 和 `元数据` 组成，其中大部分操作仅仅修改元数据部分，而不改变底层的实际数据。
+这是一个多维数组对象，该对象由 `实际数据` 和 `元数据` 组成，其中大部分操作仅仅修改元数据部分，而不改变底层的实际数据。注意，实际的数据必须要保证是同质的，也就是类型相同。
 
-注意，实际的数据必须要保证是同质的。
+所谓的多维数组，常见的，如向量 (Vector) 是一维，矩阵 (Matrix) 是二维，张量 (Tensor) 是三维，每个维度都会对应一个坐标轴，如下是一个示例。
+
+{% highlight text %}
+>>> a = np.reshape(np.array(range(24)), [2, 3, 4])
+>>> a
+array([[[ 0,  1,  2,  3],
+        [ 4,  5,  6,  7],
+        [ 8,  9, 10, 11]],
+
+       [[12, 13, 14, 15],
+        [16, 17, 18, 19],
+        [20, 21, 22, 23]]])
+{% endhighlight %}
+
+对于上述的数组，可以理解成从外向内的维度一次是 2、3、4 。
+
+### axis
+
+在 numpy 中的很多函数可以对多维数组进行统计，常见的有 `sum()` `mean()` `var()` `std()` ，下面以 `sum()` 函数为例，介绍其中的 `axis` 参数的含义。
+
+对于 `sum()` 函数，官方的文档解释为 `Sum of array elements over a give dimension. It returns an array with the same shape as input, with the specified dimension removed.` ，也就是对指定维度求和，返回的结果只是少了 axis 那一个维度。
+
+仍以上述示例为例。
+
+{% highlight text %}
+>>> np.sum(a, axis=0)   # (2, 3, 4) --> (3, 4)
+array([[12, 14, 16, 18],
+       [20, 22, 24, 26],
+       [28, 30, 32, 34]])
+>>> np.sum(a, axis=1)   # (2, 3, 4) --> (2, 4)
+array([[12, 15, 18, 21],
+       [48, 51, 54, 57]])
+>>> np.sum(a, axis=2)   # (2, 3, 4) --> (2, 3)
+array([[ 6, 22, 38],
+       [54, 70, 86]])
+{% endhighlight %}
+
+注意，上述的 `np.sum(a, axis=2)` 与 `np.sum(a, axis=-1)` 是等价的。
+
+### 常见操作
 
 {% highlight python %}
 import numpy as np

@@ -57,19 +57,15 @@ statsmodels常用子模块
 
 statsmodels更专注于统计推理，提供不确定性评价和P值参数，
 sklearn更专注于预测。
-
-
-
-
 -->
 
 ### 其它
 
 * [数据集简介](/post/math-machine-learning-some-datasets-introduce.html) 包括 CSV、示例函数、SciKit-Learn 测试集等。
 
-## 概率论与数理统计
+## 数学基础
 
-### 概率论
+### 概率论与数理统计
 
 * [基本概念](/post/math-probability-basic-concept.html)
 * [离散概率分布](/post/math-probability-basic-concept-discrete-distribution-introduce.html)
@@ -83,12 +79,16 @@ sklearn更专注于预测。
 * [核密度函数](/post/math-statistics-kernel-density-estimates-introduce.html)
 * [熵概念简介](/post/artificial-intelligence-entropy-concept-introduce.html)
 
+### 线性代数
+
+<!--
+http://www.math.uwaterloo.ca/~hwolkowi//matrixcookbook.pdf
+-->
+
 ### 优化算法
 
 * [基本优化算法](/post/math-basic-concept-optimize-method-introduce.html)
 * [梯度下降算法](/post/math-gradient-descent-optimize-method-introduce.html)
-
-
 
 ### 其它
 
@@ -96,13 +96,21 @@ sklearn更专注于预测。
 
 ## 机器学习
 
+机器学习所解决的问题，主要包括了数值的预测和分类，前者一般是回归模型，例如线性回归；后者的方法则是五花八门，例如决策树、KNN、支持向量机、朴素贝叶斯等等。
+
+其实，两类问题本质上讲是一样的，都是通过学习已有数据，构建模型，然后对未知数据进行预测，如果是连续的数值预测就是回归问题，若是离散的类标号预测，那么就变成了分类问题。
+
 * [线性回归](/post/machine-learning-algorithms-linear-regression-introduce.html)
+* [逻辑回归](/post/machine-learning-algorithms-logistic-regression-introduce.html)
+* [决策树](/post/artificial-intelligence-decision-tree-introduce.html)
+
+### 其它
+
+* [高斯过程](/post/artificial-intelligence-gaussian-process-introduce.html)
+* [损失函数](/post/machine-learning-algorithms-loss-functions-introduce.html)
+
 
 <!--
-
-Linear Regression
-Logistic Regression
-Decision Tree
 SVM
 Naive Bayes
 kNN
@@ -167,7 +175,47 @@ https://tracholar.github.io/wiki/machine-learning/sklearn-source.html
 ![artificial intelligence logo]({{ site.url }}/images/machine-learning-logo.jpg "artificial intelligence logo"){: .pull-center width="40%" }
 
 
-## 其它
+## 参考资料
+
+### 机器学习
+
+#### Pattern Recognition and Machine Learning
+
+常用资料 [Book English](https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf)、[NoteBooks](https://github.com/ctgk/PRML/tree/master/notebooks)、[Python Implemented](https://github.com/ctgk/PRML) ，也可以参考本地保存 [En](/reference/machine/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf)、[CN](/reference/machine/Bishop-Pattern-Recognition-and-Machine-Learning-CN.pdf) 。
+
+<!--
+#### Machine Learning, A Probabilistic Perspective
+
+/reference/machine/Machine-Learning_A-Probabilistic-Perspective.pdf
+
+https://doc.lagout.org/science/Artificial%20Intelligence/Machine%20learning/Machine%20Learning_%20A%20Probabilistic%20Perspective%20%5BMurphy%202012-08-24%5D.pdf
+
+
+#### The Elements of Statistical Learning
+
+频率学派
+
+包括了 [英文版](https://esl.hohoweiya.xyz/book/The%20Elements%20of%20Statistical%20Learning.pdf) 以及 [中文版](https://esl.hohoweiya.xyz/index.html) 的地址。
+
+/reference/machine/The-Elements-of-Statistical-Learning.pdf
+
+
+Deap Learning 圣经
+
+《统计学习方法》李航
+《西瓜书》
+《Pattern Recognition and Machine Learning》PRML
+
+## 台大-林轩田  机器学习基石 技法
+## 张志华 机器学习导论 统计机器学习
+## 吴恩达 CS229
+## 徐亦达 概率模型
+## 台大-李弘毅
+
+白板推导
+-->
+
+### 其它
 
 * [Rules of Machine Learning](https://developers.google.com/machine-learning/guides/rules-of-ml/) 介绍关于 ML 的一些原则，可以参考 [本地文档](/reference/machine/Rules of Machine Learning.pdf) 。
 * 数学公式的编写可以参考 [MathJax Demo](https://www.mathjax.org/#demo) 。
@@ -211,6 +259,12 @@ https://mc-stan.org/docs/2_19/stan-users-guide/linear-regression.html
 
 量化投资，不错的介绍
 https://www.quantstart.com/articles/Bayesian-Statistics-A-Beginners-Guide
+
+
+
+
+列举了数学公式中一些常见的表示符号
+https://zh.wikipedia.org/wiki/%E6%95%B0%E5%AD%A6%E7%AC%A6%E5%8F%B7%E8%A1%A8
 -->
 
 {% highlight text %}

@@ -303,6 +303,37 @@ http://www.ttlsa.com/web/let-infotify-rsync-fast/
 
 sersync
 
+
+
+
+
+## inotify
+
+Inotify 一种强大的、细粒度的、异步文件系统监控机制，它满足各种各样的文件监控需要，可以监控文件系统的访问属性、读写属性、权限属性、删除创建、移动等操作，可以监控文件发生的一切变化。
+
+在 Linux 中，同时提供了 [inotify-tools](https://github.com/rvoicilas/inotify-tools) 工具，以命令行的方式将相关接口暴露出来。
+
+### 参数调节
+
+在 Linux 中很多进程会通过 inotify 来监控目录文件的变化，实际上，内核会对总的监控数量进行限制，控制对内核中内存的开销，当超过了一定的数量之后就会报错。
+
+----- 每个用户可以创建inotify实例的上限
+# cat /proc/sys/fs/inotify/max_user_instances
+----- 每个实例可监控的最大目录/文件数，如果需要监控的文件多可以增加
+# cat /proc/sys/fs/inotify/max_user_watches
+----- 每个实例中的队列长度，超过该值后会被丢弃，并触发IN_Q_OVERFLOW事件
+# cat /proc/sys/fs/inotify/max_queued_evnets
+
+在内核中，当一个实例上增加一个监控对象时 (目录或文件) ，一般会增加 540B(32-bits) 1KB(64-bits) 。
+
+当排查问题时，可以通过如下的方式查看那些进程占用较多。
+
+find /proc/*/fd -lname anon_inode:inotify |
+   cut -d/ -f3 |
+   xargs -I '{}' -- ps --no-headers -o '%p %U %c' -p '{}' |
+   uniq -c |
+   sort -nr
+https://www.ibm.com/developerworks/cn/linux/l-inotify/index.html
 -->
 
 
