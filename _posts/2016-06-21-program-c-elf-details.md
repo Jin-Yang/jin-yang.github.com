@@ -8,7 +8,7 @@ keywords:
 description:
 ---
 
-ELF 的全称为 Executable and Linkable Format 用于存储 Linux 程序。
+ELF 的全称为 Executable and Linkable Format 用于存储 Linux 程序，可以从运行以及链接的两个视角查看，分别通过 Program Header Table 以及 Section Header Table 查看。
 
 <!-- more -->
 
@@ -38,8 +38,9 @@ ELF 文件的结构类似如下，包含了三个关键的索引表 `ELF Header`
 
 在头文件 `/usr/include/elf.h` 中定义了相关的结构体。
 
-## ELF header
+### 保存格式
 
+其中 `Section Header Table` 可以通过 `readelf -S /bin/bash` 查看，`Program Header Table` 通过 `readelf -l /bin/bash` 查看，两者会通过 `ELF Header` 结合起来。
 
 {% highlight text %}
 $ readelf -h main
@@ -76,10 +77,21 @@ $ hexdump -x main -n 64
 0000040
 {% endhighlight %}
 
+
 <!--
 libelf的使用
 https://www.zybuluo.com/devilogic/note/139554
+
+The ELF format - how programs look from the inside
+https://greek0.net/elf.html
+
+
+http://michalmalik.github.io/elf-dynamic-segment-struggles
 -->
+
+## 参考
+
+* [System V Application Binary Interface](http://sco.com/developers/gabi/latest/contents.html)
 
 {% highlight text %}
 {% endhighlight %}

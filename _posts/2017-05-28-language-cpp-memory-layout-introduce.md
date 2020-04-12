@@ -412,6 +412,14 @@ https://software.intel.com/en-us/articles/what-s-new-about-modern-hardware
 http://www.allitebooks.org/c-concurrency-in-action-2nd-edition/
 
 https://www.jb51.net/article/55885.htm
+
+
+
+https://www.cnblogs.com/alexcool/articles/9241548.html
+https://www.cnblogs.com/yunlambert/p/9876491.html
+https://www.jianshu.com/p/7d237771dc94
+https://www.iteye.com/blog/tcspecial-2425028
+https://zhuanlan.zhihu.com/p/103425537?utm_source=wechat_timeline
 -->
 
 {% highlight text %}

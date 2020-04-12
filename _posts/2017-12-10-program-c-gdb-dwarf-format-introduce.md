@@ -30,6 +30,29 @@ description: 也就是 Debugging With Attributed RecordFormats, DWARF ，到目�
 
 对于 CentOS 来说，一般保存在 `/usr/lib/debug` 目录下，
 
+### 节内容介绍
+
+在编译的时候需要添加一个 `-g` 参数，最终生成的二进制文件会包含了很多 `.debug_*` 的字段，保存了调试相关的信息，主要包含了如下的段。
+
+* `.debug_info` 调试信息主要内容，例如函数、参数、变量等。
+* `.debug_line` 地址和源文件行的对应信息。
+* `.debug_str` 在上述的 `.debug_info` 中使用的字符串表。
+
+上述的 `.debug_info` 和 `.debug_line` 节是必须有的，其它的根据不同的链接脚本可选。
+
+<!--
+* `.debug_aranges` 范围表，每个编译单元对应一个范围范围表，记录了该编译单元的某些ENTRY的text或者data的起始地址和长度，用于跨编译单元的快速查询
+.debug_abbrev 调试信息缩写表，每个编译单元对应一个缩写表，每个缩写表包含一系列的缩写声明，每个缩写对应一个DIE
+
+.debug_macinfo 宏信息，编译器-g3参数才会产生宏信息
+.debug_pubnames 全局符号查询表，以编译单元为单位，记录了每个编译单元的全局符号的名称
+.debug_frame 函数的堆栈信息
+.debug_loc Location list
+-->
+
+可以通过 `readelf -wI <EXEC>` 命令查看对应的节的内容，其中 `N` 对应了段名称的第一个字母，例如 `-wi` 对应了 `.debug_info` 的内容，`-wl` 就是 `.debug_line` 的内容。
+
+
 <!--
 symbol-file myprogram.debug
 
@@ -138,6 +161,12 @@ https://blog.csdn.net/chenyijun/article/details/85284867
 
 * DWARF 格式的详细信息可以参考 [www.dwarfstd.org](http://www.dwarfstd.org/) 官网中的介绍，包括了一个基础的教程。
 * [Articles in tag "Debuggers"](https://eli.thegreenplace.net/tag/debuggers) 一个简单的调试器，包括了 ptrace 以及 DWARF 的使用方式。
+
+
+<!--
+gdb对dwarf调试信息的解析和使用
+https://blog.csdn.net/JS072110/article/details/44153303
+-->
 
 {% highlight python %}
 {% endhighlight %}

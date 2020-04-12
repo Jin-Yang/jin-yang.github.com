@@ -72,6 +72,10 @@ description:
 * [GDB INIT 使用](/post/program-c-gdb-init-scripts-introduce.html)
 * [DWARF 格式简介](/post/program-c-gdb-dwarf-format-introduce.html)
 
+<!--
+https://segmentfault.com/a/1190000020465136
+-->
+
 ### 其它
 
 介绍一些乱七八糟的东西。

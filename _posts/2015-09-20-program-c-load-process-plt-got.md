@@ -38,6 +38,12 @@ $ readelf -S main | grep -E '(plt|got)'
   [22] .got.plt          PROGBITS         0000000000601000  00001000
 {% endhighlight %}
 
+各个段的用途如下。
+
+* `.got` Global Offset Table 会通过链接器将实际函数的地址填充。
+* `.plt` Procedure Linkage Table 编辑器生成的代码，如果已经填充了 `.got.plt` 那么会直接跳转，否则会调用链接器查找对应的函数。
+* `.got.plt` 如果链接器已经完成了查找，那么就包含了实际函数地址，或值跳转到 `.plt` 地址执行查找。
+
 ### 符号表
 
 函数和变量作为符号被存在可执行文件中，同时会将不同类型的符号又放到一块，称为符号表，包括了两类：A) 常规 `.symtab` `.strtab`；B) 动态 `.dynsym` `.dynstr` 。
@@ -174,40 +180,27 @@ $ gcc test.c -o test -g
 ----- 打印程序的反汇编
 $ objdump -S test
 
-
-
-
 ----- 使用gdb调式
 $ gdb test -q
 (gdb) break main
 (gdb) run
 (gdb) disassemble
 Dump of assembler code for function main:
-   0x000000000040053d <+0>:     push   %rbp
-   0x000000000040053e <+1>:     mov    %rsp,%rbp
-=> 0x0000000000400541 <+4>:     callq  0x40052d <foobar>    此处调用的地址是固定的
-   0x0000000000400546 <+9>:     mov    $0x0,%eax
-   0x000000000040054b <+14>:    pop    %rbp
-   0x000000000040054c <+15>:    retq
-End of assembler dump.
-(gdb) disassemble foobar
-Dump of assembler code for function foobar:
-   0x000000000040052d <+0>:     push   %rbp
-   0x000000000040052e <+1>:     mov    %rsp,%rbp
-   0x0000000000400531 <+4>:     mov    $0x4005e0,%edi
-   0x0000000000400536 <+9>:     callq  0x400410 <puts@plt>  反汇编
-   0x000000000040053b <+14>:    pop    %rbp
-   0x000000000040053c <+15>:    retq
+   0x0000000000400586 <+0>:     push   %rbp
+   0x0000000000400587 <+1>:     mov    %rsp,%rbp
+=> 0x000000000040058a <+4>:     mov    $0x400638,%edi
+   0x000000000040058f <+9>:     callq  0x400490 <puts@plt> 此处调用的地址是固定的
+   0x0000000000400594 <+14>:    mov    $0x0,%eax
+   0x0000000000400599 <+19>:    pop    %rbp
+   0x000000000040059a <+20>:    retq
 End of assembler dump.
 {% endhighlight %}
 
-从上面反汇编代码可以看出，在调用 `foobar()` 时，使用的是绝对地址，`printf()` 的调用已经换成了 `puts()` ，调用的是 `puts@plt` 这个标号，位于 `0x400410`，实际上这是一个 PLT 条目，可以通过反汇编查看相应的代码，不过它代表什么意思呢？
-
-在实际的可执行程序或者共享目标文件中，GOT表在名称为.got.plt的section中，PLT表在名称为.plt的section中。
+从上面反汇编代码可以看出，调用 `puts()` 函数时，实际上调用的是 `puts@plt` 这个符号，也就是位于 `0x400490` 地址处，实际上这是一个 PLT 条目，可以通过反汇编查看相应的代码，不过它代表什么意思呢？
 
 ### PLT
 
-在通过 `objdump -S test` 命令返汇编之后，其中的 `.plt` 内容如下。
+上述会跳转到 `puts@plt` 中，可以直接通过 `objdump -S test` 命令查看反汇编，其中的 `.plt` 内容如下。
 
 {% highlight text %}
 Disassembly of section .plt:
@@ -226,15 +219,15 @@ Disassembly of section .plt:
 当然，也可以通过 `gdb` 命令进行反汇编。
 
 {% highlight text %}
-(gdb) disassemble 0x400410
+(gdb) disassemble 0x400490
 Dump of assembler code for function puts@plt:
-   0x0000000000400410 <+0>:     jmpq   *0x200c02(%rip)        # 0x601018 <puts@got.plt>   查看对应内存
-   0x0000000000400416 <+6>:     pushq  $0x0
-   0x000000000040041b <+11>:    jmpq   0x400400
+=> 0x0000000000400490 <+0>:     jmpq   *0x200b82(%rip)        # 0x601018 <puts@got.plt>
+   0x0000000000400496 <+6>:     pushq  $0x0
+   0x000000000040049b <+11>:    jmpq   0x400480
 End of assembler dump.
 {% endhighlight %}
 
-可以看到 `puts@plt` 中包含三条指令，而且可以看出，除 `PLT0(__gmon_start__@plt-0x10)` 所标记的内容，其它的所有 `PLT` 项的形式都是一样的，而且最后的 `jmp` 指令都是 `0x400400`，即 `PLT0` 为目标的；所不同的只是第一条 `jmp` 指令的目标和 `push` 指令中的数据。
+可以看到 `puts@plt` 中包含三条指令，而且可以看出，除 `PLT0(__gmon_start__@plt-0x10)` 所标记的内容，其它的所有 `PLT` 项的形式都是一样的，而且最后的 `jmp` 指令都是 `0x400480`，即 `PLT0` 为目标的；所不同的只是第一条 `jmp` 指令的目标和 `push` 指令中的数据。
 
 `PLT0` 则与之不同，但是包括 `PLT0` 在内的每个表项都占 16 个字节，所以整个 PLT 就像个数组。
 
@@ -242,17 +235,23 @@ End of assembler dump.
 
 ### GOT
 
+也就是说，上述执行的是 `jmpq *0x601018`，而 `*0x601018` 就是 `0x00400496`，就是会调转到 `0x400496` 所在的地址执行。
+
 {% highlight text %}
------ 实际等价于jmpq *0x601018 ，而*0x601018就是0x00400416，就是会调转到0x400416所在的地址执行，
 ----- 实际是顺序执行，最终会调转到0x400400
 (gdb) x/w 0x601018
-0x601018 <puts@got.plt>:        0x00400416
+0x601018 <puts@got.plt>:        0x00400496
+{% endhighlight %}
 
-(gdb) x /3i 0x400400            查看反汇编
-   0x400400:    pushq  0x200c02(%rip)         # 0x601008
-   0x400406:    jmpq   *0x200c04(%rip)        # 0x601010   跟踪进入
-   0x40040c:    nopl   0x0(%rax)
+也就是在 `puts@plt` 的代码中，没有直接执行下一条指令，而是通过一次跳转后再继续执行下一条指令，那么，为什么要多此一举？这个问题后面解释，这里接着向下看。
 
+最终会跳转到 `0x400480` 地址处，也就是 `.plt` 的第一个。
+
+### Resolve
+
+看看第一个 `.plt` 中的内容是什么。
+
+{% highlight text %}
 (gdb) b *0x400406               设置断点
 (gdb) c
 Breakpoint 2, 0x0000000000400406 in ?? ()
@@ -263,13 +262,36 @@ _dl_runtime_resolve () at ../sysdeps/x86_64/dl-trampoline.S:58
 rip            0x7ffff7df0290   0x7ffff7df0290 <_dl_runtime_resolve>
 {% endhighlight %}
 
-从上面可以看出，这个地址实际上就是顺序执行，也就是 `puts@plt` 中的第二条指令，不过正常来说这里应该保存的是 `puts()` 函数的地址才对，那为什么会这样呢？
+如上，在 `jmpq` 中设置一个断点，观察到，实际调转到了 `_dl_runtime_resolve()` 这个函数，这里，实际上就是真正链接器查找函数所在的地址，也就是 `_dl_runtime_resolve` 函数。
 
-<!--这里的功能就是 Lazy Load，也就是延迟加载，只有在需要的时候才会加载。-->原来链接器在把所需要的共享库加载进内存后，并没有把共享库中的函数的地址写到 GOT 表项中，而是延迟到函数的第一次调用时，才会对函数的地址进行定位。
+### 验证
 
-如上，在 `jmpq` 中设置一个断点，观察到，实际调转到了 `_dl_runtime_resolve()` 这个函数。
+实际上，上面所谓的多此一举是实现动态加载的关键操作，第一次的时候，是跳转到下一条，如果引用的地址已经被替换成了需要的地址，那么就可以直接跳转了。
 
-### 地址解析
+在执行完 `callq  0x400490 <puts@plt>` 指令之后，那么 `0x601018` 地址中保存的应该是最新的 `puts` 函数地址了。
+
+{% highlight text %}
+(gdb) break *0x400594
+Breakpoint 3 at 0x400594: file main.c, line 6.
+(gdb) continue
+Continuing.
+Hello World.
+
+Breakpoint 3, main () at main.c:6
+6               return 0;
+(gdb) x/w 0x601018
+0x601018 <puts@got.plt>:        0xf7a84010
+{% endhighlight %}
+
+也就是 `0xf7a84010` 地址就是真实的 `puts` 函数地址。
+
+<!--
+![elf load]({{ site.url }}/images/linux/elf-load-process.png "elf load"){: .pull-center }
+
+上图中的红线是解析过程，蓝线则是后面的调用流程。
+-->
+
+## 地址解析
 
 在 gdb 中，可以通过 `disassemble _dl_runtime_resolve` 查看该函数的反汇编，感兴趣的话可以看看其调用流程，这里简单介绍其功能。
 
@@ -277,16 +299,54 @@ rip            0x7ffff7df0290   0x7ffff7df0290 <_dl_runtime_resolve>
 
 在 `_dl_runtime_resolve()` 函数中，会解析到 `puts()` 函数的绝对地址，并保存到 `GOT` 相应的地址处，这样后续调用时则会直接调用 `puts()` 函数，而不用再次解析。
 
-![elf load]({{ site.url }}/images/linux/elf-load-process.png "elf load"){: .pull-center }
+## 安全风险
 
-上图中的红线是解析过程，蓝线则是后面的调用流程。
+如上，在 `.got.plt` 中保存的是实际已经查找到函数的地址，那么只需要修改这个段，就可以完成程序执行的跳转，也就是常见的攻击手段。
 
+> 注意，一般主持 NX 的系统中，不会同时设置 Write 和 eXecute 两个权限，也就是说，我们无法覆盖执行的节。
+
+<!--
+https://cs155.stanford.edu/papers/formatstring-1.2.pdf
+-->
+
+### 防范措施
+
+也就是所谓的 `Relocations Read-only` ，一般简称为 `RELRO` ，包括了两种。
+
+
+* `Partial RELRO` 编译时使用 `-Wl,-z,relro` 参数，
+
+<!--
+    Maps the .got section as read-only (but not .got.plt)
+    Rearranges sections to reduce the likelihood of global variables overflowing into control structures.
+
+Full RELRO (enabled with -Wl,-z,relro,-z,now):
+
+    Does the steps of Partial RELRO, plus:
+    Causes the linker to resolve all symbols at link time (before starting execution) and then remove write permissions from .got.
+    .got.plt is merged into .got with full RELRO, so you won’t see this section name.
+
+Only full RELRO protects against overwriting function pointers in .got.plt. It works by causing the linker to immediately look up every symbol in the PLT and update the addresses, then mprotect the page to no longer be writable.
+
+dl-resolve浅析
+https://xz.aliyun.com/t/6364
+-->
 
 ## 参考
 
 关于动态库的加载过程，可以参考 [动态符号链接的细节](https://github.com/tinyclub/open-c-book/blob/master/zh/chapters/02-chapter4.markdown)。
 
 <!--
+
+https://www.jianshu.com/p/57f6474fe4c6
+https://www.iteye.com/blog/jzhihui-1447570
+http://blog.chinaunix.net/uid/21471835/cid--1-list-3.html
+https://blog.csdn.net/conansonic/article/details/54634142
+https://delcoding.github.io/2018/12/dl_runtime_resolve/
+ Linux Pwn学习之ret2_dl_resolve
+https://www.por7er.com/linux-ret2-dl-resolve.html
+
+
 ELF文件的加载和动态链接过程
 http://jzhihui.iteye.com/blog/1447570
 
@@ -301,6 +361,21 @@ http://michalmalik.github.io/elf-dynamic-segment-struggles
 https://greek0.net/elf.html
 https://lwn.net/Articles/631631/
 https://www.haiku-os.org/blog/lucian/2010-07-08_anatomy_elf/
+
+
+很多不错的介绍
+https://delcoding.github.io/
+
+
+GOT and PLT for pwning.
+https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html
+
+
+https://www.cnblogs.com/pannengzhi/p/2018-04-09-about-got-plt.html
+
+
+https://github.com/tinyclub/open-c-book
+https://tinylab.gitbooks.io/cbook/zh/chapters/02-chapter4.html
  -->
 
 {% highlight text %}

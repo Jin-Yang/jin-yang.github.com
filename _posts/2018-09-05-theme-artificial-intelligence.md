@@ -65,6 +65,16 @@ sklearn更专注于预测。
 
 ## 数学基础
 
+### 微积分
+
+* [基本概念](/post/math-calculus-basic-concept.html)
+
+### 线性代数
+
+<!--
+http://www.math.uwaterloo.ca/~hwolkowi//matrixcookbook.pdf
+-->
+
 ### 概率论与数理统计
 
 * [基本概念](/post/math-probability-basic-concept.html)
@@ -78,12 +88,6 @@ sklearn更专注于预测。
 * [似然估计](/post/math-statistics-likelihood-function-introduce.html)
 * [核密度函数](/post/math-statistics-kernel-density-estimates-introduce.html)
 * [熵概念简介](/post/artificial-intelligence-entropy-concept-introduce.html)
-
-### 线性代数
-
-<!--
-http://www.math.uwaterloo.ca/~hwolkowi//matrixcookbook.pdf
--->
 
 ### 优化算法
 

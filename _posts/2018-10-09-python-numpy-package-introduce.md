@@ -65,6 +65,69 @@ data[0:2, 0]
 data.max(axis=0)
 {% endhighlight %}
 
+## linalg
+
+在 Numpy 中的 `linalg` 模块包含了线性代数相关的函数，可以用来计算逆矩阵、特征值、线性方程组以及行列式等。
+
+### 逆矩阵
+
+需要保证矩阵是方阵且可逆，否则会抛出 `LinAlgError` 异常。
+
+{% highlight text %}
+>>> a = np.mat([[4, 7], [2, 6]])
+>>> b = np.linalg.inv(a)
+>>> b * a
+{% endhighlight %}
+
+最后可以通过 `b * a` 验证结果是否为单位矩阵。
+
+### 线性方程组
+
+可以求解如 $Ax = b$ 的线性方程组。
+
+{% highlight text %}
+>>> A = np.mat([[1, -2, 1], [0, 2, -8], [-4, 5, 9]])
+>>> b = np.array([0, 8, -9])
+>>> x = np.linalg.solve(A, b)
+>>> np.dot(A, x)
+{% endhighlight %}
+
+<!--
+https://www.cnblogs.com/xieshengsen/p/6836430.html
+-->
+
+### 其它
+
+#### array VS. mat
+
+在生成矩阵时，要求的格式不同，其中 `array()` 只能使用列表，而 `mat()` 可以使用字符串表示 (可以通过分号 `;` 或者逗号 `,` 分割)。
+
+{% highlight text %}
+>>> a = np.mat("1 2; 3 4")
+>>> b = np.mat([[1, 2], [3, 4]])
+>>> c = np.array([[1, 2], [3, 4]])
+{% endhighlight %}
+
+当然，生成的类型也不同，分别是 `matix` 以及 `array` 。
+
+另外，比较关键的是计算矩阵的乘法，除了线性代数中严格的乘法定义，`numpy` 还支持对应位的乘积，也就是函数 `multiply()` ，两者的 **默认行为** 是不同的。
+
+* `mat()` 矩阵乘积可以使用星号 `*` 或 `.dot()` 计算，对应位相乘则需要显示调用 `multiply()` 。
+* `array()` 中的星号 `*` 与 `multiply()` 相同，计算矩阵乘积需要显示调用 `.dot()` 。
+
+使用如上创建的矩阵，对应的结果如下。
+
+{% highlight text %}
+>>> np.multiply(a, b)
+matrix([[ 1,  4],
+        [ 9, 16]])
+>>> a*b
+matrix([[ 7, 10],
+        [15, 22]])
+>>> a.dot(b)
+matrix([[ 7, 10],
+        [15, 22]])
+{% endhighlight %}
 
 ## NDArray
 

@@ -82,7 +82,10 @@ int zslRandomLevel(void) {
 
 一般在游戏中会有一个排名，通过跳表可以很容易实现相关的功能，在计算排名次序时，与在跳表中查找的时间复杂度是一样的，仍然是 `O(lgN)`，而对于二叉树，貌似查找排名只能按照顺序遍历的方式来统计。
 
-
+<!--
+游戏排行榜 – 基于skiplist计算rank排名
+https://yuerblog.cc/2019/02/13/skiplist-rank/
+-->
 
 <!--
 ### 插入
@@ -101,7 +104,6 @@ SkipList 是一种概率算法，非常依赖于生成的随机数，不能使�
 
 https://www.jianshu.com/p/fcd18946994e
 https://juejin.im/post/5cb885a8f265da03973aa8a1
-https://yuerblog.cc/2019/02/13/skiplist-rank/
 
 
 

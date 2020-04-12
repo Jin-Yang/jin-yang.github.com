@@ -19,6 +19,12 @@ https://www.freebuf.com/news/200207.html
 
 https://zhuanlan.zhihu.com/p/25816426
 https://zhuanlan.zhihu.com/p/25892385
+
+https://github.com/pwndbg/pwndbg
+https://github.com/Gallopsled/pwntools
+
+
+https://www.freebuf.com/news/155971.html
 -->
 
 {% highlight text %}
