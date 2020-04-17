@@ -16,9 +16,12 @@ description:
 * [最小堆](/post/algorithm-min-heap-basic-introduce.html)
 * [SkipList](/post/linux-program-structure-skiplist-introduce.html)
 
-
-
 ## 排序算法
+
+<!--
+十大经典的排序算法
+https://github.com/hustcc/JS-Sorting-Algorithm
+-->
 
 最基础的算法。
 
@@ -74,12 +77,10 @@ $\omega$ 下界 (not tight)，大于的意思。
 
 ## 其它
 
-* [背包问题](/post/algorithm-knapsack-problem-introduce.html)
+* [背包问题](/post/algorithm-knapsack-problem-introduce.html) 很经典或者入门的动态规划问题，包括了基本及其扩展。
+* [二分查找](/post/algorithm-binary-search-introduce.html) 一个很简单方案，但是会涉及到很多的细节。
 
 <!--
-Creating Good Looking Diagrams Using Inkscape
-http://www.ioncannon.net/utilities/123/10-tips-for-creating-good-looking-diagrams-using-inkscape/
-
 关于很多算法的Python实现，也同时包括了其它的一些语言的实现
 https://github.com/TheAlgorithms/Python
 
@@ -88,7 +89,6 @@ https://github.com/julycoding/The-Art-Of-Programming-By-July
 
 https://github.com/alrightchiu/SecondRound
 -->
-
 
 {% highlight text %}
 {% endhighlight %}

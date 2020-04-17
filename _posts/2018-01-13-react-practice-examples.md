@@ -609,7 +609,8 @@ React Native的生命周期就介绍完了，其中最上面的虚线框和右�
 
 ## 参考
 
-这里大部分是参考阮一峰的 [React 入门实例教程](http://www.ruanyifeng.com/blog/2015/03/react.html) 。
+* 这里大部分是参考阮一峰的 [React 入门实例教程](http://www.ruanyifeng.com/blog/2015/03/react.html) 。
+* [入门教程: 认识 React](https://zh-hans.reactjs.org/tutorial/tutorial.html) 据说是不需要任何前置知识的。
 
 
 <!--
@@ -645,6 +646,9 @@ https://github.com/MacKentoch/react-director-admin-template
 https://github.com/rafaelhz/react-material-admin-template
 https://github.com/jtg2078/campaign-admin
 https://github.com/vaclav-zeman/dashboard-react-template
+
+
+
 -->
 
 {% highlight text %}

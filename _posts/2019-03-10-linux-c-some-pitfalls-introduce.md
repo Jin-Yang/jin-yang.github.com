@@ -12,7 +12,7 @@ description:
 
 <!-- more -->
 
-## Tip #1
+## while
 
 如下代码输出内容是什么。
 
@@ -38,7 +38,9 @@ int main(void)
 
 在执行 continue 的时候，总会判断是否满足条件，也就是 `do ... while(cont)` 的 `while(cont)` 中，而非 `do` 语句处。
 
-## Tips #2
+## switch
+
+### 变量定义
 
 {% highlight c %}
 #include <stdio.h>
@@ -63,9 +65,42 @@ int main(void)
 
 类似与其它的条件或者循环的分支，`switch` 语句同样会创建一个作用域，不过对与上述的变量无法赋值，只是做了声明，如果有调用函数实际上也不会调用执行。
 
-所以，上述的输出一般是 0 ，也可能会是其它的值。
+所以，上述的输出一般是 `0` ，也可能会是其它的值。
 
 另外，在 `case` 语句中也可以使用 `case 1...10` 类似的范围语句。
+
+### 默认分支
+
+{% highlight c %}
+#include <stdio.h>
+
+int main(void)
+{
+        int i = 0;
+
+        switch (i) {
+        default:
+                puts("default");
+        case 1:
+                puts("case 1");
+                break;
+        case 2:
+                puts("case 2");
+        }
+
+        return 0;
+}
+{% endhighlight %}
+
+上述会输出 `default` 以及 `case 1` ，实际上在 C 中，会依次判断存在值是否满足，当不满足的时候跳转到 `default` 并按照代码中的顺序继续执行，直到遇到 `break` 或者语句结束。
+
+可以将 `case` 和 `default` 视为 `goto` 跳转的标签地址。
+
+## 指针
+
+### 数组指针
+
+通过 `int (*arr)[10]` 定义一个数组大小为 10 的数组指针，括号是必须写的，不然就是指针数组。
 
 ## 参考
 
