@@ -14,13 +14,136 @@ description: 抽象地说，基本上有序列的地方就可以应用树，因�
 
 ## 简介
 
-二叉树 (Binary tree) 每个节点最多只有两个分支的树结构，其分支通常被称为 "左子树" 和 "右子树" 。二叉搜索树 (Binary Search Tree) 是二叉树的一种，对于所有节点，其左子树的值小于根结点的值，右子树的值大于根结点的值。
+Tree 通常可以用来描述层次结构，在一些回溯算法中也有应用。
 
-查找、插入和删除的效率与数的高度 ```log n``` 相关，最坏可能达到 ```O(n)``` ，如下是其最坏情况，几乎达到了线性查找。
+![tree introduce]({{ site.url }}/images/structure/tree-basic-introduce.svg "tree introduce"){: .pull-center width="90%" }
 
-![tree]({{ site.url }}/images/structure/tree_unbalanced_bst.jpg "tree"){: .pull-center }
+如上是一个树，一般会通过指针维护各个节点之间的上下级关系，包括了节点 (Node/Vertex) 以及边 (Edge)，常用的概念如下。
 
-为了保证树的高度，也就出现了如下的平衡二叉树，例如 AVL Tree、Red-Black Tree。
+* Degree 度，也就是一个 Node 的子树的个数，例如 A 为 3 ，F 为 2 。
+* Root 根节点，其父节点为 NULL ，如上图中的 A 节点。
+* Leaf 叶子节点，没有子节点或者子树的节点，例如 J、K、L、M、N 节点。
+* Siblings 兄弟节点，拥有相同的父节点，例如 B、C、D 节点。
+* Level 层级，通常是从根节点开始计算。
+* Depth 深度，从根节点到该节点的最长简单路径的边数，例如 B 为 1，F 为 2 。
+* Height 高度，从该节点到叶子节点的最长简单路径的边数，例如 B 为 2，F 为 1 。
+
+另外，将最深的叶子节点深度作为树的深度，根的高度就是树的高度，也就是说，树的高度和深度是相同的，通常使用的是高度。
+
+## 二叉树 Binary Tree
+
+二叉树每个节点最多只有两个分支的树结构，对应的节点通常被称为 "左子树" 和 "右子树" ，两者的顺序不能颠倒。
+
+### 特殊二叉树
+
+有两类特殊的二叉树。
+
+#### 满二叉树 (Full Binary Tree)
+
+也称 Perfect Binary Tree，满足 A) 所有内部节点都有两个子节点；B) 所有叶子节点 level 相同。
+
+这样，当节点的层数为 `n` 时，总共有 `2^n - 1` 个节点。
+
+#### 完全二叉树 (Complete Binary Tree)
+
+对于 `n` 层的二叉树，除了第 `n` 层外，其它层的节点数都达到了最大，而且第 `n` 层的叶子节点从左到右排布。
+
+### 遍历方式
+
+对于二叉树可以通过递归的方式进行访问，递归时的嵌套深度一般为树的高度。
+
+![tree traversal]({{ site.url }}/images/structure/tree-traversal-method.svg "tree traversal"){: .pull-center width="90%" }
+
+所谓的顺序，其实就是在访问时，当前节点所处的位置，例如前序 `V` 在最开始，顺序 `V` 在中间，后序 `V` 在最后。
+
+在实现时可以使用递归 (Recursive) 或者迭代 (Iterative) 实现。
+
+#### Pre-Order
+
+递归实现的 C 代码如下。
+
+{% highlight text %}
+void PreOrder(struct TreeNode *curr)
+{
+	if (curr == NULL)
+		return;
+	printf("%d", curr->value);  // V
+	PreOrder(curr->left);       // L
+	PreOrder(curr->right);      // R
+}
+{% endhighlight %}
+
+示例如下。
+
+![tree traversal pre-order]({{ site.url }}/images/structure/tree-traversal-pre-order.svg "tree traversal pre-order"){: .pull-center width="35%" }
+
+#### In-Order
+
+递归实现的 C 代码如下。
+
+{% highlight text %}
+void InOrder(struct TreeNode *curr)
+{
+	if (curr == NULL)
+		return;
+	InOrder(curr->left);        // L
+	printf("%d", curr->value);  // V
+	InOrder(curr->right);       // R
+}
+{% endhighlight %}
+
+
+
+示例如下。
+
+![tree traversal post-order]({{ site.url }}/images/structure/tree-traversal-post-order.svg "tree traversal post-order"){: .pull-center width="35%" }
+
+#### Post-Order
+
+递归实现的 C 代码如下。
+
+{% highlight text %}
+void PostOrder(struct TreeNode *curr)
+{
+	if (curr == NULL)
+		return;
+	PostOrder(curr->left);      // L
+	PostOrder(curr->right);     // R
+	printf("%d", curr->value);  // V
+}
+{% endhighlight %}
+
+示例如下。
+
+![tree traversal in-order]({{ site.url }}/images/structure/tree-traversal-in-order.svg "tree traversal in-order"){: .pull-center width="35%" }
+
+## 二叉搜索树 Binary Search Tree
+
+二叉树的一种，对于所有节点，其左子树的值小于根结点的值，右子树的值大于根结点的值，当采用中序遍历的时候，得出的结果就是有序序列。
+
+### 查找
+
+BST 满足上述的特性，那么只需要将要查找的值与当前节点进行判断，然后根据结果是走左分支还是右分支即可。
+
+
+
+
+
+查找、插入和删除的效率与数的高度 `n` 相关，一般是 `log n` ，最坏可能达到 `O(n)` ，也就是降级成链表。
+
+### 线索二叉树 (Threaded Binary Tree)
+
+在左指针或者右指针为空的时候，将指针充分利用，从而优化遍历的效率，简单来说如下。
+
+原本为空的右指针指向该节点在中序序列中的后继，原本为空的左指针指向该节点在中序序列的前驱。
+
+
+从而可以线性遍历二叉树，比递归的中序遍历要更快一些。
+
+
+
+
+为了保证树的高度，也就出现了如下的平衡二叉树，例如 AVL Tree、Red-Black Tree，两者都是针对可能出现的不同场景进行调整，从而达到了平衡状态，但是两者处理不平衡状态都不太好记忆，而且死板。
 
 ## AVL Tree
 
@@ -296,10 +419,10 @@ HASH_T_VAL hash_get(struct hash_table *t, HASH_T_KEY key)
 
 但它在二叉查找树的基础上增加了着色和相关的性质使得红黑树相对平衡，这主要是通过红黑树的 5 条性质保证：
 
-1. 每个结点要么是红的，要么是黑的。  
-2. 根结点是黑的。  
-3. 每个叶结点 (叶结点即指树尾端NIL指针或NULL结点) 是黑的。  
-4. 如果一个结点是红的，那么它的两个子节点都是黑的。  
+1. 每个结点要么是红的，要么是黑的。
+2. 根结点是黑的。
+3. 每个叶结点 (叶结点即指树尾端NIL指针或NULL结点) 是黑的。
+4. 如果一个结点是红的，那么它的两个子节点都是黑的。
 5. 对于任一结点而言，其到叶结点树尾端NIL指针的每一条路径都包含相同数目的黑结点。
 
 通过这 5 条性质使得一棵 N 个结点是红黑树始终保持了 logN 的高度；其中上述的 "叶结点" 或 "NULL结点" 不包含数据而只充当树的结束标志，这些结点通常会在绘图中被省略。

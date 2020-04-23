@@ -16,12 +16,20 @@ description:
 * [最小堆](/post/algorithm-min-heap-basic-introduce.html)
 * [SkipList](/post/linux-program-structure-skiplist-introduce.html)
 
-## 排序算法
+## 算法基础
 
 <!--
 十大经典的排序算法
 https://github.com/hustcc/JS-Sorting-Algorithm
 -->
+
+### 排序算法
+
+
+### 基本方法
+
+
+迭代、递归、分治、动态规划
 
 最基础的算法。
 
