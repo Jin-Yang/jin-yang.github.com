@@ -1,5 +1,5 @@
 ---
-title: 线性回归
+title: 线性回归 贝叶斯介绍
 layout: post
 comments: true
 usemath: true
@@ -9,71 +9,7 @@ keywords:
 description:
 ---
 
-
 <!-- more -->
-
-## 线性回归
-
-简单来说，现在有一批的数据，示例如下。
-
-![linear regression example data]({{ site.url }}/images/ai/linear-regression-example-data.png "linear regression example data"){: .pull-center }
-
-可以通过如下代码生成如上的测试数据。
-
-{% highlight python %}
-import numpy as np
-import matplotlib.pyplot as pylab
-
-x = np.arange(0.0, 10.1, 0.1)
-y = (2 * x - 5) + np.random.normal(scale=2.0**0.5, size=x.size)
-
-pylab.scatter(x, y)
-pylab.xlabel('x', fontsize=15)
-pylab.ylabel('y', fontsize=15)
-pylab.title('What our data looks like', fontsize=12)
-pylab.show()
-{% endhighlight %}
-
-我们希望通过这些数据来拟合出一条直线。
-
-$$y=\beta_1x+\beta_0$$
-
-也就是要确定 $\beta_1$ 和 $\beta_0$ 的值，一般来说，最常用的计算方法是获取这些数据最小的 Root Mean Squared Error, RMSE ，也即。
-
-$$\beta_1,\beta_0=argmin_{\beta_1,\beta_0}\sum_{i=1}^{N}(y_i - (\beta_1 x_i + \beta_0))^2$$
-
-### 普通最小二乘法
-
-如上所述，也就是找到一条参数对应的曲线，使得所有数据具有最小均方根误差 (RMSE)，可以直接使用 `Scikit-Learn` 中的 `LinearRegression` 模块，完整的代码如下。
-
-{% highlight python %}
-import numpy as np
-import matplotlib.pyplot as pylab
-from sklearn.linear_model import LinearRegression
-
-x = np.arange(0.0, 10.1, 0.1)
-y = (2 * x - 5) + np.random.normal(scale=2.0**0.5, size=x.size)
-
-lr = LinearRegression()
-lr.fit(x.reshape(-1, 1), y)
-
-pylab.scatter(x,y)
-pylab.plot(x, lr.coef_[0]*x + lr.intercept_, color='r')
-pylab.xlabel('x',fontsize=18)
-pylab.ylabel('y',fontsize=18)
-pylab.show()
-{% endhighlight %}
-
-在如上的处理时，sklearn 要求输入的特征必须是二维数组的类型，但目前只有 1 个特征，需要用 `reshape()` 转行成二维数组的类型。
-
-最终得到的直线如下所示。
-
-![linear regression example]({{ site.url }}/images/ai/linear-regression-scikit-learn-example.png "linear regression example"){: .pull-center }
-
-实际上这里缺少一个度量，也就是 置信界限 (confidence bounds)，当某个点的数据比较多时，认为这个范围内可信度大，而当数据较少时则不确定性增加。
-
-有点类似于下图。
-
 
 接下来介绍，如何通过贝叶斯进行线性估计。
 
@@ -229,24 +165,6 @@ $$y_i=\beta_1 x_i + \epsilon_i \ where \ \beta_1=4 \ and \ \epsilon_i \sim N(\mu
 $$\hat{y_i}=\hat{\beta_1} x_i + \epsilon_i \ where \ \hat{\beta_1}\in [0, 8] \ and \ \epsilon_i \sim N(\mu=0, \theta^2=1)$$
 
 可以通过如下的代码得到对应的结果。
-
-
-
-<!--
-https://towardsdatascience.com/unraveling-bayesian-dark-magic-non-bayesianist-implementing-bayesian-regression-e4336ef32e61
-
-https://blog.csdn.net/lanchunhui/article/details/50172659
-https://blog.csdn.net/u010329855/article/details/75281346
-
-https://cloud.tencent.com/developer/news/114376
-
-
-这里的公式有如下的假设：数据点 (x,y) 是 Independent and Identically Distributed 独立同分布的。
-
-最大似然估计(Maximum likelihood estimation)
-
-https://www.cnblogs.com/liliu/archive/2010/11/22/1883702.html
--->
 
 
 

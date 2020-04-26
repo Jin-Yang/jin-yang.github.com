@@ -646,9 +646,6 @@ https://github.com/MacKentoch/react-director-admin-template
 https://github.com/rafaelhz/react-material-admin-template
 https://github.com/jtg2078/campaign-admin
 https://github.com/vaclav-zeman/dashboard-react-template
-
-
-
 -->
 
 {% highlight text %}

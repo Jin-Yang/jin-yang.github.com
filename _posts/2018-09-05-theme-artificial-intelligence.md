@@ -104,7 +104,8 @@ http://www.math.uwaterloo.ca/~hwolkowi//matrixcookbook.pdf
 
 其实，两类问题本质上讲是一样的，都是通过学习已有数据，构建模型，然后对未知数据进行预测，如果是连续的数值预测就是回归问题，若是离散的类标号预测，那么就变成了分类问题。
 
-* [线性回归](/post/machine-learning-algorithms-linear-regression-introduce.html)
+* [线性回归 \-\- 基本介绍](/post/machine-learning-algorithms-linear-regression-basic-introduce.html)
+* [线性回归 \-\- 贝叶斯方法](/post/machine-learning-algorithms-linear-regression-bayes-introduce.html)
 * [逻辑回归](/post/machine-learning-algorithms-logistic-regression-introduce.html)
 * [决策树](/post/artificial-intelligence-decision-tree-introduce.html)
 
@@ -269,6 +270,9 @@ https://www.quantstart.com/articles/Bayesian-Statistics-A-Beginners-Guide
 
 列举了数学公式中一些常见的表示符号
 https://zh.wikipedia.org/wiki/%E6%95%B0%E5%AD%A6%E7%AC%A6%E5%8F%B7%E8%A1%A8
+
+数理统计学简史
+https://github.com/yuanliangding/books/blob/master/%E6%95%B0%E5%AD%A6-%E5%85%B6%E5%AE%83-%E6%95%B0%E5%AD%A6%E5%8F%B2/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1%E5%AD%A6%E7%AE%80%E5%8F%B2.pdf
 -->
 
 {% highlight text %}

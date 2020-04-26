@@ -1,5 +1,5 @@
 ---
-title: Python 与 Curses
+title: NCurses 使用
 layout: post
 comments: true
 language: chinese
@@ -47,50 +47,6 @@ The lower right-hand corner of the rectangle to be displayed in the pad is calcu
 {% endhighlight %}
 
 除了上述的库之外，可以从 [github mirro](https://github.com/mirror/ncurses) 下载代码，其中包含了很多的测试或者示例代码。
-
-### curses.panel
-
-如下是一个简单的示例，会绘制两个 panel ，而且第二个 panel 会自动移动。
-
-{% highlight python %}
-from time import sleep
-import curses, curses.panel
-
-def make_panel(h, l, y,x, str):
-    win = curses.newwin(h, l, y, x)
-    win.erase()
-    win.box()
-    win.addstr(2, 2, str)
-
-    panel = curses.panel.new_panel(win)
-    return win, panel
-
-def test(stdscr):
-    try:
-        curses.curs_set(0)
-    except:
-        pass
-
-    stdscr.box()
-    stdscr.addstr(2, 2, "panels everywhere")
-    win1, panel1 = make_panel(10,12, 5,5, "Panel 1")
-    win2, panel2 = make_panel(10,12, 8,8, "Panel 2")
-    curses.panel.update_panels(); stdscr.refresh()
-    sleep(1)
-
-    panel1.top(); curses.panel.update_panels(); stdscr.refresh()
-    sleep(1)
-
-    for i in range(20):
-        panel2.move(8, 8+i)
-        curses.panel.update_panels(); stdscr.refresh()
-        sleep(0.1)
-
-    sleep(1)
-
-if __name__ == '__main__':
-    curses.wrapper(test)
-{% endhighlight %}
 
 ## 异步程序
 
@@ -314,7 +270,6 @@ libev+ncurse
 https://lists.gnu.org/archive/html/bug-ncurses/2015-06/msg00046.html
 ncurse贪吃蛇
 http://www.cnblogs.com/eledim/p/4857557.html
-
 http://www.cnblogs.com/starof/p/4703820.html
 
 
@@ -340,8 +295,56 @@ http://keyvanfatehi.com/2011/08/02/Asynchronous-c-programs-an-event-loop-and-ncu
 BSD Games is a collection of the classic text based games distributed with *BSD
 http://wiki.linuxquestions.org/wiki/BSD_games
 
-有趣！10个你不得不知的Linux终端游戏 
+有趣！10个你不得不知的Linux终端游戏
 http://www.freebuf.com/articles/others-articles/124743.html
+
+
+
+
+
+### curses.panel
+
+如下是一个简单的示例，会绘制两个 panel ，而且第二个 panel 会自动移动。
+
+{% highlight python %}
+from time import sleep
+import curses, curses.panel
+
+def make_panel(h, l, y,x, str):
+    win = curses.newwin(h, l, y, x)
+    win.erase()
+    win.box()
+    win.addstr(2, 2, str)
+
+    panel = curses.panel.new_panel(win)
+    return win, panel
+
+def test(stdscr):
+    try:
+        curses.curs_set(0)
+    except:
+        pass
+
+    stdscr.box()
+    stdscr.addstr(2, 2, "panels everywhere")
+    win1, panel1 = make_panel(10,12, 5,5, "Panel 1")
+    win2, panel2 = make_panel(10,12, 8,8, "Panel 2")
+    curses.panel.update_panels(); stdscr.refresh()
+    sleep(1)
+
+    panel1.top(); curses.panel.update_panels(); stdscr.refresh()
+    sleep(1)
+
+    for i in range(20):
+        panel2.move(8, 8+i)
+        curses.panel.update_panels(); stdscr.refresh()
+        sleep(0.1)
+
+    sleep(1)
+
+if __name__ == '__main__':
+    curses.wrapper(test)
+{% endhighlight %}
 -->
 
 {% highlight text %}
