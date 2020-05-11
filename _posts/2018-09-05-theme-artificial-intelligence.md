@@ -258,7 +258,6 @@ https://zhuanlan.zhihu.com/p/34071776
 
 http://dreamrunner.org/blog/2014/06/28/qian-tan-memory-reordering/
 https://www.digitalocean.com/community/tutorials/a-guide-to-time-series-forecasting-with-prophet-in-python-3
-https://www.analyticsvidhya.com/blog/2017/09/common-machine-learning-algorithms/
 https://facebook.github.io/prophet/docs/quick_start.html#python-api
 https://mc-stan.org/docs/2_19/stan-users-guide/linear-regression.html
 
@@ -273,6 +272,8 @@ https://zh.wikipedia.org/wiki/%E6%95%B0%E5%AD%A6%E7%AC%A6%E5%8F%B7%E8%A1%A8
 
 数理统计学简史
 https://github.com/yuanliangding/books/blob/master/%E6%95%B0%E5%AD%A6-%E5%85%B6%E5%AE%83-%E6%95%B0%E5%AD%A6%E5%8F%B2/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1%E5%AD%A6%E7%AE%80%E5%8F%B2.pdf
+
+
 -->
 
 {% highlight text %}

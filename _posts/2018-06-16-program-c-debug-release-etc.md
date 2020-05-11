@@ -305,10 +305,6 @@ while true ; do  echo -e "HTTP/1.1 200 OK\n\n $(date)" | nc -l -p 1500  ; done
 
 
 
-
-关于AK/SK介绍
-https://bbs.huaweicloud.com/blogs/079b918999c111e7b8317ca23e93a891
-
 https://github.com/jobbole/awesome-c-cn
 -->
 

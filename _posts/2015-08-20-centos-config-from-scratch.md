@@ -218,8 +218,7 @@ inkscape 用于绘制矢量图，另一个比较简单的是 [xfig](http://www.x
 
 #### Chrome
 
-可以参考 [Google Chrome 51 Released – Install on RHEL/CentOS 7/6 and Fedora 23-15](http://www.tecmint.com/install-google-chrome-on-redhat-centos-fedora-linux/)
-
+也可以从 [www.google.cn](https://www.google.cn/chrome/) 上下载 RPM 安装即可。
 
 ### CHM 阅读器
 

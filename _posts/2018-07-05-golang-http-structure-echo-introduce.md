@@ -38,6 +38,64 @@ MethodOverride
 
 注意: 由于在这个级别路由还没有执行，所以这个级别的中间件不能调用任何 `echo.Context` 的 API。
 
+## 其它
+
+### 参数获取
+
+#### 表单
+
+HTML 提供的默认表单，可以使用如下方式。
+
+{% highlight text %}
+curl -X POST http://127.1:1323/v1/hello -d 'name=Andy' -d 'email=andy@foobar.com'
+{% endhighlight %}
+
+在 echo 中可以通过 `c.FormValue("name")` 获取。
+
+#### 参数
+
+在 URL 中，直接以 `?name=Andy&email=andy@foobar.com` 格式提交请求，例如：
+
+{% highlight text %}
+curl -X GET 'http://127.1:1323/v1/hello?name=Andy&email=andy@foobar.com'
+{% endhighlight %}
+
+在 echo 中可以通过 `c.QueryParam("name")` 获取。
+
+#### JSON
+
+也就是发送的数据为 JSON 格式。
+
+{% highlight text %}
+curl -X POST http://127.1:1323/v1/hello -H 'Content-Type: application/json' \
+	-d '{"name":"Andy","email":"andy@foobar.com"}'
+{% endhighlight %}
+
+可以通过如下方式读取并返回 JSON 数据格式。
+
+{% highlight text %}
+msg, err := ioutil.ReadAll(r.Body)
+if err != nil {
+	return err
+}
+
+if len(msg) == 0 {
+	return c.String(http.StatusOK, "Hello, World!")
+}
+
+var body map[string]interface{}
+if err = json.Unmarshal(msg, &body); err != nil {
+	return err
+}
+body["method"] = r.Method
+return c.JSON(http.StatusOK, body)
+{% endhighlight %}
+
+#### Bind
+
+可以通过 Bind 函数直接将接收到的数据进行转换，默认的会转换 json、xml、表单、URL 等格式的数据，也可以自己定义。
+
+
 
 ## 参考
 

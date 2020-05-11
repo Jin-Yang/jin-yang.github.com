@@ -4470,15 +4470,6 @@ https://github.com/hephaest0s/usbkill
 
 查找敏感信息
 https://www.freebuf.com/articles/system/23993.html
-
-通过使用 Access Key ID(AK)/Secret Access Key(SK) 加密的方法来验证某个请求发送者身份。
-
-在调用 API 时，需要对参数以及 AK 使用 SK 进行签名，生成一个签名信息；服务端会根据 AK 查询到预制的 SK 进行签名，并确保一致。
-
-所以，需要保证 Secure Key 不能在网络中传输，以及不能在不受信任的位置存放。
-
-https://insights.thoughtworks.cn/api-2/
-
 c++ pitfall
 
 

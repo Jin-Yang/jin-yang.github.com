@@ -50,7 +50,7 @@ The lower right-hand corner of the rectangle to be displayed in the pad is calcu
 
 ## 异步程序
 
-默认来说，当从键盘获取输入时，会阻塞读取，如下一步步介绍异步实现调用。
+默认来说，当从键盘获取输入时会阻塞读取，在获取键盘数据时也可以通过异步方式读取。
 
 ### 同步程序
 
@@ -62,32 +62,36 @@ The lower right-hand corner of the rectangle to be displayed in the pad is calcu
 
 int main(void)
 {
-  initscr();
-  crmode();
-  noecho();
-  clear();
+	char c;
 
-  char c;
-  while((c = getch()) != 'q'){
-    if(c == 'w')
-      mvaddch(20, 20, '!');
-    else if(c == 'e')
-      mvaddch(20, 20, '0');
-    else if(c == 'r')
-      mvaddch(20, 20, 't');
-  }
+	initscr();
+	crmode();
+	noecho();
+	clear();
 
-  move(20, 21);
-  addstr("do other thing");
-  getch();
+	while((c = getch()) != 'q'){
+		if(c == 'w')
+			mvaddch(20, 20, '!');
+		else if(c == 'e')
+			mvaddch(20, 20, '0');
+		else if(c == 'r')
+			mvaddch(20, 20, 't');
+	}
 
-  endwin();
-  return EXIT_SUCCESS;
+	move(20, 21);
+	addstr("do other thing");
+	getch();
+
+	endwin();
+	return EXIT_SUCCESS;
 }
 {% endhighlight %}
 
-上述程序会一直阻塞在 `getch()` 函数中，当输入 `q` 后会退出 `while` 循环，然后才执行 `addstr()` 函数。如果要实现异步调用，可以通过 A) 设置输入`O_ASYNC`位；B) 使用 `aio_read()` 实现。
+上述程序会一直阻塞在 `getch()` 函数中等待输入，在输入 `q` 后会退出 `while` 循环，然后才会执行 `addstr()` 函数，在读取终端输入时，可以采用异步输入。
 
+例如，A) 设置输入`O_ASYNC`位；B) 使用 `aio_read()` 实现；C) 使用类似 `select` `poll` `epoll` 的异步 IO 接口。
+
+<!--
 ### O_ASYNC
 
 接下来，看看如何通过设置 `O_ASYNC` 标志位来实现异步读取。
@@ -237,24 +241,22 @@ int main(void)
 {% endhighlight %}
 
 可以通过 `gcc -o main main.c -Wall -lncurses -lrt` 编译。
+-->
 
 ### 异步函数
 
-实际上，也可以直接使用类似 select()、poll()、epoll() 函数。
+直接使用 `select()`、`poll()`、`epoll()` 函数，或者使用类似 `libev` 的异步 IO 框架。
 
 
 ## 参考
 
-可以查看下官方的介绍文档 [Curses Programming with Python](https://docs.python.org/2/howto/curses.html)，以及 Python 中的 curses 模块，可查看 [Terminal handling for character-cell displays](https://docs.python.org/2/library/curses.html) 。
+* 可以查看下官方的介绍文档 [Curses Programming with Python](https://docs.python.org/2/howto/curses.html)，以及 Python 中的 curses 模块，可查看 [Terminal handling for character-cell displays](https://docs.python.org/2/library/curses.html) 。
+* 关于 C 语言中 ncurses 的相关内容可以参考 [NCURSES Programming HOWTO](http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/) 文档，以及官方网站 [www.gnu.org](https://www.gnu.org/software/ncurses/) 中的介绍。
 
 <!--
 Terminal handling for character-cell displays
 https://docs.python.org/dev/library/curses.html
--->
 
-关于 C 语言中 ncurses 的相关内容可以参考 [NCURSES Programming HOWTO](http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/) 文档，以及官方网站 [www.gnu.org](https://www.gnu.org/software/ncurses/) 中的介绍。
-
-<!--
 A panel stack extension for curses
 https://docs.python.org/dev/library/curses.panel.html
 
@@ -266,8 +268,8 @@ hughm.cs.ukzn.ac.za/~murrellh/os/notes/ncurses.html
 
 http://www.cnblogs.com/nzhl/p/5603600.html
 
-libev+ncurse
-https://lists.gnu.org/archive/html/bug-ncurses/2015-06/msg00046.html
+
+
 ncurse贪吃蛇
 http://www.cnblogs.com/eledim/p/4857557.html
 http://www.cnblogs.com/starof/p/4703820.html
@@ -345,7 +347,31 @@ def test(stdscr):
 if __name__ == '__main__':
     curses.wrapper(test)
 {% endhighlight %}
+
+
+
+## Ncurses 教程
+
+
+https://github.com/brenns10/tetris
+https://github.com/mellowcandle/bitwise
+https://github.com/jvns/snake
+
+termios 提供了一系列的 API 来操作终端，使其进入到 raw 模式，而默认的模式实际上提供了很多的功能，例如行缓存、字符自动回显、行编辑(例如删除字符)、`Ctrl-C` 发送 SIGINT 信号等等。
+
+当进入到 raw 模式后，如果需要上述的功能，那么就只能应用自己实现。
+
+而 curses 库实际上提供了基于终端的 UI 编程的方案，对于一些简单的操作可以通过 termios 自己实现，一些复杂的，还是建议考虑 curses 或者 New Curses(Ncurses) 。
+
+https://blog.csdn.net/wangzi11322/article/details/45866687
+https://blog.csdn.net/lizuobin2/article/details/51775277
 -->
+
+## 参考
+
+* [Ncurses Programming Guide](http://www.cs.ukzn.ac.za/~hughm/os/notes/ncurses.html)
+* [NCURSES Programming HOWTO](https://www.tldp.org/HOWTO/html_single/NCURSES-Programming-HOWTO/)
+* [Writing Programs with NCURSES](https://invisible-island.net/ncurses/ncurses-intro.html)
 
 {% highlight text %}
 {% endhighlight %}

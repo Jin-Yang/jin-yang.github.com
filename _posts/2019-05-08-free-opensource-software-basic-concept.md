@@ -4,8 +4,8 @@ layout: post
 comments: true
 language: chinese
 usemath: true
-category: [free,opensourcep,software]
-keywords: stan
+category: [linux]
+keywords: free,opensourcep,software]
 description:
 ---
 

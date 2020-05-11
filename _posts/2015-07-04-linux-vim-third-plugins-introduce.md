@@ -27,7 +27,7 @@ Vim 是一个功能强大、高度可定制的文本编辑器，在 Vi 的基础
   1. YouCompleteMe +++ visual assist for vim
   2. Deoplete      --- asynchronous completion framework
   3. UltiSnips     +++ ultimate snippets
-  4. Zen Coding    --- hi-speed coding for html/css
+  4. Emmet         --- hi-speed coding for html/css
 
 导航与搜索
   1. CtrlP         --- fast file finder
@@ -276,6 +276,28 @@ https://github.com/robturtle/newycm_extra_conf.py/blob/master/ycm.cpp.py
 ### deoplete
 
 通过标准的协议进行通讯，对于不同的语言需要不同的后端支持，可以参考 [Completion Sources](https://github.com/Shougo/deoplete.nvim/wiki/Completion-Sources) 。
+
+### emmet
+
+原名为 Zen Coding ，后来改成了 Emmet 。
+
+最简单的，新建一个文件，输入 `html:5`，然后按下组合键 `Ctrl-y` `,` ，既可以完成扩展，其基本的语法就是，输入简写模式，然后按下上述的快捷键，其中常见简写模式有：
+
+* `E>N` 代表N是E的子元素，例如 `ul>li` 。
+* `E+N` 代表N是E的同级元素，例如 `div+`。
+
+<!--
+（1）：E 代表HTML标签
+（2）：E#id 代表标签E有id属性
+（3）：E.class 代表E有class属性
+（4）：E[attr=foo] 代表某个特定属性
+（5）：E{info} 代表标签E包含的内容是info
+（8）：E^N 代表N是E的上级元素
+https://blog.csdn.net/lovewebeye/article/details/79957896
+-->
+
+详细可以参考中文文档 [Emmet.vim 教程](https://blog.zfanw.com/zencoding-vim-tutorial-chinese/) 。
+
 
 ## 导航与搜索
 

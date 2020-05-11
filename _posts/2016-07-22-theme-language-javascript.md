@@ -14,6 +14,8 @@ description:
 ![Git Logo]({{ site.url }}/images/misc/git-logo.jpg "Git Logo"){: .pull-center width="230" }
 -->
 
+* [基本概念](/post/javascript-css-html-browser-basic-introduce.html) 介绍 HTML CSS JS 浏览器等的基本概念。
+* [JavaScript 语法简介](/post/javascript-basic-syntax-introduce.html)
 * [JavaScript 环境](/post/javascript-environment-introduce.html)
 * [JavaScript & React 语法简介](/post/javascript-react-syntax-introduce.html)
 * [UMI 使用简介](/post/javascript-umi-introduce.html)

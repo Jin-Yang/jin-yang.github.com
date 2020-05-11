@@ -109,6 +109,26 @@ void ares_process_fd(ares_channel channel, ares_socket_t read_fd, ares_socket_t 
 
 源码其实比较简单，无非就是如何发送请求报文，然后接收报文，并根据当前的处理状态进行相应的处理。
 
+## 查询
+
+`ares_query()` 和 `ares_search()` 都是用来通过 DNS 查找对应的信息，注意，不会查看 `/etc/hosts` 信息，但是两者的执行逻辑略有区别。
+
+`ares_query()` 会直接执行一次 DNS 查询，也就是发送请求，然后接收数据进行处理。而 `ares_search()` 会模拟 `resolv.conf` 中的行为，基本流程如下：
+
+1. 根据 RFC-7686 规定，对于 `.onion` 会直接忽略；
+2. 判断是否为单个域名 (也就是最后一个字符是否为句点)，如果是则直接调用 `ares_query()` 查询；
+3. 模拟 ndots 和 search 的行为，当查询域名句点数小于 ndots 时，会遍历 search 中的选项。
+
+其函数的声明如下。
+
+{% highlight text %}
+void ares_query(ares_channel channel, const char *name, int dnsclass, int type,
+    ares_callback callback, void *arg);
+
+入参：
+    name 需要查询的域名；
+{% endhighlight %}
+
 <!--
 ## FAQ
 
@@ -328,20 +348,9 @@ http://wangxuemin.github.io/2015/07/31/c-ares%20%E4%B8%80%E4%B8%AAC%E8%AF%AD%E8%
 
 
 
-`ares_query()` 和 `ares_search()` 都是用来通过 DNS 查找对应的信息，注意，不会查看 `/etc/hosts` 信息，但是两者的执行逻辑略有区别。
-
-`ares_query()` 会直接执行一次 DNS 查询，也就是发送请求，然后接收数据进行处理。而 `ares_search()` 会模拟 `resolv.conf` 中的行为，基本流程如下：
-
-1. 根据 RFC-7686 规定，对于 `.onion` 会直接忽略；
-2. 判断是否为单个域名 (也就是最后一个字符是否为句点)，如果是则直接调用 `ares_query()` 查询；
-3. 模拟 ndots 和 search 的行为，当查询域名句点数小于 ndots 时，会遍历 search 中的选项。
 
 `ares_search()` 和 `ares_query()` 的入参相同，
 
-void ares_query(ares_channel channel, const char *name, int dnsclass, int type,
-    ares_callback callback, void *arg);
-入参：
-    name 需要查询的域名；
 
 ares_query() 这是真正单个查找的接口，其它的接口实际上是封装部分处理逻辑
  |-ares_create_query() 会将请求按照DNS通讯协议进行序列化

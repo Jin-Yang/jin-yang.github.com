@@ -580,6 +580,14 @@ J           → 把所有的行连接起来，变成一行
 
 ### 其它
 
+#### 转换为html
+
+可以直接将当前界面显示的内容转换为 html ，包括了高亮、行号等，但是不含状态栏。
+
+{% highlight text %}
+:TOhtml
+{% endhighlight %}
+
 #### 重复执行命令
 
 {% highlight text %}

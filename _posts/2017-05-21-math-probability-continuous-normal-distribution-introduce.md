@@ -324,6 +324,10 @@ https://zhuanlan.zhihu.com/p/44860862
 https://zhuanlan.zhihu.com/p/32315762
 https://zhuanlan.zhihu.com/p/58987388
 
+https://borgwang.github.io/ml/2019/07/28/gaussian-processes.html
+https://drivingc.com/p/5b793eac2392ec689a39c56b
+https://www.zybuluo.com/fsfzp888/note/1462244
+https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/
 -->
 
 {% highlight text %}
