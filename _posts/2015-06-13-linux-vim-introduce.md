@@ -113,6 +113,17 @@ vim 含有多种变量，`$HOME` 表示环境变量；`&options` 表示选项；
 
 在配置文件中，可以指定变量，而对应的变量可通过 ```:echo $VIM``` 查看。
 
+### 项目配置
+
+如果每个项目都有不同的配置，例如对齐方式，那么可以在项目目录下添加一个 `.vimrc` 文件，并在默认的 `~/.vimrc` 文件中开启。
+
+{% highlight text %}
+set exrc
+set secure
+{% endhighlight %}
+
+其中的 `set secure` 会关闭项目中的 shell autocmd write 等命令。
+
 ### 调试
 
 可以通过 `:verbose` 确定 vim 中的配置是在那里生效的，例如如下。
@@ -580,6 +591,16 @@ J           → 把所有的行连接起来，变成一行
 
 ### 其它
 
+#### 命令行匹配
+
+在输入命令时如何进行快速匹配。
+
+{% highlight text %}
+set wildmenu   " 开启自动补齐
+set wildmode=longest:list,full   " 开启自动补齐
+{% endhighlight %}
+
+
 #### 转换为html
 
 可以直接将当前界面显示的内容转换为 html ，包括了高亮、行号等，但是不含状态栏。
@@ -602,9 +623,9 @@ J           → 把所有的行连接起来，变成一行
 可以通过 `:help modeline` 查看帮助，在文件首、尾的若干行 (modelines默认5行) 添加的配置内容，可以用来指明这个文件的类型，以及一些其它的相关配置项。
 
 {% highlight text %}
-# vim: filetype=python
-/* vim: filetype=java */
-# vim: foldmarker={,} foldlevel=0 foldmethod=marker :
+# vim: set filetype=python
+/* vim: set filetype=java: */
+# vim: set foldmarker={,} foldlevel=0 foldmethod=marker:
 {% endhighlight %}
 
 可以通过 `set modelines=10` 设置行数，如果设置为 0 则会将其关闭。

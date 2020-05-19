@@ -16,7 +16,7 @@ c-ares 是一个 C89 实现的异步请求 DNS 的实现，一些常见的软件
 
 ## 简介
 
-在 CentOS 中直接通过 `yum install c-ares-devel` 安装即可。
+在 CentOS 中，可以直接通过 `yum install c-ares-devel` 安装开发库，也可以将源码以如下方式编译安装。
 
 {% highlight text %}
 $ ./buildconf
@@ -24,6 +24,18 @@ $ ./configure
 {% endhighlight %}
 
 此时将在 `.libs` 目录下生成相应的动态库和静态库。
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### 通用函数
 

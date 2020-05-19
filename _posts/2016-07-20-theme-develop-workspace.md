@@ -47,40 +47,42 @@ Git 是一免费、开源的分布式版本控制系统，可有效、高速的�
 
 ### GOGS
 
-Gogs 的功能类似于 GitHub 或者 GitLab ，不过相比来说是一款极易搭建的 Git 服务，其目标是打造一个最简单、最快速和最轻松的方式搭建自助 Git 服务。
+	Gogs 的功能类似于 GitHub 或者 GitLab ，不过相比来说是一款极易搭建的 Git 服务，其目标是打造一个最简单、最快速和最轻松的方式搭建自助 Git 服务。
 
-* [Gogs 仓库使用](/post/linux-git-gogs-introduce.html) 类似 GitLab 或者 GitHub，但是搭建起来更容易搭建。
+	* [Gogs 仓库使用](/post/linux-git-gogs-introduce.html) 类似 GitLab 或者 GitHub，但是搭建起来更容易搭建。
 
 ## 词法语法解析
 
-Lex (A Lexical Analyzer Generator) 和 Yacc(Yet Another Compiler Compiler) 是 UNIX 中两个非常重要的、功能强大的工具，分别用来做词法扫描以及语法分析。
+	Lex (A Lexical Analyzer Generator) 和 Yacc(Yet Another Compiler Compiler) 是 UNIX 中两个非常重要的、功能强大的工具，分别用来做词法扫描以及语法分析。
 
-在 Linux 上就是 flex-bison，其中在使用 bison 时，采用的语法必须是上下文无关文法 (context-free grammar)。
+	在 Linux 上就是 flex-bison，其中在使用 bison 时，采用的语法必须是上下文无关文法 (context-free grammar)。
 
-这里简单介绍，包括常规表达式、声明、匹配模式、变量、Yacc 语法和解析器代码。
+	这里简单介绍，包括常规表达式、声明、匹配模式、变量、Yacc 语法和解析器代码。
 
-* [基本概念](/post/program-lexical-basic-introduce.html) 关于词法语法分析的基本概念，例如 BNF、上下文无关等。
-* [Flex 使用简介](/post/program-concept-lexical-flex-introduce.html) 词法解析器的介绍，在 Linux 中的实现。
-* [Bison 使用简介](/post/program-concept-syntax-bison-introduce.html) 语法解析器的介绍，Linux 中对应 Yacc 的实现。
-* [MySQL 语法解析](/post/mysql-parser.html) MySQL 中使用方式，词法解析独立实现，语法分析则使用 Bison 。
+	* [基本概念](/post/program-lexical-basic-introduce.html) 关于词法语法分析的基本概念，例如 BNF、上下文无关等。
+	* [Flex 使用简介](/post/program-concept-lexical-flex-introduce.html) 词法解析器的介绍，在 Linux 中的实现。
+	* [Bison 使用简介](/post/program-concept-syntax-bison-introduce.html) 语法解析器的介绍，Linux 中对应 Yacc 的实现。
+	* [MySQL 语法解析](/post/mysql-parser.html) MySQL 中使用方式，词法解析独立实现，语法分析则使用 Bison 。
 
 ## VIM
 
-![vim logo]({{ site.url }}/images/misc/vim_logo.png "vim logo"){: .pull-center width="25%" }
+	![vim logo]({{ site.url }}/images/misc/vim_logo.png "vim logo"){: .pull-center width="25%" }
 
-Vim 是一个功能强大、高度可定制的文本编辑器，与其相匹敌的是 Emacs ，这两个都是不错的编辑器，在此不再比较两者的优劣，仅介绍 Vim 相关的内容。
+	Vim 是一个功能强大、高度可定制的文本编辑器，与其相匹敌的是 Emacs ，这两个都是不错的编辑器，在此不再比较两者的优劣，仅介绍 Vim 相关的内容。
 
 ### 功能介绍
 
-* [VIM 基本功能](/post/linux-vim-introduce.html) 一功能强大、高度可定制的文本编辑器，介绍其安装和基本用法。
-* [VIM 插件使用](/post/linux-vim-third-plugins-introduce.html) 一些常用的三方组件安装、配置、使用方法。
-* [VIM Tags 相关](/post/linux-vim-third-plugins-tags-stuff-introduce.html)
+	* [VIM 基本功能](/post/linux-vim-introduce.html) 一功能强大、高度可定制的文本编辑器，介绍其安装和基本用法。
+	* [VIM 插件使用](/post/linux-vim-third-plugins-introduce.html) 一些常用的三方组件安装、配置、使用方法。
+	* [VIM Tags 相关](/post/linux-vim-third-plugins-tags-stuff-introduce.html)
 * [VIM LaTeX 使用](/post/linux-vim-latex-snippets-introduce.html)
 
-常用快捷键整理。
+	常用快捷键整理。
 
 {% highlight text %}
-<Leader>k  ALE向上查找错误
+let mapleader=','
+<Leader>f              AutoFormat
+<Leader>k              ALE向上查找错误
 {% endhighlight %}
 
 ## 其它

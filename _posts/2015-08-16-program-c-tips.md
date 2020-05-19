@@ -126,6 +126,56 @@ int main(int argc, char *argv[])
 }
 {% endhighlight %}
 
+## bsearch
+
+也就是一个针对已排序数组的二分查找实现，其声明如下。
+
+{% highlight c %}
+#include <stdlib.h>
+void *bsearch(const void *key, const void *base,
+              size_t nmemb, size_t size,
+              int (*compar)(const void *, const void *));
+{% endhighlight %}
+
+各个参数的含义如下：
+
+* `key` 要查找的元素指针；
+* `base` 数组地址；
+* `nmemb` 数组大小；
+* `size` 数组中每个元素的大小；
+* `compar` 比较函数。
+
+返回的是数组中已经找的元素地址，没有找到则返回 `NULL`，如下是一个示例。
+
+{% highlight c %}
+#include <stdio.h>
+#include <stdlib.h>
+
+int cmp_int(const void *a, const void *b)
+{
+        return (*(int *)a - *(int *)b);
+}
+
+int main(void)
+{
+        int key = 32, *item;
+        int values[] = {5, 20, 29, 32, 63};
+
+        item = (int *)bsearch(&key, values, 5, sizeof(int), cmp_int);
+        if (item == NULL)
+                return -1;
+        printf("found item %d(%p) at %p\n", *item, item, &values[3]);
+
+        return(0);
+}
+{% endhighlight %}
+
+<!--
+其中在<search.h>头文件中提供了一系列的POSIX的搜索方案，包括了hash bst等方法
+https://stackoverflow.com/questions/49377995/search-h-header-file-not-available
+hsearch(3), lsearch(3), qsort(3), tsearch(3)
+-->
+
 
 ## qsort
 
@@ -228,6 +278,8 @@ int main (void)
 
 另外，在对字符串数组进行排序时，需要注意，如下的直接使用 `strcmp` 比较，最终会报错，需要添加一个比较函数。
 
+这是因为 `qsort()` 在排序的时候使用的是数组，在比较函数中传入的是数组中每个元素的指针，所以，如果是字符串，那么就需要在比较函数中转换完成后才可以。
+
 {% highlight c %}
 #include <stdio.h>
 #include <string.h>
@@ -246,7 +298,7 @@ int main (void)
         };
         int i, size = sizeof(names)/sizeof(names[0]);
 
-		//qsort(names, size, sizeof(names[0]), (int(*)(const void*, const void*))strcmp);
+	//qsort(names, size, sizeof(names[0]), (int(*)(const void*, const void*))strcmp);
         qsort(names, size, sizeof(names[0]), cmp_string);
 		
         for (i = 0; i < size; i++) 

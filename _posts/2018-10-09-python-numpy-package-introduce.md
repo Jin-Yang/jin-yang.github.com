@@ -290,19 +290,31 @@ numpy.random.uniform(low=0.0, high=1.0, size=None)
 
 用于生成均匀分布 (uniform distribution) 的随机数，其中 `size` 可以是数值或者元组。
 
-### RandomState
+### RandomState VS. Seed
 
-其入参可以是 `int` `array` `None` ，与 `seed()` 函数类似，其中 `RandomState()` 是线程安全的，相比来说更为复杂，可以替换 `rand()` 函数。
+为了保证实验结果可以复现，尤其是一些示例代码，可以对一些随机数据加入可重复的特性，一般包括了两种方法，全局的还有独立的。
 
-使用 `RandomState()` 获得随机数生成器时，只要种子相同那么最终生成的序列也就是相同的，一般的使用方法如下：
+所谓全局，就是通过 `np.random.seed()` 函数设置一个种子，那么后续生成的随机值基本固定。
 
-{% highlight text %}
+{% highlight python %}
 import numpy as np
 
-for i in xrange(4):
-    rnd = np.random.RandomState(1)
-    print rnd.uniform(0, 1, (2, 3))
+for i in range(4):
+	np.random.seed(0)
+	print(np.random.rand(10))
 {% endhighlight %}
+
+但这样会影响到所有全局随机函数，如果想只对部分函数生效，那么就可以使用如下方法。
+
+{% highlight python %}
+import numpy as np
+
+for i in range(4):
+	rnd = np.random.RandomState(1)
+	print(rnd.rand(10))
+{% endhighlight %}
+
+对于 `RandomState()` 函数来说，其入参可以是 `int` `array` `None` ，与 `seed()` 函数类似，其中 `RandomState()` 是线程安全的，相比来说更为复杂，可以替换 `rand()` 函数。
 
 ### 正态随机值
 

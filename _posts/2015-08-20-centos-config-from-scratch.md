@@ -218,7 +218,12 @@ inkscape 用于绘制矢量图，另一个比较简单的是 [xfig](http://www.x
 
 #### Chrome
 
-也可以从 [www.google.cn](https://www.google.cn/chrome/) 上下载 RPM 安装即可。
+也可以从 [www.google.cn](https://www.google.cn/chrome/) 上下载 RPM 安装即可，在安装插件时，可以直接通过源码进行安装。
+
+如下以安装 [Vimium](https://github.com/philc/vimium) 插件为例 (最好添加到 `~/.chrome/plugins` 目录下)：
+
+* 通过 `npm install --global coffeescript@~1` 安装 CoffeeScript V1，`./make.js build` 编译。
+* 打开 [chrome://extensions](chrome://extensions) 开启 `Developer Mode` ，通过 `Load Unpacked` 选择 Vimium 目录。
 
 ### CHM 阅读器
 

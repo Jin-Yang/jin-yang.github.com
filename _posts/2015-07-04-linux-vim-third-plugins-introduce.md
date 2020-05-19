@@ -20,32 +20,35 @@ Vim 是一个功能强大、高度可定制的文本编辑器，在 Vi 的基础
 
 {% highlight text %}
 插件管理
-  1. Vundle        --- the plug-in manager for Vim
-  2. Vim-Plug      +++ Minimalist Vim Plugin Manager
+  1. Vundle           --- the plug-in manager for Vim
+  2. Vim-Plug         +++ Minimalist Vim Plugin Manager
+
+自动格式化
+  1. vim-autoformat   +++ code formatting
 
 自动补全
-  1. YouCompleteMe +++ visual assist for vim
-  2. Deoplete      --- asynchronous completion framework
-  3. UltiSnips     +++ ultimate snippets
-  4. Emmet         --- hi-speed coding for html/css
+  1. YouCompleteMe    +++ visual assist for vim
+  2. Deoplete         --- asynchronous completion framework
+  3. UltiSnips        +++ ultimate snippets
+  4. Emmet            --- hi-speed coding for html/css
 
 导航与搜索
-  1. CtrlP         --- fast file finder
-  2. LeaderF       +++ asynchronous fuzzy finder
-  2. NERDTree      +++ file navigation
-  3. Tagbar        +++ tag generation and navigation
-  4. Taglist       --- source code browser
+  1. CtrlP            --- fast file finder
+  2. LeaderF          +++ asynchronous fuzzy finder
+  2. NERDTree         +++ file navigation
+  3. Tagbar           +++ tag generation and navigation
+  4. Taglist          --- source code browser
 
 其它
-  1. Tabularize    +++ align everything
-  2. vim-airline   +++ lean & mean status/tabline for vim that's light as air
+  1. Tabularize       +++ align everything
+  2. vim-airline      +++ lean & mean status/tabline for vim that's light as air
+  3. NERDCommenter    +++ comment++
 
-  2. Easymotion    - jump anywhere
-  3. NERDCommenter - comment++
-  4. Surround      - managing all the "'[{}]'" etc
-  5. Gundo         - time machine
-  6. Sessionman    - session manager
-  7. Powerline     --- ultimate statusline utility
+  2. Easymotion       - jump anywhere
+  4. Surround         - managing all the "'[{}]'" etc
+  5. Gundo            - time machine
+  6. Sessionman       - session manager
+  7. Powerline        --- ultimate statusline utility
 {% endhighlight %}
 
 其中 taglist 和 tagbar 类似，不过其关注点有所区别，后者比较适合面向对象。
@@ -159,9 +162,15 @@ Plug 'dense-analysis/ale'
 
 能够实时的进行语法和编码风格的检查，还集成了静态检查工具，支持近百种编程语言，像是一个集大成的实时编译器，出现错误之后，可以非常方便的跳转到出错处。
 
+## 自动格式化
 
+### vim-autoformat
+
+一个自动格式代码工具，这只是一个框架，需要相关的工具支持，例如 astyle、clang-format、python3-pep8 等等。
 
 ## 自动补全
+
+YouCompleteMe 和 Deoplete 都支持异步的补全，前者相比来说速度更快，所以，对于像 `C/C++` 建议使用前者。
 
 ### UltiSnips
 
@@ -240,7 +249,7 @@ let g:ycm_key_list_previous_completion=[]
 
 #### 配置文件
 
-YCM 中需要在 flags 中添加编译时的参数定义，例如 `-Wall`、`-Wextra` 等，然后通过 `-isystem` 指定系统的头文件，通过 `-I` 指定自定义的头文件。
+也就是 `~/.vim/ycm_extra_conf.py` 配置文件，在 flags 中添加编译时的参数定义，例如 `-Wall`、`-Wextra` 等，然后通过 `-isystem` 指定系统的头文件，通过 `-I` 指定自定义的头文件。
 
 注意，在使用相对路径时是 YCM 的安装路径。
 
@@ -262,6 +271,9 @@ let g:ycm_server_log_level = 'debug'
 {% endhighlight %}
 
 然后调试时就可以通过 print 打印，然后输出到 stdout 指定的文件中。
+
+
+<!-- Settings() -->
 
 #### 常见问题
 
@@ -448,6 +460,10 @@ set autochdir
 
 
 ## 杂项
+
+### 注释
+
+[NerdCommenter](https://github.com/preservim/nerdcommenter)
 
 ### Tabular
 

@@ -1,5 +1,5 @@
 ---
-title: React & JavaScript 语法简介
+title: React 语法简介
 layout: post
 comments: true
 language: chinese
@@ -14,6 +14,17 @@ description: 这里简单介绍一下 React 的语法。
 
 ![react logo]({{ site.url }}/images/react-logo.png "react logo "){: .pull-center width="70%" }
 
+## 环境准备
+
+需要安装 nodejs (8.10) 以及 npm (5.6) ，在 CentOS 中可以直接通过 yum 安装，注意其版本号。
+
+然后通过如下命令创建一个应用示例，其中 `npx` 是 `npm` 附带的一个 package 运行工具。
+
+{% highlight text %}
+$ npx create-react-app hello
+$ cd hello
+$ npm start
+{% endhighlight %}
 
 ## 调试
 
@@ -380,83 +391,6 @@ export const Something = 44
 // B.js
 import X, { myA as myX, Something as XSomething } from './A'
 {% endhighlight %}
-
-## JavaScript 语法
-
-### This
-
-在 Javascript 中 this 总是指向调用它所在方法的对象，this 是在函数运行时，自动生成的一个内部对象，只能在函数内部使用。
-
-#### 1. 全局函数调用
-
-{% highlight javascript %}
-var name = "global this";
-function globalTest() {
-	this.name = "global this";
-	console.log(this.name);
-}
-globalTest(); //global this
-{% endhighlight %}
-
-其中 `globalTest()` 是全局性的方法，属于全局性调用，因此 this 就代表全局对象 window。
-
-#### 2. 对象方法调用
-
-如果函数作为对象的方法调用，this 指向的是这个上级对象，即调用方法的对象。
-
-{% highlight javascript %}
-function showName() {
-	console.log(this.name);
-}
-var obj = {};
-obj.name = "object name";
-obj.show = showName;
-obj.show(); // object name
-{% endhighlight %}
-
-#### 3. 构造函数调用
-
-构造函数中的 this 指向新创建的对象本身。
-
-{% highlight javascript %}
-function showName() {
-	this.name = "showName function";
-}
-var obj = new showName();
-console.log(obj.name); //showName function
-{% endhighlight %}
-
-通过 new 关键字创建一个对象的实例，将 this 指向对象 obj 。
-
-#### 4. Call Apply Bind
-
-三者在功能上没有区别，都是改变 this 的指向，其区别主要在于方法的实现形式和参数传递：
-
-{% highlight text %}
-function.call(object, arg1, arg2, ....)
-function.apply(object，[arg1, arg2, ...])
-var ss=function.bind(object, arg1, arg2, ....)
-{% endhighlight %}
-
-使用方式如下：
-
-{% highlight javascript %}
-function show(sex){
-	console.log("function" + sex);
-}
-var person = {
-	name: "your name",
-	age: 14
-};
-show.call(person, "mail");
-show.apply(person, ["femail"]);
-var func = show.bind(person,"unknown");
-func();
-{% endhighlight %}
-
-
-
-## 参考
 
 
 {% highlight text %}

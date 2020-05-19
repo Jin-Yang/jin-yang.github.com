@@ -16,9 +16,13 @@ description:
 
 ## 简介
 
-传统 ctags 系统虽和 vim 结合紧密，但只能查定义无法查引用，cscope 能查引用，但只支持 C 语言，C++ 都不支持，况且常年不更新。
+传统 ctags 系统虽和 vim 结合紧密，但只能查定义无法查引用，而 cscope 能查引用，但只支持 C 语言，甚至连 C++ 都不支持，况且常年不更新。
 
+<!--
 ctags 由于使用文本格式存储数据，虽用了二分查找，但打开 Linux Kernel 这样的大项目时，查询会有卡顿的感觉。
+-->
+
+建议使用 gtags 替换，在 Vim8 支持了异步模式之后，自动创建索引变得十分方便。
 
 相比来说，gtags 由如下的几个特点：
 
@@ -27,6 +31,8 @@ ctags 由于使用文本格式存储数据，虽用了二分查找，但打开 L
 * 使用性能更好的本地数据库存储符号，而非文本；
 * 支持增量更新，每次只索引改变过的文件；
 * 多种输出格式，能更好的同编辑器相集成。
+
+
 
 ### Language Server Protocol, LSP
 
@@ -37,6 +43,7 @@ CTRL-]   在当前窗口里跳转到定义
 CTRL-W ] 新窗口打开并查看光标下符号的定义
 -->
 
+<!--
 ## tags
 
 tags 记录了关于一个标识符在哪里被定义的信息，比如 C/C++ 程序中的一个函数定义。vim 默认是支持 tags 的，那么可以让 vim 从任何位置跳转到相应的标示位置。
@@ -159,6 +166,7 @@ set tags=~/.vim/systags,./tags;,tags
 {% endhighlight %}
 
 分别表示使用系统 tag ，当前目录下的 `tags` 文件，后面的配置表示从当前目录一直向上查找。
+-->
 
 ## gtags
 
@@ -179,6 +187,8 @@ $ ./configure --prefix=/usr
 $ make
 # make install
 {% endhighlight %}
+
+然后可以通过 `gtags --version` 查看版本信息。
 
 ### gtags-cscope
 
@@ -213,15 +223,12 @@ let g:gutentags_define_advanced_commands = 1
 最简单的方式，如果开始是正常的，可以直接删除掉 cache 信息。
 
 <!--
-https://github.com/skywind3000/gutentags_plus
-https://github.com/ludovicchabant/vim-gutentags
--->
-
-
-<!--
 非常经典的介绍，关于GTags使用介绍
 https://zhuanlan.zhihu.com/p/36279445
 https://blog.csdn.net/gatieme/article/details/78819740
+https://www.zhihu.com/question/47691414/answer/373700711
+
+https://www.jianshu.com/p/110b27f8361b
 
 搭建整体IDE的介绍
 https://www.zhihu.com/question/47691414

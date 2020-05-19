@@ -125,20 +125,14 @@ $$
 \end{align}
 $$
 
-然后令偏导，也就是上述的结果为 $0$ 最终求解出结果。
+然后令偏导 (也就是上述的结果) 为 $0$ 最终求解出结果。
 
 $$
 \begin{align}
-w&=\frac{\sum_{i=1}^{m}{y_i(x_i-\bar{x})}}{\sum_{i=1}^{m}{x_i^2}-\frac{1}{m}(\sum_{i=1}^{m}x_i)^2} \\
-b&=\frac{1}{m}\sum_{i=1}^{m}(y_i-wx_i)
+w&=\frac{m\sum {x_i y_i}-\sum {x_i}\sum {y_i}}{m\sum {x_i^2}-(\sum x_i)^2} \\
+b&=\frac{1}{m}\sum_{i=1}^{m}(y_i-wx_i)=\frac{\sum {x_i^2} \sum{ y_i}-\sum {x_i}\sum {x_i y_i}}{m\sum {x_i^2}-(\sum x_i)^2}
 \end{align}
 $$
-
-其中 $\hat{x}$ 为样本均值。
-
-$$\bar{x}=\frac{1}{m}\sum_{i=1}^{m}{x_i}$$
-
-<!--周志华p55有详细介绍-->
 
 ### 高维推导
 
@@ -187,6 +181,20 @@ https://cloud.tencent.com/developer/news/114376
 最大似然估计(Maximum likelihood estimation)
 
 https://www.cnblogs.com/liliu/archive/2010/11/22/1883702.html
+
+
+
+## 线性回归
+
+对于线性回归问题，通常有两种解决方法，最小二乘法和梯度下降法；而最小二乘法又有两种求解思路，代数求解和矩阵求解。
+
+https://cloud.tencent.com/developer/article/1594856
+https://huhuhang.com/post/machine-learning/linear-regression-ols-gradient-descent
+
+https://zhuanlan.zhihu.com/p/79852058
+https://www.jianshu.com/p/fb9712b6e5ea
+https://zhuanlan.zhihu.com/p/47476638
+https://blog.csdn.net/cuihuijun1hao/article/details/78211225
 -->
 
 

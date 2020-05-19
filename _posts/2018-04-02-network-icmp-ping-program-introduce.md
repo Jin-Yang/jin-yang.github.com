@@ -289,21 +289,29 @@ ICMP 报文在 Linux C 中通过 `struct icmp[netinet/ip_icmp.h]` 定义，而�
 
 ### 抓包
 
-可以通过如下命令获取包。
+可以通过如下命令获取包，如果使用的 IPv6 需要将 icmp 替换为 icmp6 。
 
 {% highlight text %}
 ----- ICMP echo request
-$ tcpdump -nni eth0 -e icmp[icmptype] == 8
+# tcpdump -nni eth0 -e icmp[icmptype] == 8
 
 ----- ICMP echo reply
-$ tcpdump -nni eth0 -e icmp[icmptype] == 0
+# tcpdump -nni eth0 -e icmp[icmptype] == 0
 
 ----- 保存到文件中
-$ tcpdump -nni eth0 -w /tmp/icmp.pcap -e icmp[icmptype] == 0
+# tcpdump -nni eth0 -w /tmp/icmp.pcap -e icmp[icmptype] == 0
 
 ----- 读取文件
-$ tcpdump -nn -r icmp.pcap
+# tcpdump -nn -r icmp.pcap
+
+---- 只过滤icmp报文
+# tcpdump -nni eth0 icmp
+
+---- 针对某台主机的报文
+# tcpdump -nni eth0 icmp and host 10.80.97.129
+# nohup tcpdump -w /var/log/icmp-10.80.97.129.cap -nni eth0 icmp and host 10.80.97.129 &
 {% endhighlight %}
+
 
 ### TTL
 
