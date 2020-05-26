@@ -204,6 +204,10 @@ usage_in_bytes
 cat memory.usage_in_bytes && cat memory.stat
 
 http://linuxperf.com/?cat=7
+
+
+内存到底消耗在那里了
+http://halobates.de/memorywaste.pdf
 -->
 
 

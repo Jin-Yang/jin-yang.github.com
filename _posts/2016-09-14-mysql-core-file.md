@@ -86,7 +86,7 @@ kernel.core_user_pid = 0
 
 ### 测试示例
 
-可以在程序执行期间发送 SIGSEGV(11) 信号，也即 ```Ctrl+\``` 快捷键。
+可以在程序执行期间发送 `SIGSEGV(11)` 信号，也即 ```Ctrl+\``` 快捷键。
 
 {% highlight text %}
 ----- 使用Ctrl+\退出程序，产生core dump
@@ -104,14 +104,14 @@ $ sleep 100
 $ cat << EOF > create_core.c
 int a (int *p)
 {
-  int y = *p;
-  return y;
+	int y = *p;
+	return y;
 }
 int main (void)
 {
-  int *p = NULL;
-  *p = 0;         // 访问0地址，发生Segmentation fault错误
-  return a (p);
+	int *p = NULL;
+	*p = 0;         // 访问0地址，发生Segmentation fault错误
+	return a(p);
 }
 EOF
 $ gcc -Wall -g create_core.c -o create_core
@@ -128,24 +128,25 @@ Segmentation fault (core dumped)
 #define CORE_SIZE   1024 * 1024 * 500
 int main(void)
 {
-    struct rlimit rlmt;
-    if (getrlimit(RLIMIT_CORE, &rlmt) == -1)
-        return -1;
-    printf("Before set rlimit CORE dump current is:%d, max is:%d\n",
-           (int)rlmt.rlim_cur, (int)rlmt.rlim_max);
+	struct rlimit rlmt;
 
-    rlmt.rlim_cur = (rlim_t)CORE_SIZE;
-    rlmt.rlim_max  = (rlim_t)CORE_SIZE;
-    if (setrlimit(RLIMIT_CORE, &rlmt) == -1)
-        return -1;
-    if (getrlimit(RLIMIT_CORE, &rlmt) == -1)
-        return -1;
-    printf("After set rlimit CORE dump current is:%d, max is:%d\n",
-           (int)rlmt.rlim_cur, (int)rlmt.rlim_max);
+	if (getrlimit(RLIMIT_CORE, &rlmt) == -1)
+		return -1;
+	printf("Before set rlimit CORE dump current is:%d, max is:%d\n",
+		(int)rlmt.rlim_cur, (int)rlmt.rlim_max);
 
-    int *ptr = NULL;  // 测试非法内存，产生core文件
-    *ptr = 10;
-    return 0;
+	rlmt.rlim_cur = (rlim_t)CORE_SIZE;
+	rlmt.rlim_max  = (rlim_t)CORE_SIZE;
+	if (setrlimit(RLIMIT_CORE, &rlmt) == -1)
+		return -1;
+	if (getrlimit(RLIMIT_CORE, &rlmt) == -1)
+		return -1;
+	printf("After set rlimit CORE dump current is:%d, max is:%d\n",
+		(int)rlmt.rlim_cur, (int)rlmt.rlim_max);
+
+	int *ptr = NULL;  // 测试非法内存，产生core文件
+	*ptr = 10;
+	return 0;
 }
 {% endhighlight %}
 
@@ -313,8 +314,8 @@ $ cat << EOF > foobar.c
 #include <stdio.h>
 int main(void)
 {
-    printf("Hello World!!!\n");
-    return 0;
+	printf("Hello World!!!\n");
+	return 0;
 }
 EOF
 

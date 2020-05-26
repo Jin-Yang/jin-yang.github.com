@@ -15,55 +15,38 @@ description: 在处理通讯协议时，经常需要按照字节甚至是位进�
 
 ## 简介
 
-简单来说，可以通过 C 中的位段 (或者称为 "位域") 进行处理。
+在编写代码的时候，很大一部分工作是在不同的格式之间进行转换，从外部的数据结构转换成内部使用的结构，例如网络包 (TCP/IP、MySQL协议等)、磁盘文件 (GIF、JPEG等图片格式) 等等。
 
-所谓 "位域" 是把一个字节中的二进位划分为几个不同的区域，并标明每个区域的位数，每个域有一个域名，允许在程序中按域名进行操作。
+其中很重要的一部分就是整数的字节顺序问题，也就是当整数的大小超过了一个字节之后，如何进行表示，这就是所谓的字节序的问题。
 
-为了支持跨平台，建议使用类似 `uint32_t` 这类固定长度的类型，在 C 中一般定义在 `stdint.h` 头文件中。
+### CPU
 
-## 位域
+不同的 CPU 对应的字节序略有区别：
 
-在使用时需要注意如下的内容。
+* 大端，PowerPC、IBM、Sun、51
+* 小端，x86、DEC
 
-* 其中类型必须为整形，不能是浮点类型。
-* 可以使用空的位域，此时可以占用空间但是不能直接引用。
+其中 ARM 两种模式都可以支持，另外，网络协议中大部分使用的是大端字节序，所以就有一系列的 API 对整数进行转换。
 
-### 简单使用
-
-可以参考如下的示例。
-
-{% highlight c %}
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
-
-struct header {
-        uint32_t length:16;
-        uint32_t :8; /* reserved */
-        uint32_t sequence:8;
-};
-
-int main(void)
-{
-        int i;
-        uint8_t *ptr;
-        struct header hdr;
-
-        memset(&hdr, 0, sizeof(struct header));
-        hdr.length = 0x10;
-        hdr.sequence = 0x22;
-
-        ptr = (uint8_t *)&hdr;
-        printf("header size: %ld\n", sizeof(struct header));
-        for (i = 0; i < (int)sizeof(struct header); i++)
-                printf(" 0x%02X", ptr[i]);
-        puts("\n");
-
-        return 0;
-}
+{% highlight text %}
+# if __BYTE_ORDER == __BIG_ENDIAN
+# define ntohl(x)     (x)
+# define ntohs(x)     (x)
+# define htonl(x)     (x)
+# define htons(x)     (x)
+# else
+# define ntohl(x)     __bswap_32(x)
+# define ntohs(x)     __bswap_16(x)
+# define htonl(x)     __bswap_32(x)
+# define htons(x)     __bswap_16(x)
+# endif
 {% endhighlight %}
 
-## 大小端
+其中 `ntohs` 为 `network to host short` 的简写，这些函数一般在头文件 `<arpa/inet.h>` 中进行定义，也就是，当前 CPU 为大端则直接使用，为小端时才会进行转换。
+
+如下，详细介绍大小端的概念。
+
+### 大小端
 
 当数据类型大于一个字节时，其所占用的字节在内存中的顺序存在两种模式：小端模式 (little endian) 和大端模式 (big endian)，其中 MSB(Most Significant Bit) 最高有效位，LSB(Least Significant Bit) 最低有效位.
 
@@ -127,7 +110,9 @@ void main(void)
 }
 {% endhighlight %}
 
-如果采用大端模式，则在向某一个函数通过向下类型装换来传递参数时可能会出错。如一个变量为 ```int i=1;``` 经过函数 ```void foo(short *j);``` 的调用，即 ```foo((short*)&i);```，在 foo() 中将 i 修改为 3 则最后得到的 i 为 0x301 。
+如果采用大端模式，则在向某一个函数通过向下类型装换来传递参数时可能会出错。如一个变量为 `int i=1;` 经过函数 `void foo(short *j);` 的调用，即 `foo((short*)&i);`，在 `foo()` 中将 `i` 修改为 `3` 则最后得到的 `i` 为 `0x301` 。
+
+为了支持跨平台，建议使用类似 `uint32_t` 这类固定长度的类型，在 C 中一般定义在 `stdint.h` 头文件中。
 
 #### 转换方式
 
@@ -147,28 +132,88 @@ uint32_t length = (data[0]<<0) | (data[1]<<8) | (data[2]<<16) | (data[3]<<24);
 
 实际上 GCC 已经提供了大小端判断和数据转换的函数，可以直接使用。
 
-对于字节序来说，GCC 提供了 `__BYTE_ORDER__` `__ORDER_LITTLE_ENDIAN__` `__ORDER_BIG_ENDIAN__` 这三种预定义的宏，在代码中可以直接使用。
+GCC 内置了 `__BYTE_ORDER__` `__ORDER_LITTLE_ENDIAN__` `__ORDER_BIG_ENDIAN__` 这三种与字节序相关的宏定义，在代码中可以直接使用。
 
 > GCC 会内置了很多的宏定义，可以通过 `gcc -posix -E -dM - </dev/null` 命令进行查看，内置的函数可以查看 [Other Built-in Functions Provided by GCC](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html) 中的介绍。
 
+## 位域
+
+在保存一些信息的时候，并不需要占用一个完整的字节，可能只需要几个二进制位即可，例如一个开关量。这时候，就可以通过 C 语言中的位段 (或者称为 "位域") 进行处理。
+
+所谓 "位域" 是把一个字节中的二进位划分为几个不同的区域，并标明每个区域的位数，每个域有一个域名，允许在程序中按域名进行操作。
+
+{% highlight c %}
+struct bitfield {
+	int a:8;
+	int b:2;
+	int c:6;
+};
+{% endhighlight %}
+
+如下简单介绍其使用方法。
+
+### 简单使用
+
+可以参考如下的示例。
+
+{% highlight c %}
+#include <stdio.h>
+#include <string.h>
+#include <stdint.h>
+
+struct header {
+        uint32_t length:16;
+        uint32_t :8; /* reserved */
+        uint32_t sequence:8;
+};
+
+int main(void)
+{
+        int i;
+        uint8_t *ptr;
+        struct header hdr;
+
+        memset(&hdr, 0, sizeof(struct header));
+        hdr.length = 0x10;
+        hdr.sequence = 0x22;
+
+        ptr = (uint8_t *)&hdr;
+        printf("header size: %ld\n", sizeof(struct header));
+        for (i = 0; i < (int)sizeof(struct header); i++)
+                printf(" 0x%02X", ptr[i]);
+        puts("\n");
+
+        return 0;
+}
+{% endhighlight %}
+
+### 注意事项
+
+在使用时需要注意如下的内容。
+
+* 其中类型必须为整形，也就是 `int` `unsigned int` `signed int` 三种之一，不能是浮点类型或者 `char` 类型。
+* 二进制位数不能超过基本类型表示的最大位数，例如 x64 上的最多不能超过 64 位。
+* 可以使用空的位域，此时可以占用空间但是不能直接引用，下个位域从新存储单元开始存放。
+* 不能对位域进行取地址操作。
+
+
+<!--
+    6)若位段出现在表达式中，则会自动进行整型升级，自动转换为int型或者unsigned int。
+    7)对位段赋值时，最好不要超过位段所能表示的最大范围，否则可能会造成意想不到的结果。
+    8)位段不能出现数组的形式。
+-->
 
 ## 参考
 
 可以参考 [How to teach endian](https://blog.erratasec.com/2016/11/how-to-teach-endian.html) 中的介绍。
 
 <!--
-## 实践
-
 综合上述的内容，假设在通讯时采用与网络字节序相同的策略，也就是大端字节序。
-
-endian.h
 
 如果是跨平台的，可以参考
 https://github.com/lichray/endian2
 https://github.com/rdpoor/endian
 https://github.com/hubenchang0515/Endian
-
-https://blog.csdn.net/10km/article/details/49021499
 -->
 
 {% highlight text %}

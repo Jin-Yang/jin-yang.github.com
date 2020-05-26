@@ -20,6 +20,107 @@ description:
 * 在不同的协程之间发送消息，提供 FIFO 语义；
 * 可以让协程阻塞、非阻塞。
 
+### 基本示例
+
+根据管道的数据流方向，管道的类型大致可以分成三种：A) 从管道接收 `<-chan int` ；B) 发送到管道 `chan<- int` ；C) 双向，也就是不指定任意方向。
+
+一个简单的示例，由三个协程完成，依次完成类似流处理的步骤，包括了：A) 顺序生成数据；B) 计算其平方值；C) 输出到终端打印。
+
+{% highlight go %}
+package main
+
+import (
+        "fmt"
+)
+
+func counter(out chan<- int) {
+        for x := 0; x < 10; x++ {
+                out <- x
+        }
+        close(out)
+}
+
+func squarer(out chan<- int, in <-chan int) {
+        for v := range in {
+                out <- v * v
+        }
+        close(out)
+}
+
+func printer(in <-chan int) {
+        for v := range in {
+                fmt.Println(v)
+        }
+}
+
+func main() {
+        cntChan := make(chan int)
+        sqrChan := make(chan int)
+
+        go counter(cntChan)
+        go squarer(sqrChan, cntChan)
+
+        printer(sqrChan)
+}
+{% endhighlight %}
+
+上述管道，在声明时是一个双向管道，也就是为了可以通过生产者写入，然后再由消费者进行消费。为了防止乱用，可以在向函数传参的时候将管道修改为 **单向**，这样对于接收管道来说是不允许关闭，可以防止误操作。
+
+### Tips #1
+
+判断管道是否关闭。
+
+如果将 `squarer()` 函数替换为如下，实际上是有问题的。
+
+{% highlight go %}
+func squarer(out chan<- int, in <-chan int) {
+        for {
+                v := <-in
+                out <- v * v
+        }
+        close(out)
+}
+{% endhighlight %}
+
+当 `in` 管道关闭之后，通过 `v := <-in` 读取到的数据会始终为 `0` ，那么就会一直在计算输出 `0` ，而实际上已经关闭。可以通过 `v, ok := <-in` 在获取数据的同时判断管道是否已经关闭。
+
+{% highlight go %}
+func squarer(out chan<- int, in <-chan int) {
+        for {
+                v, ok := <-in
+                if !ok {
+                        break
+                }
+                out <- v * v
+        }
+        close(out)
+}
+{% endhighlight %}
+
+而 `range` 可以自动判断管道是否关闭。
+
+### Tips #2
+
+如果一个管道已经关闭，继续发送数据会导致系统 `panic` ，例如，假设 `squarer()` 只会消费三个数据，并关闭写入端，也就是函数修改如下。
+
+{% highlight go %}
+func squarer(out chan<- int, in chan int) {
+        cnt := 0
+        for v := range in {
+                out <- v * v
+                cnt++
+                if cnt == 3 {
+                        close(in)
+                        break
+                }
+        }
+}
+{% endhighlight %}
+
+此时当 `counter()` 写入时就说 `panic` 异常。
+
+到目前为止，还有找到在写入时如何判断管道是否关闭，估计除了通过 `defer` 捕获异常之外没有太好的办法，最好还是从设计模式上就直接规避掉。
+
 ## 使用
 
 <!--
@@ -356,12 +457,11 @@ https://medium.com/@NetflixTechBlog/performance-under-load-3e6fa9a60581
 https://github.com/Netflix/concurrency-limits
 高效的流式处理
 https://github.com/bmizerany/perks
-
-
-【繁中字幕】手嶌葵 - テルーの唄（歌集バージョン）
 -->
 
+## 参考
 
+* GoLang 的并发控制、编程参考模型 [Pipelines](https://blog.golang.org/pipelines) 。
 
 {% highlight text %}
 {% endhighlight %}

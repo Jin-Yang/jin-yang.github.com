@@ -18,11 +18,17 @@ description: 简单介绍下 Linux 中与线程相关的编程。
 
 简言之，表面是一个全局变量，所有线程都可以使用它，而实际实现时，它的值在每一个线程中又是单独存储的。
 
+### 示例
+
 TSD 的使用方法简单介绍如下：
 
 1. 声明一个类型为 `pthread_key_t` 类型的全局变量，后续所有的操作都会用到该变量；
 2. 在创建线程前调用 `pthread_key_create()` 创建该变量，入参为上面的变量以及清理函数(为 `NULL` 时调用默认的清理函数)；
 3. 启动线程，在不同的线程中分别通过 `pthread_setspcific()` 和 `pthread_getspecific()` 函数设置以及获取变量。
+
+<!--
+TSD的实现详见： https://www.ibm.com/developerworks/cn/linux/thread/posix_threadapi/part2/
+-->
 
 使用的函数声明如下。
 

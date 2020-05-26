@@ -157,7 +157,66 @@ func main() {
 }
 {% endhighlight %}
 
-### 结构体
+### 函数
+
+<!--
+http://jordanorelli.com/post/42369331748/function-types-in-go-golang
+-->
+
+在 golang 中，支持匿名函数和闭包，其中定义函数的方式如下：
+
+{% highlight go %}
+func (p myType) funcName ( a, b int, c string ) ( r, s int ) {
+	return
+}
+{% endhighlight %}
+
+包括了定义函数的关键字 `func`，函数名称 `funcName`，入参 `a, b int, c string`，返回值 `r,s int` 以及函数体 `{}`。
+
+而且，golang 可以为某个类型定义函数，也即为类型对象定义方法，也就是 `p myType` 参数，当然这不是必须的，如果为空则纯粹是一个函数，可以通过包名称访问。
+
+### switch
+
+类似于其它语言的 `switch` 语句，但同时继承了 GoLang 的简单有效，导致其语法略有区别。
+
+{% highlight go %}
+package main
+
+import "fmt"
+
+func main() {
+        i := 3
+
+        switch i {
+        case 0:
+                fmt.Println("0")
+        case 1, 2, 3:
+                fmt.Println("1, 2, 3")
+        case 4:
+                fallthrough
+        case 5:
+                fmt.Println("4 or 5")
+        default:
+                fmt.Println("Default")
+        }
+
+        switch {
+        case i <= 9:
+                fmt.Println("range(, 9]")
+        case i > 9 && i < 15:
+                fmt.Println("range(9, 15)")
+        }
+}
+{% endhighlight %}
+
+在每个 `case` 语句之后，默认会带有一个 `break` 语句，在匹配成功后不会自动向下执行其它分支，而是跳出整个 `switch` 语句，不过可以通过 `fallthrough` 语句强制执行后面的分支代码。
+
+如上代码中，当 `i := 4` 或者 `i := 5` 时，两者的输出相同。
+
+另外，也可以不在 `switch` 语句后添加变量，那么此时的行为与 `if ... else ...` 相同，也就是如上的最后示例。
+
+## struct
+
 
 通过结构体新建对象时的语法比较多，而且相比而言有些特殊。
 
@@ -174,8 +233,10 @@ type Poem struct {
 然后可以通过如下的方法进行赋值。
 
 {% highlight go %}
-poem1 := &Poem{}
+var poem1 *Poem
+poem1 = &Poem{}
 poem1.Author = "Heine"
+
 poem2 := &Poem{Author: "Heine"}
 poem3 := new(Poem)
 poem3.Author = "Heine"
@@ -240,63 +301,50 @@ func main() {
 
 如果对于子类重新定义了接口，那么默认调用的时候是子类的，也可以显式调用父类。
 
-### 函数
+### 格式化
 
-<!--
-http://jordanorelli.com/post/42369331748/function-types-in-go-golang
--->
-
-在 golang 中，支持匿名函数和闭包，其中定义函数的方式如下：
-
-{% highlight go %}
-func (p myType) funcName ( a, b int, c string ) ( r, s int ) {
-	return
-}
-{% endhighlight %}
-
-包括了定义函数的关键字 `func`，函数名称 `funcName`，入参 `a, b int, c string`，返回值 `r,s int` 以及函数体 `{}`。
-
-而且，golang 可以为某个类型定义函数，也即为类型对象定义方法，也就是 `p myType` 参数，当然这不是必须的，如果为空则纯粹是一个函数，可以通过包名称访问。
-
-### switch
-
-类似于其它语言的 `switch` 语句，但同时继承了 GoLang 的简单有效，导致其语法略有区别。
+当定义了一个结构体之后，如果要格式化输出内容，可以对改类型定义一个 `String()` 方法，这样像 `fmt.Println()` `fmt.Printf()` 使用 `%v` 参数，就会直接调用该函数。
 
 {% highlight go %}
 package main
 
-import "fmt"
+import (
+        "fmt"
+)
+
+type Poem struct {
+        Title  string
+        Author string
+        intro  string
+}
+
+func (p *Poem) String() string {
+        return fmt.Sprintf("<%s> %s", p.Title, p.Author)
+
+}
 
 func main() {
-        i := 3
-
-        switch i {
-        case 0:
-                fmt.Println("0")
-        case 1, 2, 3:
-                fmt.Println("1, 2, 3")
-        case 4:
-                fallthrough
-        case 5:
-                fmt.Println("4 or 5")
-        default:
-                fmt.Println("Default")
+        p := &Poem{
+                Title:  "Harry Potter",
+                Author: "J. K. Rowling",
         }
-
-        switch {
-        case i <= 9:
-                fmt.Println("range(, 9]")
-        case i > 9 && i < 15:
-                fmt.Println("range(9, 15)")
-        }
+        fmt.Printf("%T\n", p)
+        fmt.Println(p)
+        fmt.Printf("%v\n", p)
+        fmt.Printf("%#v\n", p)
 }
 {% endhighlight %}
 
-在每个 `case` 语句之后，默认会带有一个 `break` 语句，在匹配成功后不会自动向下执行其它分支，而是跳出整个 `switch` 语句，不过可以通过 `fallthrough` 语句强制执行后面的分支代码。
+最终输出的内容为。
 
-如上代码中，当 `i := 4` 或者 `i := 5` 时，两者的输出相同。
+{% highlight text %}
+*main.Poem
+<Harry Potter> J. K. Rowling
+<Harry Potter> J. K. Rowling
+&main.Poem{Title:"Harry Potter", Author:"J. K. Rowling", intro:""}
+{% endhighlight %}
 
-另外，也可以不在 `switch` 语句后添加变量，那么此时的行为与 `if ... else ...` 相同，也就是如上的最后示例。
+注意，不要在 `String()` 函数中涉及上述相关调用，如 `%v` 格式化，会导致无限递归调用。
 
 ## MAP
 

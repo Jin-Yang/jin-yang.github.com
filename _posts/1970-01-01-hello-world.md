@@ -116,22 +116,6 @@ Non Pygments code example
         <p>This is great isn't it?</p>
     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### Block Quote， 段引用
 
 下面时关于段引用的测试。
@@ -394,46 +378,13 @@ $$
 
 
 
-### NC
-socat加强版
-http://brieflyx.me/2015/linux-tools/socat-introduction/
-
-
-### GCC
-http://www.jianshu.com/p/dd425b9dc9db
-http://filwmm1314.blog.163.com/blog/static/218259192012121225132/
-http://www.cnblogs.com/respawn/archive/2012/07/09/2582078.html
-
-### TSD
-
-在多线程程序中，所有线程共享程序中的变量，如果每个线程需要保存独自的数据，例如每个线程维护一个链表，但是通过相同的函数处理，这就是 Thread Specific Data 的作用。如下介绍 TSD 的使用方法：
-
-1. 声明一个 pthread_key_t 类型的全局变量；
-2. 通过 pthread_key_create() 函数创建 TSD，实际就是分配一个实例，并将其赋值给 pthread_key_t 变量，所有的线程都可以通过该变量访问，这就相当于提供了同名而不同值的全局变量；
-3. 调用  pthread_setspcific()、pthread_getspecific() 存储或者获取各个线程特有的值；
-
-TSD的实现详见： https://www.ibm.com/developerworks/cn/linux/thread/posix_threadapi/part2/
-
-int pthread_key_create(pthread_key_t *key, void (*destructor)(void*));
-int pthread_setspecific(pthread_key_t key, const void *value);
-void *pthread_getspecific(pthread_key_t key);
 
 
 
 
 
-
-
-
-网络设置，包括了如何设置服务端+客户端、广播、多播等。
-https://collectd.org/wiki/index.php/Networking_introduction
-写入RRD文件，包括了Collectd对RRD的优化，以及其中一篇RRD优化介绍的文章
-http://oss.oetiker.ch/rrdtool-trac/wiki/TuningRRD
-https://collectd.org/wiki/index.php/Inside_the_RRDtool_plugin
 惊群问题讨论
 http://www.voidcn.com/blog/liujiyong7/article/p-377809.html
-linux时间相关结构体和函数整理
-http://www.cnblogs.com/zhiranok/archive/2012/01/15/linux_c_time_struct.html
 Heap数据结构(栈)
 http://www.cnblogs.com/gaochundong/p/binary_heap.html
 http://www.cnblogs.com/skywang12345/p/3610187.html
@@ -452,12 +403,6 @@ https://www.unixhot.com/page/ops
 
 
 
-
-
-
-http://halobates.de/memorywaste.pdf
-
-BuildBot
 
 
 非常经典的《Linux平台下的漏洞分析入门 》
@@ -4776,6 +4721,9 @@ Non-Deterministic Polynomial Complete Problem, NPC 问题
 Non-Deterministic Polynomially, NP 是指一个问题不能确定是否在多项式时间内找到答案，但是可以在多项式时间内验证答案是否正确，如完全子图问题、图着色问题、旅行商(TSP)问题等。
 
 之所以要定义 NP 问题，是因为通常只有 NP 问题才可能找到多项式的算法，不能指望一个连多项式验证一个解都不行的问题存在一个解决它的多项式级的算法。
+
+
+http://halobates.de/memorywaste.pdf
 -->
 
 

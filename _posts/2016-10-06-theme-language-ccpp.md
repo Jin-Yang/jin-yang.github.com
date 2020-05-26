@@ -40,7 +40,12 @@ description:
 
 ## C 语言
 
-#### 杂项
+* [数据对齐](/post/language-c-structure-align-basic-introduce.html) 结构体以及内存的对齐方式。
+* [位域和字节序](/post/language-c-bit-field-and-endian-introduce.html) 位域或位段相关概念，以及大小端字节序相关的内容。
+* [inline 简介](/post/language-c-inline-concept-introduce.html) 有点类似于 C 中的宏，但是又有所区别。
+
+
+### 杂项
 
 * [C 语言字符串](/post/program-c-string-stuff.html) 与字符串相关的函数，例如格式化、查找、转换等等。
 * [C 语言通配符](/post/program-c-string-linux-wildcard-introduce.html) 也就是 Linux 中与通配符相关的内容。
@@ -50,19 +55,22 @@ description:
 * [Linux IO 多路复用](/post/linux-program-io-multiplexing.html)，通过 IO 多路复用提高系统性能，包括了 select、poll、epoll 。
 * [Linux AIO](/post/linux-program-aio.html)，简单介绍下 Linux 平台下的异步读写模型。
 
-### 测试
 
-* [Linux C Mock Wrap](/post/linux-c-mock-wrap-unit-test.html) 介绍在 C 中如何进行单元测试。
-* [C 代码覆盖率](/post/language-c-coverage-basic-introduce.html) C 语言中所使用的代码覆盖率工具。
-* [C/C++ 竞态检查](/post/language-c-some-sanitizers-introduce.html) 一些常见的 Sanitizer 介绍，包括其原理。
-* [Fuzzing 测试](/post/program-c-fuzzing-test-introduce.html) 也就是模糊测试，介绍一些基本原理以及使用方法。
+## 工具集
 
-### 编译
+### 自动编译
 
 * [Makefile](/post/linux-makefile-auto-compile-introduce.html) 也就是最基本的 Makefile ，其它工具一般最后都是生成该文件。
 * [AutoTools](/post/linux-autotools-auto-compile-introduce.html) 比较老也是比较经典的自动编译工具。
 * [CMake](/post/linux-cmake-auto-compile-introduce.html) 最常用的自动编译工具。
 * [Linux Package 管理](/post/linux-package-config-introduce.html) Linux 提供的一种工具，通常在动态库编译时的参数配置。
+
+### gcc
+
+#### 其它
+
+* [特性定制](/post/program-c-language-gcc-some-stuff.html) 对函数、告警等选项的定制，主要是 pragma、attribute 属性的介绍。
+* [常用技巧](/post/language-c-gcc-some-basic-tips.html) 常用的参数、64位编译32位代码等等。
 
 ### gdb
 
@@ -76,21 +84,25 @@ description:
 https://segmentfault.com/a/1190000020465136
 -->
 
+### 测试
+
+* [Linux C Mock Wrap](/post/linux-c-mock-wrap-unit-test.html) 介绍在 C 中如何进行单元测试。
+* [C 代码覆盖率](/post/language-c-coverage-basic-introduce.html) C 语言中所使用的代码覆盖率工具。
+* [C/C++ 竞态检查](/post/language-c-some-sanitizers-introduce.html) 一些常见的 Sanitizer 介绍，包括其原理。
+* [Fuzzing 测试](/post/program-c-fuzzing-test-introduce.html) 也就是模糊测试，介绍一些基本原理以及使用方法。
+
 ### 其它
 
 介绍一些乱七八糟的东西。
 
-* [GCC 常用技巧](/post/program-c-language-gcc-some-stuff.html) 包括了一些 attribute 属性的介绍。
 * [GCC 强弱符号、引用](/post/program-c-strong-weak-symbol-reference.html) 一些 GCC 中与强弱符号、引用的相关介绍。
 * [替换 glibc malloc](/post/linux-c-program-replace-glibc-memory-function-introduce.html) 简单介绍如何替换掉 glibc 中的一系列内存相关函数。
 * [GNU 内联汇编](/post/linux-c-gnu-inline-assembly-language-introduce.html) GNU 中如何所用内联汇编。
-* [C 语言 inline 简介](/post/language-c-inline-concept-introduce.html) 有点类似于 C 中的宏，但是又有所区别。
 * [Volatile 使用简介](/post/linux-c-volatile-statement-introduce.html) C 语言中与 volatile 相关的介绍。
 * [Linux 时间函数](/post/linux-timer-functions.html) 介绍下 Linux 中与时间相关的函数以及如何选择。
 * [Linux 信号安全](/post/linux-signal-safe-introduce.html) 一般会在信号处理里打印日志，不过也可能会因此导致发生死锁。
 * [Socket 关闭方式](/post/language-c-socket-close-method.html) 主要介绍了通过 close() 以及 shutdown() 方式关闭 Socket 。
 * [Linux C Flock 使用](/post/linux-c-flock-introduce.html) Linux 中实现的一个建议性锁，通常用于 PIDFile 的实现。
-* [Linux C 位域和大小端](/post/language-c-bit-field-and-endian-introduce.html) C 语言提供的位域以及大小端，常用在通讯协议的处理。
 * [UDP 通讯优化](/post/linux-c-udp-optimize-introduce.html) UDP 并非一个面向连接的协议，与 TCP 不同，有其相关的优化方法。
 * [Linux C 网络编程](/post/program-c-network.html) 整理了 Linux C 经常使用的网络编程技巧。
 * [Linux C 错误信息](/post/language-c-error-message-usage-introduce.html) C 中在打印错误信息的时候应该注意那些。
@@ -135,17 +147,7 @@ libev 是一个基础的高性能事件库，提供了跨平台能力，而且�
 * [libev 时间处理](/post/linux-libev-timers.html) 简单介绍下 libev 库中与时间相关的内容。
 * [libev 信号处理](/post/linux-libev-source-code-signal-process-details.html) 信号的处理非常敏感，如果处理不当很容易出现问题。
 
-## 线程编程
-
-* [Linux 线程同步](/post/program-c-linux-pthreads-synchronize.html)，线程编程时经常使用的同步方式，如锁、条件变量、信号量等。
-* [Linux 线程编程技巧](/post/program-c-linux-pthreads-tips.html)，简单介绍下 Linux 中与线程相关的编程一些常见技巧。
-
-<!--
-针对thread线程编程的封装
-https://github.com/tinycthread/tinycthread
--->
-
-## 原子操作
+## 并发编程
 
 早期 CPU 通过提高主频来提升 CPU 的性能，不过因为工艺问题以及摩尔定律的终结，目前更加倾向于多核心的发展，对于编程来说，更像一个小型的分布式系统，也导致多线程编程要难很多。
 
@@ -153,6 +155,16 @@ https://github.com/tinycthread/tinycthread
 
 <!--
 内存一致性模型（memory consistency model）就是用来描述多线程对共享存储器的访问行为，在不同的内存一致性模型里，多线程对共享存储器的访问行为有非常大的差别。这些差别会严重影响程序的执行逻辑，甚至会造成软件逻辑问题。在后面的介绍中，我们将分析不同的一致性模型里，多线程的内存访问乱序问题。
+-->
+
+### 线程编程
+
+* [Linux 线程同步](/post/program-c-linux-pthreads-synchronize.html) 线程编程时经常使用的同步方式，如锁、条件变量、信号量等。
+* [Linux 线程编程技巧](/post/program-c-linux-pthreads-tips.html) 常见技巧，例如 TSD 。
+
+<!--
+针对thread线程编程的封装
+https://github.com/tinycthread/tinycthread
 -->
 
 ### 硬件基础

@@ -116,6 +116,50 @@ func main() {
 2. 将数值设置为字符串，添加 `string` 注释。
 3. 忽略部分字段，将字段名称设置为 `-`。
 
+### 简单格式化
+
+对一些简单返回，无需将数据映射为结构体，可以使用 `map[string]interface{}` 进行映射。
+
+{% highlight go %}
+package main
+
+import (
+        "encoding/json"
+        "fmt"
+)
+
+func main() {
+        /*
+                info, err := json.Marshal(map[string]interface{}{
+                        "Name": "J.K.",
+                        "Age":  56,
+                })
+
+                info, err := json.Marshal([]map[string]interface{}{
+                        map[string]interface{}{
+                                "Name": "J.K.",
+                                "Age":  56,
+                        },
+                        map[string]interface{}{
+                                "Name": "Shakespeare",
+                                "Age":  78,
+                        },
+                })
+        */
+
+        data := []map[string]interface{}{}
+        data = append(data, map[string]interface{}{"Name": "J.K.", "Age": 56})
+        info, err := json.Marshal(data)
+        if err != nil {
+                fmt.Println("json marshal failed:", err)
+                return
+        }
+        fmt.Println(string(info))
+}
+{% endhighlight %}
+
+
+
 ### omitempty
 
 使用的时候一定要慎重，注意 go 语言中的判空条件。

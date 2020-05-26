@@ -222,47 +222,10 @@ int main(void)
 
 如果要屏蔽部分版本，可以通过 `SSL_CTX_set_options()` 函数屏蔽，例如参数 `SSL_OP_NO_SSLv2` `SSL_OP_NO_TLSv1_1` 等等。
 
-
-
-
-
-
 <!--
 http://wzhnsc.blogspot.com/2012/12/openssl-api.html
 -->
 
-TLS 的握手主要为了三个目的：A) 确认加密套件以及参数；B) 鉴权，可以单向或者双向；C) 交换对称加密用的会话密钥。
-
-对于 TLSv1.2 之前的版本，完成握手需要 2 个 Round-Trip Time, RTT ，有些优化方案，例如 False Start 可以在 `Change Cipher Spec Finished` 过程中，同时带有业务数据，从而变相将握手过程简化为 1-RTT 。
-
-{% highlight text %}
-          <Client>                                          <Server>
-       [Client Hello] -------------------------------->
-                        * Supported Ciphers
-                        * Random Number
-                        * Session ID(any)
-                        * SNI
-
-                      <-------------------------------- [Server Hello]
- {Verify Server Cert}   * Choosen Cipher                [Server Certificate]
-                        * Random Number                 [Server Hello Done]
-                        * Session ID(reuse/new)
-                        * Client Certificate(optional)
-
-[Client Key Exchange] -------------------------------->
- <<<Key Generation>>>   * Pre-Master Secret(encrypted   <<<Key Generation>>>
-                          with server public key)
-                        * Send Client Certificate       {Verify Client Cert}
- [Change Cipher Spec
-  Finished(encrypt)]
-
-                      <-------------------------------- [Change Cipher Spec
-                                                         Finished(encrypt)]
-
-   [Application Data] <-------------------------------> [Application Data]
-{% endhighlight %}
-
-如果中间交换证书时，由于证书比较大，那么可能会将报文拆分成多个 TCP 报文。如果要减小证书，可以使用 Elliptic Curve Cryptography, ECC 替换 RSA 。
 
 ## 会话复用
 
