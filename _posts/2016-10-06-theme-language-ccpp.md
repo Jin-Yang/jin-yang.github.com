@@ -43,14 +43,16 @@ description:
 * [数据对齐](/post/language-c-structure-align-basic-introduce.html) 结构体以及内存的对齐方式。
 * [位域和字节序](/post/language-c-bit-field-and-endian-introduce.html) 位域或位段相关概念，以及大小端字节序相关的内容。
 * [inline 简介](/post/language-c-inline-concept-introduce.html) 有点类似于 C 中的宏，但是又有所区别。
+* [指针简介](/post/language-c-pointer-basic-usage-introduce.html) 包括了基本概念、函数指针等概念的介绍。
+* [字符串操作](/post/program-c-string-stuff.html) 与字符串相关的函数，例如格式化、查找、转换等等。
 
 
 ### 杂项
 
-* [C 语言字符串](/post/program-c-string-stuff.html) 与字符串相关的函数，例如格式化、查找、转换等等。
+* [常用函数](/post/language-c-some-basic-functions-usage-introduce.html) 包括了qsort、bsearch、backtrace、atexit 等函数。
+* [易错知识点](/post/linux-c-some-pitfalls-introduce.html) 整理记录了容易混淆、犯错的地方，有些会有点偏。
 * [C 语言通配符](/post/program-c-string-linux-wildcard-introduce.html) 也就是 Linux 中与通配符相关的内容。
 * [C 网络编程](/post/program-c-network.html) 简单介绍在 Linux C 中进行网络编程时常用到的一些技巧。
-* [C 函数指针](/post/program-c-tips-function-pointer.html) 相比来说函数指针是比较复杂的了，这里简单介绍。
 * [C 语言的奇技淫巧](/post/program-c-tips.html)，整理下 C 语言中常用的技巧。
 * [Linux IO 多路复用](/post/linux-program-io-multiplexing.html)，通过 IO 多路复用提高系统性能，包括了 select、poll、epoll 。
 * [Linux AIO](/post/linux-program-aio.html)，简单介绍下 Linux 平台下的异步读写模型。

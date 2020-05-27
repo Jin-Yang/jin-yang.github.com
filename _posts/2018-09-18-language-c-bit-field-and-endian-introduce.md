@@ -196,12 +196,43 @@ int main(void)
 * 可以使用空的位域，此时可以占用空间但是不能直接引用，下个位域从新存储单元开始存放。
 * 不能对位域进行取地址操作。
 
-
 <!--
     6)若位段出现在表达式中，则会自动进行整型升级，自动转换为int型或者unsigned int。
     7)对位段赋值时，最好不要超过位段所能表示的最大范围，否则可能会造成意想不到的结果。
     8)位段不能出现数组的形式。
 -->
+
+### 其它
+
+在头文件 `<netinet/ip.h>` 中，有类似如下的结构体定义，将大小端和位域进行耦合适配。
+
+{% highlight c %}
+struct ip
+{
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    unsigned int ip_hl:4;		/* header length */
+    unsigned int ip_v:4;		/* version */
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+    unsigned int ip_v:4;		/* version */
+    unsigned int ip_hl:4;		/* header length */
+#endif
+    uint8_t ip_tos;			/* type of service */
+    unsigned short ip_len;		/* total length */
+    unsigned short ip_id;		/* identification */
+    unsigned short ip_off;		/* fragment offset field */
+#define	IP_RF 0x8000			/* reserved fragment flag */
+#define	IP_DF 0x4000			/* dont fragment flag */
+#define	IP_MF 0x2000			/* more fragments flag */
+#define	IP_OFFMASK 0x1fff		/* mask for fragmenting bits */
+    uint8_t ip_ttl;			/* time to live */
+    uint8_t ip_p;			/* protocol */
+    unsigned short ip_sum;		/* checksum */
+    struct in_addr ip_src, ip_dst;	/* source and dest address */
+};
+{% endhighlight %}
+
+在定义结构体时，有关于大下端的直接优化，可以忽略字节序的转换。其实这种转换对于 CPU 来说开销很小，相比来说分支预测、执行依赖反而会占用更多的 CPU 。
 
 ## 参考
 

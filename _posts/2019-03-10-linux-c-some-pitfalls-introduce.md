@@ -102,6 +102,24 @@ int main(void)
 
 通过 `int (*arr)[10]` 定义一个数组大小为 10 的数组指针，括号是必须写的，不然就是指针数组。
 
+## 其它
+
+### 累加传参
+
+{% highlight c %}
+#include <stdio.h>
+
+int main(void)
+{
+	char chars[] = {1, 2, 3, 4, 5, 6, 7, 8};
+	char *ptr = chars;
+
+	return printf("%p %p\n", ptr, ptr++);
+}
+{% endhighlight %}
+
+在编译时，会报 `warning: operation on ‘XXX’ may be undefined [-Wsequence-point]` 的警告信息，也就是在传参的过程中，没有明确 `ptr` 与 `ptr++` 那个会先执行，不同的编译器可能会有不同的规则，导致结果非预期。
+
 ## 参考
 
 <!--

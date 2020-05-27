@@ -105,9 +105,11 @@ $ readelf -d hello     直接使用readelf
 
 * BSS 用来存放程序中未初始化的全局/静态变量的一块内存区域，属于静态内存分配。
 * DATA 保存已经初始化的全局变量，属于静态内存分配。
-* TEXT 用来存放真正执行的代码，大小在编译后已经确定，一般是只读。
+* TEXT 用来存放真正执行的代码，大小在编译后已经确定，一般是只读，也包含了一些只读常量，例如常量字符串。
 * HEAP 保存堆的内容，一般是通过 `malloc()` 动态分配的内存。
-* STACK 栈空间，一般是存放程序临时创建的局部变量。
+* STACK 栈空间，包括了函数的调用栈，以及存放程序临时创建的局部变量。
+
+其中 BSS 是 Block Started by Symbol 的简称，由操作系统初始化清零，而 DATA 则是由程序初始化，从而造成了上述的差别。
 
 如上只是基本分类，一般是在运行时的状态，在存储时，一般称为 Section ，而且在存储时，还会存在其它的段，如 `.rodata` `.comment` 等。
 
@@ -118,8 +120,11 @@ $ readelf -d hello     直接使用readelf
 #include <stdio.h>
 #include <stdlib.h>
 
-static char bss[1024];
-static int data = 1234;
+static char bss[1024];     // 未初始化全局变量，在BSS段
+//int data = 0;            // 初始化为0全局变量，在BSS段
+//static int data = 0;     // 初始化为0静态全局变量，在BSS段
+//int data = 1234;         // 已初始化全局变量，在DATA段
+static int data = 1234;    // 已初始化静态全局变量，在DATA段
 static const char *text = "foobar";
 
 static void foobar(void)
@@ -129,7 +134,11 @@ static void foobar(void)
 
 int main(void)
 {
-        int stack = 0;
+        //static int bss = 0;          // 已初始化为0的静态局部变量，在BSS段
+        //static int bss;              // 未初始化的静态局部变量，在BSS段
+        //static int data = 123;       // 已初始化静态局部变量，在DATA段
+        //char *ptr = "Hello World!";  // 局部变量，ptr存在在栈中，而指向的字符串则是在字符常量区
+        int stack = 0;                 // 局部变量，存在在栈中
         char *heap = (char *)malloc(1000);
 
         printf("Address of various segments:\n");
@@ -145,6 +154,8 @@ int main(void)
 {% endhighlight %}
 
 注意，目前的程序一般都会有多个这样的段，所以基本上无法确认每个段的边界。
+
+另外一个比较有意思的场景是，通过 `int array[1024 * 1024] = {0}` 编译的二进制文件会较小，而 `int array[1024 * 1024] = {0x55}`  至少包含 4M 的初始化数据，即使除了第一之外都是 0 。
 
 ### 示例程序
 
@@ -215,6 +226,49 @@ SYMBOL TABLE:
 __attribute__((section("FOO"))) int global = 42;
 __attribute__((section("BAR"))) void foo() { }
 {% endhighlight %}
+
+## 其它
+
+容易出错的几个知识点。
+
+### 栈变量地址
+
+关键是当函数调用返回时，对应的内存地址是否被销毁，其中静态内存的生命周期与程序运行声明周期相同。
+
+{% highlight c %}
+#include <stdio.h>
+
+char *get_string(void)
+{
+	//char str[] = "Hello World!";      // 栈地址，完成函数调用会释放，结果无法预测
+	//char *str = "Hello World!";       // 指向字符串常量(静态内存)，函数返回仍可访问
+	static char str[] = "Hello World!"; // 静态内存，函数退出通用可以访问
+	return str;
+}
+
+int main(void)
+{
+	return puts(get_string());
+}
+{% endhighlight %}
+
+还有一种是判断地址是否相同，使用 `char []` 时，定义的是一个保存在栈中的局部变量，地址不同；而使用 `char *` 指向的实际是一个常量地址，所以相等。
+
+{% highlight text %}
+#include <stdio.h>
+
+int main(void)
+{
+	//char str1[] = "Hi!"; // 两个不同的栈地址
+	//char str2[] = "Hi!";
+
+	char *str1 = "Hi!";
+	char *str2 = "Hi!";
+
+	return str1 == str2;
+}
+{% endhighlight %}
+
 
 
 {% highlight text %}
