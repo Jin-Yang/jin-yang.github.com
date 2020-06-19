@@ -46,8 +46,8 @@ int main(void)
 首先是可重定向文件或者目标文件。
 
 {% highlight text %}
-$ gcc -c main.c 
-$ file main.o 
+$ gcc -c main.c
+$ file main.o
 main.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped
 {% endhighlight %}
 
@@ -64,7 +64,7 @@ main: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, .
 {% highlight text %}
 $ gcc -c -fPIC main.c
 $ gcc -fpic -shared -Wl,-soname,libtest.so.0 -o libtest.so.0.0 main.o
-$ file libtest.so.0.0 
+$ file libtest.so.0.0
 libtest.so.0.0: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, ... ...
 {% endhighlight %}
 
@@ -110,6 +110,29 @@ $ readelf -d hello     直接使用readelf
 * STACK 栈空间，包括了函数的调用栈，以及存放程序临时创建的局部变量。
 
 其中 BSS 是 Block Started by Symbol 的简称，由操作系统初始化清零，而 DATA 则是由程序初始化，从而造成了上述的差别。
+
+{% highlight text %}
+addr       contents                   comments
+
+High  +-----------------+  ---
+ |    |    arguments    |   |   command-line arguments and
+ |    |   environments  |   |   environments variables
+ |    +-----------------+  ---
+ |    |      stack      |   |
+ |    +-----------------+   |
+ |    |      v v v      |   |
+ |    ~                 ~   |
+ |    |      ^ ^ ^      |   |
+ |    +-----------------+   |
+ |    |      heap       |   |
+ |    +-----------------+  ---
+ |    |      bss        |   |   initialized to zero by exec
+ |    +-----------------+  ---
+ |    |      data       |   |
+ |    +-----------------+   |   initialized from program file by exec
+ V    |      text       |   |
+Low   +-----------------+  ---
+{% endhighlight %}
 
 如上只是基本分类，一般是在运行时的状态，在存储时，一般称为 Section ，而且在存储时，还会存在其它的段，如 `.rodata` `.comment` 等。
 
@@ -162,7 +185,7 @@ int main(void)
 如上示例通过 `gcc -c main.c` 编译生成目标文件 `main.o`，然后通过 `objdump -h` 查看头部信息，也可以通过 `-x` 参数查看更详细的信息。
 
 {% highlight text %}
-$ objdump -h main.o 
+$ objdump -h main.o
 
 main.o:     file format elf64-x86-64
 

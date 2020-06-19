@@ -56,9 +56,44 @@ with open("test.csv", "r") as csvfile:
 		print line
 {% endhighlight %}
 
+### 鸢尾花
+
+用来做统计分类，数据集包括了：A) 花瓣 (Petal) 的长度和宽度；B) 花萼 (Sepal) 的长度和宽度。对应的单位是厘米，然后根据这些数据分成三类， Setosa、Versicolor、Virginica。
+
+数据文件通过 `csv` 格式保存，加载之后是一个字典类型，其中的 Key 包括了如下：
+
+* `data` 主要的数据集；
+* `feature_names` 数据集每列对应名称，也就是花瓣长宽、花萼长宽；
+* `target` 分类，也就是如上的三种，使用数值 `0~2` 标示；
+* `target_names` 分类名称，通过上面的序号对应名字；
+* `filename` 数据文件的保存路径；
+* `DESCR` 数据集相关信息的描述。
+
+可以用于分类、决策树等场景。
+
+<!--
+更多的数据集可以参考
+https://www.cnblogs.com/nolonely/p/6980160.html
+-->
+
+{% highlight text %}
+import sklearn.datasets as ds
+
+print(ds.load_iris())
+{% endhighlight %}
+
 ## 测试数据集
 
 Scikit-Learn 工具包中提供的数据集，通常用来学习或者模拟算法的数据库，有很多不错的模型，详细可以参考 [Dataset loading utilities](https://scikit-learn.org/stable/datasets/index.html) 。
+
+Scikit-Learn 提供了多个类型的数据集，包括了：
+
+* 自带的小数据集，通过 `sklearn.datasets.load_<name>` 加载；
+* 可在线下载的数据集，通过 `sklearn.datasets.fetch_<name>` 下载；
+* 计算机生成，可通过 `sklearn.datasets.make_<name>` 生成；
+* svm 格式数据集，通过 `sklearn.datasets.load_svmlight_file(...)` 加载。
+
+如下是简单的示例。
 
 ### make_blobs
 

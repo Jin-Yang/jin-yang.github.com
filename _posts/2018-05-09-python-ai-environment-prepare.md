@@ -68,6 +68,11 @@ $ pip install --upgrade matplotlib
 
 ----- 安装Scikit-Learn
 $ pip install -U scikit-learn
+
+----- 安装StatsModels
+$ pip install statsmodels
+$ conda install statsmodels
+
 {% endhighlight %}
 
 然后通过如下代码进行测试。

@@ -30,13 +30,11 @@ description:
 * [Numpy 简介](/post/python-numpy-package-introduce.html) 一个扩充程序库，支持高级大量的维度数组与矩阵运算。
 * [Scipy 简介](/post/python-scipy-package-intorduce.html) 可以处理插值、积分、优化、图像处理、常微分方程数值解的求解。
 * [Pandas 简介](/post/python-pandas-package-introduce.html) 基于 NumPy 的工具库，主要是为了解决数据分析任务。
+* [Seaborn 简介](/post/python-seaborn-package-introduce.html) 在 matplotlib 的基础上又封装了一层，更方便使用。
 * [Matplotlib 简介](/post/python-matplotlib-package-intorduce.html) 绘图库包大量工具，几乎可以完成所有的图形绘制。
+* [StatsModels 简介](/post/python-statsmodels-package-introduce.html) 提供了经典频率学派统计方法，包括了多种统计模型。
 
 <!--
-* [StatsModels 简介](/post/python-matplotlib-package-intorduce.html)
-
-https://www.statsmodels.org/stable/index.html
-
 skleran 常用子模块 ：
 
 sklearn 是一个机器学习包。
@@ -46,21 +44,12 @@ sklearn 是一个机器学习包。
  降维 ：PCA ,特征选择 ，矩阵分解等。
  模型选择 ：网格搜索， 交叉验证 ，指标矩阵。
  预处理： 特征提取，正态化。
-
-statsmodels常用子模块
-
-回归模型：线性回归 ，通用线性回归，鲁邦线性模型  ，线性混合效应模型等。
-方差分析（ANOVA）。
-时间序列分析：AR , ARMA , ARIMA , VAR等。
-非参数方法： 核密度估计 ， 核回归。
-统计模型结果可视化。
-
-statsmodels更专注于统计推理，提供不确定性评价和P值参数，
 sklearn更专注于预测。
 -->
 
 ### 其它
 
+* [数据预处理](/post/math-machine-learning-pre-processing-methods-introduce.html) 介绍一些常见的数据预处理方法。
 * [数据集简介](/post/math-machine-learning-some-datasets-introduce.html) 包括 CSV、示例函数、SciKit-Learn 测试集等。
 
 ## 数学基础

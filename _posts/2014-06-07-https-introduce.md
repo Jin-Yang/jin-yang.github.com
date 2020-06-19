@@ -22,100 +22,10 @@ Secure Hypertext Transfer Protocol, HTTPS 也就是安全超文本传输协议�
 
 实际上，简单来说，它是 HTTP 的安全版，是使用 SSL(Secure Socket Layer)/TLS(Transport Layer Security) 加密的 HTTP 协议。通过 TLS/SSL 协议的的身份验证、信息加密和完整性校验的功能，从而避免信息窃听、信息篡改和信息劫持的风险。
 
-简单来说，HTTPS 提供了加密 (Encryption)、认证 (Verification)、鉴定 (Identification) 三种功能。如下的解释中，假设是张三和李四在通讯。
-
-{% highlight text %}
-私密性(Confidentiality/Privacy):
-    也就是提供信息加密；保证信息只有张三和李四知道，而不会被窃听。
-可信性(Authentication):
-    身份验证，主要是服务器端的，有些银行也会对客户端进行认证；用来证明李四就是李四。
-完整性(Message Integrity):
-    保证信息传输过程中的完整性，防止被修改；李四接收到的消息就是张三发送的。
-{% endhighlight %}
-
-如下是 SSL/TLS 协议的介绍。
-
-### SSL/TLS 协议
-
-SSL 最初是在 1996 年由 Netscape 发布，由于一些安全的原因 SSL v1.0 和 SSL v2.0 都没有公开，直到 1996 年的 SSL v3.0。TLS 是 v3.0 的升级版，目前市面上所有的 HTTPS 都是用的是 TLS 而非 SSL，而且很多地方都混用两者。
-
-![https]({{ site.url }}/images/linux/https-ssl-tls-layer.png "https"){: .pull-center width="75%" }
-
-其中上图中顶层的三块又组成了 SSL Handshaking Protocols，在处理时有三种状态。
-
-{% highlight text %}
-empty state -------------------> pending state ------------------> current state
-
-             Handshake Protocol                Change Cipher Spec
-{% endhighlight %}
-
-当完成握手后，客户端和服务端确定了加密、压缩和 MAC 算法及其参数，数据通过指定算法处理；而之前的所有操作都是明文传输的。
-
-
-### 关键技术
-
-首先，在实现时加密算法是公开的，而私密性是通过密钥保证的。另外，为了实现上述的机制，需要一些比较常见的技术。
-
-其中与密码学相关的内容，可以参考 [加密算法简介](/blog/encryption-introduce.html) 。
-
-#### 私钥交换 Key Exchange Algorithms
-
-发送信息的时候，需要通过对称加密来加密数据，此时就涉及到了私钥的交换，通常使用的算法包括了 Diffie-Hellman、RSA 。
-
-{% highlight text %}
-Bob's Public Key + Alice's Secret Key     Bob's Secret Key (Decrypt)
-          |----->-------->------->-------->------>-----|
-                                              Get Alice's Secret Key
-{% endhighlight %}
-
-对于 RSA 来说，所有人都知道 Bob 的公钥，只需要将 Alice 的私钥通过公钥进行加密即可，该信息只有通过 Bob 的私钥才可以解密。
-
-当然，在实际使用时还会增加其它的随机值。
-
-#### 数字证书 Digital Certificates
-
-到此，需要通过一种方法获取到 Bob 的公钥，这就是通过数字证书获取的。数字证书中除了包括了公钥信息，还有与 Bob 相关的信息。
-
-#### 数字证书认证机构 Certification Authority, CA
-
-接下来解决的是，如何确认数字证书的拥有着就像它声明的那样，为此引入了 Public Key Infrastructure, PKI ，包括一些与数字证书相关的软件、硬件等信息。
-
-CA 就是一个三方机构，用来证明 Bob 确实就是 Bob 。
-
-CA 认证分为三类：DV (domain validation)，OV (organization validation)，EV (extended validation)，证书申请难度从前往后递增，貌似 EV 这种不仅仅是有钱就可以申请的。
-
-#### 数字签名 消息完整性
-
-实际上有篇很不错的文章 [What is a Digital Signature?](http://www.youdzone.com/signature.html) ，也可以参考 [本地文章](/reference/linux/What is a Digital Signature.mht)，在此就不做过多介绍了。
-
-
 
 ## 执行流程
 
 我们直接从 WireShark 的官网网站上下载了一个 HTTPS 的示例，详细的下载地址可以参考文章末尾的参考内容。
-
-<!--
-{% highlight text %}
-     Client                 |   Server
-                            |
-                            |
-                            |
-                            |
-+----------------------     |      -------------------
-|=== Client Hello ===       |
-                            |
-                            |
-                            |
-                            |
-                            |
-                            |
-                            |
-                            |
-                            |
-                            |
-                            |
-{% endhighlight %}
--->
 
 首先，是正常的 TCP 开始的三次握手连接，在此就不做过多的介绍了；完成之后才会开始 SSL 之间的沟通，这也是接下来重点介绍的内容。
 

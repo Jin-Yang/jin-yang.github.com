@@ -260,17 +260,47 @@ SessionID 存在一些问题，如果服务端采用了分布式，当同一个�
 
 OpenSSL 会将会话信息保存在上下文中，在 TLSv1.2 之前是在握手阶段发送会话 ID ，
 
+## 其它
 
-## 错误处理
+### 错误处理
 
 大部分 OpenSSL 的函数在成功时返回 1 ，大部分失败返回 0 ，也有少量函数返回 -1 的，例如 `SSL_connect()` 函数，所以，可以通过 `!= 1` 判断是否异常。
 
 详细的错误信息会保存在错误队列中 (一个 OpenSSL 实现的线程变量中)，可能会返回多个错误信息，可以通过函数 `ERR_print_errors_fp()` 或者 `ERR_print_errors()` 打印所有错误信息。
 
+当有异常发生时，会将一些重要的信息记录下来，其中最基本的是 32bits 的错误码，如果无消息则会返回 0 ，常用的使用函数如下。
 
+{% highlight text %}
+/* 只获取错误代码 */
+unsigned long ERR_get_error(void);       // 第一个，并将其移除队列
+unsigned long ERR_peek_error(void);      // 第一个，不移除队列
+unsigned long ERR_peek_last_error(void); // 最后一个，不移除队列
 
+/* 获取错误码、错误产生的源文件、行号 */
+unsigned long ERR_get_error_line(const char **file, int *line);
+unsigned long ERR_peek_error_line(const char **file, int *line);
+unsigned long ERR_peek_last_error_line(const char **file, int *line);
 
-## 注意事项
+/* 除了获取上述信息外，还包括了额外的数据及如何处理这些数据的标示 */
+unsigned long ERR_get_error_line_data(const char **file, int *line, const char **data, int *flags);
+unsigned long ERR_peek_error_line_data(const char **file, int *line, const char **data, int *flags);
+unsigned long ERR_peek_last_error_line_data(const char **file, int *line, const char **data, int *flags);
+
+在通过最后一类获取数据时，多数是字符串，可以按照 C 的字符串方式使用；也可能是分配的内容，可以通过 `OPENSSL_free()` 函数释放。
+
+/* 获取指定错误码的全部错误消息 */
+char *ERR_error_string(unsigned long e, char *buf);
+void  ERR_error_string_n(unsigned long e, char *buf, size_t len);
+
+/* 获取指定错误码发生的库、函数、原因 */
+const char *ERR_lib_error_string(unsigned long e);
+const char *ERR_func_error_string(unsigned long e);
+const char *ERR_reason_error_string(unsigned long e);
+{% endhighlight %}
+
+上述的 buf 最少为 120 字节，会返回一个 `error:[error code]:[library name]:[function name]:[reason string]` 格式的字符串。
+
+### TLSv1.3
 
 对于 TLSv1.3 版本之后，Session Ticket 会在握手成功之后发送，此时需要调用 `SSL_read()` 函数，对于 OpenSSL 来说才会完成 Session 信息的接收。
 
@@ -283,13 +313,7 @@ OpenSSL 会将会话信息保存在上下文中，在 TLSv1.2 之前是在握手
 https://nachtimwald.com/2014/10/06/client-side-session-cache-in-openssl/
 
 可以参考 Nginx 的实现
-https://github.com/nginx/nginx/blob/master/src/http/modules/ngx_http_ssl_module.c
-src/event/ngx_event_openssl_stapling.c
-src/event/ngx_event_openssl.c
-
-Hitch 1.5.2 使用的是libev
-https://github.com/varnish/hitch
-
+https://github.com/nginx/nginx/blob/master/src/http/modules/ngx_http_ssl_module.c src/event/ngx_event_openssl_stapling.c src/event/ngx_event_openssl.c Hitch 1.5.2 使用的是libev https://github.com/varnish/hitch
 一个简单的HTTP服务端实现
 https://github.com/criticalstack/libevhtp
 
@@ -302,7 +326,6 @@ https://github.com/deleisha/evt-tls
 Golang的编程以及一些参考连接
 https://github.com/denji/golang-tls
 -->
-
 
 
 

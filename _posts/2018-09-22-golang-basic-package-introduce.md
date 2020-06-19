@@ -188,8 +188,12 @@ Removing unused dependencies.
 
 {% highlight text %}
 export GO111MODULE=on
-export GOPROXY=http://cmc-cd-mirror.rnd.huawei.com/goproxy/
+export GOPROXY=https://goproxy.cn
 export GONOSUMDB=*
+
+----- 版本大于1.13(推荐)
+go env -w GO111MODULE=on
+go env -w GOPROXY=https://goproxy.cn,direct
 {% endhighlight %}
 
 其中 `GO111MODULE` 打开模块支持，忽略 `GOPATH` 以及 `vendor` 目录；`GONOSUMDB` 默认下载完依赖模块后，会检查其校验值，默认是 `https://sum.golang.org` ，这里过滤掉所有的包。

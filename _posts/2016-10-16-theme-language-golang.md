@@ -70,6 +70,7 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 * [GoLang 单元测试](/post/golang-testing-method-introduce.html) 使用的是基本的 testing 模块，可以执行单元测试、性能测试。
 * [GoLang Web 测试](/post/golang-testing-method-httptest-introduce.html) 基本模块中提供了 httptest 对 Web 进行模拟测试，简介之。
 * [GoLang 竞态检查](/post/golang-race-condition-introduce.html) 在并发编程中如何进行竞态条件的测试。
+* [GoLang 调试方法](/post/golang-call-frame-debug-method-introduce.html)
 
 ### 常用模块
 

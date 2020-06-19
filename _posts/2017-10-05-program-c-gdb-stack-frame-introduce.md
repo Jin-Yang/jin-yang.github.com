@@ -19,21 +19,23 @@ description: 栈是一块内存空间，会从高地址向低地址增长，同�
 这里的介绍都是以 x86_64 为基础，而栈帧的操作大部分是与寄存器相关，不同的架构使用寄存器的方式略有区别。
 
 {% highlight text %}
- addr       contents        running     access
+addr       contents       running          access           comments
 
-       +-----------------+
-       |   ~ StackTop ~  |
- High  +-----------------+
-  |    |    rbp(start)   |     |
-  |    +-----------------+     |(main)
-  V    |  ARGS9 ~ ARGS7  |     |       16(%rbp) ~ 32(%rbp)
-  |    +-----------------+     |
-  V    |  ReturnAddress  |     v            8(%rbp)
-  |    +-----------------+   -----
-  |    |    rbp(main)    |     |             (%rbp)
-  V    +-----------------+     |(foobar)
-  |    |  LocalVariable  |     v           -4(%rbp)
- Low   +-----------------+   -----
+High  +-----------------+
+ |    |   ~ StackTop ~  |
+ |    +-----------------+ -----
+ |    |    rbp(start)   |   |
+ |    +-----------------+   |(main)
+ |    |  ARGS9 ~ ARGS7  |   V     16(%rbp) ~ 32(%rbp) <- caller将参数压栈
+ |    +-----------------+ -----
+ |    |  ReturnAddress  |   |          8(%rbp)        <- call指令默认压栈操作
+ |    +-----------------+   |
+ |    |    rbp(main)    |   |           (%rbp)        <- callee负责保存上个函数栈基址方便恢复
+ |    +-----------------+ -----
+ |    +  ARGS6 ~ ARGS0  +   |
+ |    +-----------------+   | (foobar)
+ V    |  LocalVariable  |   V         -4(%rbp)
+Low   +-----------------+ -----
 {% endhighlight %}
 
 栈帧的格式基本如下所示，`$rsp` 寄存器保存了当前栈的地址，可以通过 `pushq` `popq` `call` 等指令进行隐式操作，通过 `$rbp` 保存栈帧的地址，并进行相对寻址。
@@ -81,13 +83,13 @@ int main(void)
 foobar:
 	pushq   %rbp              # 保存上次的栈
 	movq    %rsp, %rbp        # 同时使用rbp进行栈的快速操作
-	movl    %edi, -4(%rbp)
+	movl    %edi, -4(%rbp)    # 将通过寄存器传递的参数保存在栈中
 	movl    %esi, -8(%rbp)
 	movl    %edx, -12(%rbp)
 	movl    %ecx, -16(%rbp)
 	movl    %r8d, -20(%rbp)
-	movl    %r9d, -24(%rbp)
-	movl    -8(%rbp), %eax
+	movl    %r9d, -24(%rbp)   # 到此为止
+	movl    -8(%rbp), %eax    # 开始加法计算，edx保存了计算结果
 	movl    -4(%rbp), %edx
 	addl    %eax, %edx
 	movl    -12(%rbp), %eax
@@ -98,12 +100,12 @@ foobar:
 	addl    %eax, %edx
 	movl    -24(%rbp), %eax
 	addl    %eax, %edx
-	movl    16(%rbp), %eax
+	movl    16(%rbp), %eax    # 这里是通过栈传递的参数
 	addl    %eax, %edx
 	movl    24(%rbp), %eax
 	addl    %eax, %edx
 	movl    32(%rbp), %eax
-	addl    %edx, %eax
+	addl    %edx, %eax        # 计算最后一次加法同时将结果保存在eax中
 	popq    %rbp              # 恢复main的栈
 	ret
 
@@ -111,9 +113,11 @@ main:
 	pushq %rbp                # 将$rsp减一个指针长度(8Bytes)，并将$rbp的值写入到rsp指向的地址处
 	movq　%rsp, %rbp          # 将$rsp赋值给rbp寄存器，完成main栈帧的保存
 	subq  $24, %rsp           # 需要通过栈传递三个参数，每个参数占用8Bytes(实际有效的是高4Bytes)
+
 	movl  $9, 16(%rsp)
 	movl  $8, 8(%rsp)
 	movl  $7, (%rsp)
+
 	movl  $6, %r9d            # 剩余的6个参数通过寄存器进行传递
 	movl  $5, %r8d
 	movl  $4, %ecx

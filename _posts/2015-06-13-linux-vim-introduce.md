@@ -181,7 +181,7 @@ set guitablabel=%{ShortTabLabel()}
 {% highlight text %}
 :e <path/to/file>            → 打开一个文件，保存到缓冲区列表，e是edit缩写
 :badd <path/to/file>         → 添加到缓冲区列表中
-:saveas <path/to/file>       → 另存为 &lt;path/to/file&gt;
+:saveas <path/to/file>       → 另存为 <path/to/file>
 :wq                          → 存盘并退出
 :x                           → 表示仅在需要时保存
 ZZ                           → 不需要输入冒号并回车
@@ -221,9 +221,19 @@ ZZ                           → 不需要输入冒号并回车
 : set foldenable
 {% endhighlight %}
 
-当进入插入模式，将会自动打开折叠，也可通过 ```:nnoremap <space> za``` 定义通过空格展开/关闭。
+进入插入模式会自动打开折叠，也可通过 `:nnoremap <space> za` 定义通过空格展开/关闭。主要有如下几种方式，当进入非 manual 时，所有的折叠将会删除重建，反之则不会。
 
-主要有如下几种方式，当进入非 manual 时，所有的折叠将会删除重建，反之则不会。
+#### Manual Fold 手动折叠
+
+{% highlight text %}
+:set foldmethod=manual
+{% endhighlight %}
+
+在可视化模式下，通过 `zf` 折叠选中的文本；也可以通过组合命令折叠指定行，如 `zf70j` 光标之后 70 行。
+
+<!--`5zF` (当前行及随后 4 行折叠)；zf7G(当前行至全文第 7 行折叠)、zfa[(折叠括号(如()、[]、{}、><等)包围的区域)。-->
+
+默认不会保存折叠信息，通过 `:mkview` 来保存当前折叠状态；下次打开文档时，使用 `:loadview` 载入折叠信息；使用命令 `:help fold-manual` 查看关于手工折叠的帮助信息。
 
 #### Marker Fold 标记折叠
 
@@ -232,20 +242,9 @@ ZZ                           → 不需要输入冒号并回车
 vim: foldmarker={,} foldlevel=0 foldmethod=marker :
 {% endhighlight %}
 
-可以精确地定义折叠，折叠的标记通过 ```foldmaker``` 定义，默认以 \{\{\{ 开始，以 \}\}\} 结束，同时在标记后面可以添加数字表示折叠的层级，通过 ```foldlevel``` 设置级别，超过默认值则会折叠。
-
+可以精确地定义折叠，折叠的标记通过 `foldmaker` 定义，默认以 \{\{\{ 开始，以 \}\}\} 结束，同时在标记后面可以添加数字表示折叠的层级，通过 `foldlevel` 设置级别，超过默认值则会折叠。
 
 <!--
-#### Manual Fold 手动折叠
-
-{% highlight text %}
-:set foldmethod=manual
-{% endhighlight %}
-
-在可视化模式下，通过命令 zf ，将折叠选中的文本；通过组合使用移动命令折叠指定行，如，zf70j(折叠光标之后的70行)、5zF(当前行及随后 4 行折叠)；zf7G(当前行至全文第 7 行折叠)、zfa[(折叠括号(如()、[]、{}、><等)包围的区域)。<br><br>
-
-vim 不会自动记忆手工折叠，可以通过命令 :mkview 来保存当前的折叠状态；下次打开文档时，使用命令 :loadview 来载入记忆的折叠信息；使用命令 :help fold-manual 查看关于手工折叠的帮助信息。
-
 #### Indent Fold 缩进折叠
 
 {% highlight text %}

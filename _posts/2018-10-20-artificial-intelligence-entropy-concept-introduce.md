@@ -14,6 +14,8 @@ description:
 
 ## 简介
 
+对一些基本概念的简单介绍。
+
 ### 信息量
 
 信息量是对信息的度量，就跟时间的度量是秒一样，而接受到的信息量跟具体发生的事件有关。
@@ -22,7 +24,7 @@ description:
 
 因此需要查找一个函数满足，事件的信息量应该随着其发生概率而递减的，且不能为负。当然，同时还需要满足，如下条件。
 
-对于两个不相关的事件 x 和 y，那么观察到的两个事件同时发生时获得的信息应该等于观察到的事件各自发生时获得的信息之和，也就是 $h(x, y)=h(x) + h(y)$ 。
+对于两个不相关的事件 $x$ 和 $y$ ，那么观察到的两个事件同时发生时获得的信息应该等于观察到的事件各自发生时获得的信息之和，也就是 $h(x, y)=h(x) + h(y)$ 。
 
 因为事件 $x$ $y$ 不相关，那么满足 $p(x,y) = p(x)*p(y)$ 条件，显然，需要引入一个对数函数。
 
@@ -220,37 +222,37 @@ ID3 is acronym of Iterative Dichotomiser.
 https://github.com/serengil/decision-trees-for-ml
 
 
-## 数据集
-import sklearn.datasets as ds
-print(ds.load_iris())
-
-sklearn 提供了多个类型的数据集，包括了：
-
-* 自带的小数据集，通过 `sklearn.datasets.load_<name>` 加载；
-* 可在线下载的数据集，通过 `sklearn.datasets.fetch_<name>` 下载；
-* 计算机生成，可通过 `sklearn.datasets.make_<name>` 生成；
-* svm 格式数据集，通过 `sklearn.datasets.load_svmlight_file(...)` 加载。
-
-如下是简单的示例。
-
-### 鸢尾花
-
-用来做统计分类，数据集包括了：A) 花瓣的长度和宽度；B) 花萼的长度和宽度。对应的单位是厘米，然后根据这些数据分成三类， Setosa、Versicolor、Virginica。
-
-数据文件通过 `csv` 格式保存，加载之后是一个字典类型，其中的 Key 包括了如下：
-
-* `data` 主要的数据集；
-* `feature_names` 数据集每列对应名称，也就是花瓣长宽、花萼长宽；
-* `target` 分类，也就是如上的三种，使用数值 `0~2` 标示；
-* `target_names` 分类名称，通过上面的序号对应名字；
-* `filename` 数据文件的保存路径；
-* `DESCR` 数据集相关信息的描述。
-
-可以用于分类、决策树等场景。
-
 <!--
-更多的数据集可以参考
-https://www.cnblogs.com/nolonely/p/6980160.html
+
+Decision Tree
+https://zhuanlan.zhihu.com/p/32164933
+https://machinelearningmastery.com/implement-decision-tree-algorithm-scratch-python/
+https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/
+
+############################################
+## CART 决策树
+############################################
+
+Classfication And Regression Tree, CART 采用二分递归分割的技术将当前样本集分为两个子样本集，使得生成的每个非叶子节点都有两个分支。
+
+非叶子节点的特征取值为 True 和 False，其中左分支取值为 True，右分支取值为 False，因此 CART 算法生成的决策树是结构简洁的二叉树。CART 可以处理连续型变量和离散型变量，利用训练数据递归的划分特征空间进行建树，用验证数据进行剪枝。
+
+如果待预测分类是离散型数据，则CART生成分类决策树。
+如果待预测分类是连续性数据，则CART生成回归决策树。
+
+
+https://blog.csdn.net/weixin_40604987/article/details/79296427
+https://zhuanlan.zhihu.com/p/53337716
+
+
+决策树竟然还有剪枝
+https://blog.csdn.net/u012328159/article/details/79285214
+https://zhuanlan.zhihu.com/p/30296061
+
+
+从头开始实现ID3算法
+https://zhuanlan.zhihu.com/p/27905967
+
 
 /post/program-c-gcc-security-options.html
 -fPIE 是编译选项；而 -pie 是连接选项

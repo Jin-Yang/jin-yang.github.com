@@ -39,6 +39,8 @@ Community Enterprise Operating System, CentOS 是 Linux 发行版之一，它是
 * [Linux 后台服务管理](/post/linux-daemon-tools.html) 介绍目前常用的后台服务管理，例如 Monit、supervisor、goreman。
 * [Linux 绘图工具](/post/linux-gnuplot.html) 一个通过命令行驱动的绘图工具，支持多个平台。
 * [Rsync & Inotify](/post/rsync-inotify.html) 通过这两个命令可以快速实现文件的同步。
+* [Linux Alternatives](/post/linux-tools-alternatives-command-introduce.html) 用来管理多个软件或者多个版本的实现。
+
 
 ### 其它
 

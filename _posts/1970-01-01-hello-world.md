@@ -2426,13 +2426,11 @@ http://blog.csdn.net/work_msh/article/details/8470277
 
 
 
-<!--
 O_NONBLOCK VS. O_NDELAY
 http://blog.csdn.net/ww2000e/article/details/4497349
 
 SO_ACCEPTFILTER
 http://blog.csdn.net/hbhhww/article/details/8237309
--->
 
 
 
@@ -4285,118 +4283,6 @@ Answer to the Ultimate Question of Life, The Universe, and Everything. 42
 
 * [miniz](https://github.com/richgel999/miniz) Single C source file zlib-replacement library.
 
-
-
-TAIL日志方式
-https://www.vanheusden.com/turbotail/
-加密方式
-https://www.lysator.liu.se/~nisse/nettle/
-https://github.com/Rupan/blowfish
-CICD
-https://github.com/buildbot/buildbot
-https://github.com/ice799/ltrace
-libelf格式化
-https://github.com/WolfgangSt/libelf
-内存测试
-https://github.com/jnavila/memtester
-https://github.com/david415/linux-ftools
-skynety游戏的网络框架
-https://github.com/cloudwu/skynet
-HashTable
-https://troydhanson.github.io/uthash/
-https://github.com/jamesroutley/write-a-hash-table
-监控
-https://github.com/ice799/ltrace
-https://github.com/lebinh/ngxtop
-内存时序数据库
-https://github.com/facebookarchive/beringei
-PID控制
-https://github.com/m-lundberg/simple-pid
-http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/
-文件CheckSUM校验
-https://github.com/cjavad/hashit
-消息队列
-https://github.com/beanstalkd/beanstalkd
-HASH库的实现
-https://github.com/troydhanson/uthash
-Fuzz
-https://github.com/thiemonagel/bunny-the-fuzzer
-Cron
-https://github.com/dubiousjim/dcron
-https://github.com/yo8192/fcron
-常用的网络工具
-https://github.com/iputils/iputils
-https://github.com/flok99/httping
-序列化库
-https://github.com/troydhanson/tpl
-https://github.com/nanopb/nanopb
-一系列C语言实现的wrap工具，可以用来测试
-https://cwrap.org/
-一个简单的状态机实现
-https://github.com/misje/stateMachine
-Go语言中实现的平滑重启
-https://github.com/cloudflare/tableflip
-logfmt格式解析
-https://github.com/clibs/logfmt
-
-容器中使用的init
-https://github.com/krallin/tini
-ChaosMonkey 2.0
-https://github.com/Netflix/chaosmonkey/
-
-P2P协议详解
-http://www.52im.net/thread-50-1-1.html
-
-
-
-HPACK HTTP2协议解析
-https://github.com/Dridi/cashpack
-高并发通用库
-https://github.com/concurrencykit/ck
-有很多不错的测试库
-https://github.com/clibs/cmocka
-https://github.com/samvrlewis/cmocka-embedded-example
-模板库C++
-https://github.com/pantor/inja
-很多代码库，包括了一个HTTP的压测程序
-http://home.tiscali.cz/~cz210552/
-高性能的statsd服务器
-https://github.com/github/brubeck
-https://github.com/statsite/statsite
-用户面的流量整形
-https://github.com/mariusae/trickle
-死锁检测
-https://github.com/rouming/dla
-通过SCM_RIGHTS传递进程描述符
-https://github.com/vomlehn/libpassfds
-一个WebSocket的实现，还包括了一系列的基于libev的实现
-https://github.com/zhaojh329/libuwsc
-https://github.com/warmcat/libwebsockets
-libev+c-ares实现的异步DNS解析
-https://github.com/Mons/libevares
-QUIC或者说http3的实现
-https://github.com/ngtcp2/ngtcp2
-https://github.com/nghttp2/nghttp2
-协程实现
-https://github.com/sustrik/libdill
-URL解析
-https://github.com/uriparser/uriparser
-HTTP库
-https://github.com/h2o/h2o
-https://acme.com/software/mini_httpd/
-https://github.com/Karlson2k/libmicrohttpd
-lynis安全审计
-https://github.com/CISOfy/lynis
-读取进程中内存数据
-https://github.com/rek7/mXtract
-https://github.com/citypw/lcamtuf-memfetch
-resiliency库实现
-https://github.com/eapache/go-resiliency
-https://github.com/afex/hystrix-go
-无锁队列
-https://github.com/je-so/iqueue
-基于wxWidgets的十六进制编辑器
-https://wxmedit.github.io/
 
 
 

@@ -36,6 +36,7 @@ Git 是一免费、开源的分布式版本控制系统，可有效、高速的�
 * [Git 撤销操作](/post/git-cancel-reset-operation-introduce.html) 对于不同的场景，一些常见的撤销处理方法。
 * [Git 统计工具](/post/git-some-statistic-commands-and-tools-introduce.html) 对于一些常见指标的统计。
 * [Git Patch 使用](/post/git-some-basic-patch-comand-usage.html) 通过 git 可以很容易将 Patch 提取出来。
+* [Git LFS 使用](/post/git-large-file-storage-introduce.html) 由 GitHub 实现的一种处理大文件的解决方案。
 
 ## CI/CD
 
@@ -81,7 +82,7 @@ Vim 是一个功能强大、高度可定制的文本编辑器，与其相匹敌�
 * [VIM Tags 相关](/post/linux-vim-third-plugins-tags-stuff-introduce.html)
 * [VIM LaTeX 使用](/post/linux-vim-latex-snippets-introduce.html)
 
-常用快捷键整理。
+常用快捷键整理，当前的配置可以通过 `:map` 命令查看。
 
 {% highlight text %}
 let mapleader=','
@@ -89,7 +90,33 @@ let mapleader=','
 <Leader>k              ALE向上查找错误
 
 <Ctrl-j/b/f>           Snips自动填充、向后、向前选择
+
+<F2>                   取消行结束的空白字符
+<F9>                   Paste和NoPaste模式之间切换
 {% endhighlight %}
+
+<!--
+VIM优化
+https://wizardforcel.gitbooks.io/use-vim-as-ide/content/4.html
+
+
+* 调试模式，通过 `-D` 参数启动，此时能够使用 `cont` `next` `interrupt` `step` `quit` `breakadd` `breakdel` 等调试命令；
+* 手动加载配置，通过 `-u` 参数启动，然后通过 `:source` 命令逐个加载；
+* 修改日志级别，通过 `-V` 参数指定，或者通过 `:set verbose` 以及 `:set verbosefile` 进行设置。
+
+https://harttle.land/2018/12/05/vim-debug.html
+
+VIM中一个Python自动提示工具
+https://vimjc.com/jedi-vim-plugin.html
+
+VIM内嵌terminal 可以通过 :vert term 启动
+
+VIM 已经被 neovim 逼疯了。
+https://www.dannyadam.com/blog/2019/05/debugging-in-vim/
+
+https://fzheng.me/2018/05/28/termdebug/
+https://www.dannyadam.com/blog/2019/05/debugging-in-vim/
+-->
 
 ## 其它
 

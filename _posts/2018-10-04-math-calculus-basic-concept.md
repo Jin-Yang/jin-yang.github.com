@@ -24,7 +24,7 @@ description:
 导数是微积分的形态之一，一般通过极限进行定义。
 
 $$
-f'(x_0) = \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta x} = \lim_{\Delta x \to 0} \frac{f(x_0 + \Delta x) - f(x_0)}{\Delta x}
+f'(x_0) = \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta x} = \lim_{\Delta x \to 0} \frac{f(x_0 + \Delta x) - f(x_0)}{\Delta x} = \lim_{x \to x_0} \frac{f(x) - f(x_0)}{x - x_0}
 $$
 
 导数 $f' (x_0)$ 反映的是函数 $f(x)$ 在点 $x_0$ 处沿 $x$ 轴正方向的变化率。

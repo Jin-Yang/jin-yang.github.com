@@ -23,6 +23,9 @@ Vim 是一个功能强大、高度可定制的文本编辑器，在 Vi 的基础
   1. Vundle           --- the plug-in manager for Vim
   2. Vim-Plug         +++ Minimalist Vim Plugin Manager
 
+语法检查
+  1. ALE              +++ syntax checking and semantic errors
+
 自动格式化
   1. vim-autoformat   +++ code formatting
 
@@ -140,6 +143,8 @@ PlugUpgrade            升级vim-plug自己
 
 ## 语法检查
 
+常用经典的 Syntastic ，以及最早开始支持异步的 neomake 等，推荐使用 ALE 。
+
 ### ALE
 
 [Asynchronous Lint Engine](https://github.com/dense-analysis/ale) 一个异步的检查引擎，相比来说更加快速，不会感到明显的卡顿。
@@ -149,8 +154,6 @@ PlugUpgrade            升级vim-plug自己
 {% highlight text %}
 Plug 'dense-analysis/ale'
 {% endhighlight %}
-
-
 
 ### Syntastic
 
@@ -463,7 +466,17 @@ set autochdir
 
 ### 注释
 
-[NerdCommenter](https://github.com/preservim/nerdcommenter)
+可以对代码快速注释，详细的配置可以参考 [NerdCommenter](https://github.com/preservim/nerdcommenter) 中的介绍，常用快捷键如下。
+
+{% highlight text %}
+<leader>ca          在可选的注释方式之间切换，比如C的块注释/* */和行注释//
+
+<leader>cc          加注释
+<leader>cu          解开注释
+<leader>c<space>    加上/解开注释, 智能判断
+
+<leader>cs          对齐块方式，所谓的Sexy模式
+{% endhighlight %}
 
 ### Tabular
 

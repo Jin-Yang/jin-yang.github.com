@@ -24,13 +24,10 @@ TMUX 类似于 screen，是一个窗口管理器，而且功能更加强大，�
 
 tmux 使用 C/S 模型构建，分为以下单元模块：
 
-* Server，服务器。一个 tmux 命令执行后启动一个 tmux 服务；
-
-* Session，会话。一个 tmux 服务可以拥有多个 session ，一个 session 可以看作是 tmux 管理下的伪终端的一个集合；
-
-* Window，窗口。一个 session 可能会有多个 window 与之关联，每个 window 都是一个伪终端，会占据整个屏幕；
-
-* Pane，面板。一个 window 可以被分割成多个 pane ，每个都是一个 pty ，可以通过 tty 命令查看。
+* Server 服务器。一个 tmux 命令执行后启动一个 tmux 服务；
+* Session 会话。一个 tmux 服务可以拥有多个 session ，一个 session 可以看作是 tmux 管理下的伪终端的一个集合；
+* Window 窗口。一个 session 可能会有多个 window 与之关联，每个 window 都是一个伪终端，会占据整个屏幕；
+* Pane 面板。一个 window 可以被分割成多个 pane ，每个都是 pty ，可以通过 tty 命令查看。
 
 基本结构如下图所示。
 
@@ -39,21 +36,16 @@ tmux 使用 C/S 模型构建，分为以下单元模块：
 tmux 所支持的特性包括了：
 
 * 支持 UTF-8 编码及 256 色终端。
-
 * 可在多个缓冲区进行复制和粘贴。
-
 * 可通过交互式菜单来选择窗口、会话及客户端。
-
 * 支持跨窗口搜索。
-
 * 支持自动及手动锁定窗口。
 
 另外，通过 libevent 提供高性能。
 
-
 ### 安装
 
-在 CentOS 中可以通过 yum 安装，也可以按照如下方式，采用源码安装。先从 [tmux.sourceforge.net](http://tmux.sourceforge.net/) 上下载源码。tmux 需要有 ncurses 和 libevent 的支持，需要 libevent-2.0 版本，而通过 yum 只能安装低版本的，所以使用源码编译，安装过程如下。
+在 CentOS 中可以通过 yum 安装，也可以采用源码安装。先从 [tmux.sourceforge.net](http://tmux.sourceforge.net/) 上下载源码。tmux 需要有 ncurses 和 libevent 的支持，需要 libevent-2.0 版本，而通过 yum 只能安装低版本的，所以使用源码编译，安装过程如下。
 
 {% highlight text %}
 # yum install ncurses-devel         # 安装 ncurses 和 libevent 库
@@ -68,7 +60,7 @@ $ make
 # make install
 {% endhighlight %}
 
-在 Ubuntu 中可以通过 apt-get install tmux 直接安装。
+在 Ubuntu 中可以通过 `apt-get install tmux` 直接安装。
 
 ### 启动
 
@@ -76,13 +68,15 @@ $ make
 
 启动时的参数选项有：
 
-* -2: 强制 tmux 假设终端支持 256 色。
-* -8: 类似于 -2 ，不过是强制 tmux 假设终端支持 88 色。
-* -c shell-command: 使用默认的 shell 执行命令，主要用于当 tmux 作为 login shell 时使用。
-* -f file: 指定配置文件，默认检查 /etc/tmux.conf、~/.tmux.conf，如果有命令错误，则会直接退出。
-* -V: 查看版本号。
+* `-2` 强制 tmux 假设终端支持 256 色。
+* `-8` 类似于 `-2`，不过是强制 tmux 假设终端支持 88 色。
+* `-c shell-command` 使用默认的 shell 执行命令，主要用于当 tmux 作为 login shell 时使用。
+* `-f file`  指定配置文件，默认检查 `/etc/tmux.conf`、`~/.tmux.conf`，如果有命令错误，则会直接退出。
+* `-V` 查看版本号。
 
-默认 tmux 会创建的匿名的 session ，可以通过如下命令创建一个命名的 session ， Ctrl-b 是命令前缀(Command prefix)，通过前缀告知 tmux 下面的命令是发给 tmux 的，而非终端。常见的操作如下。
+默认 tmux 会创建的匿名的 session ，可以通过如下命令创建一个命名的 session ， Ctrl-b 是命令前缀(Command prefix)，通过前缀告知 tmux 下面的命令是发给 tmux 的，而非终端。
+
+常见操作如下。
 
 {% highlight text %}
 $ tmux new-session -s basic    # 创建一个名为 basic 的 session
@@ -99,10 +93,9 @@ $ tmux kill-session -t basic   # 关闭一个 session
 
 如下是各种常用的命令。
 
-
 ## 常用快捷键
 
-默认采用 Ctrl-b 作为 prefix，用于激活控制台。
+默认采用 `Ctrl-b` 作为 prefix，用于激活控制台。
 
 ### 常见操作
 
@@ -171,7 +164,24 @@ Ctrl+o                            → 顺时针旋转当前窗口的面板
 Alt+方向键                         → 以5个单元格为单位移动边缘以调整当前面板大小
 {% endhighlight %}
 
-另外，可以通过 &lt;prefix&gt;+space 在预置的面板布局中循环切换；依次包括 even-horizontal (横向平铺)、even-vertical(垂直平铺)、main-horizontal(大的 panes 在顶部，底部会有很多小的 panes )、main-vertical(大的 pane 在左边，右边很多小的 panes )、tiled(平均分配各个窗口) 。
+另外，可以通过 `<prefix>+space` 在预置的面板布局中循环切换；依次包括 even-horizontal (横向平铺)、even-vertical(垂直平铺)、main-horizontal(大的 panes 在顶部，底部会有很多小的 panes )、main-vertical(大的 pane 在左边，右边很多小的 panes )、tiled(平均分配各个窗口) 。
+
+### 复制粘贴
+
+因为 TMUX 有面板的概念，如果直接使用终端默认的 `Ctrl-Shift-C/V` 的方式进行复制，会导致异常，当然也可以将面板最大化之后复制。
+
+其实，TMUX 有自己的复制粘贴方式。
+
+默认是通过 `Ctrl-b [` 进入到复制模式 (可以映射到 `Ctrl-b y` 快捷键)，然后可以通过 vim 的方式选择范围，通过 `Space` (默认) 或者 `v` (vim模式) 开始选择，完成后直接回车，然后通过 `Ctrl-b ]` (可以映射到 `Ctrl-b p` 快捷键) 粘贴。
+
+注意，进入到复制模式后，可以翻页查找之前的内容，如果通过 `set-window-option -g mode-keys vi` 绑定了 VIM 模式，就可以直接使用 VIM 常用的一些快捷键。
+
+另外，TMUX 会维护多个复制缓冲区，可以通过 `Ctrl-b =` 查看，包含了可以直接通过回车选择。
+
+<!--
+https://www.cnblogs.com/weiyinfu/p/10462738.html
+-->
+
 
 ### 其它
 
@@ -179,15 +189,13 @@ Alt+方向键                         → 以5个单元格为单位移动边缘�
 t                                 → 显示时间，回车返回
 {% endhighlight %}
 
-
-
 ## 定制 tmux
 
-tmux 的系统级配置文件为 /etc/tmux.conf ，用户级配置文件为 ~/.tmux.conf 。
+tmux 的系统级配置文件为 `/etc/tmux.conf` ，用户级配置文件为 `~/.tmux.conf` 。
 
-有些资料中建议修改 Prefix 组合键，如 CapsLock 和 A 相邻，可以将 CapsLock 映射为 Ctrl （需要使用操作系统的键盘映射），并将 Prefix 的 Ctrl-b 重定义为 Ctrl-a ，这样的话可以非常方便的使用。
+有些资料中建议修改 Prefix 组合键，如 CapsLock 和 A 相邻，可以将 CapsLock 映射为 Ctrl (需要使用操作系统的键盘映射)，并将 Prefix 的 `Ctrl-b` 重定义为 `Ctrl-a`，这样可以方便使用。
 
-但是在 Linux 操作中会与 Bash 的 Ctrl-A 冲突，因此没有修改该键，主要是因为 Prefix 只有在调整 tmux 才会使用。如上的配置，可以在命令行中执行如下命令查看：
+但是在 Linux 操作中会与 Bash 的 `Ctrl-A` 冲突，因此没有修改该键，主要是因为 Prefix 只有在调整 tmux 才会使用。如上的配置，可以在命令行中执行如下命令查看：
 
 {% highlight text %}
 $ tmux show-options -g
@@ -376,9 +384,9 @@ for i in {0..255}; do printf "\x1b[38;5;${i}mcolour${i}  "; done
 
 tmux 的各个组件可以通过前景色和后景色进行设置。
 
-在 Putty 中，右击 -> Change Settings... -> Window -> Colours 选中， Allow terminal to specify ANSI colours 和 Allow terminal to use xterm 256-colour mode ，并在 Indicate bolded text by changing: The colour 。
+在 Putty 中，`右击 -> Change Settings... -> Window -> Colours` 选中，`Allow terminal to specify ANSI colours` 和 `Allow terminal to use xterm 256-colour mode`，并在 `Indicate bolded text by changing: The colour`。
 
-tmux 启动时可以使用 -2 参数，此时 tmux 会强制假设终端支持 256 色。
+tmux 启动时可以使用 `-2` 参数，此时 tmux 会强制假设终端支持 256 色。
 
 ### 设置状态栏
 
@@ -450,8 +458,7 @@ $ tmux -S /var/tmux/pairing attach # 另一个用户连接
 join-pane -s 1.0 -t 2
 {% endhighlight %}
 
-如果没有通过 -t 指定目标，那么默认为当前的 window ，在指定 pane 时，目标通过 [session_name]:[window].[pane] 指定。
-
+如果没有通过 `-t` 指定目标，那么默认为当前的 window ，在指定 pane 时，目标通过 `[session_name]:[window].[pane]` 指定。
 
 #### 3. 判断是否存在 session
 
@@ -497,7 +504,7 @@ set -g default-shell /bin/zsh
 
 #### 5. TERM设置
 
-当 tmux 运行时，会将 TERM 变量设置为 "screen" 或者配置文件中 default-terminal 指定的值，在 .bashrc 中可以通过判断该变量来确定现在是否在 tmux 中。
+当 tmux 运行时，会将 TERM 变量设置为 "screen" 或者配置文件中 default-terminal 指定的值，在 `.bashrc` 中可以通过判断该变量来确定现在是否在 tmux 中。
 
 {% highlight text %}
 if [[ "$TERM" != "screen-256color" ]]
@@ -511,7 +518,6 @@ fi
 
 当启动 tmux 时，仍会执行配置文件，但是由于这次在 tmux 中，因此跳过这段指令。
 
-
 #### 6. 窗口切换
 
 将窗口在 Session 之间进行切换，使用时通过  Prefix . ，并在命令行中输入想要切换的 Session。当热也可以通过如下的命令执行
@@ -522,8 +528,6 @@ $ tmux move-window -s processes:1 -t editor
 
 将 processes 的第一个 window 移动到 editor 。
 
-
-
 <!--
 之前曾介绍过通过 capture-pane + save-buffer 的方式保存终端的输出信息。此处介绍通过 pipe-pane ，通过这个命令我们可以控制开关，可以在一个命令已经执行的时候保存输出。在配置文件中添加如下的内容。
 <pre>bind P pipe-pane -o "cat >>~/#W.log" \; display "Toggled logging to ~/#W.log"</pre>
@@ -532,17 +536,17 @@ $ tmux move-window -s processes:1 -t editor
 
 ### putty 乱码设置
 
-在通过 putty 链接 tmux 时，可能会出现乱码，此时需要设置字符集。[右键] => [Change Settings...] => [Windows/Translation] => [Remote character set:] 改为 UTF-8 。
-
-
+在通过 putty 链接 tmux 时，可能会出现乱码，此时需要设置字符集。`[右键] => [Change Settings...] => [Windows/Translation] => [Remote character set:]` 改为 `UTF-8` 。
 
 ## 参考
 
-详细内容可以参考官方网站 [tmux.github.io](http://tmux.github.io/)，详细的文档可以参考 [tmux Productive Mouse-Free Development](/reference/linux/Pragmatic.tmux.Feb.2012.pdf)，版权归作者所有。
-
-当然也可以通过 [tmux-powerline](https://github.com/erikw/tmux-powerline) 配置状态栏；关于按键的绑定可以参考 [Moving The Ctrl Key](https://www.emacswiki.org/emacs/MovingTheCtrlKey)，以及参考配置文件 [tmux.conf](/reference/linux/tmux.conf) 。
+* 详细内容可以参考官方网站 [tmux.github.io](http://tmux.github.io/)，详细的文档可以参考 [tmux Productive Mouse-Free Development](/reference/linux/Pragmatic.tmux.Feb.2012.pdf)，版权归作者所有。
+* 当然也可以通过 [tmux-powerline](https://github.com/erikw/tmux-powerline) 配置状态栏；关于按键的绑定可以参考 [Moving The Ctrl Key](https://www.emacswiki.org/emacs/MovingTheCtrlKey)，以及参考配置文件 [tmux.conf](/reference/linux/tmux.conf) 。
 
 <!--
+https://github.com/tmux/tmux/wiki
+https://github.com/tmux/tmux/wiki/Clipboard
+
 set -g status-utf8 on
 Mouse Settings
 set the default bash

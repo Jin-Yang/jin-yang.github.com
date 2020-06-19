@@ -229,8 +229,7 @@ $ export HISTCONTROL ignoredups
 $ export HISTIGNORE="pwd:ls:ls -ltr:"
 {% endhighlight %}
 
-
-可以通过 `Ctrl-R` 和 `Ctrl-S` 来对历史进行搜索。
+可以通过 `Ctrl-R` 和 `Ctrl-S` 来对历史进行搜索，通过 `Ctrl-G` 可以复位，更多快捷键可以参考 [Bash Reference Manual](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Miscellaneous-Commands)  中的介绍。
 
 {% highlight text %}
 history            显示所有的历史命令，包括序号。

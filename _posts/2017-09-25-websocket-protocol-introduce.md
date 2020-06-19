@@ -107,6 +107,8 @@ GET HTTP/1.1
 Upgrade: websocket
 Connection: Upgrade
 Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
+Sec-WebSocket-Protocol: chat, superchat
+Sec-WebSocket-Version: 13
 {% endhighlight %}
 
 其中包含了几个关键的字段：
@@ -185,6 +187,10 @@ Opcode: !0 0 0
 
 	Note3：接受者不必按顺序缓存整个frame来处理
 
+
+## GoLang
+
+在 GoLang 中可以通过 `golang.org/x/net/websocket` 包使用 WebSocket 功能。
 
 
 

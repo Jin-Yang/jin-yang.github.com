@@ -18,6 +18,9 @@ description:
 <!--
 均值方差的推导
 https://blog.csdn.net/su_jz/article/details/52579723
+
+高斯分布概率密度函数（PDF）和累积分布函数(CDF)
+https://blog.csdn.net/renwudao24/article/details/44465407
 -->
 
 假设随机变量 $x$ 服从一个均值为 $\mu$ ，标准差为 $\sigma$ 的正态分布，则可以记为：

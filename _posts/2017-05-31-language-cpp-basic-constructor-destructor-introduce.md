@@ -11,8 +11,6 @@ description:
 
 <!-- more -->
 
-
-
 ## 构造函数
 
 在 C++ 中的构造函数分成了 4 类，如下以 `class Shape` 为例：
@@ -35,24 +33,56 @@ private:
 
 public:
         // Default Constructor
-        Rectangle(void): width(0), height(0) { }
+        Rectangle(void): width(0), height(0) {
+                std::cout << "Default Constructor" << std::endl;
+        }
 
         // Simple Constructor
         Rectangle(double w, double h) {
+                std::cout << "Simple Constructor" << std::endl;
                 width = w;
                 height = h;
         }
 
         // Convert Constructor
         Rectangle(int v) {
+                std::cout << "Convert Constructor" << std::endl;
                 width = v;
                 height = v;
         }
 
         // Copy Constructor
         Rectangle(const Rectangle &r) {
+                std::cout << "Copy Constructor" << std::endl;
                 width = r.width;
                 height = r.height;
+        }
+
+        // Copy-Assignment Operator
+        Rectangle& operator=(const Rectangle &r) {
+                std::cout << "Copy Assignment Operator" << std::endl;
+                if (this == &r) /* self assignment */
+                        return *this;
+                width = r.width;
+                height = r.height;
+                return *this;
+        }
+
+        // Move Constructor
+        Rectangle(Rectangle &&r) {
+                std::cout << "Move Constructor" << std::endl;
+                width = r.width;
+                height = r.height;
+        }
+
+        // Move-Assignment Operator
+        Rectangle& operator=(const Rectangle &&r) {
+                std::cout << "Move Assignment Operator" << std::endl;
+                if (this == &r) /* self assignment */
+                        return *this;
+                width = r.width;
+                height = r.height;
+                return *this;
         }
 
         void String(void) {
@@ -60,17 +90,33 @@ public:
         }
 };
 
+Rectangle CreateRectangle(void)
+{
+        return Rectangle(5, 6);
+}
+
 int main(void)
 {
         Rectangle r1;           // Default Constructor
-        Rectangle r2(3.0, 4.0); // Simple Constructor
-        Rectangle r3 = 3;       // Convert Constructor OR r3(3)
+        Rectangle r2(3, 4);     // Simple Constructor
+        Rectangle r3(3);        // Convert Constructor
         Rectangle r4 = r2;      // Copy Constructor
+        Rectangle r5;           // Default Constructor
+        r5 = r2;                // Copy-Assignment Operator
+
+        Rectangle&& r6 = CreateRectangle(); // Move Constructor
+        Rectangle r7;           // Default Constructor
+        r7 = Rectangle(3, 4);   // Simple Constructor + Move Assignment Operator
+        Rectangle r8 = 3;       // Convert Constructor + Move Constructor
 
         r1.String();
         r2.String();
         r3.String();
         r4.String();
+        r5.String();
+        r6.String();
+        r7.String();
+        r8.String();
 
         return 0;
 }

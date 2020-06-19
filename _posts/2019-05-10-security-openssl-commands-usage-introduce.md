@@ -30,6 +30,41 @@ $ make
 * `--openssldir=OPENSSLDIR` 安装目录，默认是 `/usr/local/ssl`；
 * `--prefix=PREFIX` 设置 `lib` `include` `bin` 目录的前缀，默认为 `OPENSSLDIR` 目录。
 
+## 生成秘钥
+
+通过 openssl 可以生成一个秘钥(私钥)，可以通过这个秘钥将公钥提取出来，严格来说，为了安全需要对秘钥进行对称加密，这样类似 Nginx 之类的插件需要交互输入密码。
+
+{% highlight text %}
+----- 生成、查看未加密的秘钥文件
+openssl genrsa -out private.pem 1024
+openssl rsa -in private.pem
+
+------ 查看私钥具体参数以及秘钥文件内容，通过-noout关闭私钥打印
+openssl rsa -in private.pem -text
+openssl rsa -in private.pem -text -noout
+
+------ 对秘钥加密或者直接生成
+openssl rsa -in private.pem -des3 -passout 'pass:YourPassHere' -out private_des.pem
+openssl genrsa -out private_des.pem -des3 -passout 'pass:YourPassHere' 1024
+openssl rsa -in private_des.pem -text -noout -passin 'pass:YourPassHere'
+
+------ 检查秘钥文件是否合法
+openssl rsa -in private.pem -check
+{% endhighlight %}
+
+### 查看公钥
+
+利用上述生成的秘钥可以生成公钥。
+
+{% highlight text %}
+----- 通过私钥生成公钥，然后查看，等价于直接查看文件内容
+openssl rsa -in private.pem -pubout -out public.pem
+openssl rsa -pubin -in public.pem
+
+----- 查看公钥信息，但是不查看文件内容
+openssl rsa -pubin -in public.pem -text -noout
+{% endhighlight %}
+
 ## 生成证书
 
 这里采用自签发的证书，需要生成根证书，并分别向服务端和客户端颁发对应的证书，这样可以作双向认证。

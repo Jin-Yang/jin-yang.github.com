@@ -40,6 +40,12 @@ description:
 
 ## C 语言
 
+在 1989 年，美国国家标准协会 (ANSI) 对 C 语言进行了标准化，此时 C 语言又被称为 ANSI C。在一年后被国际标准化组织 ISO 采纳，所以 C 语言在 ISO 中有了一个官方名称 ISO/IEC 9899:1990 ，其中 9899 是 C 语言在 ISO 标准中代号 (C++ 是 14882)，冒号后面的 1990 表示当前修订好的版本是在 1990 年发布。
+
+所以，最开始的 C 语言标准也被称为 C89、C90 或者 C89/C90，后续又在 1999、2007、2011 进行了改进。另外，C++ 在从 C++11 之后，基本固定每三年发布一个新版本。
+
+* [整数介绍](/post/language-c-integer-basic-concepts-introduce.html) 包括了类型提升、整型溢出等。
+* [宏使用](/post/language-c-macros-basic-concepts-introduce.html) 一些基本使用规则，以及常见注意事项。
 * [数据对齐](/post/language-c-structure-align-basic-introduce.html) 结构体以及内存的对齐方式。
 * [位域和字节序](/post/language-c-bit-field-and-endian-introduce.html) 位域或位段相关概念，以及大小端字节序相关的内容。
 * [inline 简介](/post/language-c-inline-concept-introduce.html) 有点类似于 C 中的宏，但是又有所区别。
@@ -56,9 +62,29 @@ description:
 * [C 语言的奇技淫巧](/post/program-c-tips.html)，整理下 C 语言中常用的技巧。
 * [Linux IO 多路复用](/post/linux-program-io-multiplexing.html)，通过 IO 多路复用提高系统性能，包括了 select、poll、epoll 。
 * [Linux AIO](/post/linux-program-aio.html)，简单介绍下 Linux 平台下的异步读写模型。
+* [C 多语言支持](/post/language-c-i18n-multi-language-gettext-usage.html) 可以通过 gettext 工具进行翻译整理。
+* [C11 标准解读](/post/language-c-c11-standard-introduce.html) 常见的一些新标准支持的特性。
 
+### 其它
+
+介绍一些乱七八糟的东西。
+
+* [GCC 强弱符号、引用](/post/program-c-strong-weak-symbol-reference.html) 一些 GCC 中与强弱符号、引用的相关介绍。
+* [替换 glibc malloc](/post/linux-c-program-replace-glibc-memory-function-introduce.html) 简单介绍如何替换掉 glibc 中的一系列内存相关函数。
+* [GNU 内联汇编](/post/linux-c-gnu-inline-assembly-language-introduce.html) GNU 中如何所用内联汇编。
+* [Volatile 使用简介](/post/linux-c-volatile-statement-introduce.html) C 语言中与 volatile 相关的介绍。
+* [Linux 时间函数](/post/linux-timer-functions.html) 介绍下 Linux 中与时间相关的函数以及如何选择。
+* [Linux 信号安全](/post/linux-signal-safe-introduce.html) 一般会在信号处理里打印日志，不过也可能会因此导致发生死锁。
+* [Socket 关闭方式](/post/language-c-socket-close-method.html) 主要介绍了通过 close() 以及 shutdown() 方式关闭 Socket 。
+* [Linux C Flock 使用](/post/linux-c-flock-introduce.html) Linux 中实现的一个建议性锁，通常用于 PIDFile 的实现。
+* [UDP 通讯优化](/post/linux-c-udp-optimize-introduce.html) UDP 并非一个面向连接的协议，与 TCP 不同，有其相关的优化方法。
+* [Linux C 网络编程](/post/program-c-network.html) 整理了 Linux C 经常使用的网络编程技巧。
+* [Linux C 错误信息](/post/language-c-error-message-usage-introduce.html) C 中在打印错误信息的时候应该注意那些。
+* [Linux umask 使用](/post/linux-umask-and-open-introduce.html) 通过 umask 可以在不修改代码直接调整文件的默认打开权限。
 
 ## 工具集
+
+介绍一些常见的工具使用方法，包括了编译、测试等。
 
 ### 自动编译
 
@@ -95,20 +121,6 @@ https://segmentfault.com/a/1190000020465136
 
 ### 其它
 
-介绍一些乱七八糟的东西。
-
-* [GCC 强弱符号、引用](/post/program-c-strong-weak-symbol-reference.html) 一些 GCC 中与强弱符号、引用的相关介绍。
-* [替换 glibc malloc](/post/linux-c-program-replace-glibc-memory-function-introduce.html) 简单介绍如何替换掉 glibc 中的一系列内存相关函数。
-* [GNU 内联汇编](/post/linux-c-gnu-inline-assembly-language-introduce.html) GNU 中如何所用内联汇编。
-* [Volatile 使用简介](/post/linux-c-volatile-statement-introduce.html) C 语言中与 volatile 相关的介绍。
-* [Linux 时间函数](/post/linux-timer-functions.html) 介绍下 Linux 中与时间相关的函数以及如何选择。
-* [Linux 信号安全](/post/linux-signal-safe-introduce.html) 一般会在信号处理里打印日志，不过也可能会因此导致发生死锁。
-* [Socket 关闭方式](/post/language-c-socket-close-method.html) 主要介绍了通过 close() 以及 shutdown() 方式关闭 Socket 。
-* [Linux C Flock 使用](/post/linux-c-flock-introduce.html) Linux 中实现的一个建议性锁，通常用于 PIDFile 的实现。
-* [UDP 通讯优化](/post/linux-c-udp-optimize-introduce.html) UDP 并非一个面向连接的协议，与 TCP 不同，有其相关的优化方法。
-* [Linux C 网络编程](/post/program-c-network.html) 整理了 Linux C 经常使用的网络编程技巧。
-* [Linux C 错误信息](/post/language-c-error-message-usage-introduce.html) C 中在打印错误信息的时候应该注意那些。
-* [Linux umask 使用](/post/linux-umask-and-open-introduce.html) 通过 umask 可以在不修改代码直接调整文件的默认打开权限。
 * [Linux Fail Points](/post/linux-c-fail-point-introduce.html) BSD 中的一种构造异常的测试机制。
 
 ## C++
@@ -139,6 +151,7 @@ https://segmentfault.com/a/1190000020465136
 
 * [C++ 右值引用](/post/language-cpp-basic-right-value-reference-introduce.html)
 * [C++ 可调用对象](/post/language-cpp-basic-callable-introduce.html) 包括了函数、类、lambda 等。
+* [C++ 智能指针](/post/language-cpp-basic-smart-pointer-introduce.html) 没有内存管理，通过智能指针可以降低维护成本。
 
 ## libev
 
@@ -208,6 +221,25 @@ https://blog.masterliu.net/gcc-predefined-macros/
 
 一个用户的函数trace
 https://github.com/namhyung/uftrace
+
+
+https://github.com/hellogcc/100-gdb-tips
+https://github.com/hellogcc/100-gcc-tips
+
+http://gcc.gnu.org/onlinedocs/cpp/Macros.html
+
+
+
+Clang-Format格式化选项介绍
+https://cloud.tencent.com/developer/article/1394078
+https://blog.csdn.net/softimite_zifeng/article/details/78357898
+
+https://www.kernel.org/doc/html/latest/process/clang-format.html
+https://blog.csdn.net/gatieme/article/details/73692049
+
+C里面的换行使用
+https://blog.csdn.net/baiqishijkh/article/details/79236202
+
 -->
 
 
