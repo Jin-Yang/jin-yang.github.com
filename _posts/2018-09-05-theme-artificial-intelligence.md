@@ -49,6 +49,7 @@ sklearn更专注于预测。
 
 ### 其它
 
+* [绘图基础](/post/python-matplotlib-ploting-method-intorduce.html) 一些常见数据展示图的介绍，例如箱形图。
 * [数据预处理](/post/math-machine-learning-pre-processing-methods-introduce.html) 介绍一些常见的数据预处理方法。
 * [数据集简介](/post/math-machine-learning-some-datasets-introduce.html) 包括 CSV、示例函数、SciKit-Learn 测试集等。
 

@@ -76,6 +76,8 @@ $ gcc -c main.c -o main.o
 $ gcc hello.o -o hello.exe
 {% endhighlight %}
 
+尽量不要直接使用 `ld` 命令，如果通过 `-v` 参数查看详细的命令，可以看到最终链接是通过 `collect2` 完成的 (是对 `ld`x 的封装)，而且包含了很多类似 `crt1.o` `crti.o` 这类的依赖。
+
 ## 静态链接库
 
 库有动态与静态两种，Linux 中动态通常用 `.so` 为后缀，静态用 `.a` 为后缀，如：`libhello.so` `libhello.a`，静态链接库实际上就是将各个 `.o` 文件打包合并。

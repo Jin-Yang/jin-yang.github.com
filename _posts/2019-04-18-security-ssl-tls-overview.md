@@ -163,10 +163,9 @@ CA 认证分为三类：DV (domain validation)，OV (organization validation)，
 
 ### Client Hello
 
-<!--
-http://blog.fourthbit.com/2014/12/23/traffic-analysis-of-an-ssl-slash-tls-session/
--->
+## 参考
 
+* 很不错的参考 [Traffic Analysis of an SSL/TLS session](http://blog.fourthbit.com/2014/12/23/traffic-analysis-of-an-ssl-slash-tls-session/) 。
 
 {% highlight text %}
 {% endhighlight %}

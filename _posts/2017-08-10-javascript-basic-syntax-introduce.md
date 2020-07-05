@@ -21,6 +21,13 @@ JavaScript 的核心语法部分相当精简，包括了：A) 基本的语法构
 {% highlight text %}
 {% endhighlight %}
 
+### 函数
+
+() 单参数可以省略
+{} 单返回可以省略
+
+`...` 可以变参(参数收集)，数组展开(除了赋值)
+
 ## prototype
 
 
@@ -100,6 +107,11 @@ func();
 http://crockford.com/javascript/
 
 https://github.com/getify/You-Dont-Know-JS
+
+
+兼容性测试
+http://kangax.github.io/compat-table/es6/
+http://kangax.github.io/compat-table/es5/
 -->
 
 {% highlight text %}

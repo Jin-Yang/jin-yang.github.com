@@ -85,7 +85,8 @@ $\omega$ 下界 (not tight)，大于的意思。
 
 ## LeetCode
 
-* [计算器合集](/post/leetcode/algorithm-knapsack-problem-introduce.html) 很经典或者入门的动态规划问题，包括了基本及其扩展。
+* [计算器合集](/others/leetcode/calculator.html) 很经典或者入门的动态规划问题，包括了基本及其扩展。
+* [字符串计算](/others/leetcode/strings-caculate.html) 防止因为需要计算的字符串过长导致溢出。
 
 ### 其它
 

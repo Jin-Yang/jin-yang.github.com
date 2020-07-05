@@ -16,9 +16,9 @@ C 语言中的 volatile 关键字大部分都见过，但是很少有人能明�
 
 ## 简介
 
-简单来说，在 C 中，如果将变量定义为 `volatile` 类型，这也就意味着该变量可能随时被修改，每次使用时应该重新读取，而非使用保存在寄存器中的值。
+volatile 是 C/C++ 标准中的一个关键字，会影响**编译器**的编译结果，用来表明对应变量随时可能发生变化，每次使用时需要重新读取，而非使用寄存器中的值。
 
-那么这句话如何去理解。
+注意，在 Java 中同样存在改关键字，但是含义完全不同，这里仅局限在 C/C++ 中的使用。
 
 ### 编译器
 
@@ -169,6 +169,24 @@ $ ls -l volatile.s
 <!--
 Understanding “volatile” qualifier in C
 https://www.geeksforgeeks.org/understanding-volatile-qualifier-c-set-1-introduction/
+
+编译器在对代码进行优化的时候，会假设当前执行的只有单个线程，不会因为程序外
+
+关于volatile的介绍
+https://liam.page/2018/01/18/volatile-in-C-and-Cpp/
+
+GCC文档
+https://gcc.gnu.org/onlinedocs/gcc/Volatiles.html
+Linux内核中关于volatile的介绍
+Documentation/process/volatile-considered-harmful.rst
+
+常见应用场景有：
+
+* 多核，并行设备的硬件寄存器；
+* 一个中断服务子程序中会访问到的全局变量；
+* 多线程应用中被几个任务共享的变量。
+
+volatile 通常用于 Memory-Mapped IO ，但是，内核中，貌似并非所有平台都支持通过指针的方式访问寄存器，并且提供了统一的访问方式，所以，这一场景下也不再需要。
 -->
 
 

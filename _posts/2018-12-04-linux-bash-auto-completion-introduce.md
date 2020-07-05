@@ -25,6 +25,7 @@ description: 在 Linux 命令行中，当输入字符后，按两次 `Tab` 键�
 {% highlight text %}
 ----- 查看命令的类型
 $ type -a complete
+complete is a shell builtin
 {% endhighlight %}
 
 CentOS 默认会安装一个 `bash-completion` 包，这里面包含了常用命令的大部分自动补齐脚本，在编写脚本时可以直接参考这个包里的内容。
@@ -75,7 +76,7 @@ exec  help  test
 
 ### complete
 
-补全命令，这是最核心的命令了，先看下这个命令的参数说明，可以通过 `help complete` 查看帮助，这里简单列举一下常用参数。
+补全命令，这是最核心的命令了，简单看下该命令的常用参数说明，可以通过 `help complete` 以及 `man complete` 查看详细帮助，这里简单列举一下常用参数。
 
 <!--
 {% highlight text %}
@@ -85,12 +86,19 @@ complete: complete [-abcdefgjksuv] [-pr] [-DE] [-o option] [-A action] [-G globp
 -->
 
 {% highlight text %}
--F function	执行shell 函数，函数中生成COMPREPLY作为候选的补全结果
+-F function	执行 shell 函数，函数中生成COMPREPLY作为候选的补全结果
 -C command	将 command 命令的执行结果作为候选的补全 结果
 -G pattern	将匹配 pattern的文件名作为候选的补全结果
 -W wordlist	分割 wordlist 中的单词，作为候选的补全结果
 -p [name]	列出当前所有的补全命令
 -r [name]	删除某个补全命令
+{% endhighlight %}
+
+另外，可以通过 `-o` 设置一些选项，常用的有。
+
+{% highlight text %}
+nospace    默认会自动填充一个空格，用来区分，可以通过该参数关闭
+filenames  在补全的时候会具体到文件，而不是目录，对于文件补齐比较有用
 {% endhighlight %}
 
 示例如下。
@@ -107,51 +115,91 @@ complete -W 'word1 word2 word3 test' foobar
 ... ...
 {% endhighlight %}
 
-## compgen
+### compgen
 
-筛选命令，用来筛选生成匹配单词的候选补全结果。
+筛选命令，用来筛选生成匹配单词的候选补全结果，如下是一些简单的示例。
+
+{% highlight text %}
+----- 单词匹配
+$ compgen -W "hello world" -- h
+hello
+
+----- 文件匹配
+$ compgen -f -- h
+hello.txt
+{% endhighlight %}
 
 <!--
-# help compgen
-compgen: compgen [-abcdefgjksuv] [-o option]  [-A action] [-G globpat] [-W wordlist]  [-F function] [-C command] [-X filterpat] [-P prefix] [-S suffix] [word]
-
-重点说明：
--W wordlist	分割 wordlist 中的单词，生成候选补全列表
-
-# compgen -W 'word1 word2 test' 
-word1
-word2
-test
-# compgen -W 'word1 word2 test' word 
-word1
-word2
-
-
-
-compopt（修改补全命令设置）
-这个命令可以修改补全命令设置，注意了，这个命令必须在补全函数中使用，否则会报错。
-
-# help compopt
-compopt: compopt [-o|+o option] [-DE] [name ...]
-
-重点说明：
-+o option	启用 option 配置
--o option	弃用 option 配置
-
-例如，设置命令补全后不要多加空格，方法如下：
-compopt -o nospace
-
-
-内置补全变量
-除了上面三个命令外，Bash还有几个内置变量来辅助补全功能，如下：
-COMP_WORDS	类型为数组，存放当前命令行中输入的所有单词
-COMP_CWORD	类型为整数，当前输入的单词在COMP_WORDS中的索引
-COMPREPLY	类型为数组，候选的补全结果
-COMP_WORDBREAKS	类型为字符串，表示单词之间的分隔符
-COMP_LINE	类型为字符串，表示当前的命令行输入字符
-COMP_POINT	类型为整数，表示光标在当前命令行的哪个位置
-https://blog.csdn.net/mycwq/article/details/52420330
+-f -X '!*.txt'  条件过滤
 -->
+
+### 变量
+
+除了上面常用的命令外，Bash 还提供了几个内置变量来辅助补全功能，如下：
+
+* `COMP_WORDS` 数组，存放当前命令行中输入的所有单词；
+* `COMP_CWORD` 整数，当前输入的单词在 `COMP_WORDS` 中的索引；
+* `COMPREPLY` 数组，候选的补全结果；
+* `COMP_LINE` 字符串，当前的命令行输入字符。
+
+通过这些变量，可以在不同的场景下使用。
+
+<!--
+COMP_WORDBREAKS	类型为字符串，表示单词之间的分隔符
+COMP_POINT	类型为整数，表示光标在当前命令行的哪个位置
+-->
+
+### 其它
+
+另外，在库中还提供了一些常用的函数，在 CentOS 中可以通过 `rpm -ql bash-completion` 命令查看，一般在 `/usr/share/bash-completion/bash_completion` 文件中定义。
+
+例如，如果想补齐文件路径，有如下的两种方式。
+
+{% highlight text %}
+if [[ ${prev} == --*file ]]; then
+	COMPREPLY=( $(compgen -f -- ${curr}) )
+fi
+
+if [[ ${prev} == --*file ]]; then
+	_filedir
+fi
+{% endhighlight %}
+
+上述的 `_filedir` 就是 `bash-completion` 提供的，在执行了上述内容之后，可以通过 `declare -f _filedir` 查看该函数的定义。
+
+## 示例
+
+### 多层
+
+在上述的示例中，如果多次输入 `<tab>` 会导致重复填充一个字符串，如果一个命令包含了多层的子命令，例如 `git checkout` 后面需要再跟分支等信息，那么可以参考如下示例。
+
+{% highlight text %}
+_foobar_completion()
+{
+	local curr prev
+
+	COMPREPLY=()
+	curr=${COMP_WORDS[COMP_CWORD]}
+	prev=${COMP_WORDS[COMP_CWORD-1]}
+
+	opts="hi hello"
+	if [[ ${COMP_CWORD} -eq 1 ]]; then
+		COMPREPLY=( $(compgen -W "${opts}" -- ${curr}) )
+	fi
+
+	case "${prev}" in
+		"hi")
+			COMPREPLY=( $(compgen -W "world foobar" -- ${curr}) )
+			;;
+		"hello")
+			COMPREPLY=( $(compgen -W "ldrow raboof" -- ${curr}) )
+			;;
+		*)
+			;;
+	esac
+}
+complete -F _foobar_completion foobar
+{% endhighlight %}
 
 
 {% highlight text %}
