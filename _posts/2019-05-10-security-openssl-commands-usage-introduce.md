@@ -137,6 +137,8 @@ openssl rsa -in pki/CLI/keysec.pem -out pki/CLI/keyplain.pem -passin pass:123456
 openssl x509 -in SVR/cert.pem -text -noout
 {% endhighlight %}
 
+可以通过 [gencert.sh](/reference/linux/gencert.sh) 脚本生成相关证书文件。
+
 <!--
 https://ningyu1.github.io/site/post/51-ssl-cert/
 吊销证书：$ openssl ca -revoke cert.pem -config openssl.cnf

@@ -717,7 +717,7 @@ $ git push origin develop
 
 ### 版本号
 
-通过 `git describe` 可以输出类似如下的内容。
+通过 `git describe` 可以输出类似如下的内容，另外，通过 `describe` 获取的 `commit id` 中第一个字符为 `g` 表示是 `git` 。
 
 {% highlight text %}
 $ git describe
@@ -731,8 +731,6 @@ v1.8.3.1-8-e1f4155b
 {% highlight text %}
 $ git describe --match "v[0-9]*" --abbrev=12 HEAD
 {% endhighlight %}
-
-
 
 ### 其它
 

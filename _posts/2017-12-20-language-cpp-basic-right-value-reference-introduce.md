@@ -69,6 +69,63 @@ int &&i = foobar();
 
 虽然两者的写法基本类似，但语义却相差很大，第一行 `foobar()` 产生的临时值在表达式结束时就已经被销毁了，而第二行 `foobar()` 返回的值则会随着 `i` 变量的生命周期结束，而非立即结束。
 
+注意，在最后一行中，变量 `i` 是右值引用类型 `int &&`，但如果从左右值角度看，实际上是个左值，可以取地址，是一个已经赋值的右值。
+
+## 绑定规则
+
+使用时，左值引用只能绑定左值，右值引用只能绑定右值，如果绑定的不对，那么在编译期间就会直接报错。
+
+注意，常量左值引用比较特殊，可以作为一个 "万能" 引用类型，可以绑定非常量左值、常量左值、右值，而且在绑定右值的时候，常量左值引用还可以像右值引用一样将右值的生命期延长，缺点是，只能读不能改。
+
+常量左值经常会在不经意的场景下使用，例如复制构造函数中。
+
+{% highlight cpp %}
+#include <iostream>
+
+class Copyable {
+public:
+        Copyable(){}
+        Copyable(const Copyable &c) {
+                std::cout << "Copyied" << std::endl;
+        }
+};
+
+Copyable CreateRValue()
+{
+        return Copyable(); //
+}
+void AcceptValue(Copyable c) { }
+void AcceptReference(const Copyable &c) { }
+
+int main(void)
+{
+        std::cout << "Passed by value:" << std::endl;
+        AcceptValue(CreateRValue());
+
+        std::cout << "Passed by reference:" << std::endl;
+        AcceptReference(CreateRValue());
+
+        return 0;
+}
+{% endhighlight %}
+
+正常 `AcceptValue()` 会有调用两次复制构造函数，而 `AcceptReference()` 会调用一次，实际上任何一个函数都没有调用复制构造函数。
+
+这是因为，编译器默认会开启 RVO/NRVO 优化，例如，当编译器发现 `CreateRValue()` 内部生成了一个对象，返回时要生成一个临时对象，而该对象又赋值给了一个形参，那么这三个变量完全可以用一个变量替代，这样就不需要调用拷贝构造函数了。
+
+测试时可以通过 `-fno-elide-constructors` 参数取消优化。
+
+### 总结
+
+如下的 T 是一个具体类型。
+
+* 左值引用，通过 `T&` 定义，只能绑定左值；
+* 右值引用，通过 `T&&` 定义，只能绑定右值；
+* 常量左值，通过 `const T&` 定义，既可以绑定左值又可以绑定右值；
+* 已命名的右值引用，指向右值，但本身是一个左值；
+* 编译器有返回值优化，但不要过于依赖。
+
+
 <!--
 https://www.cnblogs.com/qicosmos/p/4283455.html
 https://liam.page/2016/12/11/rvalue-reference-in-Cpp/
@@ -77,7 +134,6 @@ https://juejin.im/post/59c3932d6fb9a00a4b0c4f5b
 https://www.ibm.com/developerworks/cn/aix/library/1307_lisl_c11/index.html
 https://blog.csdn.net/xiaolewennofollow/article/details/52559306
 -->
-
 
 {% highlight text %}
 {% endhighlight %}

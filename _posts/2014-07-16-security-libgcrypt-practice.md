@@ -493,8 +493,13 @@ https://github.com/kokke/tiny-AES-c
 
 Encrypting and Signing Using libgcrypt 介绍如何使用机密以及签名机制，包含了一个完整的代码示例
 https://tnichols.org/2015/09/27/Encrypting-and-Signing-Using-libgcrypt/
+
 HMAC算法相关
 https://www.gnupg.org/documentation/manuals/gcrypt/Working-with-MAC-algorithms.html
+
+
+Libgcrypt warning: missing initialization
+https://github.com/collectd/collectd/commit/0ec776abf45ef3989f38d966e74b588f9ef15ebe
 -->
 
 

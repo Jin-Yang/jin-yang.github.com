@@ -4,28 +4,39 @@ layout: post
 comments: true
 language: chinese
 category: [linux,misc]
-keywords:
+keywords: ssl,tls,openssl
 description:
 ---
 
+SSL/TLS 处于传输层 (一般为 TCP) 以及应用层 (常用的 HTTP) 之间，提供了加密 (Encryption)、认证 (Verification)、鉴定 (Identification) 三种功能。
+
+如下简单介绍其基本概念。
 
 <!-- more -->
 
-{% highlight text %}
-密钥交换算法
-   RSA
-   DH/ECDH
-TLSv1.3
-   0-RTT
-优化
-   会话复用
-OpenSSL
-   ASYNC模式 可以使用类似QAT硬件加解密模块
-{% endhighlight %}
-
 ## 简介
 
-SSL/TLS 处于传输层 (一般为 TCP) 以及应用层 (常用的 HTTP) 之间，提供了加密 (Encryption)、认证 (Verification)、鉴定 (Identification) 三种功能。如下的解释中，假设是张三和李四在通讯。
+SSL 最初是在 1996 年由 Netscape 发布，由于一些安全的原因 SSL v1.0 和 SSL v2.0 都没有公开，直到 1996 年的 SSL v3.0。TLS 是 v3.0 的升级版，目前市面上所有的 HTTPS 都是用的是 TLS 而非 SSL，而且很多地方都混用两者。
+
+SSL/TLS 协议在 TCP 协议之上，通过一些子协议提供了上述的安全机制。
+
+![SSL/TLS Protocol Description]({{ site.url }}/images/network/ssl_tls_protocol_description.png "SSL/TLS Protocol Description"){: .pull-center width="80%" }
+
+<!--
+![https]({{ site.url }}/images/linux/https-ssl-tls-layer.png "https"){: .pull-center width="75%" }
+
+其中上图中顶层的三块又组成了 SSL Handshaking Protocols，在处理时有三种状态。
+
+{% highlight text %}
+empty state ------------------ pending state ------------------ current state
+
+             Handshake Protocol                Change Cipher Spec
+{% endhighlight %}
+
+当完成握手后，客户端和服务端确定了加密、压缩和 MAC 算法及其参数，数据通过指定算法处理；而之前的所有操作都是明文传输的。
+-->
+
+如下的解释中，假设是张三和李四在通讯，简单介绍所谓加密、认证、鉴定的概念。
 
 {% highlight text %}
 私密性(Confidentiality/Privacy):
@@ -36,25 +47,7 @@ SSL/TLS 处于传输层 (一般为 TCP) 以及应用层 (常用的 HTTP) 之间�
     保证信息传输过程中的完整性，防止被修改；李四接收到的消息就是张三发送的。
 {% endhighlight %}
 
-![SSL/TLS Protocol Description]({{ site.url }}/images/network/ssl_tls_protocol_description.png "SSL/TLS Protocol Description"){: .pull-center width="80%" }
-
-如下是 SSL/TLS 协议的介绍。
-
-### SSL/TLS 协议
-
-SSL 最初是在 1996 年由 Netscape 发布，由于一些安全的原因 SSL v1.0 和 SSL v2.0 都没有公开，直到 1996 年的 SSL v3.0。TLS 是 v3.0 的升级版，目前市面上所有的 HTTPS 都是用的是 TLS 而非 SSL，而且很多地方都混用两者。
-
-![https]({{ site.url }}/images/linux/https-ssl-tls-layer.png "https"){: .pull-center width="75%" }
-
-其中上图中顶层的三块又组成了 SSL Handshaking Protocols，在处理时有三种状态。
-
-{% highlight text %}
-empty state -------------------> pending state ------------------> current state
-
-             Handshake Protocol                Change Cipher Spec
-{% endhighlight %}
-
-当完成握手后，客户端和服务端确定了加密、压缩和 MAC 算法及其参数，数据通过指定算法处理；而之前的所有操作都是明文传输的。
+如下简单介绍 SSL/TLS 中使用到的常见技术方案。
 
 ### 关键技术
 
@@ -92,12 +85,12 @@ CA 认证分为三类：DV (domain validation)，OV (organization validation)，
 
 实际上有篇很不错的文章 [What is a Digital Signature?](http://www.youdzone.com/signature.html) ，也可以参考 [本地文章](/reference/linux/What is a Digital Signature.mht)，在此就不做过多介绍了。
 
+<!--
 ## 通讯流程
-
 
 {% highlight text %}
         -----------+
-          data   --+--------------> 1. Fragment data
+          data   --+-------------- 1. Fragment data
         -----------+
                                     +------------------------+
                                     |                        |
@@ -125,6 +118,7 @@ CA 认证分为三类：DV (domain validation)，OV (organization validation)，
                       header   |    |                             |
                                +----+-----------------------------+
 {% endhighlight %}
+-->
 
 ## Handshake Protocol
 
@@ -163,9 +157,46 @@ CA 认证分为三类：DV (domain validation)，OV (organization validation)，
 
 ### Client Hello
 
+## 其它
+
+### 握手优化
+
+#### False Start
+
+一般在 TLSv1.2 版本中使用，客户端在发送 Change Cipher Spec Finished 的同时发送相关的应用数据，服务端在完成 TLS 握手之后会直接返回数据，这样也就意味着在完成 TLS 握手之前已经在传输数据了。
+
+这里暂不详细介绍。
+
+#### 证书优化
+
+TLS 的身份认证是通过证书链完成，服务端在 TLS 握手阶段发送站点证书，客户端根据证书向上递归检查父证书，直到本地保存的信任根证书。
+
+在发送的过程中，最好只发送站点证书，也有可能需要中间证书，但是，如果层数过多可能会导致报文过大，这样底层的 TCP 就可能会导致拆包，从而影响性能。
+
+可以使用 ECC 替换，在保证安全性的前提下可以有效降低大小，不过需要注意，部分老的浏览器不支持。
+
+#### 会话复用
+
+简单来说，就是将辛辛苦苦算出来的对称密钥保存下来，在后续的请求中直接使用，从而可以减少证书传输的开销。
+
+
 ## 参考
 
 * 很不错的参考 [Traffic Analysis of an SSL/TLS session](http://blog.fourthbit.com/2014/12/23/traffic-analysis-of-an-ssl-slash-tls-session/) 。
+
+<!--
+{% highlight text %}
+密钥交换算法
+   RSA
+   DH/ECDH
+TLSv1.3
+   0-RTT
+优化
+   会话复用
+OpenSSL
+   ASYNC模式 可以使用类似QAT硬件加解密模块
+{% endhighlight %}
+-->
 
 {% highlight text %}
 {% endhighlight %}

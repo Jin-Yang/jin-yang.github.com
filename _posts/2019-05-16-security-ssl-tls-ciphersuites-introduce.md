@@ -4,8 +4,8 @@ layout: post
 comments: true
 language: chinese
 category: [linux,misc]
-keywords:
-description:
+keywords: tls,ssl,cipher,suite
+description: 直接翻译为加密套件，在 TLS/SSL 中实际上包含了四类，用来完成握手阶段的信息交互，决定了认证、加解密、密钥交换等所使用的算法。
 ---
 
 直接翻译为加密套件，在 TLS/SSL 中实际上包含了四类，用来完成握手阶段的信息交互，决定了认证、加解密、密钥交换等所使用的算法。
@@ -46,17 +46,26 @@ description:
 
 不同的加密算法套件的安全等级也略有区别，在上述的链接中也给出了是否推荐使用，也可以通过 [ciphersuite.info](https://ciphersuite.info/cs/) 网站查询加密算法的安全性。
 
+## OpenSSL 指定
+
+可以按照 OpenSSL 的格式指定 CipherSuite 列表，可以通过 `:` 分割 (也可以使用 `,` ` ` 但是不常用)，每个可以通过如下方式指定：
+
+* 指定单个加密套件，例如 `AES256-GCM-SHA384` ；
+* 包含某个特定算法的列表，例如 `SHA1` 摘要算法都为 `SHA1` 的算法，`SSLV3` 指定版本；
+* 中间使用 `+` 符号，用来表示且；
+* 添加 `!` `-` `+` 符号，分别表示永久删除、可以通过后面选项添加、移动到列表最后；
+* 也可以通过 `@STRENGTH` 指定按照加密算法的 Key 长度排序。
+
+相关的单个配置项可以参考 [OpenSSL Ciphers](https://www.openssl.org/docs/apps/ciphers.html) 中的介绍，当前服务端建议的配置可以参考 [Security/Server Side TLS](https://wiki.mozilla.org/Security/Server_Side_TLS) 中的内容。
 
 <!--
-## OpenSSL
+https://blog.helong.info/blog/2015/01/23/ssl_tls_ciphersuite_intro/
 
+## OpenSSL
 
 在tls中，选择CipherSuite的方法是通过cipher list
 
-格式和用法见：https://www.openssl.org/docs/apps/ciphers.html
-
 nginx里面的配置项是 cipher_list
-
 cipher list 的格式是：
 
 一个cipher list 包含一个或者多个由冒号分隔的cipher string( 逗号和空格也可以接受但不常用)。
@@ -123,17 +132,11 @@ https://github.com/cloudflare/sslconfig/blob/master/conf
 google的一篇文章解释当前cipher suite的流行趋势 http://googleonlinesecurity.blogspot.com.au/2013/11/a-roster-of-tls-cipher-suites-weaknesses.html
 
 google在密码学方面的最新进展可以在这个博客追踪：http://googleonlinesecurity.blogspot.com/
--->
 
 
 
 
 
-
-
-
-
-<!--
 Applications should use the SSL_CTX_set_ciphersuites() or SSL_set_ciphersuites() functions to configure TLSv1.3 ciphersuites. Note that the functions SSL_CTX_get_ciphers() and SSL_get_ciphers() will return the full list of ciphersuites that have been configured for both TLSv1.2 and below and TLSv1.3.
 
 For the OpenSSL command line applications there is a new “-ciphersuites” option to configure the TLSv1.3 ciphersuite list. This is just a simple colon (“:”) separated list of TLSv1.3 ciphersuite names in preference order. Note that you cannot use the special characters such as “+”, “!”, “-“ etc, that you can for defining TLSv1.2 ciphersuites. In practice this is not likely to be a problem because there are only a very small number of TLSv1.3 ciphersuites.

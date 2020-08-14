@@ -12,26 +12,35 @@ description: 简单介绍如何使用 Nginx 搭建 https 服务。
 
 <!-- more -->
 
-## 搭建 HTTPS 服务
+## 简介
 
-在 CentOS 中，默认根目录为 `/usr/share/nginx/html` ，使用域名 `www.foobar.com`，需要添加到 `/etc/hosts` 文件中。
+在 CentOS 中，默认根目录为 `/usr/share/nginx/html` ，这里使用域名 `www.foobar.com` 测试，直接将配置添加到 `/etc/hosts` 文件中。
+
+{% highlight text %}
+127.0.0.1   www.foobar.com
+{% endhighlight %}
 
 ### 1. 确认支持 SSL
 
-通过 ```-V``` 参数查看编译时是否添加了 ```--with-http_ssl_module``` 参数，对于 CentOS 来说，一般是已经安装了的。
+通过 `-V` 参数查看编译时是否添加了 `--with-http_ssl_module` 参数，对于 CentOS 来说，一般是已经安装了的，否则需要重新从源码编译。
 
 ### 2. 生成证书
 
-可以通过以下步骤生成一个简单的子签名证书，保存在 `/etc/pki/nginx` 目录下。
+可以通过以下步骤生成一个简单的自签名证书，保存在 `/etc/pki/nginx` 目录下。
 
 #### 2.1 生成自签 CA 证书
 
+对于私钥需要妥善保存。
+
 {% highlight text %}
------ 生成根证书私钥 pem
+----- 生成根证书私钥pem，也可以通过AES进行加密
 openssl genrsa -out cakey.pem 2048
------ 生成根证书签发申请文件 csr
+openssl genrsa -aes256 -passout pass:123456 -out cakey.pem 2048
+
+----- 生成根证书签发申请文件csr
 openssl req -new -key cakey.pem -out ca.csr    \
 	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyCA"
+
 ----- 自签发根证书 cer
 openssl x509 -req -days 3650 -sha1 -extensions v3_ca -signkey cakey.pem -in ca.csr -out cacert.pem
 {% endhighlight %}
@@ -41,12 +50,15 @@ openssl x509 -req -days 3650 -sha1 -extensions v3_ca -signkey cakey.pem -in ca.c
 {% highlight text %}
 ----- 生成服务端私钥
 openssl genrsa -out key.pem 2048
+
 ----- 生成证书请求文件
 openssl req -new -key key.pem -out server.csr  \
 	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=*.foobar.com"
+
 ----- 使用根证书签发服务端证书
 openssl x509 -req -days 365 -sha1 -extensions v3_req -CA cacert.pem     \
 	-CAkey cakey.pem -CAserial ca.srl -CAcreateserial -in server.csr -out cert.pem
+
 ----- 使用CA证书验证server端证书
 openssl verify -CAfile cacert.pem cert.pem
 {% endhighlight %}
@@ -100,7 +112,44 @@ server {
 
 ### 5. 其它
 
-在 2 中的配置中，可设置密钥，此时会在重启 nginx 输入密码，而且此时 systemctl 将会失效。
+在 2 中的配置中，可设置密钥，此时会在重启 nginx 时输入密码，不过会导致 systemctl 失效。
+
+## TLSv1.3
+
+通过 `-V` 参数检查编译时使用的 OpenSSL 版本，<!-- 一般 -->
+
+{% highlight text %}
+server {
+	... ...
+	ssl_protocols TLSv1.3 TLSv1.2 TLSv1.1;
+	#ssl_ciphers TLS13-AES-256-GCM-SHA384:TLS13-CHACHA20-POLY1305-SHA256;
+	... ...
+}
+{% endhighlight %}
+
+<!--
+ssl_prefer_server_ciphers  on; # 优先选择服务端加密套件，建议关闭由客户端选择
+
+
+    ssl_early_data on; # 0-RTT，若担心安全问题可关掉
+    ssl_stapling   on; # 如果用CDN的证书需去掉这两行
+    ssl_stapling_verify on;
+-->
+
+### 验证
+
+可以通过如下方式进行验证。
+
+{% highlight text %}
+$ openssl s_client -connect www.foobar.com:443 -tls1_3
+... ...
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS NOT supported
+... ...
+{% endhighlight %}
+
+或者打开浏览器也可以看到具体的 TLS 版本号。
 
 
 <!--

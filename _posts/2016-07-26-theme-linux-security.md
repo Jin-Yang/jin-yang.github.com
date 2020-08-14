@@ -48,7 +48,14 @@ Transport Layer Security, TLS 前身是 Secure Sockets Layer, SSL，SSL 最初�
 TLS 协议的实现有多种，如 OpenSSL、GnuTLS、PolarSSL 等等。
 
 * [SSL/TLS 简介](/post/security-ssl-tls-overview.html) 包括了一些基本的概念。
+* [TLSv1.3 简介](/post/security-ssl-tlsv1.3-some-basic-conception-introduce.html)
+* [TLS 证书详情](/post/security-ssl-tls-certification-chains-introduce.html) 包括了证书以及认证中心的介绍。
+* [Nginx 配置](/post/security-ssl-tls-nginx-https-setting.html) 如何使用 Nginx 配置使用 HTTPS 。
+* [SSL/TLS 调试](/post/security-ssl-tls-wireshark-debug-introduce.html) 通过 Wireshark 对通讯过程进行调试。
 * [CipherSuites 简介](/post/security-ssl-tls-ciphersuites-introduce.html) 加密套件的基本概念，以及在 OpenSSL 中的使用。
+
+### 其它
+
 * [OpenSSL 常用命令](/post/security-openssl-commands-usage-introduce.html) 一些命令使用方式，包括编译安装、证书、服务端、客户端等。
 
 ## SSH
@@ -78,6 +85,10 @@ https://www.freebuf.com/sectool/94235.html
 ### 参考
 
 * [github CTFs](https://github.com/ctfs) 历年 CTF 的整理。
+
+## 其它
+
+* [命令注入](/post/security-bash-commands-injection-introduce.html) 通常是因为有直接通过 Bash 执行命令，而又没有严格检查导致。
 
 ## 参考
 

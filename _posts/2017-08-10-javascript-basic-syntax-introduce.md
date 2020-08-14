@@ -107,12 +107,11 @@ func();
 http://crockford.com/javascript/
 
 https://github.com/getify/You-Dont-Know-JS
-
-
-兼容性测试
-http://kangax.github.io/compat-table/es6/
-http://kangax.github.io/compat-table/es5/
 -->
+
+## 参考
+
+* 一些常见的参考 [kangax.github.io](http://kangax.github.io/) ，例如 [ES6 兼容性表格](http://kangax.github.io/compat-table/es6/) 。
 
 {% highlight text %}
 {% endhighlight %}

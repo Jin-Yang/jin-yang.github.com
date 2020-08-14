@@ -154,6 +154,9 @@ https://github.com/go-internals-cn/go-internals
 
 含有GoLang的实现简介
 https://github.com/qyuhen/book
+
+https://swtch.com/libtask/
+http://luodw.cc/2016/06/21/libtask/
 -->
 
 {% highlight text %}

@@ -112,7 +112,7 @@ Nginx 一款轻量级且高性能的 Web 服务器、反向代理服务器，通
 * [Nginx 源码解析](/post/nginx-sourecode-analyze.html)，介绍主要的代码实现过程。
 * [Nginx 通用网关](/post/nginx-cgi-introduce.html)，与 CGI 相关的内容，以及部分的实现。
 * [Nginx 日志解析](/post/nginx-logs-introduce.html)，简单介绍 Nginx 中的日志，以及原子写入的简介。
-* [Nginx HTTPS 配置](/post/nginx-https-setting.html) 简单介绍如何使用 Nginx 搭建 https 服务。
+* [Nginx HTTPS 配置](/post/security-ssl-tls-nginx-https-setting.html) 介绍与 HTTPS 相关的配置。
 * [HTTP 协议简介](/post/network-http-introduce.html)，简单介绍下 HTTP 内容以及其演变过程。
 * [HTTPS 协议详解](/post/https-introduce.html)，简单介绍下 HTTPS 协议是如何实现的
 

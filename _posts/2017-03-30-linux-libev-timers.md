@@ -687,6 +687,26 @@ EV_API_DECL ev_tstamp ev_rt_now; /* realtime clock "now" */
 
 其中比较关键的函数是 `time_update()` ，会检测是否发生了时间跳变，并同时做相应的调整。
 
+
+每个 watcher 中通过 `pending` 字段标示在 `pendings[]` 数组中的序号，如果 `pending` 为 0 ，那么就是并没有到 `pendings[]` 数组中。
+
+最小堆，是一种经过排序的完全二叉树，其中任一非终端节点的数据值均不大于其左子节点和右子节点的值。
+
+通过 `ANHE` 定义了一个 heap 的元素，可能是一个指针或者缓存 at 的结构体。
+
+`struct ev_watcher_time` 是作为 `struct ev_timer` 和 `struct ev_periodic` 的基类，在栈的使用时会根据具体的类型，来做指针的类型转换。
+
+有点类似于决策树，在 libev 中，分别实现了 `2-heap` 以及 `4-heap` ，相比来说，后者当 watcher 比较多的时候可以通过提高缓存命中率提高效率。
+
+堆是通过数组进行组织的，分成了 timers 以及 periodics 两类，其中的 active 字段标示在数组中的序号，从 1 开始，所以 active 同样可以标示是否为活跃状态。
+
+#define HEAP0            1
+#define HPARENT(k)       ((k) >> 1)  /* 获取父节点的序号 */
+#define UPHEAP_DONE(p,k) (!(p))      /* 已经到达了序号为 0 的节点，也就是到达了栈的顶端 */
+
+其第一个子节点就是通过 `k << 1` 来计算，
+
+## adjustheap()
 -->
 
 

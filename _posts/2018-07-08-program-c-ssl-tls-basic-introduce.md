@@ -304,6 +304,16 @@ const char *ERR_reason_error_string(unsigned long e);
 
 对于 TLSv1.3 版本之后，Session Ticket 会在握手成功之后发送，此时需要调用 `SSL_read()` 函数，对于 OpenSSL 来说才会完成 Session 信息的接收。
 
+这同样也意味着，如果客户端检查证书时发现异常，如果此时直接强制关闭文件描述符，而再触发 `SSL_read()` 时就可能会发生 `EPIPE` 报错，而且关闭时如果没有很好处理，那么就可能会导致资源泄漏。
+
+### 关闭
+
+可以强制关闭链接，但可能会导致部分资源的泄漏，所以最好的方式是 Two-Way Shutdown ，也就是客户端可能仍然需要通过 `SSL_read()` 读取报文，例如上述的未完全读取会话时。
+
+<!--
+https://www.openssl.org/docs/manmaster/man3/SSL_shutdown.html
+-->
+
 ## 参考
 
 * [SSL Programming Tutorial](http://h30266.www3.hpe.com/odl/axpos/opsys/vmsos84/BA554_90007/ch04s03.html) 比较简单清晰介绍各个流程，不过有点老。

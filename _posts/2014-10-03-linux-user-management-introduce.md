@@ -411,6 +411,14 @@ int get_user_unsafe(const char *name)
 
 另外，需要注意 `getpwnam_r()` 函数不是信号安全的，内部会对线程加锁，不要在信号处理函数中调用，可能会造成死锁。
 
+### 用户组
+
+通过 `su - name` 切换的时候，会把包含该用户所拥有的所有组，可以通过 `id` 命令查看，对应的 `groups=` 中会包含多个组，这样在访问某个目录时，只要有一个组有权限即可。
+
+在代码实现时，可以通过 `setuid()` `setgid()` `setgroups()` `initgroups()` 调用实现。
+
+此外，需要注意，当进程的 uid 和 euid 不一致时，默认是不会产生 CoreDump 文件的，需要将 `/proc/sys/fs/suid_dumpable` 设置为 1 。
+
 ## 杂项
 
 简单记录常用的使用技巧。
