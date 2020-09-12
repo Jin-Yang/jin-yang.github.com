@@ -154,21 +154,5 @@ This will configure OpenSSL to use any ECDHE based ciphersuites for TLSv1.2 and 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 {% highlight text %}
 {% endhighlight %}

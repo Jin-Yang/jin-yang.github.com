@@ -73,17 +73,37 @@ openssl rsa -pubin -in public.pem -text -noout
 mkdir pki/{CA,SVR,CLI} -p
 {% endhighlight %}
 
-子签CA证书。
+### 自签名证书
+
+自签 CA 证书，有如下的三种方式，简单介绍。
 
 {% highlight text %}
 ----- 生成根证书私钥 pem
 openssl genrsa -out cakey.pem 2048
------ 生成根证书签发申请文件 csr
+----- 根据私钥生成证书申请文件 csr
 openssl req -new -key cakey.pem -out ca.csr    \
-	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyCA"
------ 自签发根证书 cer
+	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyDomain.com"
+----- 使用私钥对证书申请进行签名从而生成证书 cer
 openssl x509 -req -days 3650 -sha1 -extensions v3_ca -signkey cakey.pem -in ca.csr -out cacert.pem
 {% endhighlight %}
+
+上述的 Common Name, CN 可以输入 `*.domain.com` 以生成通配符域名证书。
+
+也可以将上述的最后两步合成一步完成。
+
+{% highlight text %}
+----- 根据私钥生成自签名证书
+openssl req -new -x509 -days 3650 -key cakey.pem -out cacert.pem    \
+	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyDomain.com"
+{% endhighlight %}
+
+或者直接一步到位，需要配置文件，暂时没有怎么研究。
+
+{% highlight text %}
+openssl req -new -x509 -days 3650 -keyout cakey.pem -out cacert.pem -config openssl.conf  \
+	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyDomain.com"
+{% endhighlight %}
+
 
 服务端私钥和证书。
 
@@ -95,7 +115,7 @@ openssl req -new -key key.pem -out server.csr  \
 	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyServer"
 ----- 使用根证书签发服务端证书
 openssl x509 -req -days 365 -sha1 -extensions v3_req -CA ../CA/cacert.pem     \
-	-CAkey ../CA/cakey.pem -CAserial ca.srl -CAcreateserial -in server.csr -out cert.pem
+	-CAkey ../CA/cakey.pem -CAserial ca.csr -CAcreateserial -in server.csr -out cert.pem
 ----- 使用CA证书验证server端证书
 openssl verify -CAfile ../CA/cacert.pem cert.pem
 {% endhighlight %}
@@ -111,7 +131,7 @@ openssl req -new -key key.pem -out client.csr  \
 	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyClient"
 ----- 使用根证书签发客户端证书
 openssl x509 -req -days 365 -sha1 -extensions v3_req -CA ../CA/cacert.pem     \
-	-CAkey ../CA/cakey.pem -CAserial ../SVR/ca.srl -in client.csr -out cert.pem
+	-CAkey ../CA/cakey.pem -CAserial ../SVR/ca.csr -in client.csr -out cert.pem
 ----- 使用CA证书验证客户端证书
 openssl verify -CAfile ../CA/cacert.pem cert.pem
 {% endhighlight %}
@@ -124,7 +144,7 @@ openssl genrsa -aes256 -out keysec.pem -passout pass:123456 2048
 openssl req -new -key keysec.pem -out clientsec.csr   \
 	-subj "/C=CN/ST=MyProvince/L=MyCity/O=MyOrganization/OU=MyGroup/CN=MyClient" -passin pass:123456
 openssl x509 -req -days 365 -sha1 -extensions v3_req -CA ../CA/cacert.pem     \
-	-CAkey ../CA/cakey.pem -CAserial ../SVR/ca.srl -in clientsec.csr -out certsec.pem -passin pass:123456
+	-CAkey ../CA/cakey.pem -CAserial ../SVR/ca.csr -in clientsec.csr -out certsec.pem -passin pass:123456
 
 ----- 去除私钥中的密码保护
 openssl rsa -in pki/CLI/keysec.pem -out pki/CLI/keyplain.pem -passin pass:123456
@@ -160,24 +180,22 @@ openssl s_client -connect 127.0.0.1:44330 -CAfile pki/CA/cacert.pem \
 如下是常用的参数。
 
 {% highlight text %}
--connect          指定服务器的地址以及端口，默认是localhost:443
--key              私钥文件的路径
--cert             证书文件的路径
--CAfile           根证书文件的路径
--showcerts        显示服务器的证书信息
--state            在SSL交互过程中的各种信息
--verify           根证书校验的深度
--debug            打印调试信息
--accept           监听的端口号
--ciphersuites     指定TLSv1.3版本的安全套件，通过:分割
--tls1_3           明确使用TLSv1.3版本，或者tls1_2 tls1_1 tls1
--num_tickets <N>  在TLSv1.3的Server中Post-Handshake阶段发送几个tickets
--reconnect <N>    尝试重新连接，可以用来测试会话复用
+-connect            指定服务器的地址以及端口，默认是localhost:443
+-key                私钥文件的路径
+-cert               证书文件的路径
+-CAfile             根证书文件的路径
+-showcerts          显示服务器的证书信息
+-state              在SSL交互过程中的各种信息
+-verify             根证书校验的深度
+-debug              打印调试信息
+-accept             监听的端口号
+-ciphersuites       指定TLSv1.3版本的安全套件，通过:分割
+-cipher             指定TLSv1.2版本以下的安全套件
+-tls1_3             明确使用TLSv1.3版本，或者tls1_2 tls1_1 tls1
+-num_tickets <N>    在TLSv1.3的Server中Post-Handshake阶段发送几个tickets
+-reconnect <N>      尝试重新连接，可以用来测试会话复用
+-keylogfile <FILE>  将链接的MasterSecret信息保存到文件中
 {% endhighlight %}
-
-### 常用命令
-
-
 
 
 {% highlight text %}

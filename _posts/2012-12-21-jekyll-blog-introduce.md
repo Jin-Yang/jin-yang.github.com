@@ -1,7 +1,6 @@
 ---
 title: 使用 Jekyll 搭建 Blog
 layout: post
-comments: true
 language: chinese
 category: [misc]
 keywords: jekyll,github,搭建,免费
@@ -16,7 +15,7 @@ Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是
 
 <!-- more -->
 
-![jekyll logo]({{ site.url }}/images/linux/jekyll-logo.png "jekyll logo"){: .pull-center }
+![jekyll logo]({{ site.url }}/images/linux/jekyll-logo.png "jekyll logo"){: .width="80%" }
 
 ## 一步步安装
 
@@ -42,7 +41,7 @@ Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是
 $ jekyll -v
 {% endhighlight %}
 
-在 CentOS 上，安装 Nodejs 时，需要安装 EPEL 源，否则会出错 Could not find a JavaScript runtime 。
+在 CentOS 上，安装 Nodejs 时，需要安装 EPEL 源，否则会有 `Could not find a JavaScript runtime` 的报错。
 
 ### 2. 创建默认目录结构
 
@@ -81,13 +80,13 @@ $ jekyll server [port] -w --incremental
 
 Jekyll 是 GitHub Pages 的后台博客引擎，也就是说 Github 可以支持 Jekyll 部署的。
 
-首先，必须在 github 上搭建一个名称为 username.github.io 的代码仓库，其中 username 就是每个 github 用户的用户 ID，只有这样名称的库才能被 github 用于链接到个人博客。
+首先，必须在 github 上搭建一个名称为 `username.github.io` 的代码仓库，其中 username 就是每个 github 用户的用户 ID，只有这样名称的库才能被 github 用于链接到个人博客。
 
-需要注意的是，username 不区分大小写。
+需要注意的是 username 不区分大小写。
 
 ![jekyll github logo]({{ site.url }}/images/linux/jekyll-github-logo.png "jekyll github logo"){: .pull-center width="280px" }
 
-可以通过如下方式将更改提交到 github，可以添加 .gitignore 文件，文件内容为。也就是在提交到 github 时，忽略动态生成的网页，忽略备份，忽略尚未完成的文章（未完成的文章使用 \_init.md 作为后缀）。
+通过如下方式将更改提交到 github，可以添加 `.gitignore` 文件，文件内容如下，也就是忽略动态生成的网页，忽略备份，忽略尚未完成的文章(未完成的文章使用 `_init.md` 作为后缀)。
 
 {% highlight text %}
 _site/
@@ -110,12 +109,6 @@ $ git push                        ← 推送到远端，也就是github
 
 关于 Github Pages 的更多配置可以参考 [Categories / Customizing GitHub Pages](https://help.github.com/categories/customizing-github-pages/) 。
 
-<!--
-Jin-Yang
-https://help.github.com/articles/using-jekyll-with-pages
-https://kramdown.gettalong.org/syntax.html
--->
-
 ### 5. MarkDown 语法
 
 如下是一些常见的 Markdown 语法，以及转换后的 tag 。
@@ -126,7 +119,7 @@ https://kramdown.gettalong.org/syntax.html
 
 ### 配置文件
 
-也就是 _config.yml ，详细可以参考 [官方配置文件讲解](http://jekyllrb.com/docs/configuration/)，如下是我的一个简单配置文件。
+也就是 `_config.yml` ，详细可以参考 [官方配置文件讲解](http://jekyllrb.com/docs/configuration/)，如下是我的一个简单配置文件。
 
 {% highlight text %}
 gems: [jekyll-paginate]
@@ -137,10 +130,27 @@ mardown: kramdown
 highlighter: pygments
 {% endhighlight %}
 
-注意：现在不再支持 auto: true ，应该在启动时使用 \-\-watch/-w 参数。
+注意：现在不再支持 `auto: true` 配置项了，需要在启动时使用 `--watch/-w` 参数。
 
 另外，**从 2016.5.1 之后，Markdown 引擎只支持 [kramdown](https://github.com/gettalong/kramdown)**，其它的 rdiscount、redcarpet 将不再支持。
 
+### 添加评论
+
+Jekyll 打建后的是一个静态网站，可以通过 disqus 或者 "多说" (已经停止服务) 添加评论功能，其中 disqus 需要翻墙才可以。
+
+另外，有很多基于 Github 中 Issues 的评论系统，例如 [gitment](https://github.com/imsun/gitment)、 [utterances](https://utteranc.es/)、[gitalk](https://gitalk.github.io/) 等等，这里使用 utterances 作为评论系统。
+
+安装配置步骤很简单，首先通过 [apps utterances](https://github.com/apps/utterances) 在 Github 上安装应用，然后添加如下内容。
+
+{% highlight text %}
+<script src="https://utteranc.es/client.js"
+	repo="[ENTER REPO HERE]"
+	issue-term="pathname"
+	theme="github-light"
+	crossorigin="anonymous"
+	async>
+</script>
+{% endhighlight %}
 
 ### 添加分类
 
@@ -350,6 +360,7 @@ a:focus{outline:none;}
 
 实际上 kramdown 默认已经支持，我们只需要设置好 ```table thead tbody th tr td``` 对应的 CSS 属性即可。
 
+
 ## SEO 技巧
 
 Search Engine Optimization, SEO 也就是搜索引擎优化，指遵循搜索引擎的搜索原理，对网站结构、网页文字语言和站点间互动外交略等进行合理规划部署，以改善网站在搜索引擎的搜索表现，进而增加客户发现并访问网站的可能性。
@@ -387,98 +398,24 @@ sitemap 用于告知搜索引擎，在该网站上有哪些可供抓取的网页
 
 <!--
 1：博客要经常保持更新，文字始终紧紧围绕关键字，围绕网站主题。
-
 2：SEO优化重点以文章内容页优化为主。
-
-
 4：在新文章中适当增加一些老文章的链接，文章的内部链接一定要自然。
-
 6：栏目分类尽量使用目录形式。如：http://lusongsong.com/youhua/而不是http://lusongsong.com/youhua.html
-
 7：可以在网页底部加上站点地图sitemap，HTML格式是给用户看的，XML格式是给搜索引擎看的。
-
 8：比较重要文章的URL可以使用拼音、英文和分割线等网址结构。
-
 9：外部链接建设很重要，新博客推荐使用工具http://tool.lusongsong.com/seo/
-
 10：垃圾留言一定要删除，非常影响排名。
-
 11：记得给每个博文插图加上和文章内容相关的alt信息，并在图片周围添加相关信息。
-
 12：文章中相同的关键词不能过多，如果非要堆砌关键词，可适当使用长尾关键词。
-
 13：每篇文章的结尾处可加入“原创文章如转载，请注明出处”“本文首发于XXX网站”等信息，对SEO有一定帮助。
-
 14：通过添加TAG标签可以增强主题的相关性和被搜索的概率。
-
 16：文章标题最好能出现一次关键字。
-
 17：关键字最好在第一段或最后一段能够出现。
 -->
 
+## 移动端适配
 
-### 添加评论
 
-Jekyll 打建后的是一个静态网站，可以通过 disqus 或者 "多说" 添加评论功能；其中 disqus 需要翻墙才可以，所以考虑到国内情况，还是用多说吧。
-
-在 [duoshuo.com](http://duoshuo.com/) 选择 "我要安装"，填写信息，会自动生成一段代码；然后放置到 post 模版中。
-
-## 使用 Gitment
-
-[Gitment]() 是作者实现的一款基于 GitHub Issues 的评论系统，支持在前端直接引入，不需要任何后端代码，可以在页面进行登录、查看、评论、点赞等操作，适合各种基于 GitHub Pages 的静态博客或项目页面。
-
-### 1. 注册 OAuth Application
-
-通过 [GitHub Settings/applications](https://github.com/settings/applications/new) 注册一个新的 OAuth Application，其它内容可以随便填写，一定要确保 callback URL 正确，一般是评论页面对应的域名，如 https://imsun.net）。
-
-然后会得到一个 client ID 和一个 client secret，这个将被用于之后的用户登录。
-
-### 2. 调用gitment
-
-如 gitment 项目页 Readme 所示，在你需要添加评论系统的地方，一般是 `_layout/post.html`, 添加如下代码。
-
-{% highlight text %}
-<div id="gitmentContainer"></div>
-<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-    id: '{{ page.date | date: "%s" }}',
-    owner: 'Your GitHub username',
-    repo: 'The repo to store comments',
-    oauth: {
-        client_id: 'Your client ID',
-        client_secret: 'Your client secret',
-    },
-});
-gitment.render('gitmentContainer');
-</script>
-{% endhighlight %}
-
-需要修改的有 4 个地方。
-
-* Your GitHub username：填写你的Github Pages博客所在的github账户名
-* The repo to store comments：填写用来存放评论的github仓库
-* Your client ID：第1步所申请到的应用的Client ID
-* Your client secret：第1步所申请到的应用的Client Secret
-
-填写完这 4 项把代码保存上传到 github 就可以了，上传代码后，随便打开一篇文章，然后选择帐号登陆。
-
-### 3. 初始化评论系统
-
-由于 gitment 的原理是为每一遍博文以其 URL 作为标识创建一个 github issue，对该篇博客的评论就是对这个 issue 的评论，因此需要为每篇博文初始化一下评论系统。
-
-初始化后，会可以在 github 上创建相对应的 issue 。
-
-<!--
-接下来，介绍一下如何初始化评论系统
-
-上面第2步代码添加成功并上传后，你就可以在你的博文页下面看到一个评论框，还 有看到以下错误Error: Comments Not Initialized，提示该篇博文的评论系统还没初始化
-
-点击Login with GitHub后，使用自己的github账号登录后，就可以在上面错误信息 处看到一个Initialize Comments的按钮 (ps: 由于要求回调URL和当前地址一样，故第2步不能在本地调试， 需把代码先上传再调试)
-
-点击Initialize Comments按钮后，就可以开始对该篇博文开始评论了， 同时也可以在对应的github仓库看到相应的issue
--->
 
 
 ## 参考
@@ -492,7 +429,8 @@ Markdown 语法的目标是：成为一种适用于网络的书写语言，详�
 
 <!--
 https://github.com/olakara/JekyllMetro/blob/master/feed.xml
-
+https://help.github.com/articles/using-jekyll-with-pages
+https://kramdown.gettalong.org/syntax.html
 -->
 
 {% highlight text %}

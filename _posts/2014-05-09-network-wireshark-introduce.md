@@ -75,5 +75,14 @@ udp.port >= 2048
 * [Sample Captures](https://wiki.wireshark.org/SampleCaptures) 可以离线参考的示例，包括了 MySQL、ARP、HTTP等协议。
 * [一站式学习Wireshark](http://blog.jobbole.com/70919/) 一系列介绍 WireShark 的文章。
 
+
+<!--
+wireshark常用错误提示分析-转
+https://www.cnblogs.com/weiyouqing/p/10693880.html
+
+新增wireshark插件的框架代码
+https://blog.csdn.net/LostSpeed/article/details/80943395
+-->
+
 {% highlight text %}
 {% endhighlight %}

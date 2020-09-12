@@ -162,36 +162,6 @@ PreMaster secret前两个字节是TLS的版本号，这是一个比较重要的�
 
 如上，是通过三个随机数来生成最终的 Master Secret 的，SSL 协议不信任每个主机都能生成完全随机的随机数，所以这里需要服务器和客户端共生成 3 个随机数，每增加一个自由度，随机性就会相应增加。
 
-
-
-
-
-
-## 其它
-
-### Cipher Suite
-
-在协商阶段，服务器和客户端会协商使用的加密协议，如下是客户端提供的协议，服务端会选择相应的协议。
-
-![https cipher specs]({{ site.url }}/images/linux/https-cipher-specs.png "https cipher specs"){: .pull-center }
-
-在示例中，会使用 TLS_RSA_WITH_AES_256_CBC_SHA (0x0035)，其中每组包含了四部分信息，分别是：
-
-* 密钥交换算法。客户端与服务器之间在握手的过程中如何认证，用到的算法包括 RSA、Diffie-Hellman、ECDH、PSK 等；
-* 加密算法。加密消息流，该名称后通常会带有两个数字，分别为密钥的长度和初始向量的长度；如果是一个数则表示相同，如 DES、RC2、RC4、AES 等；
-* 报文认证信息码 (MAC) 算法。用于创建报文摘要，防止被篡改，从而确保消息的完整性，如 MD5、SHA 等。
-
-对于上述的协议，实际使用的算法如下。
-
-{% highlight text %}
-TLS_RSA_WITH_AES_256_CBC_SHA (0x0035)
-   基于 TLS 协议；
-   使用 RSA 作为密钥交换算法；
-   加密算法是 AES，其中密钥和初始向量的长度都是 256；
-   MAC 算法，在这里就是哈希算法是 SHA。
-{% endhighlight %}
-
-
 ## 攻击
 
 Web 安全是一项系统工程，任何细微疏忽都可能导致整个安全壁垒土崩瓦解。
@@ -220,17 +190,6 @@ Server <---> Local Proxy <---> Browser
 
 ![https root]({{ site.url }}/images/linux/https-man-in-the-middle.png "https root"){: .pull-center width="60%" }
 
-### RSA Private Key
-
-在参考中有介绍如何通过 FireFox + Wireshark 抓包直接读取并分析网卡数据，这里的示例实际提供了私钥，所以看看如何通过私钥来解密这个网站的加密流量。
-
-打开 Wireshark 的 SSL 协议设置，也就是 Edit => Preferences => Protocols => SSL，把 IP、端口、协议和证书私钥都配上，其中私钥必须存为 PEM 格式。
-
-![https]({{ site.url }}/images/linux/https-protocol-10.png "https"){: .pull-center width="80%" }
-
-然后就可以看到，密文已经被解密了，只能解密 HTTP-1，而不能解密 HTTP-2。
-
-
 
 
 
@@ -252,14 +211,8 @@ Server <---> Local Proxy <---> Browser
 
 * [使用 Wireshark 调试 HTTP/2 流量](http://blog.jobbole.com/95106/)，通过 FireFox 导出密钥，可以参考 [本地文档](/reference/linux/Wireshark_HTTP_2.mht) 。
 
-* 网站检测的链接 [SSL LABS](https://www.ssllabs.com/)、[SSL Shopper](https://www.sslshopper.com/ssl-checker.html)、[China SSL](https://www.chinassl.net/ssltools/ssl-checker.html) 。
-
-
 
 <!--
-
-openssl s_client -connect 10.44.32.91~94\81~84:443
-
 一个关于SSL不错的Blog
 https://blog.ivanristic.com/SSL_Threat_Model.png
 HTTPS的七个误解（译文）

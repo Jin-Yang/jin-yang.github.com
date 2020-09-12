@@ -58,6 +58,14 @@ TLS 协议的实现有多种，如 OpenSSL、GnuTLS、PolarSSL 等等。
 
 * [OpenSSL 常用命令](/post/security-openssl-commands-usage-introduce.html) 一些命令使用方式，包括编译安装、证书、服务端、客户端等。
 
+#### 常用工具
+
+* [hitch](https://github.com/varnish/hitch) 用来将 TLS 加密链接转换为非加密链接。
+
+#### 常用链接
+
+* 网站检测的链接 [SSL LABS](https://www.ssllabs.com/)、[SSL Shopper](https://www.sslshopper.com/ssl-checker.html)、[China SSL](https://www.chinassl.net/ssltools/ssl-checker.html) 。
+
 ## SSH
 
 ![OpenSSH Logo]({{ site.url }}/images/misc/openssh-logo-1.jpg "OpenSSH Logo"){: .pull-center width="150" }

@@ -1,6 +1,6 @@
 @font-face {
  font-family: 'head-font';
- src: url('octin sports rg.ttf');
+ src: url('OctinSports.ttf');
 }
 @font-face {
   font-family: 'carousel-titile';
@@ -12,15 +12,13 @@
 }
 body {
   font-family: "Arial","Microsoft YaHei","黑体","仿宋体","宋体",sans-serif;
+  word-break: break-all;
   position: relative;
 }
-a:focus{outline:none;}
-.footer-logo {
-  background:   url(/images/system/footer.png) no-repeat;
-  width:        64px;
-  height:       64px;
-  position:     absolute;
-  left:         50%;
+img {
+  display:      block;
+  margin-left: auto;
+  margin-right: auto;
 }
 .pull-right {
   float:        right;
@@ -34,12 +32,18 @@ a:focus{outline:none;}
   margin-right: auto;
 }
 
-pre code {
-//  white-space: nowrap;
-  white-space: pre;
+a:focus{outline:none;}
+.footer-logo {
+  background:   url(/images/system/footer.png) no-repeat;
+  width:        64px;
+  height:       64px;
+  position:     absolute;
+  left:         50%;
 }
+
 code {
   font-size: 0.8em;
+  white-space: pre;
 }
 pre {
   font-size: 0.65em;
@@ -47,11 +51,7 @@ pre {
   word-spacing:0px;
   background-color: #F6E3CE;
   border: 1px dashed #424242;
-  border-radius: 3px;
-}
-.lineno {
-  border-right: 2px solid #8192D6;
-  padding-right: 5px;
+  border-radius: 5px;
 }
 /* CUSTOMIZE THE NAVBAR
 /* Special class on .container surrounding .navbar, used for positioning it into place. */
@@ -295,21 +295,6 @@ pre {
 .blog-main h6 {
   font-size: 1.1em;
 }
-
-/* DEBUG ######## */
-[class*="blog-"] {
-/*  border: 1px solid black;*/
-}
-/*
-[class*="col-"] {
-  padding-top: 15px;
-  padding-bottom: 15px;
-  background-color: #eee;
-  background-color: rgba(86,61,124,.15);
-  border: 1px solid #ddd;
-  border: 1px solid rgba(86,61,124,.2);
-}
-*/
 
 li {
   margin-left: 1em;
