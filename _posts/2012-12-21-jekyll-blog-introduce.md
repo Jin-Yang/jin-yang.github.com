@@ -4,12 +4,12 @@ layout: post
 language: chinese
 category: [misc]
 keywords: jekyll,github,搭建,免费
-description: 在此介绍如何通过 Jekyll 以及 Github 搭建个人的免费 blog 网站，包括了如何搭建，如何进行优化，配置 SEO 相关，一些不错的网站。另外，关键是所有的东西都可以自己控制，可以很方便记录一些常见文章。
+description: Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是不同的是，Jekyll 只是一个生成静态网页的工具，不需要数据库支持，不支持评论功能，只关注 Blog 本身的内容。不过，可以配合第三方评论服务，例如 Disqus，也可以通过 Github 提供的接口实现评论功能；最关键的是 Jekyll 可以免费部署在 Github 上，而且可以绑定自己的域名。接下来，我们看看如何搭建一个 Blog 。
 ---
 
 Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是不同的是，Jekyll 只是一个生成静态网页的工具，不需要数据库支持，不支持评论功能，只关注 Blog 本身的内容。
 
-不过，可以配合第三方评论服务，例如 Disqus；最关键的是 Jekyll 可以免费部署在 Github 上，而且可以绑定自己的域名。
+不过，可以配合第三方评论服务，例如 Disqus，也可以通过 Github 提供的接口实现评论功能；最关键的是 Jekyll 可以免费部署在 Github 上，而且可以绑定自己的域名。
 
 接下来，我们看看如何搭建一个 Blog 。
 
@@ -138,7 +138,7 @@ highlighter: pygments
 
 Jekyll 打建后的是一个静态网站，可以通过 disqus 或者 "多说" (已经停止服务) 添加评论功能，其中 disqus 需要翻墙才可以。
 
-另外，有很多基于 Github 中 Issues 的评论系统，例如 [gitment](https://github.com/imsun/gitment)、 [utterances](https://utteranc.es/)、[gitalk](https://gitalk.github.io/) 等等，这里使用 utterances 作为评论系统。
+另外，有很多基于 Github 中 Issues 的评论系统，例如 [gitment](https://github.com/imsun/gitment)、 [utterances](https://utteranc.es/)、[gitalk](https://gitalk.github.io/) 等等，这里使用 utterances 作为评论系统，相比这个要简单好多。
 
 安装配置步骤很简单，首先通过 [apps utterances](https://github.com/apps/utterances) 在 Github 上安装应用，然后添加如下内容。
 
@@ -416,14 +416,15 @@ sitemap 用于告知搜索引擎，在该网站上有哪些可供抓取的网页
 
 ## 参考
 
-可以参考中文官方网站 [Jekyll 将纯文本转化为静态网站和博客](http://jekyll.com.cn/) 或者参考英文网站 [Jekyll Transform your plain text into static websites and blogs](http://jekyllrb.com/) ；其中可以参考 [各种 blog 模版](https://github.com/jekyll/jekyll/wiki/Sites) 。
-
-关于搭建 Blog 可以查看 [Jekyll和Github搭建个人静态博客](http://pwnny.cn/original/2016/06/26/MakeBlog.html) 中的介绍；还有两篇之前保存的 [用Jekyll构建静态网站](http://yanping.me/cn/blog/2011/12/15/building-static-sites-with-jekyll/)、[教你一步一步搭建Jekyll博客](http://zhanglubing.github.io/2012-08-15/setup-jekyll-step-by-step.html)，也可以参考本地保存的 [blog1](/reference/misc/Jekyll和Github搭建个人静态博客.mht)、[blog2](/reference/misc/用Jekyll构建静态网站.mht)、[blog3](/reference/misc/教你一步一步搭建Jekyll博客.mht)。
-
-Markdown 语法的目标是：成为一种适用于网络的书写语言，详细可以参考 [Markdown 语法说明 (简体中文版)](http://wowubuntu.com/markdown/)，或者 [本地保存文档](/reference/misc/Markdown-Syntax.tar.gz) 。
+* 可以参考中文官方网站 [Jekyll 将纯文本转化为静态网站和博客](http://jekyll.com.cn/) 或者参考英文网站 [Jekyll Transform your plain text into static websites and blogs](http://jekyllrb.com/) ；其中可以参考 [各种 blog 模版](https://github.com/jekyll/jekyll/wiki/Sites) 。
+* 关于搭建 Blog 可以查看 [Jekyll和Github搭建个人静态博客](http://pwnny.cn/original/2016/06/26/MakeBlog.html) 中的介绍；还有两篇之前保存的 [用Jekyll构建静态网站](http://yanping.me/cn/blog/2011/12/15/building-static-sites-with-jekyll/)、[教你一步一步搭建Jekyll博客](http://zhanglubing.github.io/2012-08-15/setup-jekyll-step-by-step.html)，也可以参考本地保存的 [blog1](/reference/misc/Jekyll和Github搭建个人静态博客.mht)、[blog2](/reference/misc/用Jekyll构建静态网站.mht)、[blog3](/reference/misc/教你一步一步搭建Jekyll博客.mht)。
+* Markdown 语法的目标是：成为一种适用于网络的书写语言，详细可以参考 [Markdown 语法说明 (简体中文版)](http://wowubuntu.com/markdown/)，或者 [本地保存文档](/reference/misc/Markdown-Syntax.tar.gz) 。
 
 
 <!--
+移动端介绍
+https://segmentfault.com/a/1190000008767416
+
 https://github.com/olakara/JekyllMetro/blob/master/feed.xml
 https://help.github.com/articles/using-jekyll-with-pages
 https://kramdown.gettalong.org/syntax.html
