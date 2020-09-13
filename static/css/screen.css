@@ -4,13 +4,6 @@ body {
   margin-bottom: 20px;
   padding-top: 60px; /* TopBar的高度 */
 }
-/* navbar */
-nav {
-  height: 40px;
-}
-nav a {
-  line-height: 40px;
-}
 /* footer */
 .footer {
   font-size: 0.7em;
@@ -199,7 +192,7 @@ blockquote {
   -ms-transition: background 0s;
   transition: background 0s;
 }
-.donate_bar a.btn_donate:hover{ 
+.donate_bar a.btn_donate:hover{
   background-position: 0px -82px;
 }
 .donate_bar .donate_txt {
