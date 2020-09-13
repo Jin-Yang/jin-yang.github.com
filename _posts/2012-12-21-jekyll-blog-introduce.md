@@ -15,7 +15,7 @@ Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是
 
 <!-- more -->
 
-![jekyll logo]({{ site.url }}/images/linux/jekyll-logo.png "jekyll logo"){: .width="80%" }
+![jekyll logo]({{ site.url }}/images/linux/jekyll-logo.png "jekyll logo"){: width="80%" }
 
 ## 一步步安装
 
@@ -113,7 +113,7 @@ $ git push                        ← 推送到远端，也就是github
 
 如下是一些常见的 Markdown 语法，以及转换后的 tag 。
 
-![markdown]({{ site.url }}/images/linux/jekyll-markdown.png "markdown"){: .pull-center }
+![markdown]({{ site.url }}/images/linux/jekyll-markdown.png "markdown"){: width="90%" }
 
 ## 配置优化
 

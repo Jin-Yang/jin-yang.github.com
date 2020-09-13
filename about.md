@@ -62,6 +62,7 @@ $ echo -e "#define dot(a,b) a.b\n#define at(c,d) c@d\nat( \
 
 一个 "理性乐观派"，笃信那套老套古板的价值观：做人要讲实话，要有责任感，敢于担当；懂得知恩图报，同时要学会宽容；学会关心别人，特别是比你弱视的那些人；一定要敬天畏人，要相信报应冥冥存在的；相信自由是天赋的，谁也不能剥夺。
 
+<!--
 <ul class="timeline">
    <li><div class="tldate">2007-09</div></li>
    <li><div class="tl-circ"></div>
@@ -117,8 +118,7 @@ $ echo -e "#define dot(a,b) a.b\n#define at(c,d) c@d\nat( \
 
    <li><div class="tldate">Now</div></li>
   </ul>
-
-
+-->
 
 ## 有事不怕事，没事别找事 && 日拱一卒
 
