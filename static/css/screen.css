@@ -156,9 +156,6 @@ table {
   margin-top: 1em;
   border-collapse: collapse;
 }
-table, th, td {
-  padding: 3px 9px 3px 9px;
-}
 th {
   background-color: lightgray;
 }
@@ -177,7 +174,6 @@ blockquote {
   background-color: #DCF7A1;
   border-radius: 10px;
 }
-
 .donate_bar a.btn_donate{
   display: inline-block;
   position:      relative;
