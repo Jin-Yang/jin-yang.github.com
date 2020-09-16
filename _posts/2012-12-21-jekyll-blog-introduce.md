@@ -15,6 +15,8 @@ Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是
 
 <!-- more -->
 
+{{ jekyll.environment }}
+
 ![jekyll logo]({{ site.url }}/images/linux/jekyll-logo.png "jekyll logo"){: width="80%" }
 
 ## 一步步安装
