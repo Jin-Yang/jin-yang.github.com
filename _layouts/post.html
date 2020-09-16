@@ -20,34 +20,9 @@ layout: default
         {% if page.next %} <li class="next"><a href="{{ page.next.url }}" title="{{ page.next.title }}">Newer &rarr;</a></li> {% endif %}
     </ul>
   </nav><br>
-  <p style="text-indent:0px;text-align:center;">如果喜欢这里的文章，而且又不差钱的话，欢迎打赏个早餐 ^_^</p>
-  <div id="donate_module">
-    <div id="donate_board" class="donate_bar row" style="text-align:center;" >
-      <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
-    </div>
-    <div id="donate_guide" class="donate_bar center hidden">
-      <div class="row" style="text-align:center;" >
-        <div class="col-md-6"><img src="/images/system/barcode-pay-alipay.jpg" style="width:150px;height:150px;" title="支付宝捐赠" /><br>支付宝打赏</div>
-        <div class="col-md-6"><img src="/images/system/barcode-pay-wechat.jpg" style="width:150px;height:150px;" title="微信捐赠" /><br>微信打赏</div>
-      </div>
-    </div>
-    <script type="text/javascript">
-      document.getElementById('btn_donate').onclick = function(){
-        $('#donate_board').addClass('hidden');
-        $('#donate_guide').removeClass('hidden');
-      }
-      function donate_on_web(){
-        $('#donate').submit();
-      }
-    </script>
-  </div>
-  <div>
-    <script src="https://utteranc.es/client.js"
-       repo="Jin-Yang/jin-yang.github.com"
-       issue-term="pathname"
-       theme="github-light"
-       crossorigin="anonymous"
-       async>
-    </script>
-  </div>
+  {% if jekyll.environment == "production" %}
+    {% include donate.html %}
+    {% include ads_footer.html %}
+    {% include discuss.html %}
+  {% endif %}
 </div>

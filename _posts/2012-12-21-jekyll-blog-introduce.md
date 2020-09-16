@@ -3,7 +3,7 @@ title: 使用 Jekyll 搭建 Blog
 layout: post
 language: chinese
 category: [misc]
-keywords: jekyll,github,搭建,免费
+keywords: jekyll,github,搭建,免费,代码高亮,评论
 description: Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是不同的是，Jekyll 只是一个生成静态网页的工具，不需要数据库支持，不支持评论功能，只关注 Blog 本身的内容。不过，可以配合第三方评论服务，例如 Disqus，也可以通过 Github 提供的接口实现评论功能；最关键的是 Jekyll 可以免费部署在 Github 上，而且可以绑定自己的域名。接下来，我们看看如何搭建一个 Blog 。
 ---
 
@@ -15,9 +15,17 @@ Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是
 
 <!-- more -->
 
-{{ jekyll.environment }}
-
 ![jekyll logo]({{ site.url }}/images/linux/jekyll-logo.png "jekyll logo"){: width="80%" }
+
+## 简介
+
+Jekyll 是一个简单的静态网站生成器，使用 Ruby 编写，通过 Markdown 和 Liquid 模板生成内容。
+
+最初由 GitHub 联合创始人 Tom Preston-Werner 创立，当前的维护者 Parker Moore 也于 2016 年初加入了 GitHub 。
+
+所以，Github 也提供了静态 Jekyll 的能力，并且内置了很多不错的插件可以直接使用，在 [Pages Github](https://pages.github.com/versions/) 中包含了当前 Github 所使用的软件版本，也包括了所支持的插件信息。
+
+另外，除了自己搭建模板之外，还可以使用 [Github Pages Themes](https://github.com/pages-themes) 中提供的模板。
 
 ## 一步步安装
 
@@ -36,7 +44,7 @@ Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是
 ----- 安装jekyll时，通过选项--no-rdoc、--no-ri可以使安装最小化
 # gem install rdiscount --no-rdoc --no-ri
 # gem install jekyll --no-rdoc --no-ri
-# gem install redcarpet kramdown                ← 2016.5.1之后Github只支持kramdown
+# gem install redcarpet kramdown rouge          ← 2016.5.1之后Github只支持kramdown
 # yum install nodejs
 
 ----- 测试环境是否安装成功
@@ -44,6 +52,12 @@ $ jekyll -v
 {% endhighlight %}
 
 在 CentOS 上，安装 Nodejs 时，需要安装 EPEL 源，否则会有 `Could not find a JavaScript runtime` 的报错。
+
+另外，在安装 Ruby 工具时，如果下载比较慢，可以将源替换掉，命令如下。
+
+{% highlight text %}
+gem sources --add https://gems.ruby-china.com/ --remove https://rubygems.org/
+{% endhighlight %}
 
 ### 2. 创建默认目录结构
 
@@ -111,7 +125,32 @@ $ git push                        ← 推送到远端，也就是github
 
 关于 Github Pages 的更多配置可以参考 [Categories / Customizing GitHub Pages](https://help.github.com/categories/customizing-github-pages/) 。
 
-### 5. MarkDown 语法
+### 5. 日常开发
+
+这里简单介绍一些常见的技巧。
+
+##### 调试模式
+
+存在一个参数 `jekyll.environment` ，默认值是 `development`，当上传到 Github 之后，该值会变成 `production` ，在启动时可以通过环境变量设置。
+
+```
+JEKYLL_ENV=production jekyll build
+```
+
+这样，一些评论、广告等只需要线上有的就可以通过该参数进行定制。
+
+<!--
+```
+{% if jekyll.environment == "production" %}
+    {% include disqus.html %}
+{% endif %}
+```
+-->
+
+
+
+
+### 6. MarkDown 语法
 
 如下是一些常见的 Markdown 语法，以及转换后的 tag 。
 
@@ -124,17 +163,82 @@ $ git push                        ← 推送到远端，也就是github
 也就是 `_config.yml` ，详细可以参考 [官方配置文件讲解](http://jekyllrb.com/docs/configuration/)，如下是我的一个简单配置文件。
 
 {% highlight text %}
-gems: [jekyll-paginate]
-paginate: 8
-permalink: /blog/:title.html    # 默认是通过月份分割，此时只使用标题
+permalink: /post/:title.html    # 修改链接地址，默认会通过月份分割
 404: 404.html
+paginate: 8
+highlighter: rouge
 mardown: kramdown
-highlighter: pygments
+kramdown:
+    input: GFM                  # use Github Flavored Markdown !important
+    math_engine: mathjax
+plugins:
+    - jekyll-paginate
+repo_example: 'https://github.com/Your-Repo/Project' # 可以定义一些变量在文章中使用
 {% endhighlight %}
 
 注意：现在不再支持 `auto: true` 配置项了，需要在启动时使用 `--watch/-w` 参数。
 
 另外，**从 2016.5.1 之后，Markdown 引擎只支持 [kramdown](https://github.com/gettalong/kramdown)**，其它的 rdiscount、redcarpet 将不再支持。
+
+### 高亮显示
+
+在 Github 中，通过 rouge 兼容替换了 pygments ，可以在 `_config.yml` 中添加 `highlighter: rouge` 配置项即可，如果本地没有安装可以通过 `gem install rouge` 命令安装。
+
+该插件支持 100+ 的语言，支持的语言可以通过 `rougify list` 命令查看。
+
+这是通过 Ruby 编写的插件，高亮的内容可以在官网 [rouge.jneen.net](http://rouge.jneen.net/) 中查看，或者源码 [Rogue GitHub](https://github.com/rouge-ruby/rouge) 。
+
+```
+highlighter: rouge
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter_opts:
+    disable     : true      # 如果使用了highlight.js之类的，可以手动关闭
+    default_lang: text
+    css_class   : 'syntax'  # Pygments使用的是.syntax而Rouge默认是.highlight
+```
+
+在使用时有两种方法都可以。
+
+因为兼容 Pygments 的格式，所以可以直接使用 Pygments 的 CSS 文件，高亮的示例可以参考 [Syntax Themes](https://stylishthemes.github.io/Syntax-Themes/pygments/) 中的内容，而对应的 CSS 文件可以从 [Github](https://github.com/StylishThemes/Syntax-Themes/tree/master/pygments/css-github) 中下载。
+
+最有将下载的 CSS 文件引入即可，例如是 `pygments-monokai.css` 文件，那么可以在 `<head>` 之间添加如下内容。
+
+```
+<link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments-monokai.css">
+```
+
+<!--
+{% highlight javascript %}
+document.write("Hello World!!!");
+{% endhighlight %}
+
+```javascript
+document.write("Hello World!!!");
+```
+
+
+Pygments 提供了多种样式，比如'native'、'emacs'、'vs' 等等，可以从 [Pygments demo](http://pygments.org/demo) 中选择某种语言的例子，支持的语法高亮可以查看 [Available lexers](http://pygments.org/docs/lexers/)，也
+ 以参考如下 [网站](http://pygments.org/docs/styles/) 自定义高亮格式。
+
+通过下面的命令可以查看当前支持的样式：
+
+{% highlight text %}
+$ python
+>>> from pygments.styles import STYLE_MAP
+>>> STYLE_MAP.keys()
+['monokai', 'manni', 'rrt', 'perldoc', 'borland', 'colorful',
+ 'default', 'murphy', 'vs', 'trac', 'tango', 'fruity', 'autumn',
+ 'bw', 'emacs', 'vim', 'pastie', 'friendly', 'native']
+{% endhighlight %}
+
+选择一种样式，应用在 Jekyll 中执行如下命令，其中 "native" 是样式名，"html" 是 formatter 。
+
+{% highlight text %}
+$ pygmentize -S native -f html > pygments.css
+{% endhighlight %}
+-->
 
 ### 添加评论
 
@@ -167,7 +271,7 @@ categories: cate1 cate2
 categories: [cate1, cate2]
 {% endhighlight %}
 
-为文章设置好分类之后，就可以读取分类列表了，所有的分类都在 site.categories 变量中，所以只遍历它，就可以把分类读取出来， 其中： category \| fist 为分类名称， category \| last \| size 为该分类下文章数量。
+为文章设置好分类之后，就可以读取分类列表了，所有的分类都在 `site.categories` 变量中，所以只遍历它，就可以把分类读取出来， 其中：`category | fist` 为分类名称，`category | last | size` 为该分类下文章数量。
 
 如果 Category 为中文，显示将会出错，可以通过如下方式修改。
 
@@ -177,6 +281,8 @@ permalink: /blog/:year/:month/:day/:title
 {% endhighlight %}
 
 ### 头部信息
+
+在头部可以指定一些参数，然后可以用 `page.XXX` 引用该变量。
 
 {% highlight text %}
 ---
@@ -233,38 +339,6 @@ h2.neuesDemo {
 
 在此，简单实现了搜索，在根目录下保存了一个 json 格式文件，包括了需要搜索的内容，页面加载时同样会请求该文件，在前端进行搜索。
 
-
-### 高亮显示
-
-需要安装 Python、easy_install、Pygments 工具，对于一些平台，如果 easy_install 没有安装，可以通过如下命令安装。
-
-{% highlight text %}
-# apt-get install python-setuptools
-# easy_install Pygments
-# gem install pygments.rb
-{% endhighlight %}
-
-设置 _config.xml，注意 pygments: true 选项已经取消，目前采用的是 highlighter 。
-
-Pygments 提供了多种样式，比如'native'、'emacs'、'vs' 等等，可以从 [Pygments demo](http://pygments.org/demo) 中选择某种语言的例子，支持的语法高亮可以查看 [Available lexers](http://pygments.org/docs/lexers/)，也可以参考如下 [网站](http://pygments.org/docs/styles/) 自定义高亮格式。
-
-通过下面的命令可以查看当前支持的样式：
-
-{% highlight text %}
-$ python
->>> from pygments.styles import STYLE_MAP
->>> STYLE_MAP.keys()
-['monokai', 'manni', 'rrt', 'perldoc', 'borland', 'colorful',
- 'default', 'murphy', 'vs', 'trac', 'tango', 'fruity', 'autumn',
- 'bw', 'emacs', 'vim', 'pastie', 'friendly', 'native']
-{% endhighlight %}
-
-选择一种样式，应用在 Jekyll 中执行如下命令，其中 "native" 是样式名，"html" 是 formatter 。
-
-{% highlight text %}
-$ pygmentize -S native -f html > pygments.css
-{% endhighlight %}
-
 ### MathJax 支持
 
 首先在头部添加如下的代码。
@@ -316,11 +390,11 @@ $$
 
 更多的语法可以参考 [https://kramdown.gettalong.org/syntax.html#math-blocks](https://kramdown.gettalong.org/syntax.html#math-blocks) 。
 
-#### Pygments 冲突解决
+#### 高亮冲突解决
 
-Pygments 会与 MathJax 的 CSS 渲染模式有所冲突，导致最终渲染后的公式会变成花花绿绿的。
+Pygments/Rouge 会与 MathJax 的 CSS 渲染模式有所冲突，导致最终渲染后的公式会变成花花绿绿的。
 
-主要是 MathJax 中的 `.mi` `.mo` 与 Pygments 中的 CSS 发生了冲突，出了修改 CSS 之外，还可以在 `base.html` 模板中添加如下的代码：
+主要是 MathJax 中的 `.mi` `.mo` 与 Pygments/Rouge 中的 CSS 发生了冲突，出了修改 CSS 之外，还可以在 `base.html` 模板中添加如下的代码：
 
 {% highlight text %}
 <style type="text/css">.MathJax .mi, .MathJax .mo { color: #111; font-size: 100%; font-weight: normal; }</style>
@@ -328,17 +402,11 @@ Pygments 会与 MathJax 的 CSS 渲染模式有所冲突，导致最终渲染后
 
 这主要是 HTML 中的 CSS 要高于文件中的。
 
-### 特殊用法
+### 其它
 
 #### 竖杠
 
 `|` 会被无脑识别为 table 的 column 的分隔符，所以在里使用还得用 `\|` ，也可以使用 `\vert` 或者 `\Vert` 替换掉，后者为双竖线。
-
-<!--
-http://yaoyao.codes/jekyll/2016/02/21/tears-for-mathjax
--->
-
-### 优化
 
 #### 去除 a 标签虚线
 
@@ -416,10 +484,17 @@ sitemap 用于告知搜索引擎，在该网站上有哪些可供抓取的网页
 -->
 
 
+<!--
+## 遗留问题
+1. 图片如果设置固定的百分比宽度，可能会导致不同的拉伸，导致图片模糊。
+2. 如果要在代码中不想进行渲染，应该如何处理。
+-->
+
+
+
 ## 参考
 
 * 可以参考中文官方网站 [Jekyll 将纯文本转化为静态网站和博客](http://jekyll.com.cn/) 或者参考英文网站 [Jekyll Transform your plain text into static websites and blogs](http://jekyllrb.com/) ；其中可以参考 [各种 blog 模版](https://github.com/jekyll/jekyll/wiki/Sites) 。
-* 关于搭建 Blog 可以查看 [Jekyll和Github搭建个人静态博客](http://pwnny.cn/original/2016/06/26/MakeBlog.html) 中的介绍；还有两篇之前保存的 [用Jekyll构建静态网站](http://yanping.me/cn/blog/2011/12/15/building-static-sites-with-jekyll/)、[教你一步一步搭建Jekyll博客](http://zhanglubing.github.io/2012-08-15/setup-jekyll-step-by-step.html)，也可以参考本地保存的 [blog1](/reference/misc/Jekyll和Github搭建个人静态博客.mht)、[blog2](/reference/misc/用Jekyll构建静态网站.mht)、[blog3](/reference/misc/教你一步一步搭建Jekyll博客.mht)。
 * Markdown 语法的目标是：成为一种适用于网络的书写语言，详细可以参考 [Markdown 语法说明 (简体中文版)](http://wowubuntu.com/markdown/)，或者 [本地保存文档](/reference/misc/Markdown-Syntax.tar.gz) 。
 
 

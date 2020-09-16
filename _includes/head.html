@@ -5,7 +5,7 @@
   <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
   <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
 
-  <title>{% if page.title %}{{ page.title }}|{% endif %}悟空小饭</title>
+  <title>{% if page.title %}{{ page.title }} | {% endif %}悟空小饭</title>
   <meta name="keywords" content="{{ page.keywords }}">
   <meta name="description" content="{{ page.description }}">
 
@@ -30,7 +30,9 @@
   {% endif %}
   </style>
 
+  {% if jekyll.environment == "production" %}
   <script data-ad-client="ca-pub-4155595889991177" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  {% endif %}
 
   {% if page.usemath %}
   <!-- mathjax config similar to math.stackexchange -->
@@ -58,5 +60,7 @@
   </script>
   <style type="text/css">.MathJax .mi, .MathJax .mo { color: #111; font-size: 86%; font-weight: 100; }</style>
   {% endif %}
-  {% include google-analytics.html %}
+  {% if jekyll.environment == "production" %}
+    {% include google-analytics.html %}
+  {% endif %}
 </head>

@@ -9,6 +9,7 @@ kramdown:
     math_engine: mathjax
 plugins:
     - jekyll-paginate
+
 production_url: 'https://jin-yang.github.io'
 example_repository: 'https://github.com/Jin-Yang/examples/tree/master'
 aspire_repository: 'https://github.com/Jin-Yang/aspire/tree/master'
