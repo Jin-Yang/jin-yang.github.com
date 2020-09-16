@@ -4,6 +4,9 @@
 <p style="margin:0px;padding:0px;">This is a personal weblog ^_^ generated with Jekyll, if you like it or have some questions, just feel free to contact me :)</p>
 </div><!-- end of "node" "about" -->
 
+{% if jekyll.environment == "production" %}
+{% endif %}
+
 {% if page.curtag %}
   <h2>Related Posts</h2>
   <div class="list-group">
@@ -93,6 +96,3 @@
   <input type="text" class="search-field" placeholder=" Search This Site">
   <div class="search-results"></div>
 </div>
-
-{% if page.layout == 'post' %}
-{% endif %}
