@@ -24,9 +24,6 @@ body {
   border: 1px solid #333;
   border-radius: 0.5em;
 }
-.blog-sidebar h2 {
-  font-family: "黑体","仿宋体","宋体",sans-serif;
-}
 .blog-sidebar .list-group-item {
   border: 1px solid #333;
 }
