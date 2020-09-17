@@ -15,7 +15,7 @@ Jekyll 是一个简单的免费的 Blog 生成工具，类似 WordPress，但是
 
 <!-- more -->
 
-![jekyll logo]({{ site.url }}/images/linux/jekyll-logo.png "jekyll logo"){: width="80%" }
+![jekyll logo]({{ site.url }}/images/linux/jekyll-logo.png "jekyll logo")
 
 ## 简介
 
@@ -100,7 +100,7 @@ Jekyll 是 GitHub Pages 的后台博客引擎，也就是说 Github 可以支持
 
 需要注意的是 username 不区分大小写。
 
-![jekyll github logo]({{ site.url }}/images/linux/jekyll-github-logo.png "jekyll github logo"){: .pull-center width="280px" }
+![jekyll github logo]({{ site.url }}/images/linux/jekyll-github-logo.png "jekyll github logo"){: width="180px" }
 
 通过如下方式将更改提交到 github，可以添加 `.gitignore` 文件，文件内容如下，也就是忽略动态生成的网页，忽略备份，忽略尚未完成的文章(未完成的文章使用 `_init.md` 作为后缀)。
 
@@ -151,7 +151,7 @@ JEKYLL_ENV=production jekyll build
 
 如下是一些常见的 Markdown 语法，以及转换后的 tag 。
 
-![markdown]({{ site.url }}/images/linux/jekyll-markdown.png "markdown"){: width="90%" }
+![markdown]({{ site.url }}/images/linux/jekyll-markdown.png "markdown")
 
 ## 配置优化
 
@@ -407,6 +407,10 @@ Pygments/Rouge 会与 MathJax 的 CSS 渲染模式有所冲突，导致最终渲
 这主要是 HTML 中的 CSS 要高于文件中的。
 
 ### 其它
+
+#### 日期选择
+
+在版权信息中，通常需要获取当前的年份，正常应该使用 {% raw %}`{{ 'now' | data: '%Y' }}`{% endraw %}，不过貌似有些版本有 Bug ，暂时可以使用 {% raw %}`{{ site.time | date: '%Y' }}`{% endraw %} 替换使用，其中 `time` 的值是 jekyll 运行的时候生成的。
 
 #### 竖杠
 

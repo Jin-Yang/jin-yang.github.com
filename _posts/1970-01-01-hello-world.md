@@ -15,6 +15,15 @@ Oooops, just examples, ignore me, darling.
 
 <!-- more -->
 
+
+
+
+
+------------
+
+------------
+
+
 ![hello world logo]({{ site.url }}/images/misc/hello-world-logo.jpg "hello world logo"){: .pull-center }
 
 ## 配色
@@ -72,6 +81,8 @@ Oooops, just examples, ignore me, darling.
 
 **Strong font 粗体** __Also strong font 还是粗体__
 
+~~strikethrough 中间被画了个横线~~
+
 Water is H<sub>2</sub>O. 4<sup>2</sup>=16. 上标、下标测试。
 
 Code Use the `printf()` function，代码模块。
@@ -89,7 +100,6 @@ This is <u>Underline</u>. 下划线。
 
 Syntax highlighting via Pygments. css java sh c gas asm cpp c++
 
-<!--
 {% highlight css linenos %}
 #container {
   float: left;
@@ -102,8 +112,6 @@ Syntax highlighting via Pygments. css java sh c gas asm cpp c++
   width: 100%;
 }
 {% endhighlight %}
--->
-
 
 {% highlight c %}
 int main ()
@@ -117,6 +125,44 @@ Non Pygments code example
     <div id="awesome">
         <p>This is great isn't it?</p>
     </div>
+
+如下内容不会被渲染。
+
+{% raw %}
+```
+{% highlight c %}
+int main ()
+{
+	return 0;
+}
+{% endhighlight %}
+```
+{% endraw %}
+
+目前不太想超过长度后使用滑动方式，目前直接换行。
+
+```
+Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
+```
+
+```
+The final element.
+```
+
+```js
+// Javascript code with syntax highlighting.
+var fun = function lang(l) {
+  dateformat.i18n = require('./lang/' + l)
+  return true;
+}
+```
+
+```ruby
+# Ruby code with syntax highlighting
+GitHubPages::Dependencies.gems.each do |gem, version|
+  s.add_dependency(gem, "= #{version}")
+end
+```
 
 ### Block Quote， 段引用
 
@@ -156,6 +202,20 @@ Non Pygments code example
 
 
 ### Unordered Lists，无序列表
+
+- level 1 item
+  - level 2 item
+  - level 2 item
+    - level 3 item
+    - level 3 item
+- level 1 item
+  - level 2 item
+  - level 2 item
+  - level 2 item
+- level 1 item
+  - level 2 item
+  - level 2 item
+- level 1 item
 
 如下是三种不同的表达方式。
 
@@ -254,13 +314,15 @@ kramdown 默认支持表格，只需要设置好 ```table thead tbody th tr td``
 |row1text1|row1text3|row1text3|row1text4|
 |row2text1|row2text3|row2text3|row2text4|
 
-<!--
-dog | bird | cat
-----|------|----
-foo | foo  | foo
-bar | bar  | bar
-baz | baz  | baz
--->
+如下是 github 上的测试表格。
+
+| head1        | head two          | three |
+|:-------------|:------------------|:------|
+| ok           | good swedish fish | nice  |
+| out of stock | good and plenty   | nice  |
+| ok           | good `oreos`      | hmm   |
+| ok           | good `zoute` drop | yumm  |
+
 
 ### MathJax, 数学表达式
 
@@ -297,12 +359,33 @@ $$
 
 [aaaaa]:    /images/linux-liberty.png    "MSN Search"
 
+<div class="clearfix"></div>
+
+![Branching](/images/system/large-picture.png)
 
 ### Reference，引用
 
 如下是一个简单的链接 [an example](http://example.com/ "Title")，当然也可以使用网站的相对路径 [About Me](/about/) 。
 
 也可以将网站的引用与 URL 分别区分开，如下是其中的示例，而且不区分大小写，[RTEMS] [1]、[Linux] [2]、[GUN][GUN]、[GUN][gun] 。
+
+<!--
+### Definition lists can be used with HTML syntax.
+
+<dl>
+<dt>Name</dt>
+<dd>Godzilla</dd>
+<dt>Born</dt>
+<dd>1952</dd>
+<dt>Birthplace</dt>
+<dd>Japan</dd>
+<dt>Color</dt>
+<dd>Green</dd>
+</dl>
+
+-->
+
+
 
 <!-- the following can occur on anywhere -->
 [1]: http://www.rtems.com                              "A Real Time kernel"

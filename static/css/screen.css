@@ -124,27 +124,55 @@ body {
 }
 /* others */
 img {
-  display:      block;
+  display: block;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
 .pull-right {
-  float:        right;
+  float: right;
 }
 .pull-left {
-  float:        left;
+  float: left;
 }
 .pull-center {
   display:      block;
   margin-left: auto;
   margin-right: auto;
 }
-code {
-  white-space: pre;
+table[class='rouge-table'] {
+  width: 100%;
+  margin: 0px;
 }
-pre {
-  font-size: 0.7em;
-  word-spacing:0px;
+td[class='gutter gl'] {
+  border: none;
+  border-right: 2px solid darkgrey;
+  width: 2.5em;
+  background-color: #F6E3CE;
+}
+td[class='code'] {
+  border: none;
+}
+pre[class='lineno'] {
+  background-color: #F6E3CE;
+  text-align: right;
+  padding: 0px;
+  padding-right: 5px;
+  margin: 0px;
+  border: none;
+  font-size: 1em;
+}
+td[class='code'] > pre {
+  background-color: #F6E3CE;
+  text-align: left;
+  padding: 0px;
+  margin: 0px;
+  border: none;
+  font-size: 1em;
+  padding-left: 5px;
+}
+pre[class='highlight'], figure > pre {
+  font-size: 0.8em;
   background-color: #F6E3CE;
   border: 1px dashed #424242;
   border-radius: 5px;
@@ -160,9 +188,8 @@ th {
 }
 th, td {
   border: 1px solid gray;
-  border-bottom: 1px solid gray;
-  border-top: 1px solid gray;
   text-align: center;
+  padding: 5px;
 }
 blockquote {
   margin-left: 4em;

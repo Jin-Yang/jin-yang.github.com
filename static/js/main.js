@@ -82,7 +82,6 @@
     }
 }(jQuery));
 
-
 jQuery(document).ready(function(){
     // For simple search function.
     $('.search-field').simpleJekyllSearch({
@@ -93,30 +92,6 @@ jQuery(document).ready(function(){
         limit               : '15',
         noResults           : '<p>Oh sucks, Nothing found :(</p>'
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     var isMobile = {
         Android: function() {
@@ -154,14 +129,10 @@ jQuery(document).ready(function(){
             };
         })();
 
-
         if($('.blog-main h2').length > 2 && !isMobile.any()){
-
             var tmpl = '<p align="center"><a href="#">' + $('.blog-main h1').text(); + '</a></p>';
             tmpl += '<ul>';
             $.each($('.blog-main h2, .blog-main h3'), function(index, item){
-                //console.log($(item).text());
-                //console.log($(item).attr('id'));
                 if(item.tagName.toLowerCase() == 'h2'){
                     tmpl += '<li><a href="#" data-id="'+$(item).attr('id')+'">'+$(item).text()+'</a></li>';
                 }else{
@@ -196,9 +167,7 @@ jQuery(document).ready(function(){
                         left:menuindexLeft,
                         width:menuindexwidth
                     });
-                    console.log(document.body.clientWidth);
                 });
-
                 $(window).scroll(function(){
                     waitForFinalEvent(function(){
                         var nowTop = $(window).scrollTop();
@@ -210,7 +179,7 @@ jQuery(document).ready(function(){
                                 position:'fixed',
                                 top:'30px',
                                 left:menuindexLeft,
-								width:menuindexwidth
+								                width:menuindexwidth
                             });
                         } else {
                             $('#toc-container').css({
@@ -235,8 +204,6 @@ jQuery(document).ready(function(){
                     });
                 });
             })
-            //用js计算屏幕的高度
-            //$('#toc-contents').css('max-height',$(window).height()-80);
         }
     })();
 });
