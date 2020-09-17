@@ -153,6 +153,8 @@ JEKYLL_ENV=production jekyll build
 
 ![markdown]({{ site.url }}/images/linux/jekyll-markdown.png "markdown")
 
+{% include ads_content.html %}
+
 ## 配置优化
 
 ### 配置文件
@@ -405,6 +407,8 @@ Pygments/Rouge 会与 MathJax 的 CSS 渲染模式有所冲突，导致最终渲
 {% endhighlight %}
 
 这主要是 HTML 中的 CSS 要高于文件中的。
+
+{% include ads_content1.html %}
 
 ### 其它
 
