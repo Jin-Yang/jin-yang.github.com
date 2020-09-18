@@ -4,11 +4,34 @@ layout: post
 language: chinese
 category: [misc]
 keywords: jekyll,blog,adsense,广告
-description:
+description: 通过 Google 提供的 AdSense 平台，可以在 Jekyll 提供的 Blog 中添加广告，并以此来赚取收益。这里详细介绍如何在 AdSense 上注册，然后在页面上添加广告，并进行优化。
 ---
 
+通过 Google 提供的 AdSense 平台，可以在 Jekyll 提供的 Blog 中添加广告，并以此来赚取收益。
+
+这里详细介绍如何在 AdSense 上注册，然后在页面上添加广告，并进行优化。
 
 <!-- more -->
+
+## 注册
+
+注册时忘记了截图，自行脑补吧，这里简单说明下注意事项。
+
+注册时需要如实填写信息，尤其是国家信息，**一旦选择之后就不能再修改**，如果要修改，只能删除账号，然后用新的邮箱重新再进行注册一个 AdSenses 账号。
+
+另外，地址信息也需要如实填写 (允许以后进行修改)，后面取钱的时候会通过该地址使用邮件 (对，就是纸制邮件) 对地址进行验证，里面会包含一个 PIN 码，
+
+注册完成后，会出现一段代码，将这段代码添加到网站的 `<head>` 段中，然后，会出现如下的界面，需要等待审核，一般一到两天就可以审核完成，慢的话可能需要两周左右，如果不满足，需要修改后重新提交。
+
+![jekyll adsense reviewing phase]({{ site.url }}/images/linux/jekyll-adsense-reviewing-phase.png "jekyll adsense reviewing phase")
+
+如上，除了 Feedback 之外，其它的都是灰色的，只有审核通过之后才可以使用。
+
+<!--
+## 初审通过
+
+初审通过后
+-->
 
 ## 其它
 
@@ -34,12 +57,6 @@ google.com,pub-XXXXXXXXXXXXXXXX,DIRECT,f08c47fec0942fa0
 ### seller.json
 
 同样遵循 IAB Tech Lab 的规范，用来公开卖家信息，提高广告生态系统的透明度。
-
-
-<!--
-https://www.google.com/adsense/cancel-account?token=AEHiP_ChxsHGXi0hoSSA3a-vFYxSvWxrz_5snBJzGQ6I68c9Lve3AIDqjwybQIdt_LJjWh9QbKNKwYi5ZK7r1bH-s2U8WspVVA&pid=pub-4155595889991177
--->
-
 
 
 {% highlight text %}

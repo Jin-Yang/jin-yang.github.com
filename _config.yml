@@ -10,12 +10,10 @@ kramdown:
 plugins:
     - jekyll-paginate
 
+title: 悟空小饭
+description: 通过 Jekyll 和 Github Pages 搭建的个人 Blog ，记录一些日常生活以及杂七杂八的技术文章，如有不足不吝赐教，如果喜欢欢迎转发。
 production_url: 'https://jin-yang.github.io'
+
 example_repository: 'https://github.com/Jin-Yang/examples/tree/master'
 aspire_repository: 'https://github.com/Jin-Yang/aspire/tree/master'
 kernel_docs_url: 'https://www.kernel.org/doc'
-
-description: > # this means to ignore newlines until "baseurl:"
-    Write an awesome description for your new site here. You can edit this
-    line in _config.yml. It will appear in your document head meta (for
-    Google search results) and in your feed.xml site description.

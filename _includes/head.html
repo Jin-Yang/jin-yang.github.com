@@ -1,39 +1,35 @@
 <head>
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% if page.title %} {{ page.title }} {% else %} {{ site.title }} {% endif %}</title>
+  <meta itemprop="description" name="description" content="{% if page.description %}{{ page.description | truncate: 160 }}{% else %}{{ site.description | truncate: 160  }}{% endif %}" />
+  {% if page.keywords %}<meta name="keywords" content="{{ page.keywords }}">{% endif %}
+  <meta property="og:site_name" content="WebJeda Blog">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+  <meta property="og:title" content="{%if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+  <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
   <meta name="baidu-site-verification" content="B786jeR0MV" />
   <meta name="msvalidate.01" content="29F791E7F785800340E37AD7C714D2A7" />
   <meta name="google-site-verification" content="p7jJ5d3kF9yxRhpIo5GgHXAZ1ATKVyZhV2kf6mEGOv0" />
-
-  <title>{% if page.title %}{{ page.title }} | {% endif %}悟空小饭</title>
-  <meta name="keywords" content="{{ page.keywords }}">
-  <meta name="description" content="{{ page.description }}">
-
+  {% if jekyll.environment == "production" %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
-  <script type="text/javascript">
-  !window.jQuery && document.write('<script src="/static/js/jquery.min.js"><\/script>');
-  </script>
-  <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-  <script type="text/javascript">
-  !$('body').popover && document.write('<script src="/static/js/bootstrap.min.js"><\/script>');
-  </script>
-  <script type="text/javascript" src="/static/js/main.js"></script>
-  <!-- <link rel="stylesheet prefetch" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> -->
+  {% else %}
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+  <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
   <link type="text/css" rel="stylesheet prefetch" href="/static/css/bootstrap.min.css">
-  <!-- <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
-  <link type="text/css" rel="stylesheet prefetch" href="/static/css/font-awesome.min.css">
+  {% endif %}
+  <script type="text/javascript" src="/static/js/main.js"></script>
   <link type="text/css" rel="stylesheet prefetch" href="/static/css/pygments.css">
   <link type="text/css" rel="stylesheet prefetch" href="/static/css/screen.css">
-  <style type="text/css">
   {% if page.language == 'chinese' %}
-    .post-container > p {text-indent: 2em;}
+  <style type="text/css">.post-container > p {text-indent: 2em;}</style>
   {% endif %}
-  </style>
-
   {% if jekyll.environment == "production" %}
   <script data-ad-client="ca-pub-5925708324262028" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   {% endif %}
-
   {% if page.usemath %}
   <!-- mathjax config similar to math.stackexchange -->
   <script type="text/x-mathjax-config">
@@ -55,9 +51,11 @@
           }
       });
   </script>
-  <script type="text/javascript"
-     src="https://cdn.bootcss.com/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML">
-  </script>
+  {% if jekyll.environment == "production" %}
+  <script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"> </script>
+  {% else %}
+  <script type="text/javascript" src="/static/js/mathjax.min.js"></script>
+  {% endif %}
   <style type="text/css">.MathJax .mi, .MathJax .mo { color: #111; font-size: 86%; font-weight: 100; }</style>
   {% endif %}
   {% if jekyll.environment == "production" %}

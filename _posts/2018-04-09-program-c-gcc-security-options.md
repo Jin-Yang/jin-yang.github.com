@@ -4,8 +4,8 @@ layout: post
 comments: true
 language: chinese
 category: [linux]
-keywords: gcc,c,language
-description: 操作系统提供了许多安全机制来尝试降低或阻止缓冲区溢出攻击带来的安全风险，例如 ASLR、NX 等等，这里简单介绍一些常见的使用项。
+keywords: gcc,c,language,ASLR,PIE,PIC,堆随机,RELRO
+description: 使用 C 编写代码时，经常会遇到栈溢出、非法访问等，实际上 Linux 和 GCC 已经提供了很多安全相关的配置项，可以规避很多异常的场景，例如 GCC 提供了栈保护、溢出检查、RELPO 等机制，而 Linux 在 OS 层面又提供了 ASLR、PIE、PIC 等机制。这里简单介绍其使用方法。
 ---
 
 操作系统提供了许多安全机制来尝试降低或阻止缓冲区溢出攻击带来的安全风险，例如 ASLR、NX 等等，这里简单介绍一些常见的使用项。
@@ -189,7 +189,7 @@ echo 2 > /proc/sys/kernel/randomize_va_space
 -Wl, -z,relro
 -Wl, -z,relro -z,now
 
------ (GCC) 不建议指定搜索路径，用户可以配置
+----- (GCC) 不建议指定搜索路径，用户可以配置但是需要保护目录权限
 
 ----- (GCC) 堆栈不可执行
 -Wl,-z,noexecstack

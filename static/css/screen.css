@@ -8,12 +8,14 @@ body {
 .footer {
   font-size: 0.7em;
 }
+/*
 .footer-logo {
   background: url(/images/system/footer.png) no-repeat;
   margin: 0 auto;
   width: 64px;
   height: 64px;
 }
+*/
 /* sidebar */
 .sidebar-description {
   font-size: 0.85em;
@@ -128,7 +130,7 @@ body {
 /* others */
 img {
   display: block;
-  max-width: 100%;
+  max-width: 90%;
   margin-left: auto;
   margin-right: auto;
 }

@@ -15,15 +15,6 @@ Oooops, just examples, ignore me, darling.
 
 <!-- more -->
 
-
-
-
-
-------------
-
-------------
-
-
 ![hello world logo]({{ site.url }}/images/misc/hello-world-logo.jpg "hello world logo"){: .pull-center }
 
 ## 配色
