@@ -1,0 +1,124 @@
+---
+title: Page Not Found
+---
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <title>{% if page.title %}{{ page.title }} {% endif %} | Jin Yang's Blog</title>
+  <style type="text/css">
+	html, body {
+		margin: 0;
+		padding: 0;
+		width: 100%;
+		height: 100%;
+		background: white;
+		display: table;
+	}
+	#container {
+		display: table-cell;
+		vertical-align: middle;
+		position: relative;
+	}
+	#content-wrap {
+		width: 790px;
+		margin: 0 auto;
+		position: relative;
+	}
+	#content {
+		padding: 50px 0 10px 360px;
+		background-repeat: no-repeat;
+		background-color: white;
+		min-height: 290px;
+		border: 1px solid #d0d0d0;
+		color: #666;
+        text-align: center;
+		font: 12px/1.5 Tahoma, sans-serif;
+		text-shadow: 0 1px 0 #f1f5ef;
+		-webkit-border-radius: 12px;
+		-moz-border-radius: 12px;
+		border-radius: 12px;
+		box-shadow: 5px 5px 8px rgba(0,0,0,0.3);
+	}
+	#title {
+		overflow: hidden;
+		background-repeat: no-repeat;
+	}
+    .error-404 #content {
+        background-image: url(/images/system/page-not-found.png);
+        background-position: 30px 48px;
+	}
+    .error-404 #title {
+        background-image: url(/images/system/404.gif);
+		margin-left: 50px;
+		margin-top: -20px;
+        height: 134px;
+		width: 332px;
+	}
+	#description {
+		color: #424242;
+        font-size: 15px;
+	}
+	#description strong {
+		color: #666;
+        font: italic bold 36px/1.5em Arial,Times;
+		text-shadow: 0px 1px 1px rgba(255,255,255,.2),0px 0px 7px rgba(0,0,0,.5);
+		margin-top: 25px;
+	}
+	#backtohome {
+		display: block;
+		margin-left: 85px;
+		margin-top: 10px;
+		background: white url(/images/system/button.png) no-repeat;
+		padding-left: 35px;
+		width: 223px;
+		height: 32px;
+		color: #222;
+		text-shadow: 0 1px 0 #fff;
+		text-decoration: none;
+		line-height: 32px;
+	}
+    #backtohome:hover {
+        background-position: 0 -32px;
+    }
+    #backtohome:active {
+        background-position: 0 -64px;
+    }
+    #others {
+        margin-top: 10px;
+        font-size: 13px;
+    }
+    #others .links {
+        font-size: 11px;
+    }
+	a {
+		color: #0084B0;
+		text-decoration: none;
+		text-shadow: none;
+	}
+	a:hover {
+		text-decoration: underline;
+	}
+</style>
+</head>
+
+<body class="error-404">
+   <div id="container">
+      <div id="content-wrap">
+         <div id="content">
+           <div id="title"></div>
+           <div id="description"><strong>Oops!</strong><br>The page you were looking for doesn't exist.<br>^_^ Just take a rest, have a cup of tea ^_^</div>
+           <a id="backtohome" href="/">Go back to our homepage</a>
+           <div id="others">
+              <div class="description">Or give one of the following destinations a try ^_^"</div>
+              <div class="links">
+              <a href="/archives.html">Archives</a>
+              | <a href="/categories.html">Categories</a>
+              | <a href="/about.html">About</a>
+              | <a href="http://www.rtems.org">RTEMS</a>
+              </div>
+           </div>
+        </div><!-- #content -->
+      </div><!-- #content-wrap -->
+   </div><!-- #container -->
+</body></html>

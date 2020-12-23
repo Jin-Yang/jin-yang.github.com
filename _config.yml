@@ -1,0 +1,23 @@
+permalink: /post/:title.html
+404: 404.html
+paginate: 10
+highlighter: rouge
+mardown: kramdown
+kramdown:
+    input: GFM                  # use Github Flavored Markdown !important
+    hard_wrap: false
+    math_engine: mathjax
+plugins:
+    - jekyll-paginate
+
+title: 悟空小饭
+imgdir: imgdir
+referdir: referdir
+description: 通过 Jekyll 和 Github Pages 搭建的个人 Blog ，记录一些日常生活以及杂七杂八的技术文章，如有不足不吝赐教，如果喜欢欢迎转发。
+
+cnurl: https://www.gohalo.me
+
+production_url: 'https://jin-yang.github.io'
+example_repository: 'https://github.com/Jin-Yang/examples/tree/master'
+aspire_repository: 'https://github.com/Jin-Yang/aspire/tree/master'
+kernel_docs_url: 'https://www.kernel.org/doc'

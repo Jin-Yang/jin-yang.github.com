@@ -1,0 +1,30 @@
+---
+layout: default
+---
+{% assign post = page -%}
+<div class="post-container">
+  <div class="blog-header">
+    <h1>{{ page.title }}</h1>
+    <div class="post-description">
+      <i class="fa fa-calendar"></i> {{ post.date | date: "%F %A" }} &nbsp; &nbsp;
+      <i class="fa fa-tags"></i> {% for tag in post.tags %}{{ tag }}{% if forloop.last %}{% else %}, {% endif %}{% endfor -%}
+      {%- if post.source -%}--- Quoted From: <a href="{{ post.source }}" rel="external">Source</a>{%- endif -%}
+    </div>
+  </div>
+  <hr>
+  {%- if jekyll.environment == "production" -%}
+    {%- include ads_header.html -%}
+  {%- endif -%}
+  <hr>
+  {{ content }}
+  <hr>
+  <nav><ul class="pager">
+        {%- if page.previous -%} <li class="previous"><a href="{{ page.previous.url }}" title="{{ page.previous.title }}">&larr; Older</a></li> {%- endif -%}
+        {%- if page.next -%} <li class="next"><a href="{{ page.next.url }}" title="{{ page.next.title }}">Newer &rarr;</a></li> {%- endif -%}
+  </ul></nav><br>
+  {%- if jekyll.environment == "production" -%}
+    {%- include donate.html -%}
+    {%- include ads_footer.html -%}
+    {%- include discuss.html -%}
+  {%- endif -%}
+</div>

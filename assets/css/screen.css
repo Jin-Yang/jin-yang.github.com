@@ -1,0 +1,214 @@
+body {
+  font: 14px/1.5 "Microsoft YaHei","Arial","黑体","仿宋体","宋体",sans-serif;
+  word-break: break-all;
+  margin-bottom: 20px;
+  padding-top: 60px; /* TopBar的高度 */
+}
+/* footer */
+.footer {
+  font-size: 0.7em;
+}
+/* sidebar */
+.sidebar-module {
+  padding: 0.6em;
+  font-size: 0.9em;
+  border: 1px solid #333;
+  border-radius: 0.5em;
+}
+.posts-list ul {
+  margin: 0px;
+  list-style-type: circle;
+  padding-left: 10px;
+}
+.posts-list a {
+  padding-left: 3px;
+}
+.posts-list li:hover {
+  background-color: #81C2D6;
+}
+.blog-sidebar a {
+  color: black;
+  text-decoration:none;
+}
+#toc-contents .active {
+  background: #81C2D6;
+}
+#toc-contents ul {
+  list-style-type: none;
+  padding-left: 3px;
+  font-size: 1em;
+}
+#toc-contents .active {
+  background: #81C2D6;
+}
+/* blog */
+.blog-post {
+  margin-top: 30px;
+  border-bottom: 2px solid #81C2D6;
+}
+.blog-post-title {
+  margin-bottom: 5px;
+  font-size: 2em;
+}
+.blog-post-title a {
+  padding-left: 8px;
+  line-height: 1.6em;
+  display: block;
+  border-radius: 8px;
+  color: black;
+  text-decoration: none;
+}
+.blog-post-title a:hover {
+  background-color: #81C2D6;
+  color: white;
+}
+.blog-post-meta {
+  color: #999;
+}
+.blog-post-footer {
+  margin-top: 10px;
+  color: #999;
+}
+.post-container {
+  border-radius: 1em;
+  padding: 1em;
+  border: 1px solid #A4A4A4;
+  box-shadow: 5px 5px 8px rgba(0,0,0,0.3);
+}
+.post-description {
+  text-align: center;
+  font-size: 0.9em;
+  color: #999;
+}
+.blog-main h1 {
+  font-size: 2em;
+  font-weight: 600;
+  text-align: center;
+  text-shadow: 0px 2px 3px rgba(255,255,255,0.2),-1px -1px 1px rgba(0,0,0,0.2);
+}
+.blog-main h2 {
+  background-color: #81C2D6;
+  border-radius: 6px;
+  font-size: 2em;
+  text-align: center;
+  padding: 0.2em;
+}
+.blog-main h3 {
+  border-bottom: 3px solid #81C2D6;
+  padding-bottom: 0.1em;
+  font-size: 1.8em;
+}
+.blog-main h4 {
+  border-left: 8px solid #81C2D6;
+  padding-left: 10px;
+  font-size: 1.5em;
+}
+.blog-main h5 {
+  border-left: 3px solid #81C2D6;
+  padding-left: 10px;
+  font-size: 1.2em;
+}
+.blog-main h6 {
+  font-size: 1.1em;
+}
+/* others */
+img {
+  display: block;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.pull-right {
+  float: right;
+}
+.pull-left {
+  float: left;
+}
+.pull-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+table[class='rouge-table'] {
+  width: 100%;
+  margin: 0px;
+}
+td[class='gutter gl'] {
+  border: none;
+  border-right: 2px solid darkgrey;
+  width: 2.5em;
+  background-color: #F6E3CE;
+}
+td[class='code'] {
+  border: none;
+  font-family: "PT mono";
+}
+pre[class='lineno'] {
+  background-color: #F6E3CE;
+  text-align: right;
+  padding: 0px;
+  padding-right: 5px;
+  margin: 0px;
+  border: none;
+  font-size: 1em;
+}
+td[class='code'] > pre {
+  background-color: #F6E3CE;
+  text-align: left;
+  padding: 0px;
+  margin: 0px;
+  border: none;
+  font-size: 1em;
+  padding-left: 5px;
+}
+pre[class='highlight'], figure > pre {
+  font-size: 0.8em;
+  background-color: #F6E3CE;
+  border: 1px dashed #424242;
+  border-radius: 5px;
+}
+table {
+  margin: 0 auto;
+  margin-bottom: 1em;
+  margin-top: 1em;
+  border-collapse: collapse;
+}
+th {
+  background-color: lightgray;
+  text-align: center;
+}
+th, td {
+  border: 1px solid gray;
+  padding: 5px;
+}
+blockquote {
+  margin-left: 4em;
+  padding-left: 1em;
+  border-left: 10px solid #8192D6;
+  font-size: 0.8em;
+  line-height: 1.2em;
+  background-color: #DCF7A1;
+  border-radius: 10px;
+}
+.donate_bar a.btn_donate{
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  width: 82px;
+  height: 82px;
+  background: url("/images/misc/btn_reward.gif") no-repeat;
+  _background: url("/images/misc/btn_reward.gif") no-repeat;
+  -webkit-transition: background 0s;
+  -moz-transition: background 0s;
+  -o-transition: background 0s;
+  -ms-transition: background 0s;
+  transition: background 0s;
+}
+.donate_bar a.btn_donate:hover{
+  background-position: 0px -82px;
+}
+.donate_bar .donate_txt {
+  display: block;
+  color: #9d9d9d;
+  font: 14px/2 "Microsoft Yahei";
+}
