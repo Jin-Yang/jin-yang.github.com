@@ -1,16 +1,16 @@
 ---
-title: resolv.conf 简介
+title: DNS 配置文件 resolv.conf 简介
 layout: post
 comments: true
 language: chinese
-category: [misc]
-keywords:
-description:
+tag: [Protocol, Network, DevOps]
+keywords: DNS, resolv.conf, 配置文件
+description: Linux 中可以通过 `/etc/resolv.conf` 文件配置 DNS 服务器的地址，不过目前该文件大部分是通过一些工具自动配置的，例如 NetworkManager ，这里详细介绍其使用方式，以及常用的配置参数。
 ---
 
-Linux 中可以通过 `/etc/resolv.conf` 文件配置 DNS 服务器的地址，不过目前该文件大部分是通过一些工具自动配置的，例如 NetworkManager。
+Linux 中可以通过 `/etc/resolv.conf` 文件配置 DNS 服务器的地址，不过目前该文件大部分是通过一些工具自动配置的，例如 NetworkManager ，那么这就可能会导致在重启网络服务后该配置文件被刷新。
 
-那么这就可能会导致在重启网络服务后该配置文件被刷新。
+这里简单介绍其使用方式。
 
 <!-- more -->
 
@@ -41,10 +41,10 @@ nameserver 10.0.0.3
 
 这里大概讲下几个选项的含义，详细可以通过 `man 5 resolv.conf` 查看：
 
-* nameserver DNS服务器的IP地址，最多能设三个
-* timeout 查询一个NS的超时时间，单位是秒，默认是5，最大为30；
-* attempts 所有服务器查询的整个都尝试一遍的次数，默认是2；
-* rotate 随机选取一个作为首选DNS服务器，默认是从上到下；
+* `nameserver` DNS服务器的IP地址，最多能设三个
+* `timeout` 查询一个NS的超时时间，单位是秒，默认是5，最大为30；
+* `attempts` 所有服务器查询的整个都尝试一遍的次数，默认是2；
+* `rotate` 随机选取一个作为首选DNS服务器，默认是从上到下；
 
 ### ndots
 

@@ -125,7 +125,7 @@ void ares_process_fd(ares_channel channel, ares_socket_t read_fd, ares_socket_t 
 
 `ares_query()` 和 `ares_search()` 都是用来通过 DNS 查找对应的信息，注意，不会查看 `/etc/hosts` 信息，但是两者的执行逻辑略有区别。
 
-`ares_query()` 会直接执行一次 DNS 查询，也就是发送请求，然后接收数据进行处理。而 `ares_search()` 会模拟 `resolv.conf` 中的行为，基本流程如下：
+`ares_query()` 会直接执行一次 DNS 查询，也就是发送请求，然后接收数据进行处理；而 `ares_search()` 会模拟 `resolv.conf` 中的行为，其基本流程如下：
 
 1. 根据 RFC-7686 规定，对于 `.onion` 会直接忽略；
 2. 判断是否为单个域名 (也就是最后一个字符是否为句点)，如果是则直接调用 `ares_query()` 查询；

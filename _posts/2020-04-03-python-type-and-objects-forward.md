@@ -286,14 +286,17 @@ Note that by just subclassing `<class 'object'>`, the type `C` automatically is 
 
 Some questions are probably popping up in your head at this point. Or maybe they aren't, but I'll answer them anyway:
 
+
 * Q: How does Python really create a new object?
 * A: Internally, when Python creates a new object, it always uses a type and creates an instance of that object. Specifically it uses the `__new__()` and `__init__()` methods of the type (discussion of those is outside the scope of this book). In a sense, the type serves as a factory that can churn out new objects. The type of these manufactured objects will be the type object used to create them. This is why every object has a type.
+
 
 * Q: When using instantiation, I specify the type, but how does Python know which type to use when I use subclassing?
 * A: It looks at the base class that you specified, and uses its type as the type for the new object. In the example Example 2.4, "Creating new objects by subclassing", `<class 'type'>` (the type of `<class 'object'>`, the specified base) is used as the type object for creating C.<br>A little thought reveals that under most circumstances, any subclasses of `<class 'object'>` (and their subclasses, and so on) will have `<class 'type'>` as their type.
 
 > Advanced Material Ahead
 > Advanced discussion ahead, tread with caution, or jump straight to the next section.
+
 
 * Q: Can I instead specify a type object to use?
 * A: Yes. One option is by using the `__metaclass__` class attribute as in the following example:
@@ -307,6 +310,7 @@ class MyCWithSpecialType(object):
 
 Now Python will create `MyCWithSpecialType` by instantiating `SpecialType`, and not `<class 'type'>`.
 
+
 * Q: Wow! Can I use any type object as the `__metaclass__`?
 * A: No. It must be a subclass of the type of the base object. In the above example:
 	* Base of `MyCWithSpecialType` is `<class 'object'>`.
@@ -315,14 +319,24 @@ Now Python will create `MyCWithSpecialType` by instantiating `SpecialType`, and 
 Implementation of something like `SpecialType` requires special care and is out of scope for this book.
 
 
-Q:What if I have multiple bases, and don't specify a __metaclass__ - which type object will be used?A:Good Question. Depends if Python can figure out which one to use. If all thebases have the same type, for example, then that will be used. If they havedifferent types that are not related, then Python cannot figure out which typeobject to use. In this case specifying a __metaclass__ is required, and this__metaclass__ must be a subclass of the type of each base.Q:When should I use a __metaclass__?A:Never (as long as you're asking this question anyway :)Chapter 3. Wrap UpThe Python Objects MapWe really ended up with a map of different kinds of Python objects in the lastchapter.Figure 3.1. The Python Objects Map
+* Q: What if I have multiple bases, and don't specify a `__metaclass__` - which type object will be used?
+* A: Good Question. Depends if Python can figure out which one to use. If all the bases have the same type, for example, then that will be used. If they have different types that are not related, then Python cannot figure out which type object to use. In this case specifying a `__metaclass__` is required, and this `__metaclass__` must be a subclass of the type of each base.
+
+
+* Q: When should I use a `__metaclass__`?
+* A: Never (as long as you're asking this question anyway :)
+
+<!--
+## Chapter 3. Wrap Up
+
+The Python Objects MapWe really ended up with a map of different kinds of Python objects in the lastchapter.Figure 3.1. The Python Objects Map
 Python Types and Objectshttp://www.cafepy.com/article/python_types_and_objects/...15 of 2211/25/11 10:14Here we also unravel the mystery of the vertical grey lines. They just segregateobjects into three spaces based on what the common man calls them - metaclasses, classes, or instances.Various pedantic observations of the diagram above:Dashed lines cross spacial boundaries (i.e. go from object to meta-object). Only exception is <type 'type'> (which is good, otherwise we would need another space to the left of it, and another, and another...).1.Solid lines do not cross space boundaries. Again, <type 'type'> -> <type 'object'> is an exception.2.Solid lines are not allowed in the rightmost space. These objects are tooconcrete to be subclassed.3.Dashed line arrow heads are not allowed rightmost space. These objects aretoo concrete to be instantiated.4.Left two spaces contain types. Rightmost space contains non-types.5.If we created a new object by subclassing <type 'type'> it would be in the leftmostspace, and would also be both a subclass and instance of <type 'type'>.6.
 Python Types and Objectshttp://www.cafepy.com/article/python_types_and_objects/...16 of 2211/25/11 10:14Also note that <type 'type'> is indeed a type of all types, and <type 'object'> a superclass of all types (except itself).SummaryTo summarize all that has been said:There are two kinds of objects in Python:Type objects - can create instances, can be subclassed.1.Non-type objects - cannot create instances, cannot be subclassed.2.<type 'type'> and <type 'object'> are two primitive objects of the system.objectname.__class__ exists for every object and points the type of the object.objectname.__bases__ exists for every type object and points the superclasses of theobject. It is empty only for <type 'object'>. To create a new object using subclassing, we use the class statement and specify the bases (and, optionally, the type) of the new object. This alwayscreates a type object.To create a new object using instantiation, we use the call operator (()) on the type object we want to use. This may create a type or a non-type object,depending on which type object was used.Some non-type objects can be created using special Python syntax. Forexample, [1, 2, 3] creates an instance of <type 'list'>.Internally, Python always uses a type object to create a new object. The newobject created is an instance of the type object used. Python determines thetype object from a class statement by looking at the bases specified, and findingtheir types.issubclass(A,B) (testing for superclass-subclass relationship) returns True iff:B is in A.__bases__, or1.issubclass(Z,B) is true for any Z in A.__bases__.2.isinstance(A,B) (testing for type-instance relationship) returns True iff:
 Python Types and Objectshttp://www.cafepy.com/article/python_types_and_objects/...17 of 2211/25/11 10:14B is A.__class__, or1.issubclass(A.__class__,B) is true.2.Squasher is really a python. (Okay, that wasn't mentioned before, but now you know.)More Types to Play WithThe following example shows how to discover and experiment with built-in types.Example 3.1. More built-in types>>> import types >>> types.ListType is list True>>> def f(): ...     pass...>>> f.__class__ is types.FunctionType True>>>>>> class MyList(list): ...     pass...>>> class MyFunction(types.FunctionType): ...     pass...Traceback (most recent call last):  File "<stdin>", line 1, in ?TypeError: type 'function' is not an acceptable base type>>> dir(types) ['BooleanType', 'DictProxyType', 'DictType', ..]The types module contains many built-in types.Some well known types have another name as well.def creates a function object.The type of a function object is types.FunctionTypeSome built-in types can be subclassed.Some cannot.More types than you can shake a stick at.What's the Point, Anyway?
 Python Types and Objectshttp://www.cafepy.com/article/python_types_and_objects/...18 of 2211/25/11 10:14So we can create new objects with any relationship we choose, but what does it buyus?The relationships between objects determine how attribute access on the objectworks. For example, when we say objectname.attributename, which object do we end upwith? It all depends on objectname, its type, and its bases (if they exist).Attribute access mechanisms in Python are explained in the second book of thisseries: Python Attributes and Methods.Classic ClassesThis is a note about classic classes in Python. We can create classes of the old (pre2.2) kind by using a plain class statement.Example 3.2. Examining classic classes>>> class ClassicClass: ...     pass...>>> type(ClassicClass) <type 'classobj'>>>> import types>>> types.ClassType is type(ClassicClass) True>>> types.ClassType.__class__ <type 'type'>>>> types.ClassType.__bases__ (<type 'object'>,)A class statement specifying no bases creates a classic class Remember thatto create a new-style class you must specify object as the base (although this is not required in Python 3.0 since new-style classes are the default). Specifyingonly classic classes as bases also creates a classic class. Specifying bothclassic and new-style classes as bases create a new-style class.Its type is an object we haven't seen before (in this book).The type of classic classes is an object called types.ClassType.It looks and smells like just another type object.The types.ClassType object is in some ways an alternative <type 'type'>. Instances of this object (classic classes) are types themselves. The rules of attribute access aredifferent for classic classes and new-style classes. The types.ClassType object exists for backward compatibility and may not exist in future versions of Python. Other sections
 Python Types and Objectshttp://www.cafepy.com/article/python_types_and_objects/...19 of 2211/25/11 10:14of this book should not be applied to classic classes.Comment on this book here: discussion page. I appreciate feedback!That's all, folks!
 
-
+-->
 
 
 ## 参考
@@ -330,5 +344,9 @@ Python Types and Objectshttp://www.cafepy.com/article/python_types_and_objects/.
 * [Python Types and Objects](https://www.eecg.utoronto.ca/~jzhu/csc326/readings/metaclass-class-instance.pdf) 也就是从这个 PDF 中摘抄的。
 
 <!--
+https://www.cnblogs.com/busui/p/7283137.html
+https://www.eecg.utoronto.ca/~jzhu/csc326/readings/metaclass-class-instance.pdf
+https://blog.csdn.net/cpp_chen/article/details/17242115
+http://www.doc88.com/p-9129777039159.html
 http://www.cafepy.com/article/python_types_and_objects/python_types_and_objects.html
 -->

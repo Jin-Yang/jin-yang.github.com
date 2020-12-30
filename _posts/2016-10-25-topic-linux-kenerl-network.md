@@ -3,7 +3,7 @@ title: 【专题】Linux 网络专题
 layout: post
 comments: true
 language: chinese
-category: [misc]
+tag: [Network, Topic]
 keywords:
 description:
 ---
@@ -36,15 +36,19 @@ description:
 
 ## DNS
 
-在通过浏览器访问某个网站时，或者说访问网络上的服务器时，可以直接使用 IP 地址，但是对于人类来说很难记忆，为此引入了域名。
+首先 `www.google.com` 并不是一个域名，这样的格式被称为主机名，也就是 Full Qualified Domain Name, FQDN；而 `google.com` 才是一个域名，在这个域内有很多主机，例如 `www`、`ftp`、`email` 等等。
 
-而为了可以做到自动解析，于时就有了 DNS 。
+DNS 就是一整套用来解析主机名的方案。
 
-* [DNS 基本概念](/post/network-dns-basic-introduce.html) 介绍 DNS 协议相关的内容，dig nslookup 等工具使用。
+* [基本概念](/post/network-dns-basic-introduce.html) 详细介绍 DNS 的基本概念，包括了不同记录类型的介绍。
+* [常用工具](/post/dns-tools-usage.html) 详细介绍最常见的 dig nslookup 等命令行工具的使用，以及 BIND 服务器搭建。
+* [配置文件](/post/network-dns-resolv-conf-usage-introduce.html) 也就是 `/etc/resolv.conf` 配置文件的使用，包括了参数的详细配置。
+* [DNSmasq](/post/linux-dnsmasq-introduce.html) 一个本地的 DNS 解决方案，可以提供 DNS DHCP 等功能。
+
+<!--
 * [DNS 协议详解](/post/network-dns-protocol-details-introduce.html) 关于 DNS 协议的详细内容介绍。
-* [DNSmasq 使用](/post/linux-dnsmasq-introduce.html) 一个本地的 DNS 解决方案，可以提供 DNS DHCP 等功能。
-* [resolv.conf 简介](/post/network-dns-resolv-conf-usage-introduce.html) 也就是 `/etc/resolv.conf` 配置文件的使用。
 * [c-ares 异步 DSN 简介](/post/network-dns-async-resolve-introduce.html) cares 提供了简单的异步 DSN 解析，很多开源工具使用。
+-->
 
 ## HTTP2
 

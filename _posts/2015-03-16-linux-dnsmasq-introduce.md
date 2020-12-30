@@ -1,17 +1,18 @@
 ---
-Date: October 19, 2013
-title: DNSmasq 使用
+title: 软件 DNSmasq 使用介绍
 layout: post
 comments: true
 language: chinese
-category: [linux]
+tag: [Protocol, Network, DevOps]
+keywords: DNS, DNSmasq
+description: 有时我们需要管理 DNS 解析，如加速 DNS 的解析过程、纠正错误的 DNS 解析记录、配置局域网的 DNS 解析等等，DNSmasq 就是其中的一个解决方案，相比 BIND 来说，其更加小巧，配置更加方便。
 ---
 
-通常上网使用的 DNS 服务器都是由电信、联通等运营商提供的，或者是公用的 DNS 解析服务器，这通常会带来些问题，如有时解析不正常、经常弹出广告等。
+通常上网使用的 DNS 服务器都是由电信、联通等运营商提供的，或者是公用的 DNS 解析服务器，例如 Google 提供的解析器，这通常会带来些问题，如有时解析不正常、经常弹出广告等。
 
 有时我们需要管理 DNS 解析，如加速 DNS 的解析过程、纠正错误的 DNS 解析记录、配置局域网的 DNS 解析等等。
 
-DNSmasq 就是其中的一个解决方案，相比 BIND 来说，其更加小巧，配置更加方便，其源码仅有 2 万多行，但足以满足常见的需求。
+DNSmasq 就是其中的一个主机上最常用的解决方案，相比 BIND 来说，其更加小巧，配置更加方便，其源码仅有 2 万多行，但足以满足常见的需求。
 
 <!-- more -->
 
