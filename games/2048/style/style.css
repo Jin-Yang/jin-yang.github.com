@@ -1,0 +1,41 @@
+/*
+Error: Invalid CSS after "...clear-sans.css)": expected media query list, was ";"
+        on line 1 of main.css
+
+1: @import url(fonts/clear-sans.css);
+2: html, body {
+3:   margin: 0;
+4:   padding: 0;
+5:   background: #faf8ef;
+6:   color: #776e65;
+
+Backtrace:
+main.css:1
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/scss/parser.rb:1308:in `expected'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/scss/parser.rb:1238:in `expected'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/scss/parser.rb:74:in `parse_media_query_list'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:1059:in `parse_import_arg'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:1020:in `block in parse_import_directive'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:1019:in `loop'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:1019:in `parse_import_directive'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:834:in `parse_directive'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:654:in `parse_line'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:539:in `build_tree'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:558:in `block in append_children'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:557:in `each'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:557:in `append_children'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:417:in `_to_tree'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:389:in `_render_with_sourcemap'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/engine.rb:307:in `render_with_sourcemap'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/exec/sass_scss.rb:387:in `run'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/exec/sass_scss.rb:63:in `process_result'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/exec/base.rb:50:in `parse'
+/home/andy/.gem/ruby/gems/sass-3.7.4/lib/sass/exec/base.rb:18:in `parse!'
+/home/andy/.gem/ruby/gems/sass-3.7.4/bin/sass:13:in `<top (required)>'
+/home/andy/bin/sass:23:in `load'
+/home/andy/bin/sass:23:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Error: Invalid CSS after \"...clear-sans.css)\": expected media query list, was \";\"\A         on line 1 of main.css\A \A 1: @import url(fonts/clear-sans.css);\A 2: html, body {\A 3:   margin: 0;\A 4:   padding: 0;\A 5:   background: #faf8ef;\A 6:   color: #776e65;"; }
