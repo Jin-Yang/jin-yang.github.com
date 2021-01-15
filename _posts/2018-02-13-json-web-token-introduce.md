@@ -3,14 +3,16 @@ title: JWT 简介
 layout: post
 comments: true
 language: chinese
-category: [python]
+tag: [Network, Security, GoLang]
 keywords: react,introduce
-description: 在程序开发中，用户认证授权是一个绕不过的重难点。以前的开发模式下，cookie 和 session 认证是主流，随着前后端分离的趋势，基于 Token 的认证方式成为主流，而 JWT(RFC 7519) 是基于 Token 认证方式的一种机制，是实现单点登录认证的一种有效方法。
+description: 在程序开发中，用户认证授权是一个绕不过的重难点，因为前后端的分离，目前基于 Token 的认证机制越来越多，比较典型的就是 JWT ，这里详细介绍其设计使用方式。
 ---
 
-在程序开发中，用户认证授权是一个绕不过的重难点。
+在程序开发中，用户认证授权是一个绕不过的重难点，以前的开发模式下，cookie 和 session 认证是主流，随着前后端分离的趋势，基于 Token 的认证方式成为主流。
 
-以前的开发模式下，cookie 和 session 认证是主流，随着前后端分离的趋势，基于 Token 的认证方式成为主流，而 JWT(RFC 7519) 是基于 Token 认证方式的一种机制，是实现单点登录认证的一种有效方法。
+而 JWT(RFC 7519) 是基于 Token 认证方式的一种机制，是实现单点登录认证的一种有效方法。
+
+这里详细介绍其设计和使用方式。
 
 <!-- more -->
 
@@ -18,7 +20,7 @@ description: 在程序开发中，用户认证授权是一个绕不过的重难�
 
 JWT 定义了一个紧凑且自包含的方式，通过 JSON 对象安全地传输信息，这些信息可以通过数字签名进行验证和信任，可以使用 HMAC 算法或使用 RSA 的公私钥对来对 JWT 进行签名。
 
-体积足够小，可以通过 URL、POST 参数或 HTTP 头发送，而且其有效载荷包含有关用户的所有必需信息，避免了多次查询数据库。
+体积足够小，可以通过 URL、POST 参数或者使用 HTTP 头发送，而且其有效载荷包含有关用户的所有必需信息，从而可以避免多次查询数据库。
 
 详细可以参考 [jwt.io](https://jwt.io/introduction/) 中的相关入门介绍，如下仅仅介绍相关的概念。
 

@@ -64,6 +64,22 @@ MethodOverride
 
 ### 参数获取
 
+echo 框架提供了 Bind 函数，可以直接将接收到的数据进行转换，提供了 json、xml、表单、URL 等格式的数据转换方式，也可以自己定义。
+
+``` go
+type user struct {
+	UserName string `json:"username" form:"username"`
+	Password string `json:"password" form:"password"`
+}
+
+func handler(c echo.Context) error {
+	u := new(user)
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+}
+```
+
 #### 表单
 
 HTML 提供的默认表单，可以使用如下方式。
@@ -95,7 +111,7 @@ curl -X POST http://127.1:1323/v1/hello -H 'Content-Type: application/json' \
 
 可以通过如下方式读取并返回 JSON 数据格式。
 
-{% highlight text %}
+``` go
 msg, err := ioutil.ReadAll(r.Body)
 if err != nil {
 	return err
@@ -111,13 +127,7 @@ if err = json.Unmarshal(msg, &body); err != nil {
 }
 body["method"] = r.Method
 return c.JSON(http.StatusOK, body)
-{% endhighlight %}
-
-#### Bind
-
-可以通过 Bind 函数直接将接收到的数据进行转换，默认的会转换 json、xml、表单、URL 等格式的数据，也可以自己定义。
-
-
+```
 
 ## 参考
 

@@ -1,0 +1,87 @@
+---
+layout: tools
+title: JWT 在线解密
+keywords: JWT,JWT在线转换,JWT在线解密,JWT在线解析,JSON Web Tokens,Token,JWT转换,JWT解密,JWT解析
+description: JWT解密，JWT由头部(HEADER)、载荷(PAYLOAD)、签证(SIGNATURE)三部分组成，在解析时不记录令牌，所有验证和调试都在客户端进行。
+---
+
+<h2 class=".text-center">JSON Web Tokens (JWT) 在线解密</h2>
+
+<div class="alert alert-info">
+	<strong>提示</strong> JWT 是目前最流行的跨域认证解决方案, 是一个开放式标准 (<a href="//tools.ietf.org/html/rfc7519" target="_blank">RFC 7519</a>)，通过 JSON 格式保存信息，包含了头部(HEADER)、载荷(PAYLOAD)、签证(SIGNATURE) 三部分，在解析时不记录令牌，所有验证和调试都在客户端进行。
+</div>
+
+
+<div class="row">
+  <div class="col-xs-6">
+    <h4>Encode <small>请在以下文本框粘贴令牌</small></h4>
+    <input id="input" style="display:none;"></input>
+ </div>
+
+  <div class="col-xs-6">
+    <h4>Decode <small>以下是解密内容</small></h4>
+    <textarea id="input" style="display:none;"></textarea>
+    <textarea id="input" style="display:none;"></textarea>
+    <textarea id="input" style="display:none;"></textarea>
+ </div>
+</div>
+
+
+
+
+
+
+
+
+<div style="width:100%;text-align:left" id="con_left">
+    <h4 style="color:#000;">Encoded <small>请在以下文本框粘贴令牌</small></h4>
+    <textarea id="input" style="display:none;"></textarea>
+</div>
+
+    <style>
+        .CodeMirror {
+            text-align: left;
+            min-height: 100px;
+            border-radius: 4px;
+        }
+
+        #con_left .CodeMirror {
+            padding: 8px 8px 0 8px
+        }
+
+        #con_right .CodeMirror {
+            border-radius: 0px
+        }
+
+        .decode_header {
+            border: 1px solid silver;
+            border-bottom: 0px;
+            padding: 0 10px;
+            line-height: 30px;
+        }
+
+        .decode_bottom {
+            border: 1px solid silver;
+            border-radius: 0 0 4px 4px
+        }
+    </style>
+
+<div style="width:100%;" class="text-left" id="con_right">
+    <div>
+	<h4 style="color:#000;">Decode <small>以下是解密的内容</small></h4>
+    </div>
+    <div class="decode_header" style="border-radius: 4px 4px 0 0;">HEADER</div>
+    <textarea id="output_header" style="display:none;"></textarea>
+    <div class="decode_header" style="border-top:0">PAYLOAD</div>
+    <textarea id="output_payload" style="display:none;"></textarea>
+    <div class="decode_header" style="border-top:0">STATUS</div>
+    <p class="decode_header text-success decode_bottom" id="status_none" style="color:#00b9f2">... ... ...</p>
+    <p class="decode_header text-success decode_bottom" id="status_ok" style="display:none"><i class="icon-ok"></i> Decode Success</p>
+    <p class="decode_header text-error decode_bottom" id="status_err" style="display:none"><i class="icon-remove"></i> <span></span></p>
+</div>
+
+<script>
+	$(function () {
+		console.log("jjjjj");
+	})
+</script>
