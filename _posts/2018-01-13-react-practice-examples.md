@@ -16,41 +16,42 @@ React 起源于 Facebook 的内部项目，据说是因为该对市场上 JavaSc
 
 <!-- more -->
 
-![react logo]({{ site.url }}/images/react-logo.png "react logo "){: .pull-center width="70%" }
+![react logo]({{ site.url }}/images/react-logo.png "react logo ")
 
 ## 1. 安装使用
 
-React 的安装包可以从 [官网](https://reactjs.org/) 下载，简单的示例可以参考 [Try React](https://reactjs.org/docs/try-react.html)，其中 [Single File Example](https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html) 是一个单页的示例。
+使用 React 有点类似于 jQuery ，直接引用 JS 包即可，可以从官网 [reactjs.org](https://reactjs.org/) 下载，发布版本可以查看 [Github React Release](https://github.com/facebook/react/releases) 中的列表，不过建议从 [www.bootcdn.cn](https://www.bootcdn.cn/) 上下载。
 
-关于发布版本可以查看 [Github React Release](https://github.com/facebook/react/releases) 。
+简单的示例可以参考 [Try React](https://reactjs.org/docs/try-react.html)，其中 [Single File Example](https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html) 是一个单页的示例。
 
 
 ## 2. HTML 模版
 
 最简单的可以参考如上的 [Single File Example](https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html) ，将其中的 JS 从 [Github React Release](https://github.com/facebook/react/releases) 下载后，可以简化如下。
 
-{% highlight text %}
+``` html
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8" />
-		<title>Hello World</title>
-		<script src="../build/react.js"></script>
-		<script src="../build/react-dom.js"></script>
-		<script src="../build/browser.min.js"></script>
-	</head>
-	<body>
-		<div id="example"></div>
-		<script type="text/babel">
-			ReactDOM.render(<h1>Hello, world!</h1>, document.getElementById('root'));
-		</script>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+  </head>
+
+  <body>
+    <div id="example"></div>
+    <script type="text/babel">
+      ReactDOM.render(<h1>Hello World!</h1>, document.getElementById('example'));
+    </script>
+  </body>
 </html>
-{% endhighlight %}
+```
 
-需要注意的是，在最后一个 `<script>` 标签的 `type` 属性为 `text/babel`，这是因为 React 独有的 JSX 语法，跟 JavaScript 不兼容。
+需要注意的是，在最后一个 `<script>` 标签的 `type` 属性必须为 `text/babel`，否则会报错，这是因为 React 独有的 JSX 语法，跟 JavaScript 不兼容。
 
-这里供用到了三个库：A) react.js 是 React 的核心库；B) react-dom.js 是提供与 DOM 相关的功能；C) browser.js 的作用是将 JSX 语法转为 JavaScript 语法，这一步很消耗时间，实际上线的时候，应该将它放到服务器完成。
+这里供用到了三个库：A) `react.js` 是 React 的核心库；B) `react-dom.js` 是提供与 DOM 相关的功能；C) `babel.js` 的作用是将 JSX 语法转为 JavaScript 语法，这一步很消耗时间，实际上线的时候，需要先进行转换。
 
 <!--
 可以如下命令将 src 子目录的 js 文件进行语法转换，转码后的文件全部放在 build 子目录。
@@ -646,6 +647,15 @@ https://github.com/MacKentoch/react-director-admin-template
 https://github.com/rafaelhz/react-material-admin-template
 https://github.com/jtg2078/campaign-admin
 https://github.com/vaclav-zeman/dashboard-react-template
+
+
+
+
+
+https://github.com/camsong/redux-in-chinese
+https://github.com/quangbuule/redux-example
+https://github.com/mzabriskie/react-example
+http://react-redux.herokuapp.com/
 -->
 
 {% highlight text %}

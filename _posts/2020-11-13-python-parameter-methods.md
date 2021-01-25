@@ -1,5 +1,5 @@
 ---
-title: 详细介绍 Python 函数声明以及调用方式
+title: 关于 Python 函数声明以及调用方式
 layout: post
 comments: true
 language: chinese

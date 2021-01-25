@@ -1099,6 +1099,19 @@ http://cppcheck.sourceforge.net/
 
 
 
+https://www.jianshu.com/p/110b27f8361b
+
+
+https://github.com/dense-analysis/ale
+
+http://aiezu.com/article/linux_vim_plugin_autoformat_install.html
+https://blog.csdn.net/demorngel/article/details/69053613
+https://github.com/chiel92/vim-autoformat
+
+
+https://blog.csdn.net/wisepragma/article/details/80993437
+
+
 https://xiaozhou.net/from-vim-to-neovim-2016-05-21.html
 https://github.com/plasticboy/vim-markdown
 https://github.com/TimothyYe/mydotfiles

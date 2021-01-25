@@ -15,6 +15,12 @@ description: 整理总结与 Linux 相关的基础知识，覆盖了从准备环
 
 ## 准备环境
 
+<!--
+/post/kernel-hardware-startup.html
+/post/kernel-bootstrap.html
+-->
+
+
 ## 文件系统
 
 ## 使用终端

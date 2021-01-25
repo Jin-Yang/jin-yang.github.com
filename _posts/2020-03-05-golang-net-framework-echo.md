@@ -3,18 +3,39 @@ title: GoLang Echo 简介
 layout: post
 comments: true
 language: chinese
-category: [program,golang,linux]
+tag: [Program, GoLang, Network]
 keywords: echo,golang,http
-description:
+description: echo web 框架是通过 GoLang 开发的一种高性能、可扩展、轻量级的 web 框架，只包含了 MVC 框架的 C 部分，也就是负责 URL 路由和控制器部分，对于 V 视图和 M 数据操作可以使用自己喜欢的工具库来实现。
 ---
 
+echo web 框架是通过 GoLang 开发的一种高性能、可扩展、轻量级的 web 框架，只包含了 MVC 框架的 C 部分，也就是负责 URL 路由和控制器部分，对于 V 视图和 M 数据操作可以使用自己喜欢的工具库来实现。
+
+这里简单介绍其使用方法。
 
 <!-- more -->
 
 ![echo introduce]({{ site.url }}/images/go/echo-introduce.png "echo introduce"){: .pull-center width="80%" }
 
-
 ## 简介
+
+如下是一个简单的示例。
+
+``` go
+package main
+
+import (
+	"net/http"
+	"github.com/labstack/echo"
+)
+
+func main() {
+	e := echo.New()
+	e.GET("/hello", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello World!")
+	})
+	e.Start(":8080")
+}
+```
 
 ### 使用包
 
@@ -136,6 +157,8 @@ return c.JSON(http.StatusOK, body)
 <!--
 使用 FastHTTP 作为底层的 HTTP 处理，速度要快很多
 https://github.com/webx-top/echo
+
+https://www.tizi365.com/archives/28.html
 -->
 
 {% highlight text %}

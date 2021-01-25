@@ -338,9 +338,10 @@ https://github.com/deleisha/evt-tls
 
 Golang的编程以及一些参考连接
 https://github.com/denji/golang-tls
+
+OpenSSL中文手册之ERR库详解
+https://blog.csdn.net/liao20081228/article/details/76718342
+
+OpenSSL API 调用错误处理上的细节问题
+https://segmentfault.com/a/1190000015326570
 -->
-
-
-
-{% highlight text %}
-{% endhighlight %}

@@ -1,5 +1,5 @@
 ---
-title: JavaScript 环境
+title: Linux 搭建 JavaScript 环境
 layout: post
 comments: true
 language: chinese
@@ -12,23 +12,20 @@ description: 简单介绍下 JavaScript 经常使用的工具。
 
 <!-- more -->
 
-## Node.js
+## NodeJS
 
-如果安装最新版本可以通过如下方式，此时 node 以及 npm 都会安装。
+可以从 [nodejs.org](https://nodejs.org/en/) 下载最新的二进制包解压安装，也可以通过如下方式安装仓库源，以 CentOS 为例，会添加到 `/etc/yum.repos.d` 目录下，其中 `setup_NN.x` 是使用的版本号。
 
-{% highlight html %}
-# curl -sL https://rpm.nodesource.com/setup_11.x | bash -
+```
+# curl -sL https://rpm.nodesource.com/setup_14.x | bash -
 # yum -y install nodejs
-{% endhighlight %}
+```
 
-当然，上述方式安装的包可能也不是最新的，需要根据版本确定第一条命令。
-
-### 安装测试
-
-在 CentOS 中，可以直接通过如下方式安装并测试。
+注意，此时 node 以及 npm 都会安装。然后，可以通过如下方式进行测试。
 
 {% highlight text %}
-$ yum install nodejs
+$ node --version
+$ npm --version
 
 $ echo 'console.log("Hello World!");' > /tmp/hello.js
 $ node /tmp/hello.js
@@ -55,23 +52,25 @@ $ node hello.js
 
 ## NPM
 
-NPM 是 Node 的模块管理和发布工具，类似于 Python 的 setuptools，包括了 nodejs、grunt、bower 等工具都是通过 NPM 发布的。
+NPM 是 Node 的模块管理和发布工具，类似于 Python 的 setuptools，一些常见的工具，例如 nodejs、grunt、bower 等工具都是通过 NPM 发布的。
+
+详细可以查看官网 [www.npmjs.com](https://www.npmjs.com/)，也可以从 [npm.taobao.org](https://npm.taobao.org/mirrors/npm/) 上下载最新安装包，不过上述的 NodeJS 已经安装了 NPM 工具，所以，这里直接省略。
 
 ### 安装配置
 
 使用默认的镜像源时，可能会导致不稳定，可以通过如下两种方式指定源，如下是淘宝的。
 
-{% highlight html %}
+```
 ----- 1. 临时指定镜像源
 $ npm install --registry http://registry.npm.taobao.org express
 
 ----- 2. 永久设置
 $ npm config set registry http://registry.npm.taobao.org
-{% endhighlight %}
+```
 
 NPM 安装分为本地安装和全局安装两种，区别在于是否使用 `-g` 参数。
 
-{% highlight text %}
+```
 # npm install -g grunt-cli        ← 全局安装客户端
 $ npm install grunt               ← 安装本项目的目录下
 $ npm install grunt --save        ← 安装本项目的目录下，同时保存在package文件中
@@ -79,18 +78,18 @@ $ npm install grunt --save-dev    ← 安装本项目的目录下，同时保存
 
 $ npm config set prefix "PATH"    ← 设置全局路径
 $ npm config get prefix           ← 获取当前设置的目录
-{% endhighlight %}
+```
 
 全局会安装到 `/usr/lib/node_modules` 目录下，本地则会安装到 `node_modules` 目录下。
 
 ### 常用命令
 
-{% highlight html %}
+```
 $ npm ls --depth 0         当前项目的依赖模块
 $ npm ls -g --depth 0      全局模块
 
 $ npm uninstall -g <package>   删除全局包
-{% endhighlight %}
+```
 
 ### package.json
 
@@ -98,7 +97,7 @@ $ npm uninstall -g <package>   删除全局包
 
 可以通过 `npm init` 交互式初始化项目，会生成一个 `package.json` 文件，一个 node package 有两种依赖，分别是：A) dependencies，是正常运行该包时所需要的依赖项；B) devDependencies，开发的时候需要的依赖项，像一些进行单元测试之类的包。
 
-{% highlight text %}
+```
 {
     "name": "foobar-demo",   # 模块名称
     "version": "1.0.0",      # 版本号，通常是Major.Minor.Patch
@@ -124,32 +123,28 @@ $ npm uninstall -g <package>   删除全局包
         "webpack-merge": "^0.14.1"
     }
 }
-{% endhighlight %}
+```
 
 在定义版本号的时候，有如下的匹配方式：
 
-{% highlight html %}
+```
 1.1.1        精确下载安装1.1.1版本的包
 >,=1.1.1     大于、小于等于、大于等于1.1.1版本的包
 1.0.1-1.1.1  版本范围是包含1.0.1到1.1.1版本的包
 ~1.1.1       尽量采用靠近1.1.1版本的包，可用版本1.1.1-0到1.1.x-x
 ~1.1         下载安装1.1.x-x版本的包
 ~1           下载安装1.x.x-x版本的包
-{% endhighlight %}
-
-
+```
 
 ### 依赖
 
-
 可以通过如下方式分别安装。
 
-{% highlight html %}
+```
 $ npm install --production
 $ npm install --dev
-{% endhighlight %}
-
-
+```
+<!--
 ## Yarn
 
 Yarn 是由 Facebook、Google、Exponent 和 Tilde 联合推出了一个新的 JS 包管理工具，主要是为了弥补 npm 的一些缺陷。
@@ -172,63 +167,6 @@ npm update --save             yarn upgrade
 {% endhighlight %}
 
 
-## PhantomJS
-
-PhantomJS 提供了一个浏览器环境的命令行接口，可以把它看作一个 "虚拟浏览器"，其内核采用 WebKit 引擎，除了不能浏览，其他与正常浏览器一样。
-
-通过 npm install phantomjs -g 下载时比较慢，可以从 [npm.taobao.org](https://npm.taobao.org/dist/phantomjs/) 上下载，然后解压，并将文件复制到一个 PATH 目录下即可。
-
-查看当前版本，同时用于测试是否成功。
-
-{% highlight html %}
-$ phantomjs --version
-$ phantomjs
-phantomjs> 1+2
-3
-phantomjs> function add(a,b) { return a+b; }
-undefined
-phantomjs> add(1,2)
-3
-{% endhighlight %}
-
-下面，把上面的 add() 函数保存到一个文件中，然后测试下。
-
-{% highlight html %}
-$ cat add.js
-function add(a,b){ return a+b; }
-console.log(add(1,2));
-phantom.exit();
-
-$ phantomjs add.js
-3
-{% endhighlight %}
-
-console.log() 会将内容在终端显示，exit() 表示退出 phantomjs 环境，一般来说，这行是必须的。其它的一些常见操作可以参考如下。
-
-{% highlight html %}
-phantomjs> phantom.version
-{
-  "major": 1,
-  "minor": 5,
-  "patch": 0
-}
-
-phantomjs> console.log("phantom is awesome")
-phantom is awesome
-
-phantomjs> window.navigator
-{
-   "appCodeName": "Mozilla",
-   "appName": "Netscape",
-   ... ...
-}
-{% endhighlight %}
-
-<!--
-http://javascript.ruanyifeng.com/tool/phantomjs.html
--->
-
-
 ## GRUNT
 
 这个是 JavaScript 的构建工具，用来执行一些需要反复重复的任务，例如压缩 (minification)、编译、单元测试、linting 等，从而可以简化工作。
@@ -248,11 +186,6 @@ Grunt 基于 Node.js ，用 JS 开发，这样就可以借助 Node.js 实现跨�
 
 $ grunt --version
 {% endhighlight %}
-
-<!--
-grunt-init 使用模版
-http://www.gruntjs.net/project-scaffolding
--->
 
 其中 -g 参数表示安装到全局，有两个必须的文件：
 
@@ -423,19 +356,11 @@ $ npm install --save-dev grunt-contrib-watch
 $ npm install --save-dev grunt-contrib-connect
 {% endhighlight %}
 
-
-<!--
 http://www.jshint.com/ 用于 jshint 检测，还有 jslint 。
-
 http://tool.css-js.com/ 使用 Uglify 压缩。
-
 http://koala-app.com/index-zh.html 自动编译生成 CSS 。
--->
-
 
 ## 参考
 
 [GRUNT 中文官方](http://www.gruntjs.net/)，或者 [英文网站](http://gruntjs.com/) ，其中的简单示例可以参考 [jquery-tiny-pubsub](https://github.com/cowboy/jquery-tiny-pubsub)。
-
-{% highlight html %}
-{% endhighlight %}
+-->

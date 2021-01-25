@@ -16,7 +16,7 @@ NOTE: 更新font-awesome时同时需要下载fonts目录下的文件，可以从
 当前的tag有
 tag: [Linux, Kernel]
 CheatSheet Protocol TLS/SSL LeetCode AI Program Network Security SoftWare Linux Kernel FrontEnd BackEnd Topic Forward Translation Database DevOps Container Algorithm Structure Theory Blog Others
-GoLang C/C++ JavaScript Python
+GoLang C/C++ JavaScript Python React
 MySQL PostgreSQL SQLite
 
 通过category和related添加关联文章

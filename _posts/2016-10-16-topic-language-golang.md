@@ -74,6 +74,7 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 
 ### 常用模块
 
+* [命令行参数解析](/post/golang-common-module-flag.html) 通过 flag 模块对命令行参数进行解析。
 * [GoLang 常用模块](/post/golang-common-module-introduce.html) 常见的三方模块使用，例如 log、unsafe 等。
 * [GoLang time 模块](/post/golang-common-module-time-introduce.html) 主要是与定时器相关的内容。
 * [GoLang bytes 模块](/post/golang-common-module-bytes-introduce.html) 包括了 String、Bytes 的基本概念，序列化以及反序列化等操作。
@@ -81,6 +82,7 @@ Golang 从 2007 年末由 Robert Griesemer、Rob Pike、Ken Thompson 主持开�
 
 ### 三方模块
 
+* [INI 配置文件解析](/post/golang-ini-config-parse.html) 介绍如何读取最简单的配置文件 INI 格式。
 * [GoLang gRPC 简介](/post/golang-grpc-introduce.html)，使用方式，包括了拦截器、负载均衡、REST 转换等。
 * [GoLang HTTP 使用简介](/post/golang-net-http-webserver-introduce.html)，最常用的 HTTP 模块，介绍在 GoLang 的实现。
 * [GoLang HTTP2 使用](/post/golang-net-http2-introduce.html)

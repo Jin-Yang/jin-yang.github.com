@@ -30,7 +30,7 @@ Programs must be written for people to read, and only incidentally for machines 
 * [GoLang 语言专题](/post/topic-language-golang.html)
 * [Python 语言专题](/post/theme-language-python.html)
 * [Java 语言专题](/post/theme-language-java.html)
-* [JavaScript 语言专题](/post/theme-language-javascript.html)
+* [JavaScript 语言专题](/post/topic-language-javascript-html-css.html)
 
 其它。
 
