@@ -5,8 +5,6 @@ title: Categories
 
 <style type="text/css"><!-- p {text-indent: 2em;} --></style>
 
-## 分类
-
 {% if jekyll.environment == "production" -%}
   {%- include ads_header.html -%}
 {%- endif %}
@@ -16,25 +14,35 @@ title: Categories
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
 
-![Program Logo]({{ site.url }}/images/program-logo.jpg "Program Logo"){: .pull-center width="250"}
+## 编码
 
-码农的工具，简单来说就是用来解释给机器如何执行，有问题还得调试，一耍脾气就要再研究几天，类似于猫奴，完全就是机器奴隶。
+![Program Logo]({{ site.url }}/images/program-logo.jpg "Program Logo"){: width="250"}
+
+所谓的编程语言，也就是码农的工具，简单来说就是用来解释给机器如何执行，有问题还得调试，一耍脾气就要再研究几天，类似于猫奴，渺小的人类完全就是机器的奴隶。
 
 即使如此，仍要注意：
 
 Programs must be written for people to read, and only incidentally for machines to execute.
 
+写码须谨慎，且行且珍惜。
+
+### 开发环境
+
 * [开发环境](/post/theme-develop-workspace.html) 包括了基本的版本管理工具、IDE 开发环境、词法语法分析、CI/CD等。
+* [VIM 编辑器](/post/topic-develop-tools-vim.html) 一个很古老但很经典的编辑器，通过插件就可以针对不同的场景进行适配。
+
+### 编程语言
+
 * [C/C++ 语言专题](/post/topic-language-c-cpp.html) 介绍 C/C++ 相关的技巧，包括了 gdb、无锁编程等。
 * [Shell 语言专题](/post/theme-language-bash.html) 包括了 Bash 的使用方法，以及相关的编程语言。
-* [GoLang 语言专题](/post/topic-language-golang.html)
+* [GoLang 语言专题](/post/theme-language-golang.html)
 * [Python 语言专题](/post/theme-language-python.html)
 * [Java 语言专题](/post/theme-language-java.html)
 * [JavaScript 语言专题](/post/topic-language-javascript-html-css.html)
 
 其它。
 
-* [常用算法](/post/theme-algorithm-introduce.html)
+* [常用算法](/post/topic-algorithm-introduce.html)
 
 #### 其它
 
